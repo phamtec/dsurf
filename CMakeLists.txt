@@ -14,7 +14,6 @@ cmake_policy(SET CMP0167 NEW) # Boost
 cmake_policy(SET CMP0169 OLD) # FetchContent
 cmake_policy(SET CMP0072 NEW) # OpenGL
 
-cmake --help-policy 
 project (dead)
   find_package(Boost 1.85.0 COMPONENTS program_options REQUIRED)
   find_package(SDL3 REQUIRED)
