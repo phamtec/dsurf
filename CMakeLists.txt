@@ -10,8 +10,6 @@
 #   https://github.com/phamtec/dead
 
 cmake_minimum_required(VERSION 3.5)
-cmake_policy(SET CMP0167 NEW) # Boost
-cmake_policy(SET CMP0169 OLD) # FetchContent
 cmake_policy(SET CMP0072 NEW) # OpenGL
 
 project (dead)
