@@ -8,6 +8,14 @@ A Dictionary editor using SDL.
 
 ### SDL
 
+#### Mac
+
+```
+$ brew install sdl3
+```
+
+#### Other
+
 ```
 $ git clone https://github.com/libsdl-org/SDL
 $ cd SDL
@@ -19,6 +27,14 @@ $ sudo make install
 ```
 
 ### SDL TTF support
+
+#### Mac
+
+```
+$ brew install sdl3_ttf
+```
+
+#### Other
 
 ```
 $ git clone https://github.com/libsdl-org/SDL_ttf
