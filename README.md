@@ -38,9 +38,11 @@ $ make
 
 $ ./dead
 
+Hit q to exit
+
 ## Progress
 
-No progress so far
+Draws a spinning hello world using opengl.
 
 ## Current Focus
 

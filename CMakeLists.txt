@@ -15,6 +15,9 @@ cmake_policy(SET CMP0169 OLD) # FetchContent
 
 project (dead)
   find_package(Boost 1.85.0 COMPONENTS program_options REQUIRED)
+  find_package(SDL3 REQUIRED)
+  find_package(SDL3_ttf REQUIRED)
+  find_package(OpenGL)
   add_definitions(-DBOOST_ALL_DYN_LINK) 
   enable_testing()
   
@@ -29,6 +32,6 @@ endif ()
 include_directories(include)
 
 add_executable(dead src/dead.cpp)
-    target_link_libraries(dead ${Boost_PROGRAM_OPTIONS_LIBRARY})
+    target_link_libraries(dead SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
 # Tests
