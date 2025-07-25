@@ -27,3 +27,28 @@ $ cmake ..
 $ make
 $ sudo make install
 
+## Building this project
+
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+
+## Running this
+
+$ ./dead
+
+## Progress
+
+No progress so far
+
+## Current Focus
+
+Layout a simple dictionary using SDL in a nice TTF font.
+
+## Change Log
+
+### 25-Jul-2025
+
+Hello world. First checkin.
+
