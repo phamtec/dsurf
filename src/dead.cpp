@@ -17,279 +17,191 @@
 #include <stdio.h>
 #include <string.h>
 
+using namespace std;
+namespace po = boost::program_options;
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include <SDL3/SDL_opengl.h>
-
-using namespace std;
-namespace po = boost::program_options;
+#include <stdlib.h>
 
 #define DEFAULT_PTSIZE  18.0f
 #define DEFAULT_TEXT    "Hello World"
-#define WIDTH           640
-#define HEIGHT          480
+#define WIDTH   640
+#define HEIGHT  480
+#define MAX_FALLBACKS 4
 
-static void SDL_GL_Enter2DMode(int width, int height)
+typedef struct {
+    bool done;
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    TTF_Font *font;
+    SDL_Texture *message;
+    SDL_FRect messageRect;
+    SDL_FRect textRect;
+} Scene;
+
+int main(int argc, char *argv[])
 {
-    /* Note, there may be other things you need to change,
-       depending on how you have your OpenGL state set up.
-    */
-    glPushAttrib(GL_ENABLE_BIT);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-    glEnable(GL_TEXTURE_2D);
-
-    /* This allows alpha blending of 2D textures with the scene */
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glViewport(0, 0, width, height);
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glOrtho(0.0, (GLdouble)width, (GLdouble)height, 0.0, 0.0, 1.0);
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-}
-
-static void SDL_GL_Leave2DMode(void)
-{
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-
-    glPopAttrib();
-}
-
-/* Quick utility function for texture creation */
-static int power_of_two(int input)
-{
-    int value = 1;
-
-    while (value < input) {
-        value <<= 1;
+    string version = "dead v0.0.1, 25-Jul-2025.";
+    
+    po::options_description desc("Allowed options");
+    desc.add_options()
+      ("help", "produce help message")
+      ;
+    po::positional_options_description p;
+  
+    po::variables_map vm;
+    po::store(po::command_line_parser(argc, argv).
+            options(desc).positional(p).run(), vm);
+    po::notify(vm);   
+  
+    if (vm.count("help")) {
+      cout << desc << endl;
+      return 1;
     }
-    return value;
-}
+    
+    char *argv0 = argv[0];
+    TTF_Font *font = NULL;
+    SDL_Surface *text = NULL;
+    Scene scene;
+    float ptsize;
+    int i;
+    SDL_Color white = { 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE };
+    SDL_Color black = { 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE };
+    SDL_Color *forecol;
+    SDL_Color *backcol;
+    SDL_Event event;
+    TTF_TextEngine *engine = NULL;
+    int renderstyle = TTF_STYLE_NORMAL;
+    int outline = 0;
+    int hinting = TTF_HINTING_NORMAL;
+    int kerning = 1;
+    TTF_HorizontalAlignment align = TTF_HORIZONTAL_ALIGN_LEFT;
+    bool editbox = true;
+    char *message, string[128];
+    int result = 0;
 
-static GLuint SDL_GL_LoadTexture(SDL_Surface *surface, GLfloat *texcoord)
-{
-    GLuint texture;
-    int w, h;
-    SDL_Surface *image;
-    SDL_Rect area;
-    Uint8  saved_alpha;
-    SDL_BlendMode saved_mode;
+    SDL_zero(scene);
 
-    /* Use the surface width and height expanded to powers of 2 */
-    w = power_of_two(surface->w);
-    h = power_of_two(surface->h);
-    texcoord[0] = 0.0f;         /* Min X */
-    texcoord[1] = 0.0f;         /* Min Y */
-    texcoord[2] = (GLfloat)surface->w / w;  /* Max X */
-    texcoord[3] = (GLfloat)surface->h / h;  /* Max Y */
+    /* Default is black and white */
+    forecol = &black;
+    backcol = &white;
 
-    image = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_RGBA32);
-    if (image == NULL) {
-        return 0;
+    const char *f = "../fonts/911Fonts.com_MonotypeCorsiva_Regular_-_911fonts.com_fonts_gyWJ.ttf";
+
+    /* Initialize the TTF library */
+    if (!TTF_Init()) {
+        SDL_Log("Couldn't initialize TTF: %s",SDL_GetError());
+        result = 2;
+        goto done;
     }
 
-    /* Save the alpha blending attributes */
-    SDL_GetSurfaceAlphaMod(surface, &saved_alpha);
-    SDL_SetSurfaceAlphaMod(surface, 0xFF);
-    SDL_GetSurfaceBlendMode(surface, &saved_mode);
-    SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_NONE);
+    /* Open the font file with the requested point size */
+    ptsize = 0.0f;
+    i = 2;
+    ptsize = DEFAULT_PTSIZE;
+    
+    font = TTF_OpenFont(f, ptsize);
+    if (font == NULL) {
+        SDL_Log("Couldn't load %g pt font from %s: %s",
+                    ptsize, f, SDL_GetError());
+        result = 2;
+        goto done;
+    }
+    
+    TTF_SetFontStyle(font, renderstyle);
+    TTF_SetFontOutline(font, outline);
+    TTF_SetFontKerning(font, kerning);
+    TTF_SetFontWrapAlignment(font, align);
+    scene.font = font;
 
-    /* Copy the surface into the GL texture image */
-    area.x = 0;
-    area.y = 0;
-    area.w = surface->w;
-    area.h = surface->h;
-    SDL_BlitSurface(surface, &area, image, &area);
+    /* Create a window */
+    scene.window = SDL_CreateWindow("showfont demo", WIDTH, HEIGHT, 0);
+    if (!scene.window) {
+        SDL_Log("SDL_CreateWindow() failed: %s", SDL_GetError());
+        result = 2;
+        goto done;
+    }
+    scene.renderer = SDL_CreateRenderer(scene.window, NULL);
+    if (scene.renderer) {
+        SDL_SetRenderVSync(scene.renderer, 1);
+    }
 
-    /* Restore the alpha blending attributes */
-    SDL_SetSurfaceAlphaMod(surface, saved_alpha);
-    SDL_SetSurfaceBlendMode(surface, saved_mode);
+    if (!scene.renderer) {
+        SDL_Log("SDL_CreateRenderer() failed: %s", SDL_GetError());
+        result = 2;
+        goto done;
+    }
 
-    /* Create an OpenGL texture for the image */
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D,
-             0,
-             GL_RGBA,
-             w, h,
-             0,
-             GL_RGBA,
-             GL_UNSIGNED_BYTE,
-             image->pixels);
-    SDL_DestroySurface(image); /* No longer needed */
+    engine = TTF_CreateRendererTextEngine(scene.renderer);
+    if (!engine) {
+        SDL_Log("Couldn't create renderer text engine: %s", SDL_GetError());
+        result = 2;
+        goto done;
+    }
 
-    return texture;
-}
+    /* Show which font file we're looking at */
+    SDL_snprintf(string, sizeof(string), "Font file: %s", f);  /* possible overflow */
 
-static void cleanup(int exitcode)
-{
+    /* Render and center the message */
+    message = DEFAULT_TEXT;
+    text = TTF_RenderText_Shaded(font, message, 0, *forecol, *backcol);
+    if (text == NULL) {
+        SDL_Log("Couldn't render text: %s", SDL_GetError());
+        result = 2;
+        goto done;
+    }
+    scene.messageRect.x = (float)((WIDTH - text->w)/2);
+    scene.messageRect.y = (float)((HEIGHT - text->h)/2);
+    scene.messageRect.w = (float)text->w;
+    scene.messageRect.h = (float)text->h;
+    scene.message = SDL_CreateTextureFromSurface(scene.renderer, text);
+    SDL_Log("Font is generally %d big, and string is %d big",
+                        TTF_GetFontHeight(font), text->h);
+
+    if (editbox) {
+        scene.textRect.x = 8.0f;
+        scene.textRect.y = 4.0f;
+        scene.textRect.w = WIDTH / 2 - scene.textRect.x * 2;
+        scene.textRect.h = scene.messageRect.y - scene.textRect.y - 16.0f;
+
+        SDL_FRect editRect = scene.textRect;
+        editRect.x += 4.0f;
+        editRect.y += 4.0f;
+        editRect.w -= 8.0f;
+        editRect.w -= 8.0f;
+    }
+
+    /* Wait for a keystroke, and blit text on mouse press */
+    while (!scene.done) {
+        while (SDL_PollEvent(&event)) {
+            SDL_ConvertEventToRenderCoordinates(scene.renderer, &event);
+
+            switch (event.type) {
+
+                case SDL_EVENT_QUIT:
+                    scene.done = true;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        SDL_SetRenderDrawColor(scene.renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        SDL_RenderClear(scene.renderer);
+    
+        SDL_RenderTexture(scene.renderer, scene.message, NULL, &scene.messageRect);
+        SDL_RenderPresent(scene.renderer);
+    }
+    result = 0;
+
+done:
+    SDL_DestroySurface(text);
+    TTF_CloseFont(font);
+    SDL_DestroyTexture(scene.message);
     TTF_Quit();
     SDL_Quit();
-    exit(exitcode);
-}
-
-int main(int argc, char *argv[]) {
-
-  string version = "dead v0.0.1, 25-Jul-2025.";
-  
-  po::options_description desc("Allowed options");
-  desc.add_options()
-    ("help", "produce help message")
-    ;
-  po::positional_options_description p;
-
-  po::variables_map vm;
-  po::store(po::command_line_parser(argc, argv).
-          options(desc).positional(p).run(), vm);
-  po::notify(vm);   
-
-  if (vm.count("help")) {
-    cout << desc << endl;
-    return 1;
-  }
-  
-  SDL_Window *window;
-  SDL_GLContext context;
-  TTF_Font *font;
-  SDL_Surface *text = NULL;
-  int done;
-  SDL_Color white = { 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE };
-  SDL_Color black = { 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE };
-  GLenum gl_error;
-  GLuint texture;
-  int x, y, w, h;
-  GLfloat texcoord[4];
-  GLfloat texMinX, texMinY;
-  GLfloat texMaxX, texMaxY;
-  SDL_Event event;
-
-  /* Initialize the TTF library */
-  if (!TTF_Init()) {
-      fprintf(stderr, "Couldn't initialize TTF: %s\n",SDL_GetError());
-      SDL_Quit();
-      return(2);
-  }
-
-  /* Open the font file with the requested point size */
-  const char *f = "../fonts/911Fonts.com_MonotypeCorsiva_Regular_-_911fonts.com_fonts_gyWJ.ttf";
-  font = TTF_OpenFont(f, DEFAULT_PTSIZE);
-  if (font == NULL) {
-      fprintf(stderr, "Couldn't load %g pt font from %s: %s\n",
-                  DEFAULT_PTSIZE, f, SDL_GetError());
-      cleanup(2);
-  }
-  TTF_SetFontStyle(font, TTF_STYLE_NORMAL);
-
-  /* Set a 640x480 video mode */
-  window = SDL_CreateWindow("dead", WIDTH, HEIGHT, SDL_WINDOW_OPENGL);
-  if (window == NULL) {
-      fprintf(stderr, "Couldn't create window: %s\n", SDL_GetError());
-      cleanup(2);
-  }
-
-  context = SDL_GL_CreateContext(window);
-  if (context == NULL) {
-      fprintf(stderr, "Couldn't create OpenGL context: %s\n", SDL_GetError());
-      cleanup(2);
-  }
-
-  /* Render and center the message */
-  text = TTF_RenderText_Blended(font, DEFAULT_TEXT, 0, black);
-  if (text == NULL) {
-      fprintf(stderr, "Couldn't render text: %s\n", SDL_GetError());
-      TTF_CloseFont(font);
-      cleanup(2);
-  }
-  x = (WIDTH - text->w)/2;
-  y = (HEIGHT - text->h)/2;
-  w = text->w;
-  h = text->h;
-  printf("Font is generally %d big, and string is %d big\n",
-    TTF_GetFontHeight(font), text->h);
-
-  /* Convert the text into an OpenGL texture */
-  glGetError();
-  texture = SDL_GL_LoadTexture(text, texcoord);
-  if ((gl_error = glGetError()) != GL_NO_ERROR) {
-      /* If this failed, the text may exceed texture size limits */
-      printf("Warning: Couldn't create texture: 0x%x\n", gl_error);
-  }
-
-  /* Make texture coordinates easy to understand */
-  texMinX = texcoord[0];
-  texMinY = texcoord[1];
-  texMaxX = texcoord[2];
-  texMaxY = texcoord[3];
-
-  /* We don't need the original text surface anymore */
-  SDL_DestroySurface(text);
-
-  /* Initialize the GL state */
-  glViewport(0, 0, WIDTH, HEIGHT);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-
-  glOrtho(-2.0, 2.0, -2.0, 2.0, -20.0, 20.0);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
-  glShadeModel(GL_SMOOTH);
-
-  /* Wait for a keystroke, and blit text on mouse press */
-  done = 0;
-  while (!done) {
-      while (SDL_PollEvent(&event)) {
-          switch (event.type) {
-              case SDL_EVENT_KEY_DOWN:
-              case SDL_EVENT_QUIT:
-              done = 1;
-              break;
-              default:
-              break;
-          }
-      }
-
-      /* Clear the screen */
-      glClearColor(1.0, 1.0, 1.0, 1.0);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      /* Show the text on the screen */
-      SDL_GL_Enter2DMode(WIDTH, HEIGHT);
-      glBindTexture(GL_TEXTURE_2D, texture);
-      glBegin(GL_TRIANGLE_STRIP);
-      glTexCoord2f(texMinX, texMinY); glVertex2i(x,   y);
-      glTexCoord2f(texMaxX, texMinY); glVertex2i(x+w, y);
-      glTexCoord2f(texMinX, texMaxY); glVertex2i(x,   y+h);
-      glTexCoord2f(texMaxX, texMaxY); glVertex2i(x+w, y+h);
-      glEnd();
-      SDL_GL_Leave2DMode();
-
-      /* Swap the buffers so everything is visible */
-      SDL_GL_SwapWindow(window);
-  }
-  SDL_GL_DestroyContext(context);
-  TTF_CloseFont(font);
-  cleanup(0);
-
-  /* Not reached, but fixes compiler warnings */
-  return 0;
+    return result;
 }
