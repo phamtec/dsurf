@@ -53,7 +53,8 @@ int main(int argc, char *argv[])
   }
   
   Font font;
-  if (!font.init("/System/Library/Fonts/Courier.ttc")) {
+  if (!font.init("../fonts/911Fonts.com_MonotypeCorsiva_Regular_-_911fonts.com_fonts_gyWJ.ttf")) {
+//  if (!font.init("/System/Library/Fonts/Courier.ttc")) {
     return 1;
   }
 
