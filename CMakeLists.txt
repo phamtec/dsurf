@@ -31,7 +31,7 @@ endif ()
 
 include_directories(include)
 
-add_executable(dead src/dead.cpp)
+add_executable(dead src/dead.cpp src/font.cpp src/text.cpp src/renderer.cpp)
     target_link_libraries(dead SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
 # Tests
