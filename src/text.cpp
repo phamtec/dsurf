@@ -17,6 +17,8 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
+using namespace std;
+
 Text::~Text() {
   if (_surface) {
     SDL_DestroySurface(_surface);
@@ -26,34 +28,32 @@ Text::~Text() {
   }
 }
 
-bool Text::init(Renderer &renderer, Font &font, const char *message) {
+void Text::render(Renderer &renderer, Font &font, float x, float *y) {
 
-  SDL_Color white = { 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE };
-  SDL_Color black = { 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE };
-
-  _surface = TTF_RenderText_Shaded(font._font, message, 0, black, white);
   if (!_surface) {
-    return false;
+    SDL_Color white = { 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE };
+    SDL_Color black = { 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE };
+  
+    _surface = TTF_RenderText_Shaded(font._font, _str.c_str(), 0, black, white);
+    if (!_surface) {
+      return;
+    }
+    
+    _texture = SDL_CreateTextureFromSurface(renderer._renderer, _surface);
+    if (!_texture) {
+      SDL_Log("Couldn't render text: %s", SDL_GetError());
+      return;
+    }
   }
   
-  _texture = SDL_CreateTextureFromSurface(renderer._renderer, _surface);
-  if (!_texture) {
-    SDL_Log("Couldn't render text: %s", SDL_GetError());
-    return false;
-  }
-
-  return true;
-  
-}
-
-void Text::render(Renderer &renderer, int x, int y) {
-
   SDL_FRect messageRect;
-  messageRect.x = (float)x;
-  messageRect.y = (float)y;
-  messageRect.w = (float)_surface->w;
-  messageRect.h = (float)_surface->h;
+  messageRect.x = x;
+  messageRect.y = *y;
+  messageRect.w = _surface->w;
+  messageRect.h = _surface->h;
 
   SDL_RenderTexture(renderer._renderer, _texture, NULL, &messageRect);
+
+  *y += _surface->h;
   
 }

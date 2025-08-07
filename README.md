@@ -20,7 +20,7 @@ sudo apt-get install -y git g++ gcc build-essential git make \
 
 ### Boost
 
-#### Linux
+#### from source
 
 ```
 wget https://github.com/boostorg/boost/releases/download/boost-1.85.0/boost-1.85.0-b2-nodocs.tar.gz
@@ -44,7 +44,7 @@ brew install boost@1.85.0
 brew install sdl3
 ```
 
-#### Linux
+#### from source
 
 ```
 git clone https://github.com/libsdl-org/SDL
@@ -64,11 +64,25 @@ sudo make install
 brew install sdl3_ttf
 ```
 
-#### Linux
+#### from source
 
 ```
 git clone https://github.com/libsdl-org/SDL_ttf
 cd SDL_ttf
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+```
+
+### JSON
+
+#### from source
+
+```
+git clone https://github.com/getml/reflect-cpp.git
+cd reflect-cpp
 mkdir build
 cd build
 cmake ..
