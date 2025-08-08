@@ -1,8 +1,8 @@
-# dead
+# dsurf
 
-Dictionary Editor's Aren't Dead
+Dictionary Surfer
 
-A Dictionary editor using SDL.
+A Dictionary viewer using SDL.
 
 ## Prerequsists
 
@@ -102,7 +102,7 @@ make
 ## Running this
 
 ```
-$ ./dead jsonfile.json
+$ ./dsurf jsonfile.json
 ```
 
 Hit q to exit

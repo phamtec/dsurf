@@ -6,7 +6,7 @@
     
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
-  https://github.com/phamtec/dead
+  https://github.com/phamtec/dsurf
 */
 
 #include "renderer.hpp"
@@ -40,7 +40,7 @@ bool Renderer::init() {
   }
 
   /* Create a window */
-  _window = SDL_CreateWindow("dead", _width, _height, 0);
+  _window = SDL_CreateWindow("dsurf", _width, _height, 0);
   if (!_window) {
     SDL_Log("SDL_CreateWindow() failed: %s", SDL_GetError());
     return false;

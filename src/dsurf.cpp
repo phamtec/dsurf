@@ -1,14 +1,14 @@
 /*
-  dead.cpp
+  dsurf.cpp
   
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 25-Jul-2025
     
-  Command line driver for dead.
+  Command line driver for dsurf.
   
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
-  https://github.com/phamtec/dead
+  https://github.com/phamtec/dsurf
 */
 
 #include "text.hpp"
@@ -31,7 +31,7 @@ namespace po = boost::program_options;
 
 int main(int argc, char *argv[])
 {
-  string version = "dead v0.0.1, 25-Jul-2025.";
+  string version = "dsurf v0.0.1, 25-Jul-2025.";
     
   string usage = "Usage: " + string(argv[0]) + " input-file";
   po::options_description desc("Allowed options");

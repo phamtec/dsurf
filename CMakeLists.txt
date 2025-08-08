@@ -3,7 +3,7 @@
 #   Author: Paul Hamilton (phamtec@mac.com)
 #   Date: 25-Jul-2025
 #
-#   Input file for dead
+#   Input file for dsurf
 #
 #   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
 #   
@@ -13,7 +13,7 @@ cmake_minimum_required(VERSION 3.5)
 cmake_policy(SET CMP0167 NEW) # Boost
 cmake_policy(SET CMP0072 NEW) # OpenGL
 
-project (dead)
+project (dsurf)
   find_package(Boost 1.85.0 COMPONENTS program_options REQUIRED)
   find_package(SDL3 REQUIRED)
   find_package(SDL3_ttf REQUIRED)
@@ -29,8 +29,10 @@ if (UNIX AND NOT APPLE)
 endif ()
 
 include_directories(include)
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
 
-add_executable(dead src/dead.cpp src/font.cpp src/text.cpp src/renderer.cpp src/builder.cpp src/stringprop.cpp src/list.cpp)
-    target_link_libraries(dead SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp)
+add_executable(dsurf src/dsurf.cpp src/font.cpp src/text.cpp src/renderer.cpp src/builder.cpp src/stringprop.cpp src/list.cpp)
+    target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp)
 
 # Tests
