@@ -102,18 +102,18 @@ make
 ## Running this
 
 ```
-$ ./dead
+$ ./dead jsonfile.json
 ```
 
 Hit q to exit
 
 ## Progress
 
-Draws a spinning hello world using opengl.
+Takes a JSON file and just draws it all in one big go with no layout.
 
 ## Current Focus
 
-Layout a simple dictionary using SDL in a nice TTF font.
+Layout engine.
 
 ## References
 
@@ -124,4 +124,8 @@ Layout a simple dictionary using SDL in a nice TTF font.
 ### 25-Jul-2025
 
 Hello world. First checkin.
+
+### 8-Aug-2025
+
+Walk a JSON file building a simple layout
 

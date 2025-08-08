@@ -14,20 +14,27 @@
 #ifndef H_list
 #define H_list
 
-#include <vector>
+#include "box.hpp"
+#include "text.hpp"
 #include <memory>
+#include <vector>
 
-class Node;
-
-class List {
+class List: public Box {
 
 public:
-  List(bool object): _object(object) {}
+  List(const std::string &name): _name(name) {}
+  
+  // Box
+  virtual void render(Renderer &renderer, Font &font, float x, float *y);
+
+  void push(Box *box) {
+    _objs.push_back(std::unique_ptr<Box>(box));
+  }
   
 private:
+  Text _name;
   
-  bool _object;
-  std::vector<std::unique_ptr<Node> > _objs;
+  std::vector<std::unique_ptr<Box> > _objs;
   
 };
 

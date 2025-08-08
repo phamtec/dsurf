@@ -14,8 +14,8 @@
 #include "text.hpp"
 #include "font.hpp"
 #include "renderer.hpp"
-#include "node.hpp"
-#include "walker.hpp"
+#include "builder.hpp"
+#include "stringprop.hpp"
 
 #include <iostream>
 #include <boost/program_options.hpp> 
@@ -60,19 +60,7 @@ int main(int argc, char *argv[])
   
   string infn = vm["input-file"].as< string >();
   auto result = rfl::json::load<rfl::Generic>(infn);
-  
-  class Builder {
-    public:
-      Node makeList() const {
-        return Node::makeList();
-      }
-      Node makeObject() const {
-        return Node::makeObject();
-      }
-  };
-  Builder b;
-  Node root;
-  Walker::walk(*result, b, &root, 0);
+  unique_ptr<Box> root(Builder::walk(*result, "root"));
   
   Renderer renderer(WIDTH, HEIGHT);
   if (!renderer.init()) {
@@ -83,39 +71,7 @@ int main(int argc, char *argv[])
   if (!font.init("../fonts/Monaco.ttf")) {
     return 1;
   }
-  
-//   vector<unique_ptr<Node> > objs;
-//   transform(obj->begin(), obj->end(), back_inserter(objs), 
-//     [&renderer, &font](auto o) {
-//       unique_ptr<Node> t;
-//       auto obj = o.second.to_object();
-//       if (obj) {
-//         // handle objects
-//       }
-//       else {
-//         auto arr = o.second.to_array();
-//         if (arr) {
-//           // handle arrays          
-//           t.reset(new Node());
-//           for (auto a: *arr) {
-//             unique_ptr<Node> t2;
-//             get<List>(t->_obj)._objs.push_back(t2);
-//           }
-//         }
-//         else {
-//           // an intrinsic value.
-//           t.reset(new Node());
-//           if (!get<Text>(t->_obj).init(renderer, font, o.first)) {
-//             t.reset(0);
-//           }
-//         }
-//       }
-//       return t; 
-//     }
-//   );
-  
-  Text text("Hello World");
-  
+    
   bool done = false;
   while (!done) {
   
@@ -126,13 +82,7 @@ int main(int argc, char *argv[])
     renderer.prepare();
     
     float y = 0;
-    text.render(renderer, font, 0, &y);
-//     for (auto&& t: objs) {
-//       if (t) {
-//         get<Text>(t->_obj).render(renderer, 0, &y);
-//       }
-//     }
-
+    root->render(renderer, font, 0, &y);
     renderer.present();
   }
   
