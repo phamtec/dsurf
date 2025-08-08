@@ -19,19 +19,19 @@
 #include <vector>
 
 class Box;
-class List;
+class Pushable;
 
 class Builder {
 
 public:
   
+  static Box *walk(const rfl::Generic &g);
   static Box *walk(const rfl::Generic &g, const std::string &name);
-
 
 private:
   
-  static void walk(const rfl::Object<rfl::Generic> &obj, List *box);
-  static void walk(const std::vector<rfl::Generic > &v, List *list);
+  static void walk(const rfl::Object<rfl::Generic> &obj, Pushable *list);
+  static void walk(const std::vector<rfl::Generic > &v, Pushable *list);
 
 };
 

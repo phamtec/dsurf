@@ -14,22 +14,24 @@
 #ifndef H_text
 #define H_text
 
-#include "box.hpp"
-
 #include <string>
 
 class SDL_Surface;
 class SDL_Texture;
 
-class Text: public Box {
+class Renderer;
+class Font;
+
+class Text {
 
 public:
   Text(const std::string &str): _str(str), _surface(0), _texture(0) {}
   ~Text();
   
-  // Box
-  virtual void render(Renderer &renderer, Font &font, float x, float *y);
-  
+  virtual float render(Renderer &renderer, Font &font, float x, float y);
+    // render the text after first initialising it at x, y
+    // returns the height of the text rendered.
+    
 private:
 
   std::string _str;

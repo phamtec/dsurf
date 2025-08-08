@@ -109,11 +109,11 @@ Hit q to exit
 
 ## Progress
 
-Takes a JSON file and just draws it all in one big go with no layout.
+Takes a JSON file and just draws it all in one big go.
 
 ## Current Focus
 
-Layout engine.
+Layout engine knows about text sizes.
 
 ## References
 
@@ -127,5 +127,5 @@ Hello world. First checkin.
 
 ### 8-Aug-2025
 
-Walk a JSON file building a simple layout
+Walk a JSON file building a simple layout.
 

@@ -15,8 +15,36 @@
 #include "list.hpp"
 #include "stringprop.hpp"
 #include "boolprop.hpp"
+#include "dictprop.hpp"
+#include "listprop.hpp"
 
 using namespace std;
+
+Box *Builder::walk(const rfl::Generic &g) {
+
+  Box *obj = nullptr;
+  std::visit([&obj](const auto &field) {
+  
+    using Type = std::decay_t<decltype(field)>;
+    if constexpr (std::is_same<Type, vector<rfl::Generic >>()) {
+      Pushable *l = new List();
+      walk(field, l);
+      obj = dynamic_cast<Box *>(l);
+    }
+    else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
+      Pushable *d = new Dict();
+      walk(field, d);
+      obj = dynamic_cast<Box *>(d);
+    }
+    else {
+      cout << "unknown type " << typeid(field).name() << endl;
+    }
+
+  }, g.variant());
+
+  return obj;
+    
+}
 
 Box *Builder::walk(const rfl::Generic &g, const string &name) {
 
@@ -25,12 +53,12 @@ Box *Builder::walk(const rfl::Generic &g, const string &name) {
   
     using Type = std::decay_t<decltype(field)>;
     if constexpr (std::is_same<Type, vector<rfl::Generic >>()) {
-      List *l = new List(name);
+      ListProp *l = new ListProp(name);
       walk(field, l);
       obj = l;
     }
     else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
-      Dict *d = new Dict(name);
+      DictProp *d = new DictProp(name);
       walk(field, d);
       obj = d;
     }
@@ -50,7 +78,7 @@ Box *Builder::walk(const rfl::Generic &g, const string &name) {
     
 }
 
-void Builder::walk(const rfl::Object<rfl::Generic> &obj, List *list) {
+void Builder::walk(const rfl::Object<rfl::Generic> &obj, Pushable *list) {
 
   for (const auto& [k, v]: obj) {
     
@@ -69,10 +97,10 @@ void Builder::walk(const rfl::Object<rfl::Generic> &obj, List *list) {
 
 }
 
-void Builder::walk(const std::vector<rfl::Generic > &v, List *list) {
+void Builder::walk(const std::vector<rfl::Generic > &v, Pushable *list) {
 
   for (auto i: v) {
-    auto obj = walk(i, "");
+    auto obj = walk(i);
     if (obj) {
       list->push(obj);
     }

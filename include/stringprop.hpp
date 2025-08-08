@@ -6,6 +6,8 @@
     
   String property class.
   
+  "name": "string"
+  
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
@@ -14,6 +16,7 @@
 #ifndef H_stringprop
 #define H_stringprop
 
+#include "box.hpp"
 #include "text.hpp"
 
 class StringProp: public Box {
@@ -22,7 +25,8 @@ public:
   StringProp(const std::string &name, const std::string &value): _name(name), _value(value) {}
   
   // Box
-  virtual void render(Renderer &renderer, Font &font, float x, float *y);
+  virtual float layout(float x, float y);
+  virtual void render(Renderer &renderer, Font &font);
 
 private:
   Text _name;

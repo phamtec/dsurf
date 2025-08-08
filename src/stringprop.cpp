@@ -11,10 +11,19 @@
 
 #include "stringprop.hpp"
 
-void StringProp::render(Renderer &renderer, Font &font, float x, float *y) {
+float StringProp::layout(float x, float y) {
 
-  float origy = *y;
-  _name.render(renderer, font, x, y);
-  _value.render(renderer, font, x + 100, &origy);
+  _x = x;
+  _y = y;
+  _width = 640;
+  _height = 20;
+  return _height;
+  
+}
+
+void StringProp::render(Renderer &renderer, Font &font) {
+
+  _name.render(renderer, font, _x, _y);
+  _value.render(renderer, font, _x + 100, _y);
   
 }

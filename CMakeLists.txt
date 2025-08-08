@@ -32,7 +32,19 @@ include_directories(include)
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
 
-add_executable(dsurf src/dsurf.cpp src/font.cpp src/text.cpp src/renderer.cpp src/builder.cpp src/stringprop.cpp src/list.cpp)
+set(SRC
+  src/font.cpp 
+  src/text.cpp 
+  src/renderer.cpp 
+  src/builder.cpp 
+  src/stringprop.cpp 
+  src/list.cpp 
+  src/listprop.cpp
+  src/dict.cpp
+  src/dictprop.cpp
+)
+
+add_executable(dsurf src/dsurf.cpp ${SRC})
     target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp)
 
 # Tests

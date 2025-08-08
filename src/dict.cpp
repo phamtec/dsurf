@@ -1,5 +1,5 @@
 /*
-  list.cpp
+  dict.cpp
   
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 8-Aug-2025
@@ -9,21 +9,21 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "list.hpp"
+#include "dict.hpp"
 #include "renderer.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-float List::layout(float x, float y) {
+float Dict::layout(float x, float y) {
 
-//  cout << "layout list" << endl;
+//  cout << "layout dict" << endl;
   
   _x = x;
   _y = y;
   _width = 640;
-  _height = 20;
+  _height = 20; // open brace
   y += 20;
   for (auto&& i: _objs) {
     long h = i->layout(x + 20, y);
@@ -33,12 +33,12 @@ float List::layout(float x, float y) {
   return _height + 20;
 }
 
-void List::render(Renderer &renderer, Font &font) {
+void Dict::render(Renderer &renderer, Font &font) {
 
-  renderer.pool.open_bracket.render(renderer, font, _x, _y);
+  renderer.pool.open_brace.render(renderer, font, _x, _y);
   for (auto&& i: _objs) {
     i->render(renderer, font);
   }
-  renderer.pool.close_bracket.render(renderer, font, _x + (_objs.size() == 0 ? 10 : 0), _y + (_objs.size() == 0 ? 0 : _height));
+  renderer.pool.close_brace.render(renderer, font, _x + (_objs.size() == 0 ? 10 : 0), _y + (_objs.size() == 0 ? 0 : _height));
 
 }

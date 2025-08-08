@@ -6,6 +6,12 @@
     
   List class.
   
+  [
+    {
+      ... props
+    }
+  ]
+  
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
@@ -15,25 +21,27 @@
 #define H_list
 
 #include "box.hpp"
-#include "text.hpp"
+#include "pushable.hpp"
+
 #include <memory>
 #include <vector>
 
-class List: public Box {
+class List: public Box, public Pushable {
 
 public:
-  List(const std::string &name): _name(name) {}
+  List() {}
   
   // Box
-  virtual void render(Renderer &renderer, Font &font, float x, float *y);
+  virtual float layout(float x, float y);
+  virtual void render(Renderer &renderer, Font &font);
 
-  void push(Box *box) {
+  // Pushable
+  virtual void push(Box *box) {
     _objs.push_back(std::unique_ptr<Box>(box));
   }
   
 private:
-  Text _name;
-  
+
   std::vector<std::unique_ptr<Box> > _objs;
   
 };

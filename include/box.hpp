@@ -6,6 +6,8 @@
     
   Box class.
   
+  Box is the baseclass of all drawn objects.
+  
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
@@ -20,10 +22,18 @@ class Font;
 class Box {
 
 public:
-  virtual ~Box()  {};
+  Box(): _x(0.0f), _y(0.0f) {};
+  virtual ~Box() {};
   
-  virtual void render(Renderer &renderer, Font &font, float x, float *y) = 0;
+  float _x, _y;
+  float _width, _height;
+  
+  // layout the object.
+  virtual float layout(float x, float y) = 0;
 
+  // render this object to the screen.
+  virtual void render(Renderer &renderer, Font &font) = 0;
+  
 };
 
 #endif // H_box

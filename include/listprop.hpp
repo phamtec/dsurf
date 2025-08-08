@@ -1,47 +1,51 @@
 /*
-  dict.hpp
+  listprop.hpp
   
   Author: Paul Hamilton (phamtec@mac.com)
-  Date: 8-Aug-2025
+  Date: 6-Aug-2025
     
-  Dictionary class.
+  List property class.
   
-  {
-    ... props
-  }
-  
+  "name": [
+    {
+      ... props
+    }
+  ]
+
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
 */
 
-#ifndef H_dict
-#define H_dict
+#ifndef H_listprop
+#define H_listprop
 
 #include "box.hpp"
+#include "text.hpp"
 #include "pushable.hpp"
 
 #include <memory>
 #include <vector>
 
-class Dict: public Box, public Pushable {
+class ListProp: public Box, public Pushable {
 
 public:
-  Dict() {}
-
+  ListProp(const std::string &name): _name(name) {}
+  
   // Box
   virtual float layout(float x, float y);
   virtual void render(Renderer &renderer, Font &font);
-  
+
   // Pushable
   virtual void push(Box *box) {
     _objs.push_back(std::unique_ptr<Box>(box));
   }
   
 private:
-
+  Text _name;
+  
   std::vector<std::unique_ptr<Box> > _objs;
-
+  
 };
 
-#endif // H_dict
+#endif // H_listprop

@@ -1,0 +1,14 @@
+{
+    "elements": [
+        {
+            "type": "freeFormText",
+            "text": "Roof size?",
+            "var": "roofSize"
+        },
+        {
+            "type": "freeFormText",
+            "text": "Number of coats?",
+            "var": "coats"
+        }
+    ]
+}

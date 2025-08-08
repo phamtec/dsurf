@@ -11,11 +11,11 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "text.hpp"
+#include "textpool.hpp"
 #include "font.hpp"
 #include "renderer.hpp"
 #include "builder.hpp"
-#include "stringprop.hpp"
+#include "box.hpp"
 
 #include <iostream>
 #include <boost/program_options.hpp> 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   
   string infn = vm["input-file"].as< string >();
   auto result = rfl::json::load<rfl::Generic>(infn);
-  unique_ptr<Box> root(Builder::walk(*result, "root"));
+  unique_ptr<Box> root(Builder::walk(*result));
   
   Renderer renderer(WIDTH, HEIGHT);
   if (!renderer.init()) {
@@ -71,7 +71,10 @@ int main(int argc, char *argv[])
   if (!font.init("../fonts/Monaco.ttf")) {
     return 1;
   }
-    
+  
+  TextPool pool;
+  root->layout(0, 0);
+  
   bool done = false;
   while (!done) {
   
@@ -80,9 +83,7 @@ int main(int argc, char *argv[])
     }
 
     renderer.prepare();
-    
-    float y = 0;
-    root->render(renderer, font, 0, &y);
+    root->render(renderer, font);
     renderer.present();
   }
   
