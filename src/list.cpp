@@ -20,37 +20,57 @@ using namespace std;
 
 float List::layout(Resources &res, float x, float y) {
 
-//  cout << "layout list" << endl;
+  _r = { .x = x, .y = y, .w = 100, .h = List::layoutVector(res, x, y, res.open_bracket.height(), _objs) };
+  return _r.h + res.close_bracket.height();
   
-  _x = x;
-  _y = y;
-  _width = 100;
-  _height = res.open_bracket.height();
-  y += _height;
-  for (auto&& i: _objs) {
-    long h = i->layout(res, x + Sizes::group_indent, y);
-    _height += h;
-    y += h;
-  }
-  return _height + res.close_bracket.height();
 }
 
 void List::build(Renderer &renderer, Font &font) {
 
-  for (auto&& i: _objs) {
+  super::build(renderer, font);
+  
+  buildVector(renderer, font, _objs);
+  
+}
+
+void List::render(Renderer &renderer, Resources &res) {
+
+  super::render(renderer, res);
+  
+  res.open_bracket.render(renderer, _r.x, _r.y);
+  renderVector(renderer, res, _objs);
+  res.close_bracket.render(renderer, 
+    _r.x + (_objs.size() == 0 ? res.open_bracket.width() + Sizes::text_padding : 0), 
+    _r.y + (_objs.size() == 0 ? 0 : _r.h));
+
+}
+
+float List::layoutVector(Resources &res, float x, float y, float height, std::vector<std::unique_ptr<Box> > &list) {
+
+  y += height;
+  for (auto&& i: list) {
+    long h = i->layout(res, x + Sizes::group_indent, y);
+    height += h;
+    y += h;
+  }
+  return height;
+  
+}
+
+void List::buildVector(Renderer &renderer, Font &font, std::vector<std::unique_ptr<Box> > &list) {
+
+  for (auto&& i: list) {
     i->build(renderer, font);
   }
 
 }
 
-void List::render(Renderer &renderer, Resources &res) {
+void List::renderVector(Renderer &renderer, Resources &res, std::vector<std::unique_ptr<Box> > &list) {
 
-  res.open_bracket.render(renderer, _x, _y);
-  for (auto&& i: _objs) {
+  for (auto&& i: list) {
     i->render(renderer, res);
   }
-  res.close_bracket.render(renderer, 
-    _x + (_objs.size() == 0 ? res.open_bracket.width() + Sizes::text_padding : 0), 
-    _y + (_objs.size() == 0 ? 0 : _height));
 
 }
+
+

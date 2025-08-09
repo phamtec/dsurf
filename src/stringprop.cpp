@@ -14,24 +14,23 @@
 
 float StringProp::layout(Resources &res, float x, float y) {
 
-  _x = x;
-  _y = y;
-  _width = 100;
-  _height = _name.height();
-  return _height;
+  _r = { .x = x, .y = y, .w = 100, .h = _name.height() };
+  return _r.h;
   
 }
 
 void StringProp::build(Renderer &renderer, Font &font) {
 
-  _name.build(renderer, font);
+  super::build(renderer, font);
+  
   _value.build(renderer, font);
 
 }
 
 void StringProp::render(Renderer &renderer, Resources &res) {
 
-  _name.render(renderer, _x, _y);
-  _value.render(renderer, _x + _name.width() + Sizes::text_padding, _y);
+  super::render(renderer, res);
+  
+  _value.render(renderer, _r.x + _name.width() + Sizes::name_var_padding, _r.y);
   
 }

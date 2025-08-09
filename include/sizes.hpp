@@ -24,6 +24,9 @@ public:
   static float text_padding;
     // the amount to pad between text elements
     
+  static float name_var_padding;
+    // the amount to pad between names and variables
+    
 };
 
 #endif // H_sizes

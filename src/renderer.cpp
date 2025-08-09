@@ -19,8 +19,8 @@
 
 using namespace std;
 
-Renderer::Renderer(): _width(0), _height(0), 
-  _scale(1.0), _offx(0), _offy(0), 
+Renderer::Renderer(): _width(0.0l), _height(0.0l), 
+  _scale(0.3l), _offx(0.0l), _offy(0.0l), 
   _mousedown(false), 
   _window(0), _renderer(0), _engine(0) {
 
@@ -145,7 +145,7 @@ bool Renderer::processEvents() {
         break;
 
       case SDL_EVENT_MOUSE_WHEEL:
-        _scale += event.wheel.y * 0.08l;
+        _scale += event.wheel.y * 0.06l;
 //         _offx *= (1.0 - _scale);
 //         _offy *= (1.0 - _scale);
 //        cout << "mouse wheel: " << event.wheel.x << ", " << event.wheel.y << endl;
@@ -184,5 +184,28 @@ void Renderer::renderTexture(SDL_Texture *texture, const SDL_FRect &rect) {
   r.y -= _offy;
   
   SDL_RenderTexture(_renderer, texture, NULL, &r);
+
+}
+
+void Renderer::renderRect(const SDL_FRect &rect) {
+
+  SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
+
+  SDL_FRect r = rect;
+  r.x -= _offx;
+  r.y -= _offy;
+  r.x++;
+  r.y++;
+  r.w -= 2;
+  r.h -= 2;
+  
+//  SDL_RenderFillRect(_renderer, &r); // Fill the rectangle with black
+  SDL_RenderRect(_renderer, &r);
+
+//   SDL_FRect r = rect;
+//   r.x -= _offx;
+//   r.y -= _offy;
+// 
+//   SDL_RenderRect(_renderer, &r);
 
 }

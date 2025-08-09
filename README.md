@@ -102,18 +102,21 @@ make
 ## Running this
 
 ```
-$ ./dsurf jsonfile.json
+
+./dsurf ../test/complex.json
 ```
 
-Hit q to exit
+Use the mouse wheel (or double finger up and down on a traockpad) to zoom.
+Click and drag to pan around.
+Hit q to exit.
 
 ## Progress
 
-Takes a JSON file and just draws it all in one big go with nice colours.
+You can read-only surf a JSON file. There are lot's of examples to try out.
 
 ## Current Focus
 
-Zooming and panning like a map.
+Keeping the center correct while zooming.
 
 ## Change Log
 
@@ -130,5 +133,5 @@ Walk a JSON file building a simple layout.
 - nice colours.
 - get screen size for window.
 - lot's of better layout work.
-
+- panning and zooming.
 

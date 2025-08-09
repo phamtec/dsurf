@@ -1,33 +1,29 @@
 /*
-  dict.hpp
+  long.hpp
   
   Author: Paul Hamilton (phamtec@mac.com)
-  Date: 8-Aug-2025
+  Date: 9-Aug-2025
     
-  Dictionary class.
+  Long class.
   
-  {
-    ... props
-  }
+  123
   
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
 */
 
-#ifndef H_dict
-#define H_dict
+#ifndef H_long
+#define H_long
 
 #include "box.hpp"
-#include "pushable.hpp"
+#include "text.hpp"
+#include "colours.hpp"
 
-#include <memory>
-#include <vector>
-
-class Dict: public Box, public Pushable {
+class Long: public Box {
 
 public:
-  Dict() {}
+  Long(long value);
 
   typedef Box super;
   
@@ -35,16 +31,9 @@ public:
   virtual void build(Renderer &renderer, Font &font);
   virtual float layout(Resources &pool, float x, float y);
   virtual void render(Renderer &renderer, Resources &pool);
-  
-  // Pushable
-  virtual void push(Box *box) {
-    _objs.push_back(std::unique_ptr<Box>(box));
-  }
-  
+
 private:
-
-  std::vector<std::unique_ptr<Box> > _objs;
-
+  Text _value;
 };
 
-#endif // H_dict
+#endif // H_long

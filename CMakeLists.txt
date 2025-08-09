@@ -37,7 +37,8 @@ set(SRC
   src/text.cpp 
   src/renderer.cpp 
   src/builder.cpp 
-  src/stringprop.cpp 
+  src/stringprop.cpp
+  src/string.cpp
   src/list.cpp 
   src/listprop.cpp
   src/dict.cpp
@@ -45,6 +46,10 @@ set(SRC
   src/resources.cpp
   src/colours.cpp
   src/sizes.cpp
+  src/long.cpp
+  src/longprop.cpp
+  src/prop.cpp
+  src/box.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC})

@@ -20,20 +20,19 @@
 #ifndef H_listprop
 #define H_listprop
 
-#include "box.hpp"
-#include "text.hpp"
+#include "prop.hpp"
 #include "pushable.hpp"
-#include "colours.hpp"
 
 #include <memory>
 #include <vector>
 
-class ListProp: public Box, public Pushable {
+class ListProp: public Prop, public Pushable {
 
 public:
-  ListProp(const std::string &name): 
-    _name(name, Colours::blue) 
+  ListProp(const std::string &name): Prop(name) 
       {}
+
+  typedef Prop super;
   
   // Box
   virtual void build(Renderer &renderer, Font &font);
@@ -46,7 +45,6 @@ public:
   }
   
 private:
-  Text _name;
   
   std::vector<std::unique_ptr<Box> > _objs;
   

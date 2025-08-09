@@ -13,10 +13,13 @@
 
 #include "dict.hpp"
 #include "list.hpp"
+#include "string.hpp"
 #include "stringprop.hpp"
 #include "boolprop.hpp"
 #include "dictprop.hpp"
 #include "listprop.hpp"
+#include "long.hpp"
+#include "longprop.hpp"
 
 using namespace std;
 
@@ -35,6 +38,12 @@ Box *Builder::walk(const rfl::Generic &g) {
       Pushable *d = new Dict();
       walk(field, d);
       obj = dynamic_cast<Box *>(d);
+    }
+    else if constexpr (std::is_same<Type, string>()) {
+      obj = new String(field);
+    }
+    else if constexpr (std::is_same<Type, long long>()) {
+      obj = new Long(field);
     }
     else {
       cout << "unknown type in generic " << typeid(field).name() << endl;
@@ -63,10 +72,15 @@ Box *Builder::walk(const rfl::Generic &g, const string &name) {
       obj = d;
     }
     else if constexpr (std::is_same<Type, string>()) {
-      obj = new StringProp(name, field);
+      stringstream ss;
+      ss << "\"" << field << "\"";
+      obj = new StringProp(name, ss.str());
     }
     else if constexpr (std::is_same<Type, bool>()) {
       obj = new BoolProp(name, field);
+    }
+    else if constexpr (std::is_same<Type, long long>()) {
+      obj = new LongProp(name, field);
     }
     else {
       cout << "unknown type in generic " << name << ": " << typeid(field).name() << endl;

@@ -18,18 +18,18 @@
 #ifndef H_dictprop
 #define H_dictprop
 
-#include "box.hpp"
-#include "text.hpp"
+#include "prop.hpp"
 #include "pushable.hpp"
-#include "colours.hpp"
 
 #include <memory>
 #include <vector>
 
-class DictProp: public Box, public Pushable {
+class DictProp: public Prop, public Pushable {
 
 public:
-  DictProp(const std::string &name): _name(name, Colours::blue) {}
+  DictProp(const std::string &name): Prop(name) {}
+
+  typedef Prop super;
 
   // Box
   virtual void build(Renderer &renderer, Font &font);
@@ -42,7 +42,6 @@ public:
   }
   
 private:
-  Text _name;
   
   std::vector<std::unique_ptr<Box> > _objs;
   

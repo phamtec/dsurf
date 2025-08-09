@@ -30,6 +30,8 @@ class List: public Box, public Pushable {
 
 public:
   List() {}
+
+  typedef Box super;
   
   // Box
   virtual void build(Renderer &renderer, Font &font);
@@ -40,6 +42,11 @@ public:
   virtual void push(Box *box) {
     _objs.push_back(std::unique_ptr<Box>(box));
   }
+  
+  // helpers for things that look like a list.
+  static void buildVector(Renderer &renderer, Font &font, std::vector<std::unique_ptr<Box> > &list);
+  static float layoutVector(Resources &res, float x, float y, float height, std::vector<std::unique_ptr<Box> > &list);
+  static void renderVector(Renderer &renderer, Resources &res, std::vector<std::unique_ptr<Box> > &list);
   
 private:
 

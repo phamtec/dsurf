@@ -15,7 +15,7 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#define DEFAULT_PTSIZE  24.0f
+#define DEFAULT_PTSIZE  48.0f
 
 Font::~Font() {
 

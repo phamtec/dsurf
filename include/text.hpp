@@ -14,6 +14,8 @@
 #ifndef H_text
 #define H_text
 
+#include "colours.hpp"
+
 #include <string>
 #include <SDL3/SDL_pixels.h>
 
@@ -26,9 +28,15 @@ class Font;
 class Text {
 
 public:
+  Text(): _str("??"), _fgcolor(Colours::black), _surface(0), _texture(0) {}
   Text(const std::string &str, const SDL_Color &fgcolor): _str(str), _fgcolor(fgcolor), _surface(0), _texture(0) {}
   ~Text();
 
+  void set(const std::string &str, const SDL_Color &fgcolor) {
+    _str = str;
+    _fgcolor = fgcolor;
+  }
+  
   virtual void build(Renderer &renderer, Font &font);
     // build the texture and surface ready to render.
     

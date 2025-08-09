@@ -6,8 +6,20 @@
     
   Box class.
   
-  Box is the baseclass of all drawn objects.
+  Box is the base class of all drawn objects.
   
+  Box
+    Prop
+      StringProp
+        BoolProp
+      LongProp
+      ListProp
+      DictProp
+    String
+    Long
+    List
+    Dict
+    
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
@@ -16,6 +28,8 @@
 #ifndef H_box
 #define H_box
 
+#include <SDL3/SDL_rect.h>
+
 class Renderer;
 class Font;
 class Resources;
@@ -23,21 +37,20 @@ class Resources;
 class Box {
 
 public:
-  Box(): _x(0.0f), _y(0.0f) {};
+  Box() {};
   virtual ~Box() {};
   
-  float _x, _y;
-  float _width, _height;
-  
-  virtual void build(Renderer &renderer, Font &font) = 0;
+  virtual void build(Renderer &renderer, Font &font);
     // build the texture and surface ready to render.
 
   virtual float layout(Resources &pool, float x, float y) = 0;
     // layout the object.
 
-  virtual void render(Renderer &renderer, Resources &pool) = 0;
+  virtual void render(Renderer &renderer, Resources &pool);
     // render this object to the screen.
- 
+
+protected:
+  SDL_FRect _r;
 };
 
 #endif // H_box

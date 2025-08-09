@@ -34,6 +34,7 @@ public:
 
   SDL_Texture *createTexture(SDL_Surface *surface);
   void renderTexture(SDL_Texture *texture, const SDL_FRect &rect);
+  void renderRect(const SDL_FRect &rect);
   
 private:
   
