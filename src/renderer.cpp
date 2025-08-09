@@ -15,7 +15,14 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-Renderer::Renderer(): _width(0), _height(0), _window(0), _renderer(0), _engine(0) {
+#include <iostream>
+
+using namespace std;
+
+Renderer::Renderer(): _width(0), _height(0), 
+  _scale(1.0), _offx(0), _offy(0), 
+  _mousedown(false), 
+  _window(0), _renderer(0), _engine(0) {
 
   if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
     SDL_Log("Couldn't initialize SDL Video: %s", SDL_GetError());
@@ -35,8 +42,8 @@ Renderer::Renderer(): _width(0), _height(0), _window(0), _renderer(0), _engine(0
     return;
   }
   
-  _width = 400;
-  _height = dm->h - 400;
+  _width = dm->w - 20;
+  _height = dm->h - 120;
   
 }
 
@@ -93,6 +100,7 @@ void Renderer::prepare() {
 
   SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
   SDL_RenderClear(_renderer);
+  SDL_SetRenderScale(_renderer, _scale, _scale);
 
 }
 
@@ -107,19 +115,74 @@ bool Renderer::processEvents() {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
   
-      SDL_ConvertEventToRenderCoordinates(_renderer, &event);
+    SDL_ConvertEventToRenderCoordinates(_renderer, &event);
 
-      switch (event.type) {
+    switch (event.type) {
 
-          case SDL_EVENT_QUIT:
-              return true;
-              break;
+      case SDL_EVENT_MOUSE_BUTTON_DOWN:
+//        cout << "click: " << event.button.x << ", " << event.button.y << endl;
+        _mousedown = true;
+        _lastx = event.button.x;
+        _lasty = event.button.y;
+        break;
 
-          default:
-              break;
-      }
+      case SDL_EVENT_MOUSE_BUTTON_UP:
+//        cout << "up: " << event.button.x << ", " << event.button.y << endl;
+        _mousedown = false;
+        break;
+
+      case SDL_EVENT_MOUSE_MOTION:
+//        cout << "move: " << event.motion.x << ", " << event.motion.y << endl;
+        if (_mousedown) {
+          float dx = _lastx - event.motion.x;
+          float dy = _lasty - event.motion.y;
+          _lastx = event.motion.x;
+          _lasty = event.motion.y;
+          _offx += dx;
+          _offy += dy;
+//          cout << "drag: " << dx << ", " << dy << endl;
+        }
+        break;
+
+      case SDL_EVENT_MOUSE_WHEEL:
+        _scale += event.wheel.y * 0.08l;
+//         _offx *= (1.0 - _scale);
+//         _offy *= (1.0 - _scale);
+//        cout << "mouse wheel: " << event.wheel.x << ", " << event.wheel.y << endl;
+        break;
+
+      case SDL_EVENT_QUIT:
+        return true;
+        break;
+
+      default:
+//        cout << "got event " << hex << event.type << endl;
+        break;
+    }
+    
   }
 
   return false;
   
+}
+
+SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {
+  
+  SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, surface);
+  if (!texture) {
+    SDL_Log("Couldn't render text: %s", SDL_GetError());
+    return 0;
+  }
+  return texture;
+  
+}
+
+void Renderer::renderTexture(SDL_Texture *texture, const SDL_FRect &rect) {
+
+  SDL_FRect r = rect;
+  r.x -= _offx;
+  r.y -= _offy;
+  
+  SDL_RenderTexture(_renderer, texture, NULL, &r);
+
 }

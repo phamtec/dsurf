@@ -11,5 +11,5 @@
 
 #include "sizes.hpp"
 
-float Sizes::group_indent = 20.0l;
-float Sizes::text_padding = 4.0l;
+float Sizes::group_indent = 40.0l;
+float Sizes::text_padding = 10.0l;

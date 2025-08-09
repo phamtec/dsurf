@@ -38,11 +38,7 @@ void Text::build(Renderer &renderer, Font &font) {
     return;
   }
   
-  _texture = SDL_CreateTextureFromSurface(renderer._renderer, _surface);
-  if (!_texture) {
-    SDL_Log("Couldn't render text: %s", SDL_GetError());
-    return;
-  }
+  _texture = renderer.createTexture(_surface);
 
 }
 
@@ -58,8 +54,7 @@ void Text::render(Renderer &renderer, float x, float y) {
   messageRect.y = y;
   messageRect.w = _surface->w;
   messageRect.h = _surface->h;
-
-  SDL_RenderTexture(renderer._renderer, _texture, NULL, &messageRect);
+  renderer.renderTexture(_texture, messageRect);
   
 }
 

@@ -17,6 +17,9 @@
 class SDL_Window;
 class SDL_Renderer;
 class TTF_TextEngine;
+class SDL_FRect;
+class SDL_Texture;
+class SDL_Surface;
 
 class Renderer {
 
@@ -29,14 +32,21 @@ public:
   void present();
   bool processEvents();
 
+  SDL_Texture *createTexture(SDL_Surface *surface);
+  void renderTexture(SDL_Texture *texture, const SDL_FRect &rect);
+  
 private:
-  friend class Text;
   
   int _width, _height;
   SDL_Window *_window;
   TTF_TextEngine *_engine;
   SDL_Renderer *_renderer;
-  
+  float _scale;
+  bool _mousedown;
+  float _lastx;
+  float _lasty;
+  float _offx;
+  float _offy;
 };
 
 #endif // H_renderer
