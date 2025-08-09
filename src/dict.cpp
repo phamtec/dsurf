@@ -11,34 +11,46 @@
 
 #include "dict.hpp"
 #include "renderer.hpp"
+#include "resources.hpp"
+#include "sizes.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-float Dict::layout(float x, float y) {
+float Dict::layout(Resources &res, float x, float y) {
 
 //  cout << "layout dict" << endl;
   
   _x = x;
   _y = y;
-  _width = 640;
-  _height = 20; // open brace
-  y += 20;
+  _width = 100;
+  _height = res.open_brace.height();
+  y += _height;
   for (auto&& i: _objs) {
-    long h = i->layout(x + 20, y);
+    long h = i->layout(res, x + Sizes::group_indent, y);
     _height += h;
     y += h;
   }
-  return _height + 20;
+  return _height + res.close_brace.height();
 }
 
-void Dict::render(Renderer &renderer, Font &font) {
+void Dict::build(Renderer &renderer, Font &font) {
 
-  renderer.pool.open_brace.render(renderer, font, _x, _y);
   for (auto&& i: _objs) {
-    i->render(renderer, font);
+    i->build(renderer, font);
   }
-  renderer.pool.close_brace.render(renderer, font, _x + (_objs.size() == 0 ? 10 : 0), _y + (_objs.size() == 0 ? 0 : _height));
+
+}
+
+void Dict::render(Renderer &renderer, Resources &res) {
+
+  res.open_brace.render(renderer, _x, _y);
+  for (auto&& i: _objs) {
+    i->render(renderer, res);
+  }
+  res.close_brace.render(renderer, 
+    _x + (_objs.size() == 0 ? res.open_brace.width() + Sizes::text_padding : 0), 
+    _y + (_objs.size() == 0 ? 0 : _height));
 
 }

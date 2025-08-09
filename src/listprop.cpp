@@ -11,35 +11,48 @@
 
 #include "listprop.hpp"
 #include "renderer.hpp"
+#include "resources.hpp"
+#include "sizes.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-float ListProp::layout(float x, float y) {
+float ListProp::layout(Resources &res, float x, float y) {
 
 //  cout << "layout listprop" << endl;
   
   _x = x;
   _y = y;
-  _width = 640;
-  _height = 20; // open bracket and name
-  y += 20;
+  _width = 100;
+  _height = _name.height(); // open bracket and name
+  y += _name.height();
   for (auto&& i: _objs) {
-    long h = i->layout(x + 20, y);
+    long h = i->layout(res, x + Sizes::group_indent, y);
     _height += h;
     y += h;
   }
-  return _height + (_objs.size() > 0 ? 20 : 0); // closed bracket if not empty
+  return _height + (_objs.size() > 0 ? res.close_bracket.height() : 0); // closed bracket if not empty
 }
 
-void ListProp::render(Renderer &renderer, Font &font) {
+void ListProp::build(Renderer &renderer, Font &font) {
 
-  _name.render(renderer, font, _x, _y);
-  renderer.pool.open_bracket.render(renderer, font, _x + 100, _y);
+  _name.build(renderer, font);
   for (auto&& i: _objs) {
-    i->render(renderer, font);
+    i->build(renderer, font);
   }
-  renderer.pool.close_bracket.render(renderer, font, _x + (_objs.size() == 0 ? 110 : 0), _y + (_objs.size() == 0 ? 0 : _height));
+
+}
+
+void ListProp::render(Renderer &renderer, Resources &res) {
+
+  _name.render(renderer, _x, _y);
+  res.open_bracket.render(renderer, _x + _name.width() + 4, _y);
+  for (auto&& i: _objs) {
+    i->render(renderer, res);
+  }
+  res.close_bracket.render(renderer, 
+    _x + (_objs.size() == 0 ? _name.width() + res.open_bracket.width() + (Sizes::text_padding * 2): 0), 
+    _y + (_objs.size() == 0 ? 0 : _height));
   
 }

@@ -18,15 +18,20 @@
 
 #include "box.hpp"
 #include "text.hpp"
+#include "colours.hpp"
 
 class StringProp: public Box {
 
 public:
-  StringProp(const std::string &name, const std::string &value): _name(name), _value(value) {}
+  StringProp(const std::string &name, const std::string &value): 
+    _name(name, Colours::blue), 
+    _value(value, Colours::green) 
+      {}
   
   // Box
-  virtual float layout(float x, float y);
-  virtual void render(Renderer &renderer, Font &font);
+  virtual void build(Renderer &renderer, Font &font);
+  virtual float layout(Resources &pool, float x, float y);
+  virtual void render(Renderer &renderer, Resources &pool);
 
 private:
   Text _name;

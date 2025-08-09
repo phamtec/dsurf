@@ -42,6 +42,9 @@ set(SRC
   src/listprop.cpp
   src/dict.cpp
   src/dictprop.cpp
+  src/resources.cpp
+  src/colours.cpp
+  src/sizes.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC})

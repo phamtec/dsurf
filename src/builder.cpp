@@ -37,7 +37,7 @@ Box *Builder::walk(const rfl::Generic &g) {
       obj = dynamic_cast<Box *>(d);
     }
     else {
-      cout << "unknown type " << typeid(field).name() << endl;
+      cout << "unknown type in generic " << typeid(field).name() << endl;
     }
 
   }, g.variant());
@@ -69,7 +69,7 @@ Box *Builder::walk(const rfl::Generic &g, const string &name) {
       obj = new BoolProp(name, field);
     }
     else {
-      cout << "unknown type " << typeid(field).name() << endl;
+      cout << "unknown type in generic " << name << ": " << typeid(field).name() << endl;
     }
 
   }, g.variant());
@@ -90,7 +90,7 @@ void Builder::walk(const rfl::Object<rfl::Generic> &obj, Pushable *list) {
       }
     }
     else {
-      cout << "unknown type " << typeid(v).name();
+      cout << "unknown type in object " << typeid(v).name();
     }
     
   }

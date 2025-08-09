@@ -109,15 +109,11 @@ Hit q to exit
 
 ## Progress
 
-Takes a JSON file and just draws it all in one big go.
+Takes a JSON file and just draws it all in one big go with nice colours.
 
 ## Current Focus
 
-Layout engine knows about text sizes.
-
-## References
-
-# reflect-cpp
+Zooming and panning like a map.
 
 ## Change Log
 
@@ -128,4 +124,11 @@ Hello world. First checkin.
 ### 8-Aug-2025
 
 Walk a JSON file building a simple layout.
+
+### 9-Aug-2025
+
+- nice colours.
+- get screen size for window.
+- lot's of better layout work.
+
 

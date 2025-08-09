@@ -11,35 +11,47 @@
 
 #include "dictprop.hpp"
 #include "renderer.hpp"
+#include "resources.hpp"
+#include "sizes.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-float DictProp::layout(float x, float y) {
+float DictProp::layout(Resources &res, float x, float y) {
 
 //  cout << "layout dictprop" << endl;
   
   _x = x;
   _y = y;
-  _width = 640;
-  _height = 20; // name and open brace
-  y += 20;
+  _width = 100;
+  _height = _name.height(); // name and open brace
+  y += _name.height();
   for (auto&& i: _objs) {
-    long h = i->layout(x + 20, y);
+    long h = i->layout(res, x + Sizes::group_indent, y);
     _height += h;
     y += h;
   }
-  return _height + (_objs.size() > 0 ? 20 : 0); // closed bracket if not empty
+  return _height + (_objs.size() > 0 ? res.close_brace.height() : 0); // closed bracket if not empty
 }
 
-void DictProp::render(Renderer &renderer, Font &font) {
+void DictProp::build(Renderer &renderer, Font &font) {
 
-  _name.render(renderer, font, _x, _y);
-  renderer.pool.open_brace.render(renderer, font, _x + 100, _y);
+  _name.build(renderer, font);
   for (auto&& i: _objs) {
-    i->render(renderer, font);
+    i->build(renderer, font);
   }
-  renderer.pool.close_brace.render(renderer, font, _x + (_objs.size() == 0 ? 110 : 0), _y + (_objs.size() == 0 ? 0 : _height));
+
+}
+void DictProp::render(Renderer &renderer, Resources &res) {
+
+  _name.render(renderer, _x, _y);
+  res.open_brace.render(renderer, _x + _name.width() + Sizes::text_padding, _y);
+  for (auto&& i: _objs) {
+    i->render(renderer, res);
+  }
+  res.close_brace.render(renderer, 
+    _x + (_objs.size() == 0 ? _name.width() + res.open_brace.width() + (Sizes::text_padding * 2) : 0), 
+    _y + (_objs.size() == 0 ? 0 : _height));
 
 }

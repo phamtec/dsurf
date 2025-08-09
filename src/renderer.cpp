@@ -15,6 +15,31 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
+Renderer::Renderer(): _width(0), _height(0), _window(0), _renderer(0), _engine(0) {
+
+  if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
+    SDL_Log("Couldn't initialize SDL Video: %s", SDL_GetError());
+    return;
+  }
+
+  int n;
+  SDL_DisplayID *displays = SDL_GetDisplays(&n);
+  if (n < 1) {
+    SDL_Log("Not enough displays");
+    return;
+  }
+
+  const SDL_DisplayMode *dm = SDL_GetCurrentDisplayMode(displays[0]);
+  if (!dm) {
+    SDL_Log("Couldn't get display mode: %s", SDL_GetError());    
+    return;
+  }
+  
+  _width = 400;
+  _height = dm->h - 400;
+  
+}
+
 Renderer::~Renderer() {
 
   if (_engine) {

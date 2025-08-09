@@ -11,34 +11,46 @@
 
 #include "list.hpp"
 #include "renderer.hpp"
+#include "resources.hpp"
+#include "sizes.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-float List::layout(float x, float y) {
+float List::layout(Resources &res, float x, float y) {
 
 //  cout << "layout list" << endl;
   
   _x = x;
   _y = y;
-  _width = 640;
-  _height = 20;
-  y += 20;
+  _width = 100;
+  _height = res.open_bracket.height();
+  y += _height;
   for (auto&& i: _objs) {
-    long h = i->layout(x + 20, y);
+    long h = i->layout(res, x + Sizes::group_indent, y);
     _height += h;
     y += h;
   }
-  return _height + 20;
+  return _height + res.close_bracket.height();
 }
 
-void List::render(Renderer &renderer, Font &font) {
+void List::build(Renderer &renderer, Font &font) {
 
-  renderer.pool.open_bracket.render(renderer, font, _x, _y);
   for (auto&& i: _objs) {
-    i->render(renderer, font);
+    i->build(renderer, font);
   }
-  renderer.pool.close_bracket.render(renderer, font, _x + (_objs.size() == 0 ? 10 : 0), _y + (_objs.size() == 0 ? 0 : _height));
+
+}
+
+void List::render(Renderer &renderer, Resources &res) {
+
+  res.open_bracket.render(renderer, _x, _y);
+  for (auto&& i: _objs) {
+    i->render(renderer, res);
+  }
+  res.close_bracket.render(renderer, 
+    _x + (_objs.size() == 0 ? res.open_bracket.width() + Sizes::text_padding : 0), 
+    _y + (_objs.size() == 0 ? 0 : _height));
 
 }

@@ -15,6 +15,7 @@
 #define H_text
 
 #include <string>
+#include <SDL3/SDL_pixels.h>
 
 class SDL_Surface;
 class SDL_Texture;
@@ -25,16 +26,22 @@ class Font;
 class Text {
 
 public:
-  Text(const std::string &str): _str(str), _surface(0), _texture(0) {}
+  Text(const std::string &str, const SDL_Color &fgcolor): _str(str), _fgcolor(fgcolor), _surface(0), _texture(0) {}
   ~Text();
-  
-  virtual float render(Renderer &renderer, Font &font, float x, float y);
-    // render the text after first initialising it at x, y
-    // returns the height of the text rendered.
+
+  virtual void build(Renderer &renderer, Font &font);
+    // build the texture and surface ready to render.
     
+  virtual void render(Renderer &renderer, float x, float y);
+    // render the text after first initialising it at x, y
+    
+  float width();
+  float height();
+  
 private:
 
   std::string _str;
+  SDL_Color _fgcolor;
   SDL_Surface *_surface;
   SDL_Texture *_texture;
   

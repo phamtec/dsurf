@@ -1,0 +1,49 @@
+{
+    "name": "Paint the roof",
+    "library": [],
+    "states": [
+        {
+            "next": { "nextState": {} },
+            "name": "Buy paint",
+            "tests": [],
+            "guard": true,
+            "elements": [
+                {
+                    "type": "freeFormText",
+                    "text": "Roof size?",
+                    "var": "roofSize"
+                },
+                {
+                    "type": "freeFormText",
+                    "text": "Number of coats?",
+                    "var": "coats"
+                }
+            ]
+        },
+        {
+            "next": { "nextState": {} },
+            "name": "Invite people to paint roof",
+            "tests": [],
+            "guard": true,
+            "elements": [
+                {
+                    "type": "date",
+                    "text": "When?",
+                    "var": "when"
+                },
+                {
+                    "type": "assign",
+                    "text": "Who?",
+                    "var": "who"
+                }
+            ]
+        },
+        {
+            "next": {},
+            "name": "Paint the roof",
+            "tests": [],
+            "guard": true,
+            "elements": []
+        }
+    ]
+}

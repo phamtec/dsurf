@@ -10,20 +10,28 @@
 */
 
 #include "stringprop.hpp"
+#include "sizes.hpp"
 
-float StringProp::layout(float x, float y) {
+float StringProp::layout(Resources &res, float x, float y) {
 
   _x = x;
   _y = y;
-  _width = 640;
-  _height = 20;
+  _width = 100;
+  _height = _name.height();
   return _height;
   
 }
 
-void StringProp::render(Renderer &renderer, Font &font) {
+void StringProp::build(Renderer &renderer, Font &font) {
 
-  _name.render(renderer, font, _x, _y);
-  _value.render(renderer, font, _x + 100, _y);
+  _name.build(renderer, font);
+  _value.build(renderer, font);
+
+}
+
+void StringProp::render(Renderer &renderer, Resources &res) {
+
+  _name.render(renderer, _x, _y);
+  _value.render(renderer, _x + _name.width() + Sizes::text_padding, _y);
   
 }

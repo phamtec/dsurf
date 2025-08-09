@@ -18,6 +18,7 @@
 
 class Renderer;
 class Font;
+class Resources;
 
 class Box {
 
@@ -28,12 +29,15 @@ public:
   float _x, _y;
   float _width, _height;
   
-  // layout the object.
-  virtual float layout(float x, float y) = 0;
+  virtual void build(Renderer &renderer, Font &font) = 0;
+    // build the texture and surface ready to render.
 
-  // render this object to the screen.
-  virtual void render(Renderer &renderer, Font &font) = 0;
-  
+  virtual float layout(Resources &pool, float x, float y) = 0;
+    // layout the object.
+
+  virtual void render(Renderer &renderer, Resources &pool) = 0;
+    // render this object to the screen.
+ 
 };
 
 #endif // H_box

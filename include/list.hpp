@@ -32,8 +32,9 @@ public:
   List() {}
   
   // Box
-  virtual float layout(float x, float y);
-  virtual void render(Renderer &renderer, Font &font);
+  virtual void build(Renderer &renderer, Font &font);
+  virtual float layout(Resources &pool, float x, float y);
+  virtual void render(Renderer &renderer, Resources &pool);
 
   // Pushable
   virtual void push(Box *box) {

@@ -14,8 +14,6 @@
 #ifndef H_renderer
 #define H_renderer
 
-#include "textpool.hpp"
-
 class SDL_Window;
 class SDL_Renderer;
 class TTF_TextEngine;
@@ -23,7 +21,7 @@ class TTF_TextEngine;
 class Renderer {
 
 public:
-  Renderer(int width, int height): _width(width), _height(height), _window(0), _renderer(0), _engine(0) {}
+  Renderer();
   ~Renderer();
   
   bool init();
@@ -31,8 +29,6 @@ public:
   void present();
   bool processEvents();
 
-  TextPool pool;
-  
 private:
   friend class Text;
   

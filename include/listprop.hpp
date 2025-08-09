@@ -23,6 +23,7 @@
 #include "box.hpp"
 #include "text.hpp"
 #include "pushable.hpp"
+#include "colours.hpp"
 
 #include <memory>
 #include <vector>
@@ -30,11 +31,14 @@
 class ListProp: public Box, public Pushable {
 
 public:
-  ListProp(const std::string &name): _name(name) {}
+  ListProp(const std::string &name): 
+    _name(name, Colours::blue) 
+      {}
   
   // Box
-  virtual float layout(float x, float y);
-  virtual void render(Renderer &renderer, Font &font);
+  virtual void build(Renderer &renderer, Font &font);
+  virtual float layout(Resources &pool, float x, float y);
+  virtual void render(Renderer &renderer, Resources &pool);
 
   // Pushable
   virtual void push(Box *box) {

@@ -11,7 +11,7 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "textpool.hpp"
+#include "resources.hpp"
 #include "font.hpp"
 #include "renderer.hpp"
 #include "builder.hpp"
@@ -61,8 +61,8 @@ int main(int argc, char *argv[])
   string infn = vm["input-file"].as< string >();
   auto result = rfl::json::load<rfl::Generic>(infn);
   unique_ptr<Box> root(Builder::walk(*result));
-  
-  Renderer renderer(WIDTH, HEIGHT);
+
+  Renderer renderer;
   if (!renderer.init()) {
     return 1;
   }
@@ -72,8 +72,14 @@ int main(int argc, char *argv[])
     return 1;
   }
   
-  TextPool pool;
-  root->layout(0, 0);
+  Resources pool;
+  
+  // allow all objects to build.
+  pool.build(renderer, font);
+  root->build(renderer, font);
+
+  // lay it all out.
+  root->layout(pool, 0, 0);
   
   bool done = false;
   while (!done) {
@@ -83,7 +89,7 @@ int main(int argc, char *argv[])
     }
 
     renderer.prepare();
-    root->render(renderer, font);
+    root->render(renderer, pool);
     renderer.present();
   }
   
