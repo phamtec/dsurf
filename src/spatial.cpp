@@ -13,8 +13,7 @@
 
 void Spatial::calcPan(const Point &p, Point *last, Size *offs) {
 
-  Point d = *last;
-  d -= p;
+  Point d = *last - p;
   *last = p;
   *offs += Size(d);
   
