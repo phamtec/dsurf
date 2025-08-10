@@ -15,6 +15,7 @@
 #include "list.hpp"
 #include "string.hpp"
 #include "stringprop.hpp"
+#include "bool.hpp"
 #include "boolprop.hpp"
 #include "dictprop.hpp"
 #include "listprop.hpp"
@@ -40,7 +41,12 @@ Box *Builder::walk(const rfl::Generic &g) {
       obj = dynamic_cast<Box *>(d);
     }
     else if constexpr (std::is_same<Type, string>()) {
-      obj = new String(field);
+      stringstream ss;
+      ss << "\"" << field << "\"";
+      obj = new String(ss.str());
+    }
+    else if constexpr (std::is_same<Type, bool>()) {
+      obj = new Bool(field);
     }
     else if constexpr (std::is_same<Type, long long>()) {
       obj = new Long(field);

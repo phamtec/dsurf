@@ -16,6 +16,7 @@
       ListProp
       DictProp
     String
+      Bool
     Long
     List
     Dict
@@ -43,7 +44,7 @@ public:
   virtual void build(Renderer &renderer, Font &font);
     // build the texture and surface ready to render.
 
-  virtual float layout(Resources &pool, float x, float y) = 0;
+  virtual float layout(Resources &res, const SDL_FPoint &origin) = 0;
     // layout the object.
 
   virtual void render(Renderer &renderer, Resources &pool);

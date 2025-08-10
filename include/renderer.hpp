@@ -14,6 +14,8 @@
 #ifndef H_renderer
 #define H_renderer
 
+#include <SDL3/SDL_rect.h>
+
 class SDL_Window;
 class SDL_Renderer;
 class TTF_TextEngine;
@@ -44,10 +46,12 @@ private:
   SDL_Renderer *_renderer;
   float _scale;
   bool _mousedown;
-  float _lastx;
-  float _lasty;
-  float _offx;
-  float _offy;
+  SDL_FPoint _last;
+  SDL_FPoint _offs;
+//   float _lastx;
+//   float _lasty;
+//   float _offx;
+//   float _offy;
 };
 
 #endif // H_renderer

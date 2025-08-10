@@ -22,16 +22,16 @@
 
 class String: public Box {
 
+  typedef Box super;
+  
 public:
   String(const std::string &value): 
     _value(value, Colours::green) 
       {}
 
-  typedef Box super;
-  
   // Box
   virtual void build(Renderer &renderer, Font &font);
-  virtual float layout(Resources &pool, float x, float y);
+  virtual float layout(Resources &res, const SDL_FPoint &origin);
   virtual void render(Renderer &renderer, Resources &pool);
 
 private:

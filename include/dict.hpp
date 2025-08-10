@@ -26,14 +26,14 @@
 
 class Dict: public Box, public Pushable {
 
+  typedef Box super;
+
 public:
   Dict() {}
-
-  typedef Box super;
   
   // Box
   virtual void build(Renderer &renderer, Font &font);
-  virtual float layout(Resources &pool, float x, float y);
+  virtual float layout(Resources &res, const SDL_FPoint &origin);
   virtual void render(Renderer &renderer, Resources &pool);
   
   // Pushable

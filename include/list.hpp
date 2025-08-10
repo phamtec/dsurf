@@ -28,14 +28,14 @@
 
 class List: public Box, public Pushable {
 
+  typedef Box super;
+
 public:
   List() {}
-
-  typedef Box super;
   
   // Box
   virtual void build(Renderer &renderer, Font &font);
-  virtual float layout(Resources &pool, float x, float y);
+  virtual float layout(Resources &res, const SDL_FPoint &origin);
   virtual void render(Renderer &renderer, Resources &pool);
 
   // Pushable
@@ -45,7 +45,7 @@ public:
   
   // helpers for things that look like a list.
   static void buildVector(Renderer &renderer, Font &font, std::vector<std::unique_ptr<Box> > &list);
-  static float layoutVector(Resources &res, float x, float y, float height, std::vector<std::unique_ptr<Box> > &list);
+  static float layoutVector(Resources &res, const SDL_FPoint &origin, float height, std::vector<std::unique_ptr<Box> > &list);
   static void renderVector(Renderer &renderer, Resources &res, std::vector<std::unique_ptr<Box> > &list);
   
 private:

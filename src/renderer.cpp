@@ -10,6 +10,7 @@
 */
 
 #include "renderer.hpp"
+#include "spatial.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -20,7 +21,7 @@
 using namespace std;
 
 Renderer::Renderer(): _width(0.0l), _height(0.0l), 
-  _scale(0.3l), _offx(0.0l), _offy(0.0l), 
+  _scale(0.3l), _offs(Spatial::makePoint(0, 0)),
   _mousedown(false), 
   _window(0), _renderer(0), _engine(0) {
 
@@ -122,8 +123,7 @@ bool Renderer::processEvents() {
       case SDL_EVENT_MOUSE_BUTTON_DOWN:
 //        cout << "click: " << event.button.x << ", " << event.button.y << endl;
         _mousedown = true;
-        _lastx = event.button.x;
-        _lasty = event.button.y;
+        _last = Spatial::makePoint(event.button.x, event.button.y);
         break;
 
       case SDL_EVENT_MOUSE_BUTTON_UP:
@@ -134,20 +134,13 @@ bool Renderer::processEvents() {
       case SDL_EVENT_MOUSE_MOTION:
 //        cout << "move: " << event.motion.x << ", " << event.motion.y << endl;
         if (_mousedown) {
-          float dx = _lastx - event.motion.x;
-          float dy = _lasty - event.motion.y;
-          _lastx = event.motion.x;
-          _lasty = event.motion.y;
-          _offx += dx;
-          _offy += dy;
+          Spatial::calcPan(Spatial::makePoint(event.motion.x, event.motion.y), &_last, &_offs);
 //          cout << "drag: " << dx << ", " << dy << endl;
         }
         break;
 
       case SDL_EVENT_MOUSE_WHEEL:
         _scale += event.wheel.y * 0.06l;
-//         _offx *= (1.0 - _scale);
-//         _offy *= (1.0 - _scale);
 //        cout << "mouse wheel: " << event.wheel.x << ", " << event.wheel.y << endl;
         break;
 
@@ -180,9 +173,8 @@ SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {
 void Renderer::renderTexture(SDL_Texture *texture, const SDL_FRect &rect) {
 
   SDL_FRect r = rect;
-  r.x -= _offx;
-  r.y -= _offy;
-  
+  Spatial::subtractOrigin(&r, _offs);
+
   SDL_RenderTexture(_renderer, texture, NULL, &r);
 
 }
@@ -192,20 +184,10 @@ void Renderer::renderRect(const SDL_FRect &rect) {
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
 
   SDL_FRect r = rect;
-  r.x -= _offx;
-  r.y -= _offy;
-  r.x++;
-  r.y++;
-  r.w -= 2;
-  r.h -= 2;
+  Spatial::subtractOrigin(&r, _offs);
+  Spatial::inset(&r, 1);
   
 //  SDL_RenderFillRect(_renderer, &r); // Fill the rectangle with black
   SDL_RenderRect(_renderer, &r);
-
-//   SDL_FRect r = rect;
-//   r.x -= _offx;
-//   r.y -= _offy;
-// 
-//   SDL_RenderRect(_renderer, &r);
 
 }

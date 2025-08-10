@@ -12,6 +12,7 @@
 #include "text.hpp"
 #include "font.hpp"
 #include "renderer.hpp"
+#include "spatial.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -42,19 +43,18 @@ void Text::build(Renderer &renderer, Font &font) {
 
 }
 
-void Text::render(Renderer &renderer, float x, float y) {
+void Text::render(Renderer &renderer, const SDL_FPoint &origin) {
 
   if (!_surface) {
     SDL_Log("need to build first!");
     return;
   }
   
-  SDL_FRect messageRect;
-  messageRect.x = x;
-  messageRect.y = y;
-  messageRect.w = _surface->w;
-  messageRect.h = _surface->h;
-  renderer.renderTexture(_texture, messageRect);
+  SDL_FRect r;
+  Spatial::setOrigin(&r, origin);
+  Spatial::setDimensions(&r, _surface->w, _surface->h);
+
+  renderer.renderTexture(_texture, r);
   
 }
 

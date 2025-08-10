@@ -10,6 +10,7 @@
 */
 
 #include "prop.hpp"
+#include "spatial.hpp"
 
 void Prop::build(Renderer &renderer, Font &font) {
 
@@ -23,6 +24,6 @@ void Prop::render(Renderer &renderer, Resources &res) {
 
   super::render(renderer, res);
   
-  _name.render(renderer, _r.x, _r.y);
+  _name.render(renderer, Spatial::origin(_r));
   
 }

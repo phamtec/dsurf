@@ -11,10 +11,12 @@
 
 #include "string.hpp"
 #include "sizes.hpp"
+#include "spatial.hpp"
 
-float String::layout(Resources &res, float x, float y) {
+float String::layout(Resources &res, const SDL_FPoint &origin) {
 
-  _r = { .x = x, .y = y, .w = 100, .h = _value.height() };
+  Spatial::setOrigin(&_r, origin);
+  Spatial::setDimensions(&_r, 100, _value.height());
   return _r.h;
   
 }
@@ -31,6 +33,6 @@ void String::render(Renderer &renderer, Resources &res) {
 
   super::render(renderer, res);
   
-  _value.render(renderer, _r.x, _r.y);
+  _value.render(renderer, Spatial::origin(_r));
   
 }

@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
   root->build(renderer, font);
 
   // lay it all out.
-  root->layout(pool, 0, 0);
+  root->layout(pool, { .x = 0, .y = 0});
   
   bool done = false;
   while (!done) {

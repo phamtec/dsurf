@@ -13,15 +13,17 @@
 #include "renderer.hpp"
 #include "resources.hpp"
 #include "sizes.hpp"
+#include "spatial.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-float List::layout(Resources &res, float x, float y) {
+float List::layout(Resources &res, const SDL_FPoint &origin) {
 
-  _r = { .x = x, .y = y, .w = 100, .h = List::layoutVector(res, x, y, res.open_bracket.height(), _objs) };
-  return _r.h + res.close_bracket.height();
+  Spatial::setOrigin(&_r, origin);
+  Spatial::setDimensions(&_r, 100, List::layoutVector(res, origin, res.open_bracket.height(), _objs) + res.close_bracket.height());
+  return _r.h;
   
 }
 
@@ -37,21 +39,22 @@ void List::render(Renderer &renderer, Resources &res) {
 
   super::render(renderer, res);
   
-  res.open_bracket.render(renderer, _r.x, _r.y);
+  res.open_bracket.render(renderer, Spatial::origin(_r));
   renderVector(renderer, res, _objs);
-  res.close_bracket.render(renderer, 
-    _r.x + (_objs.size() == 0 ? res.open_bracket.width() + Sizes::text_padding : 0), 
-    _r.y + (_objs.size() == 0 ? 0 : _r.h));
+  res.close_bracket.render(renderer, Spatial::calcOriginOffset(_r,
+    _objs.size() == 0 ? res.open_bracket.width() + Sizes::text_padding : 0, 
+    _objs.size() == 0 ? 0 : _r.h - res.open_bracket.height()));
 
 }
 
-float List::layoutVector(Resources &res, float x, float y, float height, std::vector<std::unique_ptr<Box> > &list) {
+float List::layoutVector(Resources &res, const SDL_FPoint &origin, float height, std::vector<std::unique_ptr<Box> > &list) {
 
-  y += height;
+  SDL_FPoint p = origin;
+  p.y += height;
   for (auto&& i: list) {
-    long h = i->layout(res, x + Sizes::group_indent, y);
+    long h = i->layout(res, Spatial::makePoint(p.x + Sizes::group_indent, p.y));
     height += h;
-    y += h;
+    p.y += h;
   }
   return height;
   

@@ -14,7 +14,7 @@ cmake_policy(SET CMP0167 NEW) # Boost
 cmake_policy(SET CMP0072 NEW) # OpenGL
 
 project (dsurf)
-  find_package(Boost 1.85.0 COMPONENTS program_options REQUIRED)
+  find_package(Boost 1.85.0 COMPONENTS program_options unit_test_framework REQUIRED)
   find_package(SDL3 REQUIRED)
   find_package(SDL3_ttf REQUIRED)
   find_package(OpenGL)
@@ -50,9 +50,14 @@ set(SRC
   src/longprop.cpp
   src/prop.cpp
   src/box.cpp
+  src/spatial.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC})
     target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp)
 
 # Tests
+add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp)
+  target_link_libraries(TestSpatial ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+add_test(TestSpatial TestSpatial)

@@ -20,17 +20,17 @@
 
 class StringProp: public Prop {
 
+  typedef Prop super;
+  
 public:
   StringProp(const std::string &name, const std::string &value): 
     Prop(name), 
     _value(value, Colours::green) 
       {}
 
-  typedef Prop super;
-  
   // Box
   virtual void build(Renderer &renderer, Font &font);
-  virtual float layout(Resources &pool, float x, float y);
+  virtual float layout(Resources &res, const SDL_FPoint &origin);
   virtual void render(Renderer &renderer, Resources &pool);
 
 private:

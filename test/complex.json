@@ -1,6 +1,10 @@
 {
     "name": "Paint the roof",
     "library": [],
+    "longprop": 0,
+    "longs": [1, 2, 3],
+    "bools": [true, false, true],
+    "strings": ["a", "b", "c"],
     "states": [
         {
             "next": { "nextState": {} },

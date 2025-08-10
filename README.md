@@ -97,6 +97,7 @@ mkdir build
 cd build
 cmake ..
 make
+make test
 ```
 
 ## Running this
@@ -109,6 +110,14 @@ make
 Use the mouse wheel (or double finger up and down on a traockpad) to zoom.
 Click and drag to pan around.
 Hit q to exit.
+
+## Running tests
+
+The tests use BOOST test, to run
+
+```
+make test
+```
 
 ## Progress
 

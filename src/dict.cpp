@@ -14,14 +14,16 @@
 #include "resources.hpp"
 #include "sizes.hpp"
 #include "list.hpp"
+#include "spatial.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-float Dict::layout(Resources &res, float x, float y) {
+float Dict::layout(Resources &res, const SDL_FPoint &origin) {
 
-  _r = { .x = x, .y = y, .w = 100, .h = List::layoutVector(res, x, y, res.open_brace.height(), _objs) + res.close_brace.height() };
+  Spatial::setOrigin(&_r, origin);
+  Spatial::setDimensions(&_r, 100, List::layoutVector(res, origin, res.open_brace.height(), _objs) + res.close_brace.height());
   return _r.h;
   
 }
@@ -38,11 +40,11 @@ void Dict::render(Renderer &renderer, Resources &res) {
 
   super::render(renderer, res);
   
-  res.open_brace.render(renderer, _r.x, _r.y);
+  res.open_brace.render(renderer, Spatial::origin(_r));
   List::renderVector(renderer, res, _objs);
-  res.close_brace.render(renderer, 
-    _r.x + (_objs.size() == 0 ? res.open_brace.width() + Sizes::text_padding : 0), 
-    _r.y + (_objs.size() == 0 ? 0 : _r.h - res.close_brace.height()));
+  res.close_brace.render(renderer, Spatial::calcOriginOffset(_r,
+    _objs.size() == 0 ? res.open_brace.width() + Sizes::text_padding : 0, 
+    _objs.size() == 0 ? 0 : _r.h - res.close_brace.height()));
 
 //  renderer.renderRect(_r);
 

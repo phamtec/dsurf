@@ -22,13 +22,13 @@
 
 class Prop: public Box {
 
+  typedef Box super;
+  
 public:
   Prop(const std::string &name): 
     _name(name, Colours::blue)
       {}
 
-  typedef Box super;
-  
   // Box
   virtual void build(Renderer &renderer, Font &font);
   virtual void render(Renderer &renderer, Resources &pool);

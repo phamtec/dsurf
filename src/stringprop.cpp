@@ -11,10 +11,12 @@
 
 #include "stringprop.hpp"
 #include "sizes.hpp"
+#include "spatial.hpp"
 
-float StringProp::layout(Resources &res, float x, float y) {
+float StringProp::layout(Resources &res, const SDL_FPoint &origin) {
 
-  _r = { .x = x, .y = y, .w = 100, .h = _name.height() };
+  Spatial::setOrigin(&_r, origin);
+  Spatial::setDimensions(&_r, 100, _value.height());
   return _r.h;
   
 }
@@ -31,6 +33,6 @@ void StringProp::render(Renderer &renderer, Resources &res) {
 
   super::render(renderer, res);
   
-  _value.render(renderer, _r.x + _name.width() + Sizes::name_var_padding, _r.y);
+  _value.render(renderer, Spatial::makePoint(_r.x + _name.width() + Sizes::name_var_padding, _r.y));
   
 }
