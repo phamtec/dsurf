@@ -98,10 +98,9 @@ bool Renderer::init() {
 }
 
 Point Renderer::rootPoint(const Size &size) {
-//   cout << _width << endl;
-//   cout << size << endl;
-//   cout << _scale << endl;
-  return { .x = 0, .y = 0 };
+
+  return Spatial::center(_width, _height, size, _scale);
+
 }
 
 void Renderer::prepare() {
@@ -147,7 +146,7 @@ bool Renderer::processEvents() {
         break;
 
       case SDL_EVENT_MOUSE_WHEEL:
-        _scale += event.wheel.y * 0.06l;
+        _scale += event.wheel.y * 0.01l;
 //        cout << "mouse wheel: " << event.wheel.x << ", " << event.wheel.y << endl;
         break;
 
@@ -199,3 +198,23 @@ void Renderer::renderRect(const Rect &rect) {
   SDL_RenderRect(_renderer, &sr);
 
 }
+
+void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
+
+  SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
+  
+  Rect r = rect;
+  r -= _offs;
+
+  SDL_FRect sr = r.srect();
+  SDL_RenderFillRect(_renderer, &sr);
+
+
+}
+
+bool Renderer::textTooSmall(const Rect &rect) {
+
+  return (rect.size.h * _scale) < 9;
+  
+}
+

@@ -17,6 +17,8 @@
 #include "point.hpp"
 #include "size.hpp"
 
+#include <SDL3/SDL_pixels.h>
+
 class SDL_Window;
 class SDL_Renderer;
 class TTF_TextEngine;
@@ -38,8 +40,10 @@ public:
   SDL_Texture *createTexture(SDL_Surface *surface);
   void renderTexture(SDL_Texture *texture, const Rect &rect);
   void renderRect(const Rect &rect);
+  void renderFilledRect(const Rect &rect, const SDL_Color &color);
   
   Point rootPoint(const Size &size);
+  bool textTooSmall(const Rect &rect);
   
 private:
   

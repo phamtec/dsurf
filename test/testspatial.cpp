@@ -34,3 +34,14 @@ BOOST_AUTO_TEST_CASE( calcPan )
   BOOST_CHECK(offs.h >= 41.4 && offs.h <= 41.5);
 
 }
+
+BOOST_AUTO_TEST_CASE( center )
+{
+  cout << "=== center ===" << endl;
+  
+  Point p = Spatial::center(1024, 768, Size(300, 300), 0.5);
+
+  BOOST_CHECK_EQUAL(p.x, 874);
+  BOOST_CHECK_EQUAL(p.y, 618);
+
+}

@@ -50,7 +50,14 @@ void Text::render(Renderer &renderer, const Point &origin) {
     return;
   }
   
-  renderer.renderTexture(_texture, Rect(origin, Size(_surface->w, _surface->h)));
+  Rect r(origin, Size(_surface->w, _surface->h));
+  if (renderer.textTooSmall(r)) {
+    r -= 4;
+    renderer.renderFilledRect(r, _fgcolor);
+  }
+  else {
+    renderer.renderTexture(_texture, Rect(origin, Size(_surface->w, _surface->h)));
+  }
   
 }
 

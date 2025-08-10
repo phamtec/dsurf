@@ -30,7 +30,7 @@ public:
   Point origin;
   Size size;
   
-  inline SDL_FRect srect() {
+  inline SDL_FRect srect() const {
     return { .x = origin.x, .y = origin.y, .w = size.w, .h = size.h };
   }
   

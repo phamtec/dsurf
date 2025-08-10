@@ -18,3 +18,12 @@ void Spatial::calcPan(const Point &p, Point *last, Size *offs) {
   *offs += Size(d);
   
 }
+
+Point Spatial::center(float width, float height, const Size &size, float scale) {
+
+  return {
+    .x = ((width - (size.w * scale)) * (1/scale)) / 2, 
+    .y = ((height - (size.h * scale)) * (1/scale)) / 2 
+  };
+    
+}

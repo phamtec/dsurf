@@ -22,14 +22,13 @@ class Spatial {
 
 public:
 
-  static inline Point calcOriginOffset(const Rect &r, float width, float height) {
-  // calculate the offset to the origin of a rectangle.
-    return Point(r.origin.x + width, r.origin.y + height);
-  }
-  
   static void calcPan(const Point &p, Point *last, Size *offs);
     // calculate the pan. Takes the new point of a pan
     // last point of the pan, the offset to pan
+    
+  static Point center(float width, float height, const Size &size, float scale);
+    // given a window width and height, center the object of size
+    // qssuming the drawing scale;
     
 };
 
