@@ -20,14 +20,12 @@
 
 using namespace std;
 
-Size ListProp::layout(Resources &res, const Point &origin) {
+Size ListProp::layout(Resources &res) {
 
-  _r.origin = origin;
-  _r.size = List::layoutVector(res, origin, _name.size() + Size(res.open_bracket.size().w + Sizes::text_padding, 0), _objs);
+  _size = List::layoutVector(res, _name.size() + Size(res.open_bracket.size().w + Sizes::text_padding, 0), _objs);
   Size s = res.close_bracket.size();
-  _r.size += _objs.size() == 0 ? Size(s.w, 0) : Size(0, s.h);
-//  _r.size.h += (_objs.size() > 0 ? res.close_bracket.size().h : 0); // closed bracket if not empty
-  return _r.size;
+  _size += _objs.size() == 0 ? Size(s.w, 0) : Size(0, s.h);
+  return _size;
 
 }
 
@@ -39,15 +37,15 @@ void ListProp::build(Renderer &renderer, Font &font) {
 
 }
 
-void ListProp::render(Renderer &renderer, Resources &res) {
+void ListProp::render(Renderer &renderer, Resources &res, const Point &origin) {
 
-  super::render(renderer, res);
+  super::render(renderer, res, origin);
   
-  res.open_bracket.render(renderer, Point(_r.origin.x + _name.size().w + Sizes::text_padding, _r.origin.y));
-  List::renderVector(renderer, res, _objs);
-  res.close_bracket.render(renderer, Spatial::calcOriginOffset(_r,
+  res.open_bracket.render(renderer, Point(origin.x + _name.size().w + Sizes::text_padding, origin.y));
+  List::renderVector(renderer, res, origin + Point(Sizes::group_indent, res.open_bracket.size().h), _objs);
+  res.close_bracket.render(renderer, origin + Point(
     _objs.size() == 0 ? _name.size().w + res.open_bracket.size().w + (Sizes::text_padding * 2) : 0, 
-    _objs.size() == 0 ? 0 : _r.size.h - res.close_bracket.size().h));
+    _objs.size() == 0 ? 0 : _size.h - res.close_bracket.size().h));
   
 //  renderer.renderRect(_r);
 

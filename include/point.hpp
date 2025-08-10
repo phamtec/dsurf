@@ -35,6 +35,10 @@ public:
     return Point(x - other.x, y - other.y);
   }
   
+  inline Point operator+(const Point& other) const {
+    return Point(x + other.x, y + other.y);
+  }
+  
   Point& operator+=(const Size &size);
   
   friend std::ostream& operator<< (std::ostream& stream, const Point& matrix);

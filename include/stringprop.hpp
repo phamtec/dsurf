@@ -30,8 +30,8 @@ public:
 
   // Box
   virtual void build(Renderer &renderer, Font &font);
-  virtual Size layout(Resources &res, const Point &origin);
-  virtual void render(Renderer &renderer, Resources &pool);
+  virtual Size layout(Resources &res);
+  virtual void render(Renderer &renderer, Resources &res, const Point &origin);
 
 private:
 

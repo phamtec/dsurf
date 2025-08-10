@@ -4,7 +4,7 @@
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 8-Aug-2025
     
-  Text pool class.
+  Resources class.
   
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  

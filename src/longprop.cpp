@@ -26,12 +26,11 @@ LongProp::LongProp(const std::string &name, long value): Prop(name) {
   
 }
 
-Size LongProp::layout(Resources &res, const Point &origin) {
+Size LongProp::layout(Resources &res) {
 
-  _r.origin = origin;
-  _r.size = _value.size();
-  _r.size.w += _name.size().w + Sizes::name_var_padding;
-  return _r.size;
+  _size = _value.size();
+  _size.w += _name.size().w + Sizes::name_var_padding;
+  return _size;
   
 }
 
@@ -43,11 +42,11 @@ void LongProp::build(Renderer &renderer, Font &font) {
 
 }
 
-void LongProp::render(Renderer &renderer, Resources &res) {
+void LongProp::render(Renderer &renderer, Resources &res, const Point &origin) {
 
-  super::render(renderer, res);
+  super::render(renderer, res, origin);
   
-  _value.render(renderer, Spatial::calcOriginOffset(_r, _name.size().w + Sizes::name_var_padding, 0));
+  _value.render(renderer, origin + Point(_name.size().w + Sizes::name_var_padding, 0));
   
 //  renderer.renderRect(_r);
   

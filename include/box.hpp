@@ -45,14 +45,15 @@ public:
   virtual void build(Renderer &renderer, Font &font);
     // build the texture and surface ready to render.
 
-  virtual Size layout(Resources &res, const Point &origin) = 0;
+  virtual Size layout(Resources &res) = 0;
     // layout the object.
 
-  virtual void render(Renderer &renderer, Resources &pool);
+  virtual void render(Renderer &renderer, Resources &res, const Point &origin);
     // render this object to the screen.
 
-protected:
-  Rect _r;
+  Size _size;
+    // the size of this object
+    
 };
 
 #endif // H_box

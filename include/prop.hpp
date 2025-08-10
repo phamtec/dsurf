@@ -31,7 +31,7 @@ public:
 
   // Box
   virtual void build(Renderer &renderer, Font &font);
-  virtual void render(Renderer &renderer, Resources &pool);
+  virtual void render(Renderer &renderer, Resources &res, const Point &origin);
 
 protected:
   Text _name;

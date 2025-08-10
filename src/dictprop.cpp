@@ -20,13 +20,12 @@
 
 using namespace std;
 
-Size DictProp::layout(Resources &res, const Point &origin) {
+Size DictProp::layout(Resources &res) {
 
-  _r.origin = origin;
-  _r.size = List::layoutVector(res, origin, _name.size() + Size(res.open_brace.size().w + Sizes::text_padding, 0), _objs);
+  _size = List::layoutVector(res, _name.size() + Size(res.open_brace.size().w + Sizes::text_padding, 0), _objs);
   Size s = res.close_brace.size();
-  _r.size += _objs.size() == 0 ? Size(s.w, 0) : Size(0, s.h);
-  return _r.size;
+  _size += _objs.size() == 0 ? Size(s.w, 0) : Size(0, s.h);
+  return _size;
 
 }
 
@@ -38,15 +37,15 @@ void DictProp::build(Renderer &renderer, Font &font) {
 
 }
 
-void DictProp::render(Renderer &renderer, Resources &res) {
+void DictProp::render(Renderer &renderer, Resources &res, const Point &origin) {
 
-  super::render(renderer, res);
+  super::render(renderer, res, origin);
   
-  res.open_brace.render(renderer, Point(_r.origin.x + _name.size().w + Sizes::text_padding, _r.origin.y));
-  List::renderVector(renderer, res, _objs);
-  res.close_brace.render(renderer, Spatial::calcOriginOffset(_r,
+  res.open_brace.render(renderer, origin + Point(_name.size().w + Sizes::text_padding, 0));
+  List::renderVector(renderer, res, origin + Point(Sizes::group_indent, res.open_brace.size().h), _objs);
+  res.close_brace.render(renderer, origin + Point(
     _objs.size() == 0 ? _name.size().w + res.open_brace.size().w + (Sizes::text_padding * 2) : 0, 
-    _objs.size() == 0 ? 0 : _r.size.h - res.close_brace.size().h));
+    _objs.size() == 0 ? 0 : _size.h - res.close_brace.size().h));
 
 //  renderer.renderRect(_r);
   

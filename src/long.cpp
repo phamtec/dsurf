@@ -26,11 +26,10 @@ Long::Long(long value) {
   
 }
 
-Size Long::layout(Resources &res, const Point &origin) {
+Size Long::layout(Resources &res) {
 
-  _r.origin = origin;
-  _r.size = _value.size();
-  return _r.size;
+  _size = _value.size();
+  return _size;
   
 }
 
@@ -42,11 +41,11 @@ void Long::build(Renderer &renderer, Font &font) {
 
 }
 
-void Long::render(Renderer &renderer, Resources &res) {
+void Long::render(Renderer &renderer, Resources &res, const Point &origin) {
 
-  super::render(renderer, res);
+  super::render(renderer, res, origin);
   
-  _value.render(renderer, _r.origin);
+  _value.render(renderer, origin);
   
 //  renderer.renderRect(_r);
   

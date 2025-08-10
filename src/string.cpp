@@ -14,11 +14,10 @@
 #include "spatial.hpp"
 #include "renderer.hpp"
 
-Size String::layout(Resources &res, const Point &origin) {
+Size String::layout(Resources &res) {
 
-  _r.origin = origin;
-  _r.size = _value.size();
-  return _r.size;
+  _size = _value.size();
+  return _size;
   
 }
 
@@ -30,12 +29,12 @@ void String::build(Renderer &renderer, Font &font) {
 
 }
 
-void String::render(Renderer &renderer, Resources &res) {
+void String::render(Renderer &renderer, Resources &res, const Point &origin) {
 
-  super::render(renderer, res);
+  super::render(renderer, res, origin);
   
-  _value.render(renderer, _r.origin);
+  _value.render(renderer, origin);
 
-  renderer.renderRect(_r);
+//  renderer.renderRect(_r);
 
 }

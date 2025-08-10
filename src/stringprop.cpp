@@ -14,12 +14,11 @@
 #include "spatial.hpp"
 #include "renderer.hpp"
 
-Size StringProp::layout(Resources &res, const Point &origin) {
+Size StringProp::layout(Resources &res) {
 
-  _r.origin = origin;
-  _r.size = _value.size();
-  _r.size.w += _name.size().w + Sizes::name_var_padding;
-  return _r.size;
+  _size = _value.size();
+  _size.w += _name.size().w + Sizes::name_var_padding;
+  return _size;
   
 }
 
@@ -31,11 +30,11 @@ void StringProp::build(Renderer &renderer, Font &font) {
 
 }
 
-void StringProp::render(Renderer &renderer, Resources &res) {
+void StringProp::render(Renderer &renderer, Resources &res, const Point &origin) {
 
-  super::render(renderer, res);
+  super::render(renderer, res, origin);
   
-  _value.render(renderer, Point(_r.origin.x + _name.size().w + Sizes::name_var_padding, _r.origin.y));
+  _value.render(renderer, Point(origin.x + _name.size().w + Sizes::name_var_padding, origin.y));
   
 //  renderer.renderRect(_r);
 

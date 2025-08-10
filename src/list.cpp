@@ -19,13 +19,12 @@
 
 using namespace std;
 
-Size List::layout(Resources &res, const Point &origin) {
+Size List::layout(Resources &res) {
 
-  _r.origin = origin;
-  _r.size = List::layoutVector(res, origin, res.open_bracket.size(), _objs);
+  _size = List::layoutVector(res, res.open_bracket.size(), _objs);
   Size s = res.close_bracket.size();
-  _r.size += _objs.size() == 0 ? Size(s.w, 0) : s;
-  return _r.size;
+  _size += _objs.size() == 0 ? Size(s.w, 0) : s;
+  return _size;
   
 }
 
@@ -37,27 +36,27 @@ void List::build(Renderer &renderer, Font &font) {
   
 }
 
-void List::render(Renderer &renderer, Resources &res) {
+void List::render(Renderer &renderer, Resources &res, const Point &origin) {
 
-  super::render(renderer, res);
+  super::render(renderer, res, origin);
   
-  res.open_bracket.render(renderer, _r.origin);
-  renderVector(renderer, res, _objs);
-  res.close_bracket.render(renderer, Spatial::calcOriginOffset(_r,
+  res.open_bracket.render(renderer, origin);
+  renderVector(renderer, res, origin + Point(Sizes::group_indent, res.open_bracket.size().h), _objs);
+  res.close_bracket.render(renderer, origin + Point(
     _objs.size() == 0 ? res.open_bracket.size().w + Sizes::text_padding : 0, 
-    _objs.size() == 0 ? 0 : _r.size.h - res.open_bracket.size().h));
+    _objs.size() == 0 ? 0 : _size.h - res.open_bracket.size().h));
 
 //  renderer.renderRect(_r);
 
 }
 
-Size List::layoutVector(Resources &res, const Point &origin, const Size &size, std::vector<std::unique_ptr<Box> > &list) {
+Size List::layoutVector(Resources &res, const Size &size, std::vector<std::unique_ptr<Box> > &list) {
 
-  Point p = origin;
+  Point p(0, 0);
   Size newsize = size;
   p.y += size.h;
   for (auto&& i: list) {
-    Size s = i->layout(res, Point(p.x + Sizes::group_indent, p.y));
+    Size s = i->layout(res);
     newsize.h += s.h;
     p.y += s.h;
     if ((Sizes::group_indent + s.w) > newsize.w) {
@@ -76,10 +75,12 @@ void List::buildVector(Renderer &renderer, Font &font, std::vector<std::unique_p
 
 }
 
-void List::renderVector(Renderer &renderer, Resources &res, std::vector<std::unique_ptr<Box> > &list) {
+void List::renderVector(Renderer &renderer, Resources &res, const Point &origin, std::vector<std::unique_ptr<Box> > &list) {
 
+  float y = origin.y;
   for (auto&& i: list) {
-    i->render(renderer, res);
+    i->render(renderer, res, Point(origin.x, y));
+    y += i->_size.h;
   }
 
 }

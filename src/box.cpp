@@ -21,7 +21,7 @@ void Box::build(Renderer &renderer, Font &font) {
 
 }
 
-void Box::render(Renderer &renderer, Resources &pool) {
+void Box::render(Renderer &renderer, Resources &res, const Point &origin) {
 
 //  renderer.renderRect(_r);
   

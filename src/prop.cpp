@@ -20,10 +20,10 @@ void Prop::build(Renderer &renderer, Font &font) {
 
 }
 
-void Prop::render(Renderer &renderer, Resources &res) {
+void Prop::render(Renderer &renderer, Resources &res, const Point &origin) {
 
-  super::render(renderer, res);
+  super::render(renderer, res, origin);
   
-  _name.render(renderer, _r.origin);
+  _name.render(renderer, origin);
   
 }

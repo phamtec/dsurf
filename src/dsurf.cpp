@@ -72,15 +72,15 @@ int main(int argc, char *argv[])
     return 1;
   }
   
-  Resources pool;
+  Resources res;
   
   // allow all objects to build.
-  pool.build(renderer, font);
+  res.build(renderer, font);
   root->build(renderer, font);
 
   // lay it all out.
-  root->layout(pool, { .x = 0, .y = 0});
-  
+  root->layout(res);
+
   bool done = false;
   while (!done) {
   
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     }
 
     renderer.prepare();
-    root->render(renderer, pool);
+    root->render(renderer, res, { .x = 0, .y = 0 });
     renderer.present();
   }
   

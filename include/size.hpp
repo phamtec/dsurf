@@ -21,6 +21,7 @@ class Point;
 class Size {
 
 public:
+  Size(): w(0), h(0) {}
   Size(float w1, float h1): w(w1), h(h1) {};
   Size(const Point &point);
   
