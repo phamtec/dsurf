@@ -48,6 +48,6 @@ void Dict::render(Renderer &renderer, Resources &res, const Point &origin) {
     (_objs.size() == 0 ? res.open_brace.size().w + Sizes::text_padding : 0), 
     (_objs.size() == 0 ? 0 : _size.h - res.close_brace.size().h)));
 
-//  renderer.renderRect(_r);
+//  renderer.renderRect(Rect(origin, _size));
 
 }

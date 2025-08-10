@@ -79,8 +79,9 @@ int main(int argc, char *argv[])
   root->build(renderer, font);
 
   // lay it all out.
-  root->layout(res);
-
+  Size size = root->layout(res);
+//  cout << size << endl;
+  
   bool done = false;
   while (!done) {
   
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
     }
 
     renderer.prepare();
-    root->render(renderer, res, { .x = 0, .y = 0 });
+    root->render(renderer, res, renderer.rootPoint(size));
     renderer.present();
   }
   

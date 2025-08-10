@@ -39,6 +39,8 @@ public:
   void renderTexture(SDL_Texture *texture, const Rect &rect);
   void renderRect(const Rect &rect);
   
+  Point rootPoint(const Size &size);
+  
 private:
   
   int _width, _height;

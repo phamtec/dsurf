@@ -97,6 +97,13 @@ bool Renderer::init() {
    
 }
 
+Point Renderer::rootPoint(const Size &size) {
+//   cout << _width << endl;
+//   cout << size << endl;
+//   cout << _scale << endl;
+  return { .x = 0, .y = 0 };
+}
+
 void Renderer::prepare() {
 
   SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
