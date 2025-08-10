@@ -20,12 +20,13 @@
 
 using namespace std;
 
-float ListProp::layout(Resources &res, const SDL_FPoint &origin) {
+float ListProp::layout(Resources &res, const Point &origin) {
 
-  Spatial::setOrigin(&_r, origin);
-  Spatial::setDimensions(&_r, 100, List::layoutVector(res, origin, _name.height(), _objs) + 
-    (_objs.size() > 0 ? res.close_bracket.height() : 0)); // closed bracket if not empty
-  return _r.h;
+  _r.origin = origin;
+  _r.size = Size(100, List::layoutVector(res, origin, _name.size().h, _objs) + 
+    (_objs.size() > 0 ? res.close_bracket.size().h : 0)); // closed bracket if not empty
+  return _r.size.h;
+
 }
 
 void ListProp::build(Renderer &renderer, Font &font) {
@@ -40,10 +41,10 @@ void ListProp::render(Renderer &renderer, Resources &res) {
 
   super::render(renderer, res);
   
-  res.open_bracket.render(renderer, Spatial::makePoint(_r.x + _name.width() + Sizes::text_padding, _r.y));
+  res.open_bracket.render(renderer, Point(_r.origin.x + _name.size().w + Sizes::text_padding, _r.origin.y));
   List::renderVector(renderer, res, _objs);
   res.close_bracket.render(renderer, Spatial::calcOriginOffset(_r,
-    _objs.size() == 0 ? _name.width() + res.open_bracket.width() + (Sizes::text_padding * 2) : 0, 
-    _objs.size() == 0 ? 0 : _r.h - res.close_bracket.height()));
+    _objs.size() == 0 ? _name.size().w + res.open_bracket.size().w + (Sizes::text_padding * 2) : 0, 
+    _objs.size() == 0 ? 0 : _r.size.h - res.close_bracket.size().h));
   
 }

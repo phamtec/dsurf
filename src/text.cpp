@@ -43,37 +43,17 @@ void Text::build(Renderer &renderer, Font &font) {
 
 }
 
-void Text::render(Renderer &renderer, const SDL_FPoint &origin) {
+void Text::render(Renderer &renderer, const Point &origin) {
 
   if (!_surface) {
     SDL_Log("need to build first!");
     return;
   }
   
-  SDL_FRect r;
-  Spatial::setOrigin(&r, origin);
-  Spatial::setDimensions(&r, _surface->w, _surface->h);
-
-  renderer.renderTexture(_texture, r);
+  renderer.renderTexture(_texture, Rect(origin, Size(_surface->w, _surface->h)));
   
 }
 
-float Text::width() {
-
-  if (!_surface) {
-    SDL_Log("need to build first!");
-    return 0;
-  }
-  return _surface->w;
-  
-}
-
-float Text::height() {
-
-  if (!_surface) {
-    SDL_Log("need to build first!");
-    return 0;
-  }
-  return _surface->h;
-
+Size Text::size() {
+  return Size(_surface->w, _surface->h);
 }

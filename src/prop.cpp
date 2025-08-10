@@ -24,6 +24,6 @@ void Prop::render(Renderer &renderer, Resources &res) {
 
   super::render(renderer, res);
   
-  _name.render(renderer, Spatial::origin(_r));
+  _name.render(renderer, _r.origin);
   
 }

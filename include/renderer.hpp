@@ -14,14 +14,15 @@
 #ifndef H_renderer
 #define H_renderer
 
-#include <SDL3/SDL_rect.h>
+#include "point.hpp"
+#include "size.hpp"
 
 class SDL_Window;
 class SDL_Renderer;
 class TTF_TextEngine;
-class SDL_FRect;
 class SDL_Texture;
 class SDL_Surface;
+class Rect;
 
 class Renderer {
 
@@ -35,8 +36,8 @@ public:
   bool processEvents();
 
   SDL_Texture *createTexture(SDL_Surface *surface);
-  void renderTexture(SDL_Texture *texture, const SDL_FRect &rect);
-  void renderRect(const SDL_FRect &rect);
+  void renderTexture(SDL_Texture *texture, const Rect &rect);
+  void renderRect(const Rect &rect);
   
 private:
   
@@ -46,12 +47,9 @@ private:
   SDL_Renderer *_renderer;
   float _scale;
   bool _mousedown;
-  SDL_FPoint _last;
-  SDL_FPoint _offs;
-//   float _lastx;
-//   float _lasty;
-//   float _offx;
-//   float _offy;
+  Point _last;
+  Size _offs;
+
 };
 
 #endif // H_renderer

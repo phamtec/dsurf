@@ -51,13 +51,15 @@ set(SRC
   src/prop.cpp
   src/box.cpp
   src/spatial.cpp
+  src/point.cpp
+  src/size.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC})
     target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp)
 
 # Tests
-add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp)
+add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp src/size.cpp)
   target_link_libraries(TestSpatial ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestSpatial TestSpatial)

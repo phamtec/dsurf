@@ -19,11 +19,11 @@
 
 using namespace std;
 
-float List::layout(Resources &res, const SDL_FPoint &origin) {
+float List::layout(Resources &res, const Point &origin) {
 
-  Spatial::setOrigin(&_r, origin);
-  Spatial::setDimensions(&_r, 100, List::layoutVector(res, origin, res.open_bracket.height(), _objs) + res.close_bracket.height());
-  return _r.h;
+  _r.origin = origin;
+  _r.size = Size(100, List::layoutVector(res, origin, res.open_bracket.size().h, _objs) + res.close_bracket.size().h);
+  return _r.size.h;
   
 }
 
@@ -39,20 +39,20 @@ void List::render(Renderer &renderer, Resources &res) {
 
   super::render(renderer, res);
   
-  res.open_bracket.render(renderer, Spatial::origin(_r));
+  res.open_bracket.render(renderer, _r.origin);
   renderVector(renderer, res, _objs);
   res.close_bracket.render(renderer, Spatial::calcOriginOffset(_r,
-    _objs.size() == 0 ? res.open_bracket.width() + Sizes::text_padding : 0, 
-    _objs.size() == 0 ? 0 : _r.h - res.open_bracket.height()));
+    _objs.size() == 0 ? res.open_bracket.size().w + Sizes::text_padding : 0, 
+    _objs.size() == 0 ? 0 : _r.size.h - res.open_bracket.size().h));
 
 }
 
-float List::layoutVector(Resources &res, const SDL_FPoint &origin, float height, std::vector<std::unique_ptr<Box> > &list) {
+float List::layoutVector(Resources &res, const Point &origin, float height, std::vector<std::unique_ptr<Box> > &list) {
 
-  SDL_FPoint p = origin;
+  Point p = origin;
   p.y += height;
   for (auto&& i: list) {
-    long h = i->layout(res, Spatial::makePoint(p.x + Sizes::group_indent, p.y));
+    long h = i->layout(res, Point(p.x + Sizes::group_indent, p.y));
     height += h;
     p.y += h;
   }

@@ -1,5 +1,5 @@
 /*
-  spatial.cpp
+  size.cpp
   
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 10-Aug-2025
@@ -9,13 +9,8 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "spatial.hpp"
+#include "size.hpp"
+#include "point.hpp"
 
-void Spatial::calcPan(const Point &p, Point *last, Size *offs) {
-
-  Point d = *last;
-  d -= p;
-  *last = p;
-  *offs += Size(d);
-  
+Size::Size(const Point &point): w(point.x), h(point.y) {
 }

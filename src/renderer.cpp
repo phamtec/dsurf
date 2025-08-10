@@ -21,7 +21,7 @@
 using namespace std;
 
 Renderer::Renderer(): _width(0.0l), _height(0.0l), 
-  _scale(0.3l), _offs(Spatial::makePoint(0, 0)),
+  _scale(0.3l), _offs(0, 0),
   _mousedown(false), 
   _window(0), _renderer(0), _engine(0) {
 
@@ -123,7 +123,7 @@ bool Renderer::processEvents() {
       case SDL_EVENT_MOUSE_BUTTON_DOWN:
 //        cout << "click: " << event.button.x << ", " << event.button.y << endl;
         _mousedown = true;
-        _last = Spatial::makePoint(event.button.x, event.button.y);
+        _last = Point(event.button.x, event.button.y);
         break;
 
       case SDL_EVENT_MOUSE_BUTTON_UP:
@@ -134,7 +134,7 @@ bool Renderer::processEvents() {
       case SDL_EVENT_MOUSE_MOTION:
 //        cout << "move: " << event.motion.x << ", " << event.motion.y << endl;
         if (_mousedown) {
-          Spatial::calcPan(Spatial::makePoint(event.motion.x, event.motion.y), &_last, &_offs);
+          Spatial::calcPan(Point(event.motion.x, event.motion.y), &_last, &_offs);
 //          cout << "drag: " << dx << ", " << dy << endl;
         }
         break;
@@ -170,24 +170,26 @@ SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {
   
 }
 
-void Renderer::renderTexture(SDL_Texture *texture, const SDL_FRect &rect) {
+void Renderer::renderTexture(SDL_Texture *texture, const Rect &rect) {
 
-  SDL_FRect r = rect;
-  Spatial::subtractOrigin(&r, _offs);
+  Rect r = rect;
+  r -= _offs;
 
-  SDL_RenderTexture(_renderer, texture, NULL, &r);
+  SDL_FRect sr = r.srect();
+  SDL_RenderTexture(_renderer, texture, NULL, &sr);
 
 }
 
-void Renderer::renderRect(const SDL_FRect &rect) {
+void Renderer::renderRect(const Rect &rect) {
 
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
 
-  SDL_FRect r = rect;
-  Spatial::subtractOrigin(&r, _offs);
-  Spatial::inset(&r, 1);
+  Rect r = rect;
+  r -= _offs;
+  r -= 1; // inset by 1
   
 //  SDL_RenderFillRect(_renderer, &r); // Fill the rectangle with black
-  SDL_RenderRect(_renderer, &r);
+  SDL_FRect sr = r.srect();
+  SDL_RenderRect(_renderer, &sr);
 
 }

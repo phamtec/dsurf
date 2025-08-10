@@ -1,0 +1,42 @@
+/*
+  size.hpp
+  
+  Author: Paul Hamilton (phamtec@mac.com)
+  Date: 10-Aug-2025
+    
+  A dimension class.
+  
+  Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
+ 
+  https://github.com/phamtec/dsurf
+*/
+
+#ifndef H_size
+#define H_size
+
+class Point;
+
+class Size {
+
+public:
+  Size(float w1, float h1): w(w1), h(h1) {};
+  Size(const Point &point);
+  
+  float w;
+  float h;
+  
+  inline Size& operator-=(float offset) {
+    w -= offset;
+    h -= offset;
+    return *this;
+  }
+
+  inline Size& operator+=(const Size &other) {
+    w += other.w;
+    h += other.h;
+    return *this;
+  }
+
+};
+
+#endif // H_size

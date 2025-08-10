@@ -15,16 +15,17 @@
 #define H_text
 
 #include "colours.hpp"
+#include "size.hpp"
 
 #include <string>
 #include <SDL3/SDL_pixels.h>
-#include <SDL3/SDL_rect.h>
 
 class SDL_Surface;
 class SDL_Texture;
 
 class Renderer;
 class Font;
+class Point;
 
 class Text {
 
@@ -41,12 +42,12 @@ public:
   virtual void build(Renderer &renderer, Font &font);
     // build the texture and surface ready to render.
     
-  virtual void render(Renderer &renderer, const SDL_FPoint &origin);
+  virtual void render(Renderer &renderer, const Point &origin);
     // render the text after first initialising it at x, y
     
-  float width();
-  float height();
-  
+  Size size();
+    // return the size of the text object.
+      
 private:
 
   std::string _str;

@@ -29,11 +29,12 @@
 #ifndef H_box
 #define H_box
 
-#include <SDL3/SDL_rect.h>
+#include "rect.hpp"
 
 class Renderer;
 class Font;
 class Resources;
+class Point;
 
 class Box {
 
@@ -44,14 +45,14 @@ public:
   virtual void build(Renderer &renderer, Font &font);
     // build the texture and surface ready to render.
 
-  virtual float layout(Resources &res, const SDL_FPoint &origin) = 0;
+  virtual float layout(Resources &res, const Point &origin) = 0;
     // layout the object.
 
   virtual void render(Renderer &renderer, Resources &pool);
     // render this object to the screen.
 
 protected:
-  SDL_FRect _r;
+  Rect _r;
 };
 
 #endif // H_box
