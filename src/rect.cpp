@@ -1,5 +1,5 @@
 /*
-  size.cpp
+  rect.cpp
   
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 10-Aug-2025
@@ -9,15 +9,11 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "size.hpp"
-#include "point.hpp"
+#include "rect.hpp"
 
-Size::Size(const Point &point): w(point.x), h(point.y) {
-}
+std::ostream& operator <<(std::ostream& stream, const Rect& rect) {
 
-std::ostream& operator <<(std::ostream& stream, const Size& size) {
-
-  stream << size.w << ", " << size.h;
+  stream << rect.origin << ", " << rect.size;
   return stream;
   
 }

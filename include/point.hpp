@@ -14,6 +14,8 @@
 #ifndef H_point
 #define H_point
 
+#include <iostream>
+
 class Size;
 
 class Point {
@@ -34,6 +36,8 @@ public:
   }
   
   Point& operator+=(const Size &size);
+  
+  friend std::ostream& operator<< (std::ostream& stream, const Point& matrix);
   
 };
 

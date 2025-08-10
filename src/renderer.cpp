@@ -188,7 +188,6 @@ void Renderer::renderRect(const Rect &rect) {
   r -= _offs;
   r -= 1; // inset by 1
   
-//  SDL_RenderFillRect(_renderer, &r); // Fill the rectangle with black
   SDL_FRect sr = r.srect();
   SDL_RenderRect(_renderer, &sr);
 

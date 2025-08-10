@@ -12,12 +12,14 @@
 #include "stringprop.hpp"
 #include "sizes.hpp"
 #include "spatial.hpp"
+#include "renderer.hpp"
 
-float StringProp::layout(Resources &res, const Point &origin) {
+Size StringProp::layout(Resources &res, const Point &origin) {
 
   _r.origin = origin;
-  _r.size = Size(100, _value.size().h);
-  return _r.size.h;
+  _r.size = _value.size();
+  _r.size.w += _name.size().w + Sizes::name_var_padding;
+  return _r.size;
   
 }
 
@@ -35,4 +37,6 @@ void StringProp::render(Renderer &renderer, Resources &res) {
   
   _value.render(renderer, Point(_r.origin.x + _name.size().w + Sizes::name_var_padding, _r.origin.y));
   
+//  renderer.renderRect(_r);
+
 }

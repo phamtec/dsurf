@@ -14,6 +14,8 @@
 #ifndef H_size
 #define H_size
 
+#include <iostream>
+
 class Point;
 
 class Size {
@@ -36,7 +38,12 @@ public:
     h += other.h;
     return *this;
   }
+  inline Size operator+(const Size& other) const {
+    return Size(w + other.w, h + other.h);
+  }
 
+  friend std::ostream& operator<< (std::ostream& stream, const Size& matrix);
+  
 };
 
 #endif // H_size

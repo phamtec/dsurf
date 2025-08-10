@@ -20,12 +20,14 @@
 
 using namespace std;
 
-float ListProp::layout(Resources &res, const Point &origin) {
+Size ListProp::layout(Resources &res, const Point &origin) {
 
   _r.origin = origin;
-  _r.size = Size(100, List::layoutVector(res, origin, _name.size().h, _objs) + 
-    (_objs.size() > 0 ? res.close_bracket.size().h : 0)); // closed bracket if not empty
-  return _r.size.h;
+  _r.size = List::layoutVector(res, origin, _name.size() + Size(res.open_bracket.size().w + Sizes::text_padding, 0), _objs);
+  Size s = res.close_bracket.size();
+  _r.size += _objs.size() == 0 ? Size(s.w, 0) : Size(0, s.h);
+//  _r.size.h += (_objs.size() > 0 ? res.close_bracket.size().h : 0); // closed bracket if not empty
+  return _r.size;
 
 }
 
@@ -47,4 +49,6 @@ void ListProp::render(Renderer &renderer, Resources &res) {
     _objs.size() == 0 ? _name.size().w + res.open_bracket.size().w + (Sizes::text_padding * 2) : 0, 
     _objs.size() == 0 ? 0 : _r.size.h - res.close_bracket.size().h));
   
+//  renderer.renderRect(_r);
+
 }

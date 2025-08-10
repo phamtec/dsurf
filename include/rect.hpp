@@ -15,6 +15,7 @@
 #define H_rect
 
 #include <SDL3/SDL_rect.h>
+#include <iostream>
 
 #include "point.hpp"
 #include "size.hpp"
@@ -44,6 +45,8 @@ public:
     size -= offset * 2;
     return *this;
   }
+
+  friend std::ostream& operator<< (std::ostream& stream, const Rect& matrix);
   
 };
 

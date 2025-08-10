@@ -30,7 +30,7 @@ public:
 
   // Box
   virtual void build(Renderer &renderer, Font &font);
-  virtual float layout(Resources &res, const Point &origin);
+  virtual Size layout(Resources &res, const Point &origin);
   virtual void render(Renderer &renderer, Resources &pool);
 
 private:

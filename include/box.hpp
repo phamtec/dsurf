@@ -45,7 +45,7 @@ public:
   virtual void build(Renderer &renderer, Font &font);
     // build the texture and surface ready to render.
 
-  virtual float layout(Resources &res, const Point &origin) = 0;
+  virtual Size layout(Resources &res, const Point &origin) = 0;
     // layout the object.
 
   virtual void render(Renderer &renderer, Resources &pool);

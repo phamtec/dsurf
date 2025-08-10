@@ -20,11 +20,14 @@
 
 using namespace std;
 
-float Dict::layout(Resources &res, const Point &origin) {
+Size Dict::layout(Resources &res, const Point &origin) {
 
   _r.origin = origin;
-  _r.size = Size(100, List::layoutVector(res, origin, res.open_brace.size().h, _objs) + res.close_brace.size().h);
-  return _r.size.h;
+  _r.size = List::layoutVector(res, origin, res.open_brace.size(), _objs);
+  Size s = res.close_brace.size();
+  _r.size += _objs.size() == 0 ? Size(s.w, 0) : s;
+//  cout << _r << endl;
+  return _r.size;
   
 }
 

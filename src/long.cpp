@@ -12,6 +12,7 @@
 #include "long.hpp"
 #include "sizes.hpp"
 #include "spatial.hpp"
+#include "renderer.hpp"
 
 #include <sstream>
 
@@ -25,11 +26,11 @@ Long::Long(long value) {
   
 }
 
-float Long::layout(Resources &res, const Point &origin) {
+Size Long::layout(Resources &res, const Point &origin) {
 
   _r.origin = origin;
-  _r.size = Size(100, _value.size().h);
-  return _r.size.h;
+  _r.size = _value.size();
+  return _r.size;
   
 }
 
@@ -46,5 +47,7 @@ void Long::render(Renderer &renderer, Resources &res) {
   super::render(renderer, res);
   
   _value.render(renderer, _r.origin);
+  
+//  renderer.renderRect(_r);
   
 }

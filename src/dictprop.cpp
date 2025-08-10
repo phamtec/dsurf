@@ -20,13 +20,13 @@
 
 using namespace std;
 
-float DictProp::layout(Resources &res, const Point &origin) {
+Size DictProp::layout(Resources &res, const Point &origin) {
 
   _r.origin = origin;
-  _r.size = Size(100, List::layoutVector(res, origin, 
-    _name.size().h, _objs) + 
-    (_objs.size() > 0 ? res.close_brace.size().h : 0));
-  return _r.size.h;
+  _r.size = List::layoutVector(res, origin, _name.size() + Size(res.open_brace.size().w + Sizes::text_padding, 0), _objs);
+  Size s = res.close_brace.size();
+  _r.size += _objs.size() == 0 ? Size(s.w, 0) : Size(0, s.h);
+  return _r.size;
 
 }
 
@@ -48,4 +48,6 @@ void DictProp::render(Renderer &renderer, Resources &res) {
     _objs.size() == 0 ? _name.size().w + res.open_brace.size().w + (Sizes::text_padding * 2) : 0, 
     _objs.size() == 0 ? 0 : _r.size.h - res.close_brace.size().h));
 
+//  renderer.renderRect(_r);
+  
 }

@@ -17,3 +17,10 @@ Point& Point::operator+=(const Size &size) {
   y += size.h;
   return *this;
 }
+
+std::ostream& operator <<(std::ostream& stream, const Point& point) {
+
+  stream << point.x << ", " << point.y;
+  return stream;
+  
+}
