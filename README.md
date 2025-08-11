@@ -144,3 +144,13 @@ Walk a JSON file building a simple layout.
 - lot's of better layout work.
 - panning and zooming.
 
+### 10-Aug-2025
+
+- Work to center while zooming.
+
+### 11-Aug-2025
+
+- First go at centering while zooming.
+
+
+
