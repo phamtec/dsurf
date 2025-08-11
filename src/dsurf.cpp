@@ -80,7 +80,10 @@ int main(int argc, char *argv[])
 
   // lay it all out.
   Size size = root->layout(res);
-//  cout << size << endl;
+//  cout << "osize " << size << endl;
+  
+  // center it.  
+  renderer.center(size);
   
   bool done = false;
   while (!done) {
@@ -90,7 +93,7 @@ int main(int argc, char *argv[])
     }
 
     renderer.prepare();
-    root->render(renderer, res, renderer.rootPoint(size));
+    root->render(renderer, res, renderer.rootPoint());
     renderer.present();
   }
   

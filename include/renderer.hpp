@@ -42,12 +42,13 @@ public:
   void renderRect(const Rect &rect);
   void renderFilledRect(const Rect &rect, const SDL_Color &color);
   
-  Point rootPoint(const Size &size);
+  void center(const Size &size);
+  Point rootPoint();
   bool textTooSmall(const Rect &rect);
   
 private:
   
-  int _width, _height;
+  Size _size;
   SDL_Window *_window;
   TTF_TextEngine *_engine;
   SDL_Renderer *_renderer;
@@ -56,6 +57,7 @@ private:
   Point _last;
   Size _offs;
   Point _mouse;
+  Size _osize;
   
   void debugOffs();
   void debugScale();

@@ -26,11 +26,12 @@ public:
     // calculate the pan. Takes the new point of a pan
     // last point of the pan, the offset to pan
     
-  static Point center(float width, float height, const Size &size, float scale);
-    // given a window width and height, center the object of size
-    // qssuming the drawing scale;
+  static Point center(const Size &wsize, const Size &size, float scale);
+    // given a window size, center the object of size
+    // qssuming the drawing scale
+    // returns of the offset to draw the object at.
     
-  static void scaleAndCenter(int width, int height, const Point &mouse, float amount, float prescale, float *scale, Size *offset);
+  static void scaleAndCenter(const Size &wsize, const Size &osize, const Point &mouse, float amount, float prescale, float *scale, Size *offset);
     // scale, but try to keep the object centered on the cursor while scaling.
     
 };

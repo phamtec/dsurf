@@ -61,6 +61,15 @@ public:
   inline Size operator+(const Size& other) const {
     return Size(w + other.w, h + other.h);
   }
+  inline Size operator-(const Size& other) const {
+    return Size(w - other.w, h - other.h);
+  }
+  inline Size operator*(float size) const {
+    return Size(w * size, h * size);
+  }
+  inline Size operator/(float size) const {
+    return Size(w / size, h / size);
+  }
 
   friend std::ostream& operator<< (std::ostream& stream, const Size& matrix);
   

@@ -21,7 +21,7 @@
 
 using namespace std;
 
-Renderer::Renderer(): _width(0.0l), _height(0.0l), 
+Renderer::Renderer(): 
   _scale(0.3), _offs(0, 0),
 //  _scale(1.0), _offs(0, 0),
 //  _scale(1.5), _offs(-64.7, -68),
@@ -46,8 +46,8 @@ Renderer::Renderer(): _width(0.0l), _height(0.0l),
     return;
   }
   
-  _width = dm->w - 20;
-  _height = dm->h - 120;
+  _size.w = dm->w - 20;
+  _size.h = dm->h - 120;
   
 }
 
@@ -76,7 +76,7 @@ bool Renderer::init() {
   }
 
   /* Create a window */
-  _window = SDL_CreateWindow("dsurf", _width, _height, 0);
+  _window = SDL_CreateWindow("dsurf", _size.w, _size.h, 0);
   if (!_window) {
     SDL_Log("SDL_CreateWindow() failed: %s", SDL_GetError());
     return false;
@@ -100,10 +100,18 @@ bool Renderer::init() {
    
 }
 
-Point Renderer::rootPoint(const Size &size) {
+Point Renderer::rootPoint() {
 
-  return Spatial::center(_width, _height, size, _scale);
+  return Point(0.0, 0.0);
 
+}
+
+void Renderer::center(const Size &size) {
+
+  _osize = size;
+  _offs = Spatial::center(_size, size, _scale);
+  cout << _offs << endl;
+  
 }
 
 void Renderer::prepare() {
@@ -120,7 +128,7 @@ void Renderer::debugOffs() {
   SDL_SetRenderScale(_renderer, 1.0, 1.0);
   stringstream ss;
   ss << "offs: " << _offs << endl;
-  SDL_RenderDebugText(_renderer, _width - 300, 10, ss.str().c_str());
+  SDL_RenderDebugText(_renderer, _size.w - 300, 10, ss.str().c_str());
 
 }
 
@@ -130,7 +138,7 @@ void Renderer::debugScale() {
   SDL_SetRenderScale(_renderer, 1.0, 1.0);
   stringstream ss;
   ss << "scale: " << _scale << endl;
-  SDL_RenderDebugText(_renderer, _width - 300, 30, ss.str().c_str());
+  SDL_RenderDebugText(_renderer, _size.w - 300, 30, ss.str().c_str());
 
 }
 
@@ -140,7 +148,7 @@ void Renderer::debugMouse(const Point &p) {
   SDL_SetRenderScale(_renderer, 1.0, 1.0);
   stringstream ss;
   ss << "mouse: " << p.x << ", " << p.y << endl;
-  SDL_RenderDebugText(_renderer, _width - 300, 50, ss.str().c_str());
+  SDL_RenderDebugText(_renderer, _size.w - 300, 50, ss.str().c_str());
 
 }
 
@@ -149,8 +157,8 @@ void Renderer::debugSize() {
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
   SDL_SetRenderScale(_renderer, 1.0, 1.0);
   stringstream ss;
-  ss << "size: " << _width << ", " << _height << endl;
-  SDL_RenderDebugText(_renderer, _width - 300, 70, ss.str().c_str());
+  ss << "size: " << _size << endl;
+  SDL_RenderDebugText(_renderer, _size.w - 300, 70, ss.str().c_str());
 
 }
 
@@ -195,7 +203,8 @@ bool Renderer::processEvents() {
         break;
 
       case SDL_EVENT_MOUSE_WHEEL:
-        Spatial::scaleAndCenter(_width, _height, _mouse, event.wheel.y, 0.01l, &_scale, &_offs);
+//        cout << event.wheel.y << endl;
+        Spatial::scaleAndCenter(_size, _osize, _mouse, event.wheel.y, 0.01, &_scale, &_offs);
 //        cout << "mouse wheel: " << event.wheel.x << ", " << event.wheel.y << endl;
         break;
 
@@ -228,7 +237,7 @@ SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {
 void Renderer::renderTexture(SDL_Texture *texture, const Rect &rect) {
 
   Rect r = rect;
-  r -= _offs;
+  r += _offs;
 
   SDL_FRect sr = r.srect();
   SDL_RenderTexture(_renderer, texture, NULL, &sr);
@@ -240,7 +249,7 @@ void Renderer::renderRect(const Rect &rect) {
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
 
   Rect r = rect;
-  r -= _offs;
+  r += _offs;
   r -= 1; // inset by 1
   
   SDL_FRect sr = r.srect();
@@ -253,7 +262,7 @@ void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
   SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
   
   Rect r = rect;
-  r -= _offs;
+  r += _offs;
 
   SDL_FRect sr = r.srect();
   SDL_RenderFillRect(_renderer, &sr);

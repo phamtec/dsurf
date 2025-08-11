@@ -40,6 +40,12 @@ public:
     return *this;
   }
   
+  inline Rect& operator+=(Size size) {
+    origin.x += size.w;
+    origin.y += size.h;
+    return *this;
+  }
+  
   inline Rect& operator-=(float offset) {
     origin += offset;
     size -= offset * 2;
