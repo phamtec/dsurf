@@ -17,11 +17,14 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
 Renderer::Renderer(): _width(0.0l), _height(0.0l), 
-  _scale(0.3l), _offs(0, 0),
+  _scale(0.3), _offs(0, 0),
+//  _scale(1.0), _offs(0, 0),
+//  _scale(1.5), _offs(-64.7, -68),
   _mousedown(false), 
   _window(0), _renderer(0), _engine(0) {
 
@@ -111,8 +114,53 @@ void Renderer::prepare() {
 
 }
 
+void Renderer::debugOffs() {
+
+  SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
+  SDL_SetRenderScale(_renderer, 1.0, 1.0);
+  stringstream ss;
+  ss << "offs: " << _offs << endl;
+  SDL_RenderDebugText(_renderer, _width - 300, 10, ss.str().c_str());
+
+}
+
+void Renderer::debugScale() {
+
+  SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
+  SDL_SetRenderScale(_renderer, 1.0, 1.0);
+  stringstream ss;
+  ss << "scale: " << _scale << endl;
+  SDL_RenderDebugText(_renderer, _width - 300, 30, ss.str().c_str());
+
+}
+
+void Renderer::debugMouse(const Point &p) {
+
+  SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
+  SDL_SetRenderScale(_renderer, 1.0, 1.0);
+  stringstream ss;
+  ss << "mouse: " << p.x << ", " << p.y << endl;
+  SDL_RenderDebugText(_renderer, _width - 300, 50, ss.str().c_str());
+
+}
+
+void Renderer::debugSize() {
+
+  SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
+  SDL_SetRenderScale(_renderer, 1.0, 1.0);
+  stringstream ss;
+  ss << "size: " << _width << ", " << _height << endl;
+  SDL_RenderDebugText(_renderer, _width - 300, 70, ss.str().c_str());
+
+}
+
 void Renderer::present() {
 
+  debugOffs();
+  debugScale();
+  debugMouse(_mouse);
+  debugSize();
+  
   SDL_RenderPresent(_renderer);
 
 }
@@ -138,15 +186,16 @@ bool Renderer::processEvents() {
         break;
 
       case SDL_EVENT_MOUSE_MOTION:
+        _mouse = Point(event.motion.x, event.motion.y);
 //        cout << "move: " << event.motion.x << ", " << event.motion.y << endl;
         if (_mousedown) {
-          Spatial::calcPan(Point(event.motion.x, event.motion.y), &_last, &_offs);
+          Spatial::calcPan(Point(event.motion.x, event.motion.y), &_last, &_offs, _scale);
 //          cout << "drag: " << dx << ", " << dy << endl;
         }
         break;
 
       case SDL_EVENT_MOUSE_WHEEL:
-        _scale += event.wheel.y * 0.01l;
+        Spatial::scaleAndCenter(_width, _height, _mouse, event.wheel.y, 0.01l, &_scale, &_offs);
 //        cout << "mouse wheel: " << event.wheel.x << ", " << event.wheel.y << endl;
         break;
 

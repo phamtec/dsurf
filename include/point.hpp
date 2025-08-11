@@ -40,6 +40,8 @@ public:
   }
   
   Point& operator+=(const Size &size);
+  Point& operator-=(const Size &size);
+  Point& operator*=(float size);
   
   friend std::ostream& operator<< (std::ostream& stream, const Point& matrix);
   

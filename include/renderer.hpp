@@ -55,7 +55,13 @@ private:
   bool _mousedown;
   Point _last;
   Size _offs;
-
+  Point _mouse;
+  
+  void debugOffs();
+  void debugScale();
+  void debugMouse(const Point &p);
+  void debugSize();
+  
 };
 
 #endif // H_renderer

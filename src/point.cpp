@@ -18,6 +18,18 @@ Point& Point::operator+=(const Size &size) {
   return *this;
 }
 
+Point& Point::operator-=(const Size &size) {
+  x -= size.w;
+  y -= size.h;
+  return *this;
+}
+
+Point& Point::operator*=(float size) {
+  x *= size;
+  y *= size;
+  return *this;
+}
+
 std::ostream& operator <<(std::ostream& stream, const Point& point) {
 
   stream << point.x << ", " << point.y;
