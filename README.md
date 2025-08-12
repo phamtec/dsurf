@@ -125,7 +125,7 @@ You can read-only surf a JSON file. There are lot's of examples to try out.
 
 ## Current Focus
 
-Keeping the center correct while zooming.
+Nicer drawing of dicts and lists.
 
 ## Change Log
 
@@ -151,6 +151,10 @@ Walk a JSON file building a simple layout.
 ### 11-Aug-2025
 
 - First go at centering while zooming.
+
+### 12-Aug-2025
+
+- Get the math right for an object at an offset already.
 
 
 

@@ -46,18 +46,6 @@ public:
     return *this;
   }
   
-  inline Size& operator*=(float d) {
-    w *= d;
-    h *= d;
-    return *this;
-  }
-
-  inline Size& operator/=(float d) {
-    w /= d;
-    h /= d;
-    return *this;
-  }
-
   inline Size operator+(const Size& other) const {
     return Size(w + other.w, h + other.h);
   }

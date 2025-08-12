@@ -67,55 +67,31 @@ BOOST_AUTO_TEST_CASE( scaleAndCenter )
 {
   cout << "=== scaleAndCenter ===" << endl;
 
-  Size wsize(1492, 862);
   Size osize(936, 720);
+  
+  // values when test/list.json is shown.
   float scale = 0.3;
-//  cout << osize << endl;
-  Size offs = Spatial::center(wsize, osize, scale);
-  cout << offs << endl;
+  Size offs(2018.67, 1076.67);
+  Spatial::scaleAndCenter(osize, 0.5, 0.01, &scale, &offs);
   
-  test(wsize, osize, Point(), 0.5, 0.01, &scale, &offs);
-  cout << scale << endl;
-  cout << offs << endl;
+  BOOST_CHECK_CLOSE_FRACTION(scale, .305, 0.001);
+  BOOST_CHECK_CLOSE_FRACTION(offs.w, 1987.4, 0.1);
+  BOOST_CHECK_CLOSE_FRACTION(offs.h, 1052.6, 0.1);
   
-  Size newosize = osize + (osize * (scale - 0.3));
-  Size newoffs = Spatial::center(wsize, newosize, scale);
-  cout << newoffs << endl;
-
-//  BOOST_CHECK_CLOSE_FRACTION(scale, .305, 0.001);
-//  BOOST_CHECK_CLOSE_FRACTION(offs.w, 1025.8, 0.1);
-//  BOOST_CHECK_CLOSE_FRACTION(offs.h, 547.1, 0.1);
-
-//   c = Spatial::center(wsize, osize, 0.5);
-//   cout << c << endl;
-//   c = Spatial::center(wsize, osize, 0.3);
-//   cout << c << endl;
+  scale = 1.0;
+  offs = Size(0.0, 0.0);
+  Spatial::scaleAndCenter(osize, 0.5, 1.0, &scale, &offs);
   
-//   // values when test/list.json is shown.
-//   float scale = 0.3;
-//   Size offs(2018.67, 1076.67);
-//   Spatial::scaleAndCenter(swidth, sheight, Point(swidth / 2, sheight / 2), 0.5, 0.01, &scale, &offs);
-//   
-//   BOOST_CHECK_CLOSE_FRACTION(scale, .305, 0.001);
-//   BOOST_CHECK_CLOSE_FRACTION(offs.w, 1025.8, 0.1);
-//   BOOST_CHECK_CLOSE_FRACTION(offs.h, 547.1, 0.1);
+  BOOST_CHECK_EQUAL(scale, 1.5);
+  BOOST_CHECK_CLOSE_FRACTION(offs.w, -936, 0.1);
+  BOOST_CHECK_CLOSE_FRACTION(offs.h, -720, 0.1);
   
-//   scale = 1.0;
-//   offs = Size(0.0, 0.0);
-//   Spatial::scaleAndCenter(1492, 862, Point(390, 400), 0.5, 1.0, &scale, &offs);
-//   
-//   BOOST_CHECK_EQUAL(scale, 1.5);
-//   BOOST_CHECK_CLOSE_FRACTION(offs.w, -118.5, 0.1);
-//   BOOST_CHECK_CLOSE_FRACTION(offs.h, -10, 0.1);
-//   
-//   scale = 1.5;
-//   offs = Size(-64.7, -68);
-//   Spatial::scaleAndCenter(1492, 862, Point(311, 485), 0.5, 1.0, &scale, &offs);
-//   
-//   BOOST_CHECK_EQUAL(scale, 2);
-//   BOOST_CHECK_CLOSE_FRACTION(offs.w, -138, 0.1);
-// //  BOOST_CHECK_CLOSE_FRACTION(offs.h, -60, 0.1);
-// // TBD this is wrong
-//   BOOST_CHECK_CLOSE_FRACTION(offs.h, -29, 0.1);
+  scale = 1.5;
+  offs = Size(-64.7, -68);
+  Spatial::scaleAndCenter(osize, 0.5, 1.0, &scale, &offs);
+  
+  BOOST_CHECK_EQUAL(scale, 2);
+  BOOST_CHECK_CLOSE_FRACTION(offs.w, -688.7, 0.1);
+  BOOST_CHECK_CLOSE_FRACTION(offs.h, -548, 0.1);
   
 }

@@ -21,6 +21,9 @@ class Size;
 class Point {
 
 public:
+  Point(): x(0), y(0) {}
+  Point(float x1, float y1): x(x1), y(y1) {};
+  Point(const Size &size);
 
   float x;
   float y;
@@ -39,10 +42,18 @@ public:
     return Point(x + other.x, y + other.y);
   }
   
-  Point& operator+=(const Size &size);
-  Point& operator-=(const Size &size);
-  Point& operator*=(float size);
-  
+  inline Point operator-(float offset) const {
+    return Point(x - offset, y - offset);
+  }
+
+  inline Point operator+(float offset) const {
+    return Point(x + offset, y + offset);
+  }
+
+  inline Point operator*(float offset) const {
+    return Point(x * offset, y * offset);
+  }
+
   friend std::ostream& operator<< (std::ostream& stream, const Point& matrix);
   
 };

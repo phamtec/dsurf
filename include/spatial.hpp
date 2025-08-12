@@ -31,8 +31,8 @@ public:
     // qssuming the drawing scale
     // returns of the offset to draw the object at.
     
-  static void scaleAndCenter(const Size &wsize, const Size &osize, const Point &mouse, float amount, float prescale, float *scale, Size *offset);
-    // scale, but try to keep the object centered on the cursor while scaling.
+  static void scaleAndCenter(const Size &objsize, float amount, float prescale, float *scale, Size *offset);
+    // scale and recenter an object.
     
 };
 

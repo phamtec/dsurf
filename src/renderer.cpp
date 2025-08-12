@@ -110,7 +110,7 @@ void Renderer::center(const Size &size) {
 
   _osize = size;
   _offs = Spatial::center(_size, size, _scale);
-  cout << _offs << endl;
+//  cout << _offs << endl;
   
 }
 
@@ -204,7 +204,7 @@ bool Renderer::processEvents() {
 
       case SDL_EVENT_MOUSE_WHEEL:
 //        cout << event.wheel.y << endl;
-        Spatial::scaleAndCenter(_size, _osize, _mouse, event.wheel.y, 0.01, &_scale, &_offs);
+        Spatial::scaleAndCenter(_osize, event.wheel.y, 0.01, &_scale, &_offs);
 //        cout << "mouse wheel: " << event.wheel.x << ", " << event.wheel.y << endl;
         break;
 
@@ -236,8 +236,7 @@ SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {
 
 void Renderer::renderTexture(SDL_Texture *texture, const Rect &rect) {
 
-  Rect r = rect;
-  r += _offs;
+  Rect r = rect + _offs;
 
   SDL_FRect sr = r.srect();
   SDL_RenderTexture(_renderer, texture, NULL, &sr);
@@ -248,8 +247,7 @@ void Renderer::renderRect(const Rect &rect) {
 
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
 
-  Rect r = rect;
-  r += _offs;
+  Rect r = rect + _offs;
   r -= 1; // inset by 1
   
   SDL_FRect sr = r.srect();
@@ -261,8 +259,7 @@ void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
 
   SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
   
-  Rect r = rect;
-  r += _offs;
+  Rect r = rect + _offs;
 
   SDL_FRect sr = r.srect();
   SDL_RenderFillRect(_renderer, &sr);

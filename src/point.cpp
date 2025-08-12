@@ -12,22 +12,7 @@
 #include "point.hpp"
 #include "size.hpp"
 
-Point& Point::operator+=(const Size &size) {
-  x += size.w;
-  y += size.h;
-  return *this;
-}
-
-Point& Point::operator-=(const Size &size) {
-  x -= size.w;
-  y -= size.h;
-  return *this;
-}
-
-Point& Point::operator*=(float size) {
-  x *= size;
-  y *= size;
-  return *this;
+Point::Point(const Size &size): x(size.w), y(size.h) {
 }
 
 std::ostream& operator <<(std::ostream& stream, const Point& point) {

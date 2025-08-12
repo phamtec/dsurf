@@ -34,22 +34,14 @@ public:
     return { .x = origin.x, .y = origin.y, .w = size.w, .h = size.h };
   }
   
-  inline Rect& operator-=(Size size) {
-    origin.x -= size.w;
-    origin.y -= size.h;
-    return *this;
-  }
-  
-  inline Rect& operator+=(Size size) {
-    origin.x += size.w;
-    origin.y += size.h;
-    return *this;
-  }
-  
   inline Rect& operator-=(float offset) {
     origin += offset;
     size -= offset * 2;
     return *this;
+  }
+
+  inline Rect operator+(const Size& dist) const {
+    return Rect(origin + dist, size);
   }
 
   friend std::ostream& operator<< (std::ostream& stream, const Rect& matrix);
