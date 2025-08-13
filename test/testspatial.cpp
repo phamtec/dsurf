@@ -67,12 +67,26 @@ BOOST_AUTO_TEST_CASE( scaleAndCenter )
 {
   cout << "=== scaleAndCenter ===" << endl;
 
-  Size osize(936, 720);
+  Size wsize(500, 500);
+  Size osize(200, 200);
+  float scale = 1.0;
+  Size offs(150.0, 150.0);
+  Spatial::scaleAndCenter(wsize, osize, wsize / 2, 0.5, 1.0, &scale, &offs);
+  
+  BOOST_CHECK_CLOSE_FRACTION(scale, 1.5, 0.001);
+  
+  BOOST_CHECK_CLOSE_FRACTION(offs.w, 66.6, 0.1);
+  BOOST_CHECK_CLOSE_FRACTION(offs.h, 66.6, 0.1);
+
+  wsize = Size(1492, 862);
+  osize = Size(936, 720);
   
   // values when test/list.json is shown.
-  float scale = 0.3;
-  Size offs(2018.67, 1076.67);
-  Spatial::scaleAndCenter(osize, 0.5, 0.01, &scale, &offs);
+  scale = 0.3;
+  offs = Size(2018.67, 1076.67);
+  // mouse slightly off center
+  Point mouse =  (wsize / 2) - 10;
+  Spatial::scaleAndCenter(wsize, osize, mouse, 0.5, 0.01, &scale, &offs);
   
   BOOST_CHECK_CLOSE_FRACTION(scale, .305, 0.001);
   BOOST_CHECK_CLOSE_FRACTION(offs.w, 1987.4, 0.1);
@@ -80,18 +94,18 @@ BOOST_AUTO_TEST_CASE( scaleAndCenter )
   
   scale = 1.0;
   offs = Size(0.0, 0.0);
-  Spatial::scaleAndCenter(osize, 0.5, 1.0, &scale, &offs);
+  Spatial::scaleAndCenter(wsize, osize, mouse, 0.5, 1.0, &scale, &offs);
   
   BOOST_CHECK_EQUAL(scale, 1.5);
-  BOOST_CHECK_CLOSE_FRACTION(offs.w, -936, 0.1);
-  BOOST_CHECK_CLOSE_FRACTION(offs.h, -720, 0.1);
+  BOOST_CHECK_CLOSE_FRACTION(offs.w, -245.3, 0.1);
+  BOOST_CHECK_CLOSE_FRACTION(offs.h, -140.3, 0.1);
   
   scale = 1.5;
   offs = Size(-64.7, -68);
-  Spatial::scaleAndCenter(osize, 0.5, 1.0, &scale, &offs);
+  Spatial::scaleAndCenter(wsize, osize, mouse, 0.5, 1.0, &scale, &offs);
   
   BOOST_CHECK_EQUAL(scale, 2);
-  BOOST_CHECK_CLOSE_FRACTION(offs.w, -688.7, 0.1);
-  BOOST_CHECK_CLOSE_FRACTION(offs.h, -548, 0.1);
+  BOOST_CHECK_CLOSE_FRACTION(offs.w, -187.3, 0.1);
+  BOOST_CHECK_CLOSE_FRACTION(offs.h, -144.5, 0.1);
   
 }

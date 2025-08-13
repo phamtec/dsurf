@@ -30,23 +30,42 @@ Point Spatial::center(const Size &wsize, const Size &size, float scale) {
     
 }
 
-void Spatial::scaleAndCenter(const Size &objsize, float amount, float prescale, float *scale, Size *offset) {
+void Spatial::scaleAndCenter(const Size &wsize, const Size &objsize, const Size &mouse, float amount, float scalemult, float *scale, Size *offset) {
 
-//   cout << "scaleAndCenter " << amount << ", " << prescale << endl;
+//   cout << "scaleAndCenter wsize(" << wsize << "), objsize(" << objsize << "), mouse(" << mouse << ") amount " << amount << ", scalemult " << scalemult << endl;
 //   cout << "scale " << *scale << endl;
-//   cout << "offset " << *offset << endl;
+//   cout << "offset (scaled) " << *offset << endl;
 
-  float oscale = *scale;
-   
-  *scale += amount * prescale;
+  // save away the original scale
+  float oldscale = *scale;
+  
+  *scale += amount * scalemult;
   if (*scale < 0.01) {
     *scale = 0.01;
   }
+//  cout << "newscale " << *scale << endl;
   
-  Size newsize = objsize + (objsize * (*scale - oscale));
-  Size diff = (newsize - objsize) * 2;
-//  cout << "diff " << diff << endl;
+//   if (*scale == 2.0) {
+//     cout << "test" << endl;
+//     *offset -= Size(33.3, 33.3);
+//     return;
+//   }
+
+  Size halfobj = objsize / 2;
+//  cout << "halfobj " << halfobj << endl;
   
-  *offset -= diff * (1 / oscale);
+  Size halfw = wsize / 2;
+//  cout << "halfw " << halfw << endl;
+  
+  Size objcenter = (halfw / *scale) - halfobj;
+//  cout << "objcenter " << objcenter << endl;
+  
+  Size moffset = (mouse - halfw) / *scale;
+//  cout << "moffset " << moffset << endl;
+  
+  Size oldmouse = mouse / oldscale;
+//  cout << "oldmouse " << oldmouse << endl;
+  
+  *offset = objcenter + ((moffset + (halfobj - (oldmouse - *offset))));
   
 }

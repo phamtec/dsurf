@@ -119,6 +119,25 @@ The tests use BOOST test, to run
 make test
 ```
 
+## Interactive debugging on a Mac
+
+There is a cool little script you can use like this in a command window:
+
+```
+cd build
+../run.sh ../test ./TestSpatial scaleAndCenter
+```
+
+This will monitor the "test" directory for changes to a file, if it finds them it will do a "make" and then if that is successful it will run the program "./TestSpatial" specifying the test "scaleAndCenter" to run.
+
+You can split your screen to see this command window and your text editor and interactively make changes, save and see results :-)
+
+If you want to compile things that change in the source dir, just change the command to
+
+```
+../run.sh ../src ./TestSpatial scaleAndCenter
+```
+
 ## Progress
 
 You can read-only surf a JSON file. There are lot's of examples to try out.
@@ -155,6 +174,10 @@ Walk a JSON file building a simple layout.
 ### 12-Aug-2025
 
 - Get the math right for an object at an offset already.
+
+### 13-Aug-2025
+
+- Crack the math to keep the view centered right at the cursor while zooming.
 
 
 

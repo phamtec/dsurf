@@ -16,6 +16,7 @@
 #include "renderer.hpp"
 #include "builder.hpp"
 #include "box.hpp"
+#include "filledbox.hpp"
 
 #include <iostream>
 #include <boost/program_options.hpp> 
@@ -58,11 +59,18 @@ int main(int argc, char *argv[])
     return 1;
   }
   
+  // read in a JSON file and create a rendered almost as large as the device
   string infn = vm["input-file"].as< string >();
   auto result = rfl::json::load<rfl::Generic>(infn);
   unique_ptr<Box> root(Builder::walk(*result));
+  Renderer renderer(Renderer::displaySize() - Size(20, 120), 0.01, 0.3, Size(0.0, 0.0));
 
-  Renderer renderer;
+//  alternate startup which just draws a blue box right in the middle of a small
+//  screen
+//   unique_ptr<Box> root(new FilledBox(Size(200, 200)));
+//   Size wsize(500, 500);
+//   Renderer renderer(wsize, 0.01, 1.5, Size(0.0, 0.0));
+
   if (!renderer.init()) {
     return 1;
   }
@@ -80,7 +88,6 @@ int main(int argc, char *argv[])
 
   // lay it all out.
   Size size = root->layout(res);
-//  cout << "osize " << size << endl;
   
   // center it.  
   renderer.center(size);

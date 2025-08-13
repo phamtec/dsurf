@@ -54,6 +54,7 @@ set(SRC
   src/point.cpp
   src/size.cpp
   src/rect.cpp
+  src/filledbox.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC})

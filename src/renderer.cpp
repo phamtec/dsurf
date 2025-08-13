@@ -21,36 +21,6 @@
 
 using namespace std;
 
-Renderer::Renderer(): 
-  _scale(0.3), _offs(0, 0),
-//  _scale(1.0), _offs(0, 0),
-//  _scale(1.5), _offs(-64.7, -68),
-  _mousedown(false), 
-  _window(0), _renderer(0), _engine(0) {
-
-  if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
-    SDL_Log("Couldn't initialize SDL Video: %s", SDL_GetError());
-    return;
-  }
-
-  int n;
-  SDL_DisplayID *displays = SDL_GetDisplays(&n);
-  if (n < 1) {
-    SDL_Log("Not enough displays");
-    return;
-  }
-
-  const SDL_DisplayMode *dm = SDL_GetCurrentDisplayMode(displays[0]);
-  if (!dm) {
-    SDL_Log("Couldn't get display mode: %s", SDL_GetError());    
-    return;
-  }
-  
-  _size.w = dm->w - 20;
-  _size.h = dm->h - 120;
-  
-}
-
 Renderer::~Renderer() {
 
   if (_engine) {
@@ -64,6 +34,30 @@ Renderer::~Renderer() {
   }
   TTF_Quit();
   SDL_Quit();
+
+}
+
+Size Renderer::displaySize() {
+
+  if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
+    SDL_Log("Couldn't initialize SDL Video: %s", SDL_GetError());
+    return Size(0, 0);
+  }
+
+  int n;
+  SDL_DisplayID *displays = SDL_GetDisplays(&n);
+  if (n < 1) {
+    SDL_Log("Not enough displays");
+    return Size(0, 0);
+  }
+
+  const SDL_DisplayMode *dm = SDL_GetCurrentDisplayMode(displays[0]);
+  if (!dm) {
+    SDL_Log("Couldn't get display mode: %s", SDL_GetError());    
+    return Size(0, 0);
+  }
+  
+  return Size(dm->w, dm->h);
 
 }
 
@@ -118,6 +112,8 @@ void Renderer::prepare() {
 
   SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
   SDL_RenderClear(_renderer);
+  
+  // set the scale ready to do our calculations.
   SDL_SetRenderScale(_renderer, _scale, _scale);
 
 }
@@ -125,7 +121,6 @@ void Renderer::prepare() {
 void Renderer::debugOffs() {
 
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
-  SDL_SetRenderScale(_renderer, 1.0, 1.0);
   stringstream ss;
   ss << "offs: " << _offs << endl;
   SDL_RenderDebugText(_renderer, _size.w - 300, 10, ss.str().c_str());
@@ -135,7 +130,6 @@ void Renderer::debugOffs() {
 void Renderer::debugScale() {
 
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
-  SDL_SetRenderScale(_renderer, 1.0, 1.0);
   stringstream ss;
   ss << "scale: " << _scale << endl;
   SDL_RenderDebugText(_renderer, _size.w - 300, 30, ss.str().c_str());
@@ -145,7 +139,6 @@ void Renderer::debugScale() {
 void Renderer::debugMouse(const Point &p) {
 
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
-  SDL_SetRenderScale(_renderer, 1.0, 1.0);
   stringstream ss;
   ss << "mouse: " << p.x << ", " << p.y << endl;
   SDL_RenderDebugText(_renderer, _size.w - 300, 50, ss.str().c_str());
@@ -155,7 +148,6 @@ void Renderer::debugMouse(const Point &p) {
 void Renderer::debugSize() {
 
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
-  SDL_SetRenderScale(_renderer, 1.0, 1.0);
   stringstream ss;
   ss << "size: " << _size << endl;
   SDL_RenderDebugText(_renderer, _size.w - 300, 70, ss.str().c_str());
@@ -164,10 +156,13 @@ void Renderer::debugSize() {
 
 void Renderer::present() {
 
-  debugOffs();
-  debugScale();
-  debugMouse(_mouse);
-  debugSize();
+  // set the scale back to 1.0 so that our draw will work.
+  SDL_SetRenderScale(_renderer, 1.0, 1.0);
+
+//   debugOffs();
+//   debugScale();
+//   debugMouse(_mouse);
+//   debugSize();
   
   SDL_RenderPresent(_renderer);
 
@@ -198,14 +193,12 @@ bool Renderer::processEvents() {
 //        cout << "move: " << event.motion.x << ", " << event.motion.y << endl;
         if (_mousedown) {
           Spatial::calcPan(Point(event.motion.x, event.motion.y), &_last, &_offs, _scale);
-//          cout << "drag: " << dx << ", " << dy << endl;
         }
         break;
 
       case SDL_EVENT_MOUSE_WHEEL:
 //        cout << event.wheel.y << endl;
-        Spatial::scaleAndCenter(_osize, event.wheel.y, 0.01, &_scale, &_offs);
-//        cout << "mouse wheel: " << event.wheel.x << ", " << event.wheel.y << endl;
+        Spatial::scaleAndCenter(_size, _osize, _mouse, event.wheel.y, _scalemult, &_scale, &_offs);
         break;
 
       case SDL_EVENT_QUIT:

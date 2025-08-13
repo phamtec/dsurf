@@ -29,14 +29,20 @@ class Rect;
 class Renderer {
 
 public:
-  Renderer();
+  Renderer(const Size &wsize, float scalemult, float scale, const Size &offset): 
+    _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
+    _mousedown(false), 
+    _window(0), _renderer(0), _engine(0) 
+      {};
   ~Renderer();
+  
+  static Size displaySize();
   
   bool init();
   void prepare();
   void present();
   bool processEvents();
-
+  
   SDL_Texture *createTexture(SDL_Surface *surface);
   void renderTexture(SDL_Texture *texture, const Rect &rect);
   void renderRect(const Rect &rect);
@@ -53,6 +59,7 @@ private:
   TTF_TextEngine *_engine;
   SDL_Renderer *_renderer;
   float _scale;
+  float _scalemult;
   bool _mousedown;
   Point _last;
   Size _offs;
