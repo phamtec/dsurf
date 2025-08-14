@@ -22,10 +22,8 @@ using namespace std;
 
 Size Dict::layout(Resources &res) {
 
-  _size = List::layoutVector(res, res.open_brace.size(), _objs);
-  Size s = res.close_brace.size();
-  _size += _objs.size() == 0 ? Size(s.w, 0) : s;
-//  cout << _r << endl;
+  _size = List::layoutVector(res, Size(0, Sizes::listgap), _objs);
+  _size.h += _objs.size() == 0 ? Sizes::listgap - 10 : 0;
   return _size;
   
 }
@@ -40,13 +38,13 @@ void Dict::build(Renderer &renderer, Font &font) {
 
 void Dict::render(Renderer &renderer, Resources &res, const Point &origin) {
 
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::plum);
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::thickness, _size.h - Sizes::thickness)), Colours::plum);
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0) + Size(0, _size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::plum);
+
   super::render(renderer, res, origin);
   
-  res.open_brace.render(renderer, origin);
-  List::renderVector(renderer, res, origin + Point(Sizes::group_indent, res.open_brace.size().h), _objs);
-  res.close_brace.render(renderer, origin + Point(
-    (_objs.size() == 0 ? res.open_brace.size().w + Sizes::text_padding : 0), 
-    (_objs.size() == 0 ? 0 : _size.h - res.close_brace.size().h)));
+  List::renderVector(renderer, res, origin + Point(Sizes::group_indent, Sizes::listgap), _objs);
 
 //  renderer.renderRect(Rect(origin, _size));
 

@@ -14,26 +14,18 @@
 #ifndef H_resources
 #define H_resources
 
-#include "text.hpp"
 #include "colours.hpp"
+
+class Renderer;
+class Font;
 
 class Resources {
 
 public:
-  Resources(): 
-    open_brace("{", Colours::black), 
-    close_brace("}", Colours::black),   
-    open_bracket("[", Colours::black), 
-    close_bracket("]", Colours::black) 
-      {}
+  Resources() {}
   
   void build(Renderer &renderer, Font &font);
-  
-  Text open_brace;
-  Text close_brace;
-  Text open_bracket;
-  Text close_bracket;
-  
+        
 };
 
 #endif // H_resources

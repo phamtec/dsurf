@@ -13,9 +13,4 @@
 
 void Resources::build(Renderer &renderer, Font &font) {
 
-  open_brace.build(renderer, font);
-  close_brace.build(renderer, font);
-  open_bracket.build(renderer, font);
-  close_bracket.build(renderer, font);
-  
 }

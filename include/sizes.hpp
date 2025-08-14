@@ -27,6 +27,18 @@ public:
   static float name_var_padding;
     // the amount to pad between names and variables
     
+  static float thickness;
+    // line thickness.
+    
+  static float toplinelength;
+    // length of the topline on dicts and lists
+    
+  static float bottomlinelength;
+    // length of the bottonm lineon dicts and lists.
+    
+  static float listgap;
+    // gap between each item in a list.
+
 };
 
 #endif // H_sizes

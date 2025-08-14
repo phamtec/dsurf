@@ -24,7 +24,9 @@ public:
   static SDL_Color black;
   static SDL_Color blue;
   static SDL_Color green;
-
+  static SDL_Color plum;
+  static SDL_Color orange;
+  
 };
 
 #endif // H_colours

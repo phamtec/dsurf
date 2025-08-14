@@ -144,7 +144,7 @@ You can read-only surf a JSON file. There are lot's of examples to try out.
 
 ## Current Focus
 
-Nicer drawing of dicts and lists.
+Copying and pasting JSON from window.
 
 ## Change Log
 
@@ -179,5 +179,8 @@ Walk a JSON file building a simple layout.
 
 - Crack the math to keep the view centered right at the cursor while zooming.
 
+### 14-Aug-2025
+
+- Draw orange and plum objects instead of brackets and braces.
 
 
