@@ -48,7 +48,7 @@ Box *Builder::walk(const rfl::Generic &g) {
     else if constexpr (std::is_same<Type, bool>()) {
       obj = new Bool(field);
     }
-    else if constexpr (std::is_same<Type, long long>()) {
+    else if constexpr (std::is_same<Type, long long>() || std::is_same<Type, long>()) {
       obj = new Long(field);
     }
     else {
@@ -85,7 +85,7 @@ Box *Builder::walk(const rfl::Generic &g, const string &name) {
     else if constexpr (std::is_same<Type, bool>()) {
       obj = new BoolProp(name, field);
     }
-    else if constexpr (std::is_same<Type, long long>()) {
+    else if constexpr (std::is_same<Type, long long>() || std::is_same<Type, long>()) {
       obj = new LongProp(name, field);
     }
     else {
