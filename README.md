@@ -144,7 +144,7 @@ You can read-only surf a JSON file. There are lot's of examples to try out.
 
 ## Current Focus
 
-Copying and pasting JSON from window.
+Editing text in the dictionary.
 
 ## Change Log
 
@@ -186,6 +186,4 @@ Walk a JSON file building a simple layout.
 ### 15-Aug-2025
 
 - Allow JSON on the clipbaord to be pasted into the window.
-- Allow JSON (not pretty printed to be created from the object tree)
-
-
+- Allow JSON to be copied from the window.

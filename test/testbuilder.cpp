@@ -17,15 +17,31 @@
 #define BOOST_AUTO_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
+#include <fstream>
+
 using namespace std;
+
+void testParse(const string &fname) {
+
+  // parse in the JSON to our objects.
+  unique_ptr<Box> box(Builder::loadFile(fname));
+  string json = Builder::getJson(box.get());
+  
+  // read in the original file.
+  ifstream f(fname);
+  BOOST_CHECK(f);
+  string input(istreambuf_iterator<char>(f), {});
+    
+  // make sure they are identical.
+  BOOST_CHECK_EQUAL(json, input);
+
+}
 
 BOOST_AUTO_TEST_CASE( parseEmptyDict )
 {
   cout << "=== parseEmptyDict ===" << endl;
 
-  unique_ptr<Box> box(Builder::loadFile("../test/emptydict.json"));
-  
-  BOOST_CHECK_EQUAL(Builder::getJson(box.get()), "{}");
+  testParse("../test/emptydict.json");
   
 }
 
@@ -33,19 +49,15 @@ BOOST_AUTO_TEST_CASE( parseDict )
 {
   cout << "=== parseDict ===" << endl;
 
-  unique_ptr<Box> box(Builder::loadFile("../test/dict.json"));
-  
-  BOOST_CHECK_EQUAL(Builder::getJson(box.get()), "{\"type\":\"freeFormText\",\"text\":\"Roof size?\",\"var\":\"roofSize\"}");
-  
+  testParse("../test/dict.json");
+
 }
 
 BOOST_AUTO_TEST_CASE( parseEmptyList )
 {
   cout << "=== parseEmptyList ===" << endl;
 
-  unique_ptr<Box> box(Builder::loadFile("../test/emptylist.json"));
-  
-  BOOST_CHECK_EQUAL(Builder::getJson(box.get()), "[]");
+  testParse("../test/emptylist.json");
   
 }
 
@@ -53,9 +65,7 @@ BOOST_AUTO_TEST_CASE( parseList )
 {
   cout << "=== parseList ===" << endl;
 
-  unique_ptr<Box> box(Builder::loadFile("../test/list.json"));
-  
-  BOOST_CHECK_EQUAL(Builder::getJson(box.get()), "[{\"type\":\"freeFormText\",\"text\":\"Roof size?\",\"var\":\"roofSize\"},{\"type\":\"freeFormText\",\"text\":\"Number of coats?\",\"var\":\"coats\"}]");
+  testParse("../test/list.json");
   
 }
 
@@ -63,9 +73,7 @@ BOOST_AUTO_TEST_CASE( parseDictProp )
 {
   cout << "=== parseDictProp ===" << endl;
 
-  unique_ptr<Box> box(Builder::loadFile("../test/dictprop.json"));
-  
-  BOOST_CHECK_EQUAL(Builder::getJson(box.get()), "{\"next\":{\"nextState\":{}}}");
+  testParse("../test/dictprop.json");
   
 }
 
@@ -73,9 +81,7 @@ BOOST_AUTO_TEST_CASE( parseListProp )
 {
   cout << "=== parseListProp ===" << endl;
 
-  unique_ptr<Box> box(Builder::loadFile("../test/listprop.json"));
-  
-  BOOST_CHECK_EQUAL(Builder::getJson(box.get()), "{\"elements\":[{\"type\":\"freeFormText\",\"text\":\"Roof size?\",\"var\":\"roofSize\"},{\"type\":\"freeFormText\",\"text\":\"Number of coats?\",\"var\":\"coats\"}]}");
+  testParse("../test/listprop.json");
   
 }
 
@@ -83,9 +89,7 @@ BOOST_AUTO_TEST_CASE( parseEmptyDictProp )
 {
   cout << "=== parseEmptyDictProp ===" << endl;
 
-  unique_ptr<Box> box(Builder::loadFile("../test/emptydictprop.json"));
-  
-  BOOST_CHECK_EQUAL(Builder::getJson(box.get()), "{\"next\":{}}");
+  testParse("../test/emptydictprop.json");
   
 }
 
@@ -93,9 +97,7 @@ BOOST_AUTO_TEST_CASE( parseEmptyListProp )
 {
   cout << "=== parseEmptyListProp ===" << endl;
 
-  unique_ptr<Box> box(Builder::loadFile("../test/emptylistprop.json"));
-  
-  BOOST_CHECK_EQUAL(Builder::getJson(box.get()), "{\"elements\":[]}");
+  testParse("../test/emptylistprop.json");
   
 }
 

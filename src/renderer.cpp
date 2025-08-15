@@ -247,7 +247,7 @@ bool Renderer::processEvents() {
               break;
               
             case SDLK_C:
-              cout << "copy" << endl;
+              SDL_SetClipboardText(Builder::getJson(_root.get()).c_str());
               break;
               
             default:

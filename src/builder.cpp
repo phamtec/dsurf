@@ -144,7 +144,7 @@ void Builder::walk(const std::vector<rfl::Generic > &v, Pushable *list) {
 
 std::string Builder::getJson(Box *box) { 
 
-  return rfl::json::write(box->getGeneric()); 
+  return rfl::json::write(box->getGeneric(), rfl::json::pretty); 
   
 }
 
