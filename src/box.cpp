@@ -17,11 +17,11 @@
 
 using namespace std;
 
-void Box::build(Renderer &renderer, Font &font) {
+void Box::build(Renderer &renderer) {
 
 }
 
-void Box::render(Renderer &renderer, Resources &res, const Point &origin) {
+void Box::render(Renderer &renderer, const Point &origin) {
 
 //  renderer.renderRect(_r);
   

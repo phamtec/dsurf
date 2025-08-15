@@ -26,24 +26,24 @@ Long::Long(long value) {
   
 }
 
-Size Long::layout(Resources &res) {
+Size Long::layout() {
 
   _size = _value.size();
   return _size;
   
 }
 
-void Long::build(Renderer &renderer, Font &font) {
+void Long::build(Renderer &renderer) {
 
-  super::build(renderer, font);
+  super::build(renderer);
   
-  _value.build(renderer, font);
+  _value.build(renderer);
 
 }
 
-void Long::render(Renderer &renderer, Resources &res, const Point &origin) {
+void Long::render(Renderer &renderer, const Point &origin) {
 
-  super::render(renderer, res, origin);
+  super::render(renderer, origin);
   
   _value.render(renderer, origin);
   

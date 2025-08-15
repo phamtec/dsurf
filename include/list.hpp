@@ -34,9 +34,9 @@ public:
   List() {}
   
   // Box
-  virtual void build(Renderer &renderer, Font &font);
-  virtual Size layout(Resources &res);
-  virtual void render(Renderer &renderer, Resources &res, const Point &origin);
+  virtual void build(Renderer &renderer);
+  virtual Size layout();
+  virtual void render(Renderer &renderer, const Point &origin);
 
   // Pushable
   virtual void push(Box *box) {
@@ -44,9 +44,10 @@ public:
   }
   
   // helpers for things that look like a list.
-  static void buildVector(Renderer &renderer, Font &font, std::vector<std::unique_ptr<Box> > &list);
-  static Size layoutVector(Resources &res, const Size &size, std::vector<std::unique_ptr<Box> > &list);
-  static void renderVector(Renderer &renderer, Resources &res, const Point &origin, std::vector<std::unique_ptr<Box> > &list);
+  static void buildVector(Renderer &renderer, std::vector<std::unique_ptr<Box> > &list);
+  static Size layoutVector(const Size &size, std::vector<std::unique_ptr<Box> > &list);
+  static void renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Box> > &list);
+  static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
   
 private:
 

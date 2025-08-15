@@ -11,10 +11,16 @@
 
 #include "renderer.hpp"
 #include "spatial.hpp"
+#include "builder.hpp"
+#include "colours.hpp"
+#include "dict.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
+
+#include <rfl/json.hpp>
+#include <rfl.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -23,6 +29,8 @@ using namespace std;
 
 Renderer::~Renderer() {
 
+  // font first.
+  _font.reset(0);
   if (_engine) {
     TTF_DestroyRendererTextEngine(_engine);
   }
@@ -61,7 +69,7 @@ Size Renderer::displaySize() {
 
 }
 
-bool Renderer::init() {
+bool Renderer::init(const char *path) {
 
    /* Initialize the TTF library */
   if (!TTF_Init()) {
@@ -70,7 +78,7 @@ bool Renderer::init() {
   }
 
   /* Create a window */
-  _window = SDL_CreateWindow("dsurf", _size.w, _size.h, 0);
+  _window = SDL_CreateWindow("dsurf", _size.w, _size.h, SDL_WINDOW_RESIZABLE);
   if (!_window) {
     SDL_Log("SDL_CreateWindow() failed: %s", SDL_GetError());
     return false;
@@ -90,32 +98,65 @@ bool Renderer::init() {
     return false;
   }
 
+  _font = unique_ptr<Font>(new Font());
+  if (!_font->init(path)) {
+    SDL_Log("Couldn't iniitalise font");
+    return false;
+  }
+  
+  // always just a new dictiionary.
+  setRoot(new Dict());
+//  _root.reset(new Dict());
+
   return true;
    
 }
 
-Point Renderer::rootPoint() {
+void Renderer::setRoot(Box *root) {
 
-  return Point(0.0, 0.0);
-
-}
-
-void Renderer::center(const Size &size) {
-
-  _osize = size;
-  _offs = Spatial::center(_size, size, _scale);
+  _root.reset(root);
+  
+  // build all objects with this renderer.
+  _root->build(*this);
+  
+  // lay it out.
+  _osize = _root->layout();
+  
+  _offs = Spatial::center(_size, _osize, _scale);
 //  cout << _offs << endl;
-  
+
 }
 
-void Renderer::prepare() {
+void Renderer::loop() {
 
-  SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-  SDL_RenderClear(_renderer);
+  bool done = false;
+  while (!done) {
   
-  // set the scale ready to do our calculations.
-  SDL_SetRenderScale(_renderer, _scale, _scale);
+    // handle all the events.
+    if (processEvents()) {
+      done = true;
+    }
 
+    SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_RenderClear(_renderer);
+    
+    // set the scale ready to do our calculations.
+    SDL_SetRenderScale(_renderer, _scale, _scale);
+
+    _root->render(*this, Point(0.0, 0.0));
+
+    // set the scale back to 1.0 so that our draw will work.
+    SDL_SetRenderScale(_renderer, 1.0, 1.0);
+  
+    debugOffs();
+    debugScale();
+    debugMouse(_mouse);
+    debugSize();
+    
+    SDL_RenderPresent(_renderer);
+
+  }
+  
 }
 
 void Renderer::debugOffs() {
@@ -154,20 +195,6 @@ void Renderer::debugSize() {
 
 }
 
-void Renderer::present() {
-
-  // set the scale back to 1.0 so that our draw will work.
-  SDL_SetRenderScale(_renderer, 1.0, 1.0);
-
-//   debugOffs();
-//   debugScale();
-//   debugMouse(_mouse);
-//   debugSize();
-  
-  SDL_RenderPresent(_renderer);
-
-}
-
 bool Renderer::processEvents() {
 
   SDL_Event event;
@@ -201,7 +228,39 @@ bool Renderer::processEvents() {
         Spatial::scaleAndCenter(_size, _osize, _mouse, event.wheel.y, _scalemult, &_scale, &_offs);
         break;
 
-      case SDL_EVENT_QUIT:
+      case SDL_EVENT_WINDOW_RESIZED:
+        {
+          int w, h;
+          SDL_GetWindowSize(_window, &w, &h);
+          Size osize = _size;
+          _size = Size(w, h);
+          _scale *= _size.w / osize.w;
+        }
+        break;
+               
+      case SDL_EVENT_KEY_DOWN:
+        if (event.key.mod & SDL_KMOD_LGUI) {
+          switch (event.key.key) {
+            case SDLK_V:
+              {
+                char *text = SDL_GetClipboardText();
+                loadText(text);
+                SDL_free(text);
+              }
+              break;
+              
+            case SDLK_C:
+              cout << "copy" << endl;
+              break;
+              
+            default:
+              break;
+          }
+        }
+        break;
+
+
+     case SDL_EVENT_QUIT:
         return true;
         break;
 
@@ -214,6 +273,22 @@ bool Renderer::processEvents() {
 
   return false;
   
+}
+
+void Renderer::loadFile(const string &fn) {
+
+    auto result = rfl::json::load<rfl::Generic>(fn);
+    auto root = Builder::walk(*result);
+   setRoot(root);
+
+}
+
+void Renderer::loadText(const char *text) {
+
+    auto result =rfl::json::read<rfl::Generic>(text);
+    auto root = Builder::walk(*result);
+   setRoot(root);
+
 }
 
 SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {
@@ -263,6 +338,18 @@ void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
 bool Renderer::textTooSmall(const Rect &rect) {
 
   return (rect.size.h * _scale) < 9;
+  
+}
+
+SDL_Surface *Renderer::renderText(const char *str, const SDL_Color &color) {
+
+  SDL_Surface *surface = TTF_RenderText_Shaded(_font->_font, str, 0, color, Colours::white);
+  if (!surface) {
+    SDL_Log("could not create surface");
+    return 0;
+  }
+
+  return surface;
   
 }
 

@@ -14,7 +14,7 @@
 #include "spatial.hpp"
 #include "renderer.hpp"
 
-Size StringProp::layout(Resources &res) {
+Size StringProp::layout() {
 
   _size = _value.size();
   _size.w += _name.size().w + Sizes::name_var_padding;
@@ -22,17 +22,17 @@ Size StringProp::layout(Resources &res) {
   
 }
 
-void StringProp::build(Renderer &renderer, Font &font) {
+void StringProp::build(Renderer &renderer) {
 
-  super::build(renderer, font);
+  super::build(renderer);
   
-  _value.build(renderer, font);
+  _value.build(renderer);
 
 }
 
-void StringProp::render(Renderer &renderer, Resources &res, const Point &origin) {
+void StringProp::render(Renderer &renderer, const Point &origin) {
 
-  super::render(renderer, res, origin);
+  super::render(renderer, origin);
   
   _value.render(renderer, Point(origin.x + _name.size().w + Sizes::name_var_padding, origin.y));
   

@@ -183,4 +183,10 @@ Walk a JSON file building a simple layout.
 
 - Draw orange and plum objects instead of brackets and braces.
 
+### 15-Aug-2025
+
+- Allow JSON on the clipbaord to be pasted into the window.
+- big refactor.
+
+
 

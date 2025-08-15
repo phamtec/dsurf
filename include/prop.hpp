@@ -30,8 +30,8 @@ public:
       {}
 
   // Box
-  virtual void build(Renderer &renderer, Font &font);
-  virtual void render(Renderer &renderer, Resources &res, const Point &origin);
+  virtual void build(Renderer &renderer);
+  virtual void render(Renderer &renderer, const Point &origin);
 
 protected:
   Text _name;

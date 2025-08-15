@@ -29,13 +29,10 @@ Text::~Text() {
   }
 }
 
-void Text::build(Renderer &renderer, Font &font) {
+void Text::build(Renderer &renderer) {
 
-  SDL_Color white = { 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE };
-
-  _surface = TTF_RenderText_Shaded(font._font, _str.c_str(), 0, _fgcolor, white);
+  _surface = renderer.renderText(_str.c_str(), _fgcolor);
   if (!_surface) {
-    SDL_Log("could not create surface");
     return;
   }
   

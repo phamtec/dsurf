@@ -11,40 +11,38 @@
 
 #include "dictprop.hpp"
 #include "renderer.hpp"
-#include "resources.hpp"
 #include "sizes.hpp"
 #include "list.hpp"
+#include "dict.hpp"
 #include "spatial.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-Size DictProp::layout(Resources &res) {
+Size DictProp::layout() {
 
-  _size = List::layoutVector(res, _name.size() + Size(Sizes::text_padding, 0), _objs);
+  _size = List::layoutVector(_name.size() + Size(Sizes::text_padding, 0), _objs);
   _size.h += _objs.size() == 0 ? Sizes::listgap - 10 : 0;
   return _size;
 
 }
 
-void DictProp::build(Renderer &renderer, Font &font) {
+void DictProp::build(Renderer &renderer) {
 
-  super::build(renderer, font);
+  super::build(renderer);
   
-  List::buildVector(renderer, font, _objs);
+  List::buildVector(renderer, _objs);
 
 }
 
-void DictProp::render(Renderer &renderer, Resources &res, const Point &origin) {
+void DictProp::render(Renderer &renderer, const Point &origin) {
 
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::plum);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::thickness, _size.h)), Colours::plum);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0) + Size(0, _size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::plum);
+  Dict::drawBorder(renderer, origin, _size, true);
 
-  super::render(renderer, res, origin);
+  super::render(renderer, origin);
   
-  List::renderVector(renderer, res, origin + Point(Sizes::group_indent, 60), _objs);
+  List::renderVector(renderer, origin + Point(Sizes::group_indent, 60), _objs);
 
 //  renderer.renderRect(_r);
   

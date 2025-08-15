@@ -11,7 +11,6 @@
 
 #include "listprop.hpp"
 #include "renderer.hpp"
-#include "resources.hpp"
 #include "sizes.hpp"
 #include "list.hpp"
 #include "spatial.hpp"
@@ -20,31 +19,29 @@
 
 using namespace std;
 
-Size ListProp::layout(Resources &res) {
+Size ListProp::layout() {
 
-  _size = List::layoutVector(res, _name.size() + Size(Sizes::text_padding, Sizes::listgap), _objs);
+  _size = List::layoutVector(_name.size() + Size(Sizes::text_padding, Sizes::listgap), _objs);
   _size.h += _objs.size() == 0 ? 10 : -10;
   return _size;
 
 }
 
-void ListProp::build(Renderer &renderer, Font &font) {
+void ListProp::build(Renderer &renderer) {
 
-  super::build(renderer, font);
+  super::build(renderer);
   
-  List::buildVector(renderer, font, _objs);
+  List::buildVector(renderer, _objs);
 
 }
 
-void ListProp::render(Renderer &renderer, Resources &res, const Point &origin) {
+void ListProp::render(Renderer &renderer, const Point &origin) {
 
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::orange);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::thickness, _size.h)), Colours::orange);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0) + Size(0, _size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::orange);
+  List::drawBorder(renderer, origin, _size, true);
 
-  super::render(renderer, res, origin);
+  super::render(renderer, origin);
   
-  List::renderVector(renderer, res, origin + Point(Sizes::group_indent, 60), _objs);
+  List::renderVector(renderer, origin + Point(Sizes::group_indent, 60), _objs);
 
 //  renderer.renderRect(_r);
 

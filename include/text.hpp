@@ -39,7 +39,7 @@ public:
     _fgcolor = fgcolor;
   }
   
-  virtual void build(Renderer &renderer, Font &font);
+  virtual void build(Renderer &renderer);
     // build the texture and surface ready to render.
     
   virtual void render(Renderer &renderer, const Point &origin);

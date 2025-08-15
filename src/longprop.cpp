@@ -26,7 +26,7 @@ LongProp::LongProp(const std::string &name, long value): Prop(name) {
   
 }
 
-Size LongProp::layout(Resources &res) {
+Size LongProp::layout() {
 
   _size = _value.size();
   _size.w += _name.size().w + Sizes::name_var_padding;
@@ -34,17 +34,17 @@ Size LongProp::layout(Resources &res) {
   
 }
 
-void LongProp::build(Renderer &renderer, Font &font) {
+void LongProp::build(Renderer &renderer) {
 
-  super::build(renderer, font);
+  super::build(renderer);
   
-  _value.build(renderer, font);
+  _value.build(renderer);
 
 }
 
-void LongProp::render(Renderer &renderer, Resources &res, const Point &origin) {
+void LongProp::render(Renderer &renderer, const Point &origin) {
 
-  super::render(renderer, res, origin);
+  super::render(renderer, origin);
   
   _value.render(renderer, origin + Point(_name.size().w + Sizes::name_var_padding, 0));
   

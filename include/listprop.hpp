@@ -35,9 +35,9 @@ public:
       {}
   
   // Box
-  virtual void build(Renderer &renderer, Font &font);
-  virtual Size layout(Resources &res);
-  virtual void render(Renderer &renderer, Resources &res, const Point &origin);
+  virtual void build(Renderer &renderer);
+  virtual Size layout();
+  virtual void render(Renderer &renderer, const Point &origin);
 
   // Pushable
   virtual void push(Box *box) {

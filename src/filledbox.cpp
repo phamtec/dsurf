@@ -13,7 +13,7 @@
 #include "colours.hpp"
 #include "renderer.hpp"
 
-void FilledBox::render(Renderer &renderer, Resources &res, const Point &origin) {
+void FilledBox::render(Renderer &renderer, const Point &origin) {
 
   renderer.renderFilledRect(Rect(origin, _size), Colours::blue);
   

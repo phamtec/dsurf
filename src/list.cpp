@@ -11,7 +11,7 @@
 
 #include "list.hpp"
 #include "renderer.hpp"
-#include "resources.hpp"
+#include "colours.hpp"
 #include "sizes.hpp"
 #include "spatial.hpp"
 
@@ -19,41 +19,39 @@
 
 using namespace std;
 
-Size List::layout(Resources &res) {
+Size List::layout() {
 
-  _size = List::layoutVector(res, Size(0, Sizes::listgap), _objs);
+  _size = List::layoutVector(Size(0, Sizes::listgap), _objs);
   _size.h += _objs.size() == 0 ? Sizes::listgap - 10 : Sizes::listgap;
   return _size;
   
 }
 
-void List::build(Renderer &renderer, Font &font) {
+void List::build(Renderer &renderer) {
 
-  super::build(renderer, font);
+  super::build(renderer);
   
-  buildVector(renderer, font, _objs);
+  buildVector(renderer, _objs);
   
 }
 
-void List::render(Renderer &renderer, Resources &res, const Point &origin) {
+void List::render(Renderer &renderer, const Point &origin) {
 
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::orange);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::thickness, _size.h - Sizes::thickness)), Colours::orange);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0) + Size(0, _size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::orange);
+  drawBorder(renderer, origin, _size, false);
 
-  super::render(renderer, res, origin);
+  super::render(renderer, origin);
 
-  renderVector(renderer, res, origin + Point(Sizes::group_indent, Sizes::listgap), _objs);
+  renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _objs);
   
 //  renderer.renderRect(_r);
 
 }
 
-Size List::layoutVector(Resources &res, const Size &size, std::vector<std::unique_ptr<Box> > &list) {
+Size List::layoutVector(const Size &size, std::vector<std::unique_ptr<Box> > &list) {
 
   Size newsize = size;
   for (auto&& i: list) {
-    Size s = i->layout(res);
+    Size s = i->layout();
     newsize.h += s.h + Sizes::listgap;
     if ((Sizes::group_indent + s.w) > newsize.w) {
       newsize.w = Sizes::group_indent + s.w;
@@ -63,22 +61,29 @@ Size List::layoutVector(Resources &res, const Size &size, std::vector<std::uniqu
   
 }
 
-void List::buildVector(Renderer &renderer, Font &font, std::vector<std::unique_ptr<Box> > &list) {
+void List::buildVector(Renderer &renderer, std::vector<std::unique_ptr<Box> > &list) {
 
   for (auto&& i: list) {
-    i->build(renderer, font);
+    i->build(renderer);
   }
 
 }
 
-void List::renderVector(Renderer &renderer, Resources &res, const Point &origin, std::vector<std::unique_ptr<Box> > &list) {
+void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Box> > &list) {
 
   float y = origin.y;
   for (auto&& i: list) {
-    i->render(renderer, res, Point(origin.x, y));
+    i->render(renderer, Point(origin.x, y));
     y += i->_size.h + Sizes::listgap;
   }
 
 }
 
+void List::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
+
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::orange);
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::thickness, size.h - (prop ? 0 : Sizes::thickness))), Colours::orange);
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0) + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::orange);
+
+}
 

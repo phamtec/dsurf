@@ -16,6 +16,8 @@
 
 #include "point.hpp"
 #include "size.hpp"
+#include "box.hpp"
+#include "font.hpp"
 
 #include <SDL3/SDL_pixels.h>
 
@@ -38,22 +40,33 @@ public:
   
   static Size displaySize();
   
-  bool init();
-  void prepare();
-  void present();
-  bool processEvents();
-  
+  void setRoot(Box *box);
+    // switch out the root we will use to render.
+    
+  bool init(const char *fontpath);
+    // initialise with th epath to the font file.
+    
+  void loop();
+    // the main render loop.
+    
+  void loadFile(const std::string &fn);
+    // load the JSON file into the renderer.
+    
+  void loadText(const char *text);
+    // load the JSON text into the renderer.
+    
+  // functions used to create and render.
+  SDL_Surface *renderText(const char *str, const SDL_Color &color);
   SDL_Texture *createTexture(SDL_Surface *surface);
   void renderTexture(SDL_Texture *texture, const Rect &rect);
   void renderRect(const Rect &rect);
   void renderFilledRect(const Rect &rect, const SDL_Color &color);
-  
-  void center(const Size &size);
-  Point rootPoint();
+
   bool textTooSmall(const Rect &rect);
-  
+    // if the text is too small for the rectangle, return true.
+    
 private:
-  
+
   Size _size;
   SDL_Window *_window;
   TTF_TextEngine *_engine;
@@ -65,7 +78,11 @@ private:
   Size _offs;
   Point _mouse;
   Size _osize;
+  std::unique_ptr<Box> _root;
+  std::unique_ptr<Font> _font;
   
+  bool processEvents();
+
   void debugOffs();
   void debugScale();
   void debugMouse(const Point &p);

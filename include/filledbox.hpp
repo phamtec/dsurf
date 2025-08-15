@@ -26,8 +26,8 @@ public:
   FilledBox(const Size &size): _size(size) {}
 
   // Box
-  virtual Size layout(Resources &res) { return _size; };
-  virtual void render(Renderer &renderer, Resources &res, const Point &origin);
+  virtual Size layout() { return _size; };
+  virtual void render(Renderer &renderer, const Point &origin);
 
 private:
 

@@ -32,7 +32,6 @@
 #include "rect.hpp"
 
 class Renderer;
-class Font;
 class Resources;
 class Point;
 
@@ -42,13 +41,13 @@ public:
   Box() {};
   virtual ~Box() {};
   
-  virtual void build(Renderer &renderer, Font &font);
+  virtual void build(Renderer &renderer);
     // build the texture and surface ready to render.
 
-  virtual Size layout(Resources &res) = 0;
+  virtual Size layout() = 0;
     // layout the object.
 
-  virtual void render(Renderer &renderer, Resources &res, const Point &origin);
+  virtual void render(Renderer &renderer, const Point &origin);
     // render this object to the screen.
 
   Size _size;

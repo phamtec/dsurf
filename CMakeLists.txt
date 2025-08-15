@@ -43,7 +43,6 @@ set(SRC
   src/listprop.cpp
   src/dict.cpp
   src/dictprop.cpp
-  src/resources.cpp
   src/colours.cpp
   src/sizes.cpp
   src/long.cpp

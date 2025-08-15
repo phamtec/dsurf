@@ -12,17 +12,17 @@
 #include "prop.hpp"
 #include "spatial.hpp"
 
-void Prop::build(Renderer &renderer, Font &font) {
+void Prop::build(Renderer &renderer) {
 
-  super::build(renderer, font);
+  super::build(renderer);
   
-  _name.build(renderer, font);
+  _name.build(renderer);
 
 }
 
-void Prop::render(Renderer &renderer, Resources &res, const Point &origin) {
+void Prop::render(Renderer &renderer, const Point &origin) {
 
-  super::render(renderer, res, origin);
+  super::render(renderer, origin);
   
   _name.render(renderer, origin);
   

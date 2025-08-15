@@ -25,7 +25,7 @@ public:
   bool init(const char *path);
 
 private:
-  friend class Text;
+  friend class Renderer;
   
   TTF_Font *_font;
   
