@@ -16,11 +16,12 @@
 #ifndef H_longprop
 #define H_longprop
 
-#include "prop.hpp"
+#include "box.hpp"
+#include "text.hpp"
 
-class LongProp: public Prop {
+class LongProp: public Box {
 
-  typedef Prop super;
+  typedef Box super;
   
 public:
   LongProp(const std::string &name, long value);
@@ -29,8 +30,11 @@ public:
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
+  virtual std::string getName() { return _name.str(); }
+  virtual rfl::Generic getGeneric() { return _value.str(); }
 
 private:
+  Text _name;
   Text _value;
 };
 

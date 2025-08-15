@@ -31,6 +31,7 @@ void ListProp::build(Renderer &renderer) {
 
   super::build(renderer);
   
+  _name.build(renderer);
   List::buildVector(renderer, _objs);
 
 }
@@ -41,8 +42,21 @@ void ListProp::render(Renderer &renderer, const Point &origin) {
 
   super::render(renderer, origin);
   
+  _name.render(renderer, origin);
   List::renderVector(renderer, origin + Point(Sizes::group_indent, 60), _objs);
 
 //  renderer.renderRect(_r);
 
+}
+
+rfl::Generic ListProp::getGeneric() { 
+
+  vector<rfl::Generic> obj = vector<rfl::Generic>();
+
+  for (auto&& i: _objs) {
+    obj.push_back(i->getGeneric());
+  }
+  
+  return obj; 
+  
 }

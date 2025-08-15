@@ -24,13 +24,27 @@
 
 using namespace std;
 
+Box *Builder::loadFile(const string &fn) {
+
+  auto result = rfl::json::load<rfl::Generic>(fn);
+  return walk(*result);
+
+}
+
+Box *Builder::loadText(const char *text) {
+
+  auto result =rfl::json::read<rfl::Generic>(text);
+  return walk(*result);
+
+}
+
 Box *Builder::walk(const rfl::Generic &g) {
 
   Box *obj = nullptr;
   std::visit([&obj](const auto &field) {
   
     using Type = std::decay_t<decltype(field)>;
-    if constexpr (std::is_same<Type, vector<rfl::Generic >>()) {
+    if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
       Pushable *l = new List();
       walk(field, l);
       obj = dynamic_cast<Box *>(l);
@@ -67,7 +81,7 @@ Box *Builder::walk(const rfl::Generic &g, const string &name) {
   std::visit([&obj, name](const auto &field) {
   
     using Type = std::decay_t<decltype(field)>;
-    if constexpr (std::is_same<Type, vector<rfl::Generic >>()) {
+    if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
       ListProp *l = new ListProp(name);
       walk(field, l);
       obj = l;
@@ -126,5 +140,11 @@ void Builder::walk(const std::vector<rfl::Generic > &v, Pushable *list) {
     }
   }
 
+}
+
+std::string Builder::getJson(Box *box) { 
+
+  return rfl::json::write(box->getGeneric()); 
+  
 }
 

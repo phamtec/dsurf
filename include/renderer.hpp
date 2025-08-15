@@ -49,12 +49,6 @@ public:
   void loop();
     // the main render loop.
     
-  void loadFile(const std::string &fn);
-    // load the JSON file into the renderer.
-    
-  void loadText(const char *text);
-    // load the JSON text into the renderer.
-    
   // functions used to create and render.
   SDL_Surface *renderText(const char *str, const SDL_Color &color);
   SDL_Texture *createTexture(SDL_Surface *surface);

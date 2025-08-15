@@ -48,6 +48,8 @@ public:
   Size size();
     // return the size of the text object.
       
+  std::string str() { return _str; }
+    
 private:
 
   std::string _str;

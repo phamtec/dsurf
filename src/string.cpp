@@ -38,3 +38,9 @@ void String::render(Renderer &renderer, const Point &origin) {
 //  renderer.renderRect(_r);
 
 }
+
+rfl::Generic String::getGeneric() { 
+
+  return _value.str().substr(1, _value.str().size() - 2); 
+  
+}

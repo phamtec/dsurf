@@ -18,23 +18,26 @@
 #ifndef H_dictprop
 #define H_dictprop
 
-#include "prop.hpp"
+#include "box.hpp"
+#include "text.hpp"
 #include "pushable.hpp"
 
 #include <memory>
 #include <vector>
 
-class DictProp: public Prop, public Pushable {
+class DictProp: public Box, public Pushable {
 
-  typedef Prop super;
+  typedef Box super;
 
 public:
-  DictProp(const std::string &name): Prop(name) {}
+  DictProp(const std::string &name): _name(name, Colours::blue) {}
 
   // Box
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
+  virtual std::string getName() { return _name.str(); }
+  virtual rfl::Generic getGeneric();
 
   // Pushable
   virtual void push(Box *box) {
@@ -42,7 +45,7 @@ public:
   }
   
 private:
-  
+  Text _name;
   std::vector<std::unique_ptr<Box> > _objs;
   
 };

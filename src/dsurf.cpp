@@ -12,6 +12,7 @@
 */
 
 #include "renderer.hpp"
+#include "builder.hpp"
 #include "box.hpp"
 #include "filledbox.hpp"
 
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
   
   // read in a JSON file if one is specified.
   if (vm.count("input-file") > 0) {
-    renderer.loadFile(vm["input-file"].as< string >());
+    renderer.setRoot(Builder::loadFile(vm["input-file"].as< string >()));
   }
 
 //  alternate startup which just draws a blue box right in the middle of a small

@@ -47,7 +47,6 @@ set(SRC
   src/sizes.cpp
   src/long.cpp
   src/longprop.cpp
-  src/prop.cpp
   src/box.cpp
   src/spatial.cpp
   src/point.cpp
@@ -57,10 +56,15 @@ set(SRC
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC})
-    target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp)
+  target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp)
 
 # Tests
 add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp src/size.cpp)
   target_link_libraries(TestSpatial ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestSpatial TestSpatial)
+
+add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp ${SRC})
+  target_link_libraries(TestBuilder reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL)
+
+add_test(TestBuilder TestBuilder)

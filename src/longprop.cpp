@@ -18,7 +18,7 @@
 
 using namespace std;
 
-LongProp::LongProp(const std::string &name, long value): Prop(name) {
+LongProp::LongProp(const std::string &name, long value): _name(name, Colours::blue) {
 
   stringstream ss;
   ss << value;
@@ -38,6 +38,7 @@ void LongProp::build(Renderer &renderer) {
 
   super::build(renderer);
   
+  _name.build(renderer);
   _value.build(renderer);
 
 }
@@ -46,6 +47,7 @@ void LongProp::render(Renderer &renderer, const Point &origin) {
 
   super::render(renderer, origin);
   
+  _name.render(renderer, origin);
   _value.render(renderer, origin + Point(_name.size().w + Sizes::name_var_padding, 0));
   
 //  renderer.renderRect(_r);

@@ -26,6 +26,7 @@ void StringProp::build(Renderer &renderer) {
 
   super::build(renderer);
   
+  _name.build(renderer);
   _value.build(renderer);
 
 }
@@ -34,8 +35,15 @@ void StringProp::render(Renderer &renderer, const Point &origin) {
 
   super::render(renderer, origin);
   
+  _name.render(renderer, origin);
   _value.render(renderer, Point(origin.x + _name.size().w + Sizes::name_var_padding, origin.y));
   
 //  renderer.renderRect(_r);
 
+}
+
+rfl::Generic StringProp::getGeneric() { 
+
+  return _value.str().substr(1, _value.str().size() - 2); 
+  
 }

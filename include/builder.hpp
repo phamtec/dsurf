@@ -28,6 +28,15 @@ public:
   static Box *walk(const rfl::Generic &g);
   static Box *walk(const rfl::Generic &g, const std::string &name);
 
+  static Box *loadFile(const std::string &fn);
+    // load the JSON file into the renderer.
+    
+  static Box *loadText(const char *text);
+    // load the JSON text into the renderer.
+
+  static std::string getJson(Box *box);
+    // get the JSON representing the box.
+    
 private:
   
   static void walk(const rfl::Object<rfl::Generic> &obj, Pushable *list);

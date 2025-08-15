@@ -19,9 +19,6 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include <rfl/json.hpp>
-#include <rfl.hpp>
-
 #include <iostream>
 #include <sstream>
 
@@ -244,7 +241,7 @@ bool Renderer::processEvents() {
             case SDLK_V:
               {
                 char *text = SDL_GetClipboardText();
-                loadText(text);
+                setRoot(Builder::loadText(text));
                 SDL_free(text);
               }
               break;
@@ -273,22 +270,6 @@ bool Renderer::processEvents() {
 
   return false;
   
-}
-
-void Renderer::loadFile(const string &fn) {
-
-    auto result = rfl::json::load<rfl::Generic>(fn);
-    auto root = Builder::walk(*result);
-   setRoot(root);
-
-}
-
-void Renderer::loadText(const char *text) {
-
-    auto result =rfl::json::read<rfl::Generic>(text);
-    auto root = Builder::walk(*result);
-   setRoot(root);
-
 }
 
 SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {

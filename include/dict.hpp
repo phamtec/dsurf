@@ -35,6 +35,8 @@ public:
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
+  virtual rfl::Generic getGeneric();
+  virtual std::string getName() { return "????"; };
   
   // Pushable
   virtual void push(Box *box) {

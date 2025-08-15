@@ -10,19 +10,3 @@
 */
 
 #include "box.hpp"
-#include "renderer.hpp"
-
-#include <SDL3/SDL.h>
-#include <iostream>
-
-using namespace std;
-
-void Box::build(Renderer &renderer) {
-
-}
-
-void Box::render(Renderer &renderer, const Point &origin) {
-
-//  renderer.renderRect(_r);
-  
-}

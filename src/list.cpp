@@ -87,3 +87,14 @@ void List::drawBorder(Renderer &renderer, const Point &origin, const Size &size,
 
 }
 
+rfl::Generic List::getGeneric() { 
+
+  vector<rfl::Generic> obj = vector<rfl::Generic>();
+
+  for (auto&& i: _objs) {
+    obj.push_back(i->getGeneric());
+  }
+  
+  return obj; 
+  
+}

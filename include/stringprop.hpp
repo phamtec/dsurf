@@ -16,15 +16,16 @@
 #ifndef H_stringprop
 #define H_stringprop
 
-#include "prop.hpp"
+#include "box.hpp"
+#include "text.hpp"
 
-class StringProp: public Prop {
+class StringProp: public Box {
 
-  typedef Prop super;
+  typedef Box super;
   
 public:
   StringProp(const std::string &name, const std::string &value): 
-    Prop(name), 
+    _name(name, Colours::blue), 
     _value(value, Colours::green) 
       {}
 
@@ -32,9 +33,12 @@ public:
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
+  virtual std::string getName() { return _name.str(); }
+  virtual rfl::Generic getGeneric();
 
 private:
 
+  Text _name;
   Text _value;
 };
 

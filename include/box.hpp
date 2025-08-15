@@ -4,17 +4,16 @@
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 6-Aug-2025
     
-  Box class.
+  Box bass class.
   
-  Box is the base class of all drawn objects.
+  Box is the abstract base class of all drawn objects.
   
   Box
-    Prop
-      StringProp
-        BoolProp
-      LongProp
-      ListProp
-      DictProp
+    StringProp
+      BoolProp
+    LongProp
+    ListProp
+    DictProp
     String
       Bool
     Long
@@ -35,24 +34,29 @@ class Renderer;
 class Resources;
 class Point;
 
+#include <rfl.hpp>
+
 class Box {
 
 public:
   Box() {};
   virtual ~Box() {};
   
-  virtual void build(Renderer &renderer);
-    // build the texture and surface ready to render.
-
   virtual Size layout() = 0;
     // layout the object.
 
-  virtual void render(Renderer &renderer, const Point &origin);
+  virtual void build(Renderer &renderer) {};
+    // build the texture and surface ready to render.
+
+  virtual void render(Renderer &renderer, const Point &origin) {};
     // render this object to the screen.
 
   Size _size;
     // the size of this object
     
+  virtual rfl::Generic getGeneric() = 0;
+  virtual std::string getName() = 0;
+  
 };
 
 #endif // H_box

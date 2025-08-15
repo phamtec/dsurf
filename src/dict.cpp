@@ -55,3 +55,16 @@ void Dict::drawBorder(Renderer &renderer, const Point &origin, const Size &size,
   renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0) + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::plum);
 
 }
+
+rfl::Generic Dict::getGeneric() { 
+
+  rfl::Object<rfl::Generic> obj = rfl::Object<rfl::Generic>();
+
+  for (auto&& i: _objs) {
+    string name = i->getName();
+    obj[name] = i->getGeneric();
+  }
+  
+  return obj; 
+  
+}
