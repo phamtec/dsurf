@@ -236,7 +236,7 @@ bool Renderer::processEvents() {
         break;
                
       case SDL_EVENT_KEY_DOWN:
-        if (event.key.mod & SDL_KMOD_LGUI) {
+        if ((event.key.mod & SDL_KMOD_LGUI) || (event.key.mod & SDL_KMOD_CTRL)) {
           switch (event.key.key) {
             case SDLK_V:
               {
