@@ -550,39 +550,39 @@ static int _gfxPrimitivesCompareFloat2(const void *a, const void *b)
 static int renderdrawline(SDL_Renderer *renderer, int x1, int y1, int x2, int y2)
 {
 	int result ;
-#ifndef __EMSCRIPTEN__
-	if ((x1 == x2) && (y1 == y2))
-		result = SDL_RenderPoint (renderer, x1, y1) ;
-	else if (y1 == y2)
-	    {
-		int x ;
-		if (x1 > x2) { x = x1 ; x1 = x2 ; x2 = x ; }
-		SDL_FPoint *points = (SDL_FPoint*) malloc ((x2 - x1 + 1) * sizeof(SDL_FPoint)) ;
-		if (points == NULL) return -1 ;
-		for (x = x1; x <= x2; x++)
-		    {
-			points[x - x1].x = x ;
-			points[x - x1].y = y1 ;
-		    }
-		result = SDL_RenderPoints (renderer, points, x2 - x1 + 1) ;
-		free (points) ;
-	    }
-	else if (x1 == x2)
-	    {
-		int y ;
-		if (y1 > y2) { y = y1 ; y1 = y2 ; y2 = y ; }
-		SDL_FPoint *points = (SDL_FPoint*) malloc ((y2 - y1 + 1) * sizeof(SDL_FPoint)) ;
-		if (points == NULL) return -1 ;
-		for (y = y1; y <= y2; y++)
-		    {
-			points[y - y1].x = x1 ;
-			points[y - y1].y = y ;
-		    }
-		result = SDL_RenderPoints (renderer, points, y2 - y1 + 1) ;
-		free (points) ;
-	    }
-	else
-#endif
+// #ifndef __EMSCRIPTEN__
+// 	if ((x1 == x2) && (y1 == y2))
+// 		result = SDL_RenderPoint (renderer, x1, y1) ;
+// 	else if (y1 == y2)
+// 	    {
+// 		int x ;
+// 		if (x1 > x2) { x = x1 ; x1 = x2 ; x2 = x ; }
+// 		SDL_FPoint *points = (SDL_FPoint*) malloc ((x2 - x1 + 1) * sizeof(SDL_FPoint)) ;
+// 		if (points == NULL) return -1 ;
+// 		for (x = x1; x <= x2; x++)
+// 		    {
+// 			points[x - x1].x = x ;
+// 			points[x - x1].y = y1 ;
+// 		    }
+// 		result = SDL_RenderPoints (renderer, points, x2 - x1 + 1) ;
+// 		free (points) ;
+// 	    }
+// 	else if (x1 == x2)
+// 	    {
+// 		int y ;
+// 		if (y1 > y2) { y = y1 ; y1 = y2 ; y2 = y ; }
+// 		SDL_FPoint *points = (SDL_FPoint*) malloc ((y2 - y1 + 1) * sizeof(SDL_FPoint)) ;
+// 		if (points == NULL) return -1 ;
+// 		for (y = y1; y <= y2; y++)
+// 		    {
+// 			points[y - y1].x = x1 ;
+// 			points[y - y1].y = y ;
+// 		    }
+// 		result = SDL_RenderPoints (renderer, points, y2 - y1 + 1) ;
+// 		free (points) ;
+// 	    }
+// 	else
+// #endif
 		result = SDL_RenderLine (renderer, x1, y1, x2, y2) ;
 	return result ;
 }
