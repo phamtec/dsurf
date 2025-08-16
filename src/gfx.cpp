@@ -11,8 +11,9 @@
   This code was mainly copy and pasted from:
   
   https://github.com/sabdul-khabir/SDL3_gfx
+  https://github.com/rtrussell/BBCSDL
   
-  Thank you so much to aschiffler at ferzkopp dot net!
+  Thank you so much to aschiffler at ferzkopp dot net and 
 */
 
 #include "gfx.hpp"
@@ -35,6 +36,249 @@
 bool pixel(SDL_Renderer *renderer, Sint16 x, Sint16 y)
 {
 	return SDL_RenderPoint(renderer, x, y);
+}
+
+/*!
+\brief Draw horizontal line in currently set color
+
+\param renderer The renderer to draw on.
+\param x1 X coordinate of the first point (i.e. left) of the line.
+\param x2 X coordinate of the second point (i.e. right) of the line.
+\param y Y coordinate of the points of the line.
+
+\returns Returns true on success, false on failure.
+*/
+bool hline(SDL_Renderer * renderer, Sint16 x1, Sint16 x2, Sint16 y)
+{
+	return SDL_RenderLine(renderer, x1, y, x2, y);;
+}
+
+#define AAlevels 256
+#define AAbits 8
+
+/*!
+\brief Internal function to draw anti-aliased line with alpha blending and endpoint control.
+
+This implementation of the Wu antialiasing code is based on Mike Abrash's
+DDJ article which was reprinted as Chapter 42 of his Graphics Programming
+Black Book, but has been optimized to work with SDL and utilizes 32-bit
+fixed-point arithmetic by A. Schiffler. The endpoint control allows the
+supression to draw the last pixel useful for rendering continous aa-lines
+with alpha<255.
+
+\param renderer The renderer to draw on.
+\param x1 X coordinate of the first point of the aa-line.
+\param y1 Y coordinate of the first point of the aa-line.
+\param x2 X coordinate of the second point of the aa-line.
+\param y2 Y coordinate of the second point of the aa-line.
+\param r The red value of the aa-line to draw. 
+\param g The green value of the aa-line to draw. 
+\param b The blue value of the aa-line to draw. 
+\param a The alpha value of the aa-line to draw.
+\param draw_endpoint Flag indicating if the endpoint should be drawn; draw if non-zero.
+
+\returns Returns true on success, false on failure.
+*/
+int Gfx::_aalineRGBA(SDL_Renderer * renderer, Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a, int draw_endpoint)
+{
+	Sint32 xx0, yy0, xx1, yy1;
+	bool result;
+	Uint32 intshift, erracc, erradj;
+	Uint32 erracctmp, wgt, wgtcompmask;
+	int dx, dy, tmp, xdir, y0p1, x0pxdir;
+
+	/*
+	* Keep on working with 32bit numbers 
+	*/
+	xx0 = x1;
+	yy0 = y1;
+	xx1 = x2;
+	yy1 = y2;
+
+	/*
+	* Reorder points to make dy positive 
+	*/
+	if (yy0 > yy1) {
+		tmp = yy0;
+		yy0 = yy1;
+		yy1 = tmp;
+		tmp = xx0;
+		xx0 = xx1;
+		xx1 = tmp;
+	}
+
+	/*
+	* Calculate distance 
+	*/
+	dx = xx1 - xx0;
+	dy = yy1 - yy0;
+
+	/*
+	* Adjust for negative dx and set xdir 
+	*/
+	if (dx >= 0) {
+		xdir = 1;
+	} else {
+		xdir = -1;
+		dx = (-dx);
+	}
+	
+	/*
+	* Check for special cases 
+	*/
+	if (dx == 0) {
+		/*
+		* Vertical line 
+		*/
+		if (draw_endpoint)
+		{
+			return (vlineRGBA(renderer, x1, y1, y2, r, g, b, a));
+		} else {
+			if (dy > 0) {
+				return (vlineRGBA(renderer, x1, yy0, yy0+dy, r, g, b, a));
+			} else {
+				return (pixelRGBA(renderer, x1, y1, r, g, b, a));
+			}
+		}
+	} else if (dy == 0) {
+		/*
+		* Horizontal line 
+		*/
+		if (draw_endpoint)
+		{
+			return (hlineRGBA(renderer, x1, x2, y1, r, g, b, a));
+		} else {
+			if (dx > 0) {
+				return (hlineRGBA(renderer, xx0, xx0+(xdir*dx), y1, r, g, b, a));
+			} else {
+				return (pixelRGBA(renderer, x1, y1, r, g, b, a));
+			}
+		}
+	} else if ((dx == dy) && (draw_endpoint)) {
+		/*
+		* Diagonal line (with endpoint)
+		*/
+		return (lineRGBA(renderer, x1, y1, x2, y2,  r, g, b, a));
+	}
+
+
+	/*
+	* Line is not horizontal, vertical or diagonal (with endpoint)
+	*/
+	result = true;
+
+	/*
+	* Zero accumulator 
+	*/
+	erracc = 0;
+
+	/*
+	* # of bits by which to shift erracc to get intensity level 
+	*/
+	intshift = 32 - AAbits;
+
+	/*
+	* Mask used to flip all bits in an intensity weighting 
+	*/
+	wgtcompmask = AAlevels - 1;
+
+	/*
+	* Draw the initial pixel in the foreground color 
+	*/
+	result &= pixelRGBA(renderer, x1, y1, r, g, b, a);
+
+	/*
+	* x-major or y-major? 
+	*/
+	if (dy > dx) {
+
+		/*
+		* y-major.  Calculate 16-bit fixed point fractional part of a pixel that
+		* X advances every time Y advances 1 pixel, truncating the result so that
+		* we won't overrun the endpoint along the X axis 
+		*/
+		/*
+		* Not-so-portable version: erradj = ((Uint64)dx << 32) / (Uint64)dy; 
+		*/
+		erradj = ((dx << 16) / dy) << 16;
+
+		/*
+		* draw all pixels other than the first and last 
+		*/
+		x0pxdir = xx0 + xdir;
+		while (--dy) {
+			erracctmp = erracc;
+			erracc += erradj;
+			if (erracc <= erracctmp) {
+				/*
+				* rollover in error accumulator, x coord advances 
+				*/
+				xx0 = x0pxdir;
+				x0pxdir += xdir;
+			}
+			yy0++;		/* y-major so always advance Y */
+
+			/*
+			* the AAbits most significant bits of erracc give us the intensity
+			* weighting for this pixel, and the complement of the weighting for
+			* the paired pixel. 
+			*/
+			wgt = (erracc >> intshift) & 255;
+			result &= pixelRGBAWeight (renderer, xx0, yy0, r, g, b, a, 255 - wgt);
+			result &= pixelRGBAWeight (renderer, x0pxdir, yy0, r, g, b, a, wgt);
+		}
+
+	} else {
+
+		/*
+		* x-major line.  Calculate 16-bit fixed-point fractional part of a pixel
+		* that Y advances each time X advances 1 pixel, truncating the result so
+		* that we won't overrun the endpoint along the X axis. 
+		*/
+		/*
+		* Not-so-portable version: erradj = ((Uint64)dy << 32) / (Uint64)dx; 
+		*/
+		erradj = ((dy << 16) / dx) << 16;
+
+		/*
+		* draw all pixels other than the first and last 
+		*/
+		y0p1 = yy0 + 1;
+		while (--dx) {
+
+			erracctmp = erracc;
+			erracc += erradj;
+			if (erracc <= erracctmp) {
+				/*
+				* Accumulator turned over, advance y 
+				*/
+				yy0 = y0p1;
+				y0p1++;
+			}
+			xx0 += xdir;	/* x-major so always advance X */
+			/*
+			* the AAbits most significant bits of erracc give us the intensity
+			* weighting for this pixel, and the complement of the weighting for
+			* the paired pixel. 
+			*/
+			wgt = (erracc >> intshift) & 255;
+			result &= pixelRGBAWeight (renderer, xx0, yy0, r, g, b, a, 255 - wgt);
+			result &= pixelRGBAWeight (renderer, xx0, y0p1, r, g, b, a, wgt);
+		}
+	}
+
+	/*
+	* Do we have to draw the endpoint 
+	*/
+	if (draw_endpoint) {
+		/*
+		* Draw final pixel, always exactly intersected by the line and doesn't
+		* need to be weighted. 
+		*/
+		result &= pixelRGBA (renderer, x2, y2, r, g, b, a);
+	}
+
+	return (result);
 }
 
 /*!
@@ -106,509 +350,6 @@ bool Gfx::hlineRGBA(SDL_Renderer * renderer, Sint16 x1, Sint16 x2, Sint16 y, Uin
 }
 
 /*!
-\brief Draw horizontal line in currently set color
-
-\param renderer The renderer to draw on.
-\param x1 X coordinate of the first point (i.e. left) of the line.
-\param x2 X coordinate of the second point (i.e. right) of the line.
-\param y Y coordinate of the points of the line.
-
-\returns Returns true on success, false on failure.
-*/
-bool hline(SDL_Renderer * renderer, Sint16 x1, Sint16 x2, Sint16 y)
-{
-	return SDL_RenderLine(renderer, x1, y, x2, y);;
-}
-
-/*!
-\brief Draw box (filled rectangle) with blending.
-
-\param renderer The renderer to draw on.
-\param x1 X coordinate of the first point (i.e. top right) of the box.
-\param y1 Y coordinate of the first point (i.e. top right) of the box.
-\param x2 X coordinate of the second point (i.e. bottom left) of the box.
-\param y2 Y coordinate of the second point (i.e. bottom left) of the box.
-\param r The red value of the box to draw. 
-\param g The green value of the box to draw. 
-\param b The blue value of the box to draw. 
-\param a The alpha value of the box to draw.
-
-\returns Returns true on success, false on failure.
-*/
-bool Gfx::boxRGBA(SDL_Renderer * renderer, Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-{
-	bool result;
-	Sint16 tmp;
-	SDL_FRect rect;
-
-	/*
-	* Test for special cases of straight lines or single point 
-	*/
-	if (x1 == x2) {
-		if (y1 == y2) {
-			return (pixelRGBA(renderer, x1, y1, r, g, b, a));
-		} else {
-			return (vlineRGBA(renderer, x1, y1, y2, r, g, b, a));
-		}
-	} else {
-		if (y1 == y2) {
-			return (hlineRGBA(renderer, x1, x2, y1, r, g, b, a));
-		}
-	}
-
-	/*
-	* Swap x1, x2 if required 
-	*/
-	if (x1 > x2) {
-		tmp = x1;
-		x1 = x2;
-		x2 = tmp;
-	}
-
-	/*
-	* Swap y1, y2 if required 
-	*/
-	if (y1 > y2) {
-		tmp = y1;
-		y1 = y2;
-		y2 = tmp;
-	}
-
-	/* 
-	* Create destination rect
-	*/	
-	rect.x = x1;
-	rect.y = y1;
-	rect.w = x2 - x1 + 1;
-	rect.h = y2 - y1 + 1;
-	
-	/*
-	* Draw
-	*/
-	result = true;
-	result &= SDL_SetRenderDrawBlendMode(renderer, (a == 255) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
-	result &= SDL_SetRenderDrawColor(renderer, r, g, b, a);	
-	result &= SDL_RenderFillRect(renderer, &rect);
-	return result;
-}
-
-/*!
-\brief Draw rounded-corner box (filled rectangle) with blending.
-
-\param renderer The renderer to draw on.
-\param x1 X coordinate of the first point (i.e. top right) of the box.
-\param y1 Y coordinate of the first point (i.e. top right) of the box.
-\param x2 X coordinate of the second point (i.e. bottom left) of the box.
-\param y2 Y coordinate of the second point (i.e. bottom left) of the box.
-\param rad The radius of the corner arcs of the box.
-\param r The red value of the box to draw. 
-\param g The green value of the box to draw. 
-\param b The blue value of the box to draw. 
-\param a The alpha value of the box to draw. 
-
-\returns Returns true on success, false on failure.
-*/
-bool Gfx::roundedBoxRGBA(SDL_Renderer * renderer, Sint16 x1, Sint16 y1, Sint16 x2,
-	Sint16 y2, Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-{
-	bool result;
-	Sint16 w, h, r2, tmp;
-	Sint16 cx = 0;
-	Sint16 cy = rad;
-	Sint16 ocx = (Sint16) 0xffff;
-	Sint16 ocy = (Sint16) 0xffff;
-	Sint16 df = 1 - rad;
-	Sint16 d_e = 3;
-	Sint16 d_se = -2 * rad + 5;
-	Sint16 xpcx, xmcx, xpcy, xmcy;
-	Sint16 ypcy, ymcy, ypcx, ymcx;
-	Sint16 x, y, dx, dy;
-
-	/* 
-	* Check destination renderer 
-	*/
-	if (renderer == NULL)
-	{
-		return false;
-	}
-
-	/*
-	* Check radius vor valid range
-	*/
-	if (rad < 0) {
-		return false;
-	}
-
-	/*
-	* Special case - no rounding
-	*/
-	if (rad <= 1) {
-		return boxRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
-	}
-
-	/*
-	* Test for special cases of straight lines or single point 
-	*/
-	if (x1 == x2) {
-		if (y1 == y2) {
-			return (pixelRGBA(renderer, x1, y1, r, g, b, a));
-		} else {
-			return (vlineRGBA(renderer, x1, y1, y2, r, g, b, a));
-		}
-	} else {
-		if (y1 == y2) {
-			return (hlineRGBA(renderer, x1, x2, y1, r, g, b, a));
-		}
-	}
-
-	/*
-	* Swap x1, x2 if required 
-	*/
-	if (x1 > x2) {
-		tmp = x1;
-		x1 = x2;
-		x2 = tmp;
-	}
-
-	/*
-	* Swap y1, y2 if required 
-	*/
-	if (y1 > y2) {
-		tmp = y1;
-		y1 = y2;
-		y2 = tmp;
-	}
-
-	/*
-	* Calculate width&height 
-	*/
-	w = x2 - x1 + 1;
-	h = y2 - y1 + 1;
-
-	/*
-	* Maybe adjust radius
-	*/
-	r2 = rad + rad;
-	if (r2 > w)  
-	{
-		rad = w / 2;
-		r2 = rad + rad;
-	}
-	if (r2 > h)
-	{
-		rad = h / 2;
-	}
-
-	/* Setup filled circle drawing for corners */
-	x = x1 + rad;
-	y = y1 + rad;
-	dx = x2 - x1 - rad - rad;
-	dy = y2 - y1 - rad - rad;
-
-	/*
-	* Set color
-	*/
-	result = true;
-	result &= SDL_SetRenderDrawBlendMode(renderer, (a == 255) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
-	result &= SDL_SetRenderDrawColor(renderer, r, g, b, a);
-
-	/*
-	* Draw corners
-	*/
-	do {
-		xpcx = x + cx;
-		xmcx = x - cx;
-		xpcy = x + cy;
-		xmcy = x - cy;
-		if (ocy != cy) {
-			if (cy > 0) {
-				ypcy = y + cy;
-				ymcy = y - cy;
-				result &= hline(renderer, xmcx, xpcx + dx, ypcy + dy);
-				result &= hline(renderer, xmcx, xpcx + dx, ymcy);
-			} else {
-				result &= hline(renderer, xmcx, xpcx + dx, y);
-			}
-			ocy = cy;
-		}
-		if (ocx != cx) {
-			if (cx != cy) {
-				if (cx > 0) {
-					ypcx = y + cx;
-					ymcx = y - cx;
-					result &= hline(renderer, xmcy, xpcy + dx, ymcx);
-					result &= hline(renderer, xmcy, xpcy + dx, ypcx + dy);
-				} else {
-					result &= hline(renderer, xmcy, xpcy + dx, y);
-				}
-			}
-			ocx = cx;
-		}
-
-		/*
-		* Update 
-		*/
-		if (df < 0) {
-			df += d_e;
-			d_e += 2;
-			d_se += 2;
-		} else {
-			df += d_se;
-			d_e += 2;
-			d_se += 4;
-			cy--;
-		}
-		cx++;
-	} while (cx <= cy);
-
-	/* Inside */
-	if (dx > 0 && dy > 0) {
-		result &= boxRGBA(renderer, x1, y1 + rad + 1, x2, y2 - rad, r, g, b, a);
-	}
-
-	return (result);
-}
-
-/*!
-\brief Arc with blending.
-
-\param renderer The renderer to draw on.
-\param x X coordinate of the center of the arc.
-\param y Y coordinate of the center of the arc.
-\param rad Radius in pixels of the arc.
-\param start Starting radius in degrees of the arc. 0 degrees is down, increasing counterclockwise.
-\param end Ending radius in degrees of the arc. 0 degrees is down, increasing counterclockwise.
-\param r The red value of the arc to draw. 
-\param g The green value of the arc to draw. 
-\param b The blue value of the arc to draw. 
-\param a The alpha value of the arc to draw.
-
-\returns Returns true on success, false on failure.
-*/
-/* TODO: rewrite algorithm; arc endpoints are not always drawn */
-bool Gfx::arcRGBA(SDL_Renderer * renderer, Sint16 x, Sint16 y, Sint16 rad, Sint16 start, Sint16 end, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-{
-	bool result;
-	Sint16 cx = 0;
-	Sint16 cy = rad;
-	Sint16 df = 1 - rad;
-	Sint16 d_e = 3;
-	Sint16 d_se = -2 * rad + 5;
-	Sint16 xpcx, xmcx, xpcy, xmcy;
-	Sint16 ypcy, ymcy, ypcx, ymcx;
-	Uint8 drawoct;
-	int startoct, endoct, oct, stopval_start = 0, stopval_end = 0;
-	double dstart, dend, temp = 0.;
-
-	/*
-	* Sanity check radius 
-	*/
-	if (rad < 0) {
-		return (false);
-	}
-
-	/*
-	* Special case for rad=0 - draw a point 
-	*/
-	if (rad == 0) {
-		return (pixelRGBA(renderer, x, y, r, g, b, a));
-	}
-
-	/*
-	 Octant labeling
-	      
-	  \ 5 | 6 /
-	   \  |  /
-	  4 \ | / 7
-	     \|/
-	------+------ +x
-	     /|\
-	  3 / | \ 0
-	   /  |  \
-	  / 2 | 1 \
-	      +y
-
-	 Initially reset bitmask to 0x00000000
-	 the set whether or not to keep drawing a given octant.
-	 For example: 0x00111100 means we're drawing in octants 2-5
-	*/
-	drawoct = 0; 
-
-	/*
-	* Fixup angles
-	*/
-	start %= 360;
-	end %= 360;
-	/* 0 <= start & end < 360; note that sometimes start > end - if so, arc goes back through 0. */
-	while (start < 0) start += 360;
-	while (end < 0) end += 360;
-	start %= 360;
-	end %= 360;
-
-	/* now, we find which octants we're drawing in. */
-	startoct = start / 45;
-	endoct = end / 45;
-	oct = startoct - 1;
-
-	/* stopval_start, stopval_end; what values of cx to stop at. */
-	do {
-		oct = (oct + 1) % 8;
-
-		if (oct == startoct) {
-			/* need to compute stopval_start for this octant.  Look at picture above if this is unclear */
-			dstart = (double)start;
-			switch (oct) 
-			{
-			case 0:
-			case 3:
-				temp = sin(dstart * M_PI / 180.);
-				break;
-			case 1:
-			case 6:
-				temp = cos(dstart * M_PI / 180.);
-				break;
-			case 2:
-			case 5:
-				temp = -cos(dstart * M_PI / 180.);
-				break;
-			case 4:
-			case 7:
-				temp = -sin(dstart * M_PI / 180.);
-				break;
-			}
-			temp *= rad;
-			stopval_start = (int)temp;
-
-			/* 
-			This isn't arbitrary, but requires graph paper to explain well.
-			The basic idea is that we're always changing drawoct after we draw, so we
-			stop immediately after we render the last sensible pixel at x = ((int)temp).
-			and whether to draw in this octant initially
-			*/
-			if (oct % 2) drawoct |= (1 << oct);			/* this is basically like saying drawoct[oct] = true, if drawoct were a bool array */
-			else		 drawoct &= 255 - (1 << oct);	/* this is basically like saying drawoct[oct] = false */
-		}
-		if (oct == endoct) {
-			/* need to compute stopval_end for this octant */
-			dend = (double)end;
-			switch (oct)
-			{
-			case 0:
-			case 3:
-				temp = sin(dend * M_PI / 180);
-				break;
-			case 1:
-			case 6:
-				temp = cos(dend * M_PI / 180);
-				break;
-			case 2:
-			case 5:
-				temp = -cos(dend * M_PI / 180);
-				break;
-			case 4:
-			case 7:
-				temp = -sin(dend * M_PI / 180);
-				break;
-			}
-			temp *= rad;
-			stopval_end = (int)temp;
-
-			/* and whether to draw in this octant initially */
-			if (startoct == endoct)	{
-				/* note:      we start drawing, stop, then start again in this case */
-				/* otherwise: we only draw in this octant, so initialize it to false, it will get set back to true */
-				if (start > end) {
-					/* unfortunately, if we're in the same octant and need to draw over the whole circle, */
-					/* we need to set the rest to true, because the while loop will end at the bottom. */
-					drawoct = 255;
-				} else {
-					drawoct &= 255 - (1 << oct);
-				}
-			} 
-			else if (oct % 2) drawoct &= 255 - (1 << oct);
-			else			  drawoct |= (1 << oct);
-		} else if (oct != startoct) { /* already verified that it's != endoct */
-			drawoct |= (1 << oct); /* draw this entire segment */
-		}
-	} while (oct != endoct);
-
-	/* so now we have what octants to draw and when to draw them. all that's left is the actual raster code. */
-
-	/*
-	* Set color 
-	*/
-	result = true;
-	result &= SDL_SetRenderDrawBlendMode(renderer, (a == 255) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
-	result &= SDL_SetRenderDrawColor(renderer, r, g, b, a);
-
-	/*
-	* Draw arc 
-	*/
-	do {
-		ypcy = y + cy;
-		ymcy = y - cy;
-		if (cx > 0) {
-			xpcx = x + cx;
-			xmcx = x - cx;
-
-			/* always check if we're drawing a certain octant before adding a pixel to that octant. */
-			if (drawoct & 4)  result &= pixel(renderer, xmcx, ypcy);
-			if (drawoct & 2)  result &= pixel(renderer, xpcx, ypcy);
-			if (drawoct & 32) result &= pixel(renderer, xmcx, ymcy);
-			if (drawoct & 64) result &= pixel(renderer, xpcx, ymcy);
-		} else {
-			if (drawoct & 96) result &= pixel(renderer, x, ymcy);
-			if (drawoct & 6)  result &= pixel(renderer, x, ypcy);
-		}
-
-		xpcy = x + cy;
-		xmcy = x - cy;
-		if (cx > 0 && cx != cy) {
-			ypcx = y + cx;
-			ymcx = y - cx;
-			if (drawoct & 8)   result &= pixel(renderer, xmcy, ypcx);
-			if (drawoct & 1)   result &= pixel(renderer, xpcy, ypcx);
-			if (drawoct & 16)  result &= pixel(renderer, xmcy, ymcx);
-			if (drawoct & 128) result &= pixel(renderer, xpcy, ymcx);
-		} else if (cx == 0) {
-			if (drawoct & 24)  result &= pixel(renderer, xmcy, y);
-			if (drawoct & 129) result &= pixel(renderer, xpcy, y);
-		}
-
-		/*
-		* Update whether we're drawing an octant
-		*/
-		if (stopval_start == cx) {
-			/* works like an on-off switch. */  
-			/* This is just in case start & end are in the same octant. */
-			if (drawoct & (1 << startoct)) drawoct &= 255 - (1 << startoct);		
-			else						   drawoct |= (1 << startoct);
-		}
-		if (stopval_end == cx) {
-			if (drawoct & (1 << endoct)) drawoct &= 255 - (1 << endoct);
-			else						 drawoct |= (1 << endoct);
-		}
-
-		/*
-		* Update pixels
-		*/
-		if (df < 0) {
-			df += d_e;
-			d_e += 2;
-			d_se += 2;
-		} else {
-			df += d_se;
-			d_e += 2;
-			d_se += 4;
-			cy--;
-		}
-		cx++;
-	} while (cx <= cy);
-
-	return (result);
-}
-
-/*!
 \brief Draw line with alpha blending.
 
 \param renderer The renderer to draw on.
@@ -636,432 +377,53 @@ bool Gfx::lineRGBA(SDL_Renderer * renderer, Sint16 x1, Sint16 y1, Sint16 x2, Sin
 }
 
 /*!
-\brief Internal float (low-speed) pie-calc implementation by drawing polygons.
-
-Note: Determines vertex array and uses polygon or filledPolygon drawing routines to render.
+\brief Draw pixel with blending enabled and using alpha weight on color.
 
 \param renderer The renderer to draw on.
-\param x X coordinate of the center of the pie.
-\param y Y coordinate of the center of the pie.
-\param rad Radius in pixels of the pie.
-\param start Starting radius in degrees of the pie.
-\param end Ending radius in degrees of the pie.
-\param r The red value of the pie to draw. 
-\param g The green value of the pie to draw. 
-\param b The blue value of the pie to draw. 
-\param a The alpha value of the pie to draw.
-\param filled Flag indicating if the pie should be filled (=1) or not (=0).
+\param x The horizontal coordinate of the pixel.
+\param y The vertical position of the pixel.
+\param r The red color value of the pixel to draw. 
+\param g The green color value of the pixel to draw.
+\param b The blue color value of the pixel to draw.
+\param a The alpha value of the pixel to draw.
+\param weight The weight multiplied into the alpha value of the pixel.
 
 \returns Returns true on success, false on failure.
 */
-/* TODO: rewrite algorithm; pie is not always accurate */
-bool Gfx::_pieRGBA(SDL_Renderer * renderer, Sint16 x, Sint16 y, Sint16 rad, Sint16 start, Sint16 end,  Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint8 filled)
+bool Gfx::pixelRGBAWeight(SDL_Renderer * renderer, Sint16 x, Sint16 y, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint32 weight)
 {
-	bool result;
-	double angle, start_angle, end_angle;
-	double deltaAngle;
-	double dr;
-	int numpoints, i;
-	Sint16 *vx, *vy;
-
 	/*
-	* Sanity check radii 
+	* Modify Alpha by weight 
 	*/
-	if (rad < 0) {
-		return (false);
+	Uint32 ax = a;
+	ax = ((ax * weight) >> 8);
+	if (ax > 255) {
+		a = 255;
+	} else {
+		a = (Uint8)(ax & 0x000000ff);
 	}
 
-	/*
-	* Fixup angles
-	*/
-	start = start % 360;
-	end = end % 360;
-
-	/*
-	* Special case for rad=0 - draw a point 
-	*/
-	if (rad == 0) {
-		return (pixelRGBA(renderer, x, y, r, g, b, a));
-	}
-
-	/*
-	* Variable setup 
-	*/
-	dr = (double) rad;
-	deltaAngle = 3.0 / dr;
-	start_angle = (double) start *(2.0 * M_PI / 360.0);
-	end_angle = (double) end *(2.0 * M_PI / 360.0);
-	if (start > end) {
-		end_angle += (2.0 * M_PI);
-	}
-
-	/* We will always have at least 2 points */
-	numpoints = 2;
-
-	/* Count points (rather than calculating it) */
-	angle = start_angle;
-	while (angle < end_angle) {
-		angle += deltaAngle;
-		numpoints++;
-	}
-
-	/* Allocate combined vertex array */
-	vx = vy = (Sint16 *) malloc(2 * sizeof(Uint16) * numpoints);
-	if (vx == NULL) {
-		return (false);
-	}
-
-	/* Update point to start of vy */
-	vy += numpoints;
-
-	/* Center */
-	vx[0] = x;
-	vy[0] = y;
-
-	/* First vertex */
-	angle = start_angle;
-	vx[1] = x + (int) (dr * cos(angle));
-	vy[1] = y + (int) (dr * sin(angle));
-
-	if (numpoints<3)
-	{
-		result = lineRGBA(renderer, vx[0], vy[0], vx[1], vy[1], r, g, b, a);
-	}
-	else
-	{
-		/* Calculate other vertices */
-		i = 2;
-		angle = start_angle;
-		while (angle < end_angle) {
-			angle += deltaAngle;
-			if (angle>end_angle)
-			{
-				angle = end_angle;
-			}
-			vx[i] = x + (int) (dr * cos(angle));
-			vy[i] = y + (int) (dr * sin(angle));
-			i++;
-		}
-
-		/* Draw */
-		if (filled) {
-			result = filledPolygonRGBA(renderer, vx, vy, numpoints, r, g, b, a);
-		} else {
-			result = polygonRGBA(renderer, vx, vy, numpoints, r, g, b, a);
-		}
-	}
-
-	/* Free combined vertex array */
-	free(vx);
-
-	return (result);
+	return pixelRGBA(renderer, x, y, r, g, b, a);
 }
 
 /*!
-\brief Draw filled pie with alpha blending.
+\brief Draw anti-aliased polygon with alpha blending.
 
 \param renderer The renderer to draw on.
-\param x X coordinate of the center of the filled pie.
-\param y Y coordinate of the center of the filled pie.
-\param rad Radius in pixels of the filled pie.
-\param start Starting radius in degrees of the filled pie.
-\param end Ending radius in degrees of the filled pie.
-\param r The red value of the filled pie to draw. 
-\param g The green value of the filled pie to draw. 
-\param b The blue value of the filled pie to draw. 
-\param a The alpha value of the filled pie to draw.
-
-\returns Returns true on success, false on failure.
-*/
-bool Gfx::filledPieRGBA(SDL_Renderer * renderer, Sint16 x, Sint16 y, Sint16 rad,
-	Sint16 start, Sint16 end, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-{
-	return _pieRGBA(renderer, x, y, rad, start, end, r, g, b, a, 1);
-}
-
-/*!
-\brief Draw polygon with the currently set color and blend mode.
-
-\param renderer The renderer to draw on.
-\param vx Vertex array containing X coordinates of the points of the polygon.
-\param vy Vertex array containing Y coordinates of the points of the polygon.
+\param vx Vertex array containing X coordinates of the points of the aa-polygon.
+\param vy Vertex array containing Y coordinates of the points of the aa-polygon.
 \param n Number of points in the vertex array. Minimum number is 3.
+\param r The red value of the aa-polygon to draw. 
+\param g The green value of the aa-polygon to draw. 
+\param b The blue value of the aa-polygon to draw. 
+\param a The alpha value of the aa-polygon to draw.
 
 \returns Returns true on success, false on failure.
 */
-bool polygon(SDL_Renderer * renderer, const Sint16 * vx, const Sint16 * vy, int n)
-{
-	/*
-	* Draw 
-	*/
-	bool result = true;
-	int i, nn;
-	SDL_FPoint* points;
-
-	/*
-	* Vertex array NULL check 
-	*/
-	if (vx == NULL) {
-		return (false);
-	}
-	if (vy == NULL) {
-		return (false);
-	}
-
-	/*
-	* Sanity check 
-	*/
-	if (n < 3) {
-		return (false);
-	}
-
-	/*
-	* Create array of points
-	*/
-	nn = n + 1;
-	points = (SDL_FPoint*)malloc(sizeof(SDL_FPoint) * nn);
-	if (points == NULL)
-	{
-		return false;
-	}
-	for (i=0; i<n; i++)
-	{
-		points[i].x = vx[i];
-		points[i].y = vy[i];
-	}
-	points[n].x = vx[0];
-	points[n].y = vy[0];
-
-	/*
-	* Draw 
-	*/
-	result &= SDL_RenderLines(renderer, points, nn);
-	free(points);
-
-	return (result);
-}
-
-/*!
-\brief Internal helper qsort callback functions used in filled polygon drawing.
-
-\param a The surface to draw on.
-\param b Vertex array containing X coordinates of the points of the polygon.
-
-\returns Returns 0 if a==b, a negative number if a<b or a positive number if a>b.
-*/
-int _gfxPrimitivesCompareInt(const void *a, const void *b)
-{
-	return (*(const int *) a) - (*(const int *) b);
-}
-
-/*!
-\brief Global vertex array to use if optional parameters are not given in filledPolygonMT calls.
-
-Note: Used for non-multithreaded (default) operation of filledPolygonMT.
-*/
-static int *gfxPrimitivesPolyIntsGlobal = NULL;
-
-/*!
-\brief Flag indicating if global vertex array was already allocated.
-
-Note: Used for non-multithreaded (default) operation of filledPolygonMT.
-*/
-static int gfxPrimitivesPolyAllocatedGlobal = 0;
-
-/*!
-\brief Draw filled polygon with alpha blending (multi-threaded capable).
-
-Note: The last two parameters are optional; but are required for multithreaded operation.  
-
-\param renderer The renderer to draw on.
-\param vx Vertex array containing X coordinates of the points of the filled polygon.
-\param vy Vertex array containing Y coordinates of the points of the filled polygon.
-\param n Number of points in the vertex array. Minimum number is 3.
-\param r The red value of the filled polygon to draw. 
-\param g The green value of the filled polygon to draw. 
-\param b The blue value of the filled polygon to draw. 
-\param a The alpha value of the filled polygon to draw.
-\param polyInts Preallocated, temporary vertex array used for sorting vertices. Required for multithreaded operation; set to NULL otherwise.
-\param polyAllocated Flag indicating if temporary vertex array was allocated. Required for multithreaded operation; set to NULL otherwise.
-
-\returns Returns true on success, false on failure.
-*/
-int filledPolygonRGBAMT(SDL_Renderer * renderer, const Sint16 * vx, const Sint16 * vy, int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a, int **polyInts, int *polyAllocated)
+bool Gfx::aapolygonRGBA(SDL_Renderer * renderer, const Sint16 * vx, const Sint16 * vy, int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 {
 	bool result;
 	int i;
-	int y, xa, xb;
-	int miny, maxy;
-	int x1, y1;
-	int x2, y2;
-	int ind1, ind2;
-	int ints;
-	int *gfxPrimitivesPolyInts = NULL;
-	int *gfxPrimitivesPolyIntsNew = NULL;
-	int gfxPrimitivesPolyAllocated = 0;
-
-	/*
-	* Vertex array NULL check 
-	*/
-	if (vx == NULL) {
-		return (false);
-	}
-	if (vy == NULL) {
-		return (false);
-	}
-
-	/*
-	* Sanity check number of edges
-	*/
-	if (n < 3) {
-		return false;
-	}
-
-	/*
-	* Map polygon cache  
-	*/
-	if ((polyInts==NULL) || (polyAllocated==NULL)) {
-		/* Use global cache */
-		gfxPrimitivesPolyInts = gfxPrimitivesPolyIntsGlobal;
-		gfxPrimitivesPolyAllocated = gfxPrimitivesPolyAllocatedGlobal;
-	} else {
-		/* Use local cache */
-		gfxPrimitivesPolyInts = *polyInts;
-		gfxPrimitivesPolyAllocated = *polyAllocated;
-	}
-
-	/*
-	* Allocate temp array, only grow array 
-	*/
-	if (!gfxPrimitivesPolyAllocated) {
-		gfxPrimitivesPolyInts = (int *) malloc(sizeof(int) * n);
-		gfxPrimitivesPolyAllocated = n;
-	} else {
-		if (gfxPrimitivesPolyAllocated < n) {
-			gfxPrimitivesPolyIntsNew = (int *) realloc(gfxPrimitivesPolyInts, sizeof(int) * n);
-			if (!gfxPrimitivesPolyIntsNew) {
-				if (!gfxPrimitivesPolyInts) {
-					free(gfxPrimitivesPolyInts);
-					gfxPrimitivesPolyInts = NULL;
-				}
-				gfxPrimitivesPolyAllocated = 0;
-			} else {
-				gfxPrimitivesPolyInts = gfxPrimitivesPolyIntsNew;
-				gfxPrimitivesPolyAllocated = n;
-			}
-		}
-	}
-
-	/*
-	* Check temp array
-	*/
-	if (gfxPrimitivesPolyInts==NULL) {        
-		gfxPrimitivesPolyAllocated = 0;
-	}
-
-	/*
-	* Update cache variables
-	*/
-	if ((polyInts==NULL) || (polyAllocated==NULL)) { 
-		gfxPrimitivesPolyIntsGlobal =  gfxPrimitivesPolyInts;
-		gfxPrimitivesPolyAllocatedGlobal = gfxPrimitivesPolyAllocated;
-	} else {
-		*polyInts = gfxPrimitivesPolyInts;
-		*polyAllocated = gfxPrimitivesPolyAllocated;
-	}
-
-	/*
-	* Check temp array again
-	*/
-	if (gfxPrimitivesPolyInts==NULL) {        
-		return(false);
-	}
-
-	/*
-	* Determine Y maxima 
-	*/
-	miny = vy[0];
-	maxy = vy[0];
-	for (i = 1; (i < n); i++) {
-		if (vy[i] < miny) {
-			miny = vy[i];
-		} else if (vy[i] > maxy) {
-			maxy = vy[i];
-		}
-	}
-
-	/*
-	* Draw, scanning y 
-	*/
-	for (y = miny; (y <= maxy); y++) {
-		ints = 0;
-		for (i = 0; (i < n); i++) {
-			if (!i) {
-				ind1 = n - 1;
-				ind2 = 0;
-			} else {
-				ind1 = i - 1;
-				ind2 = i;
-			}
-			y1 = vy[ind1];
-			y2 = vy[ind2];
-			if (y1 < y2) {
-				x1 = vx[ind1];
-				x2 = vx[ind2];
-			} else if (y1 > y2) {
-				y2 = vy[ind1];
-				y1 = vy[ind2];
-				x2 = vx[ind1];
-				x1 = vx[ind2];
-			} else {
-				continue;
-			}
-			if ( ((y >= y1) && (y < y2)) || ((y == maxy) && (y > y1) && (y <= y2)) ) {
-				gfxPrimitivesPolyInts[ints++] = ((65536 * (y - y1)) / (y2 - y1)) * (x2 - x1) + (65536 * x1);
-			} 	    
-		}
-
-		qsort(gfxPrimitivesPolyInts, ints, sizeof(int), _gfxPrimitivesCompareInt);
-
-		/*
-		* Set color 
-		*/
-		result = true;
-	   result &= SDL_SetRenderDrawBlendMode(renderer, (a == 255) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
-		result &= SDL_SetRenderDrawColor(renderer, r, g, b, a);	
-
-		for (i = 0; (i < ints); i += 2) {
-			xa = gfxPrimitivesPolyInts[i] + 1;
-			xa = (xa >> 16) + ((xa & 32768) >> 15);
-			xb = gfxPrimitivesPolyInts[i+1] - 1;
-			xb = (xb >> 16) + ((xb & 32768) >> 15);
-			result &= hline(renderer, xa, xb, y);
-		}
-	}
-
-	return (result);
-}
-
-/*!
-\brief Draw polygon with alpha blending.
-
-\param renderer The renderer to draw on.
-\param vx Vertex array containing X coordinates of the points of the polygon.
-\param vy Vertex array containing Y coordinates of the points of the polygon.
-\param n Number of points in the vertex array. Minimum number is 3.
-\param r The red value of the polygon to draw. 
-\param g The green value of the polygon to draw. 
-\param b The blue value of the polygon to draw. 
-\param a The alpha value of the polygon to draw.
-
-\returns Returns true on success, false on failure.
-*/
-bool Gfx::polygonRGBA(SDL_Renderer * renderer, const Sint16 * vx, const Sint16 * vy, int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-{
-	/*
-	* Draw 
-	*/
-	bool result;
 	const Sint16 *x1, *y1, *x2, *y2;
 
 	/*
@@ -1090,22 +452,148 @@ bool Gfx::polygonRGBA(SDL_Renderer * renderer, const Sint16 * vx, const Sint16 *
 	y2++;
 
 	/*
-	* Set color 
-	*/
-	result = true;
-	result &= SDL_SetRenderDrawBlendMode(renderer, (a == 255) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
-	result &= SDL_SetRenderDrawColor(renderer, r, g, b, a);	
-
-	/*
 	* Draw 
 	*/
-	result &= polygon(renderer, vx, vy, n);
+	result = true;
+	for (i = 1; i < n; i++) {
+		result &= _aalineRGBA(renderer, *x1, *y1, *x2, *y2, r, g, b, a, 0);
+		x1 = x2;
+		y1 = y2;
+		x2++;
+		y2++;
+	}
+
+	result &= _aalineRGBA(renderer, *x1, *y1, *vx, *vy, r, g, b, a, 0);
 
 	return (result);
 }
 
 /*!
-\brief Draw filled polygon with alpha blending.
+\brief Draw anti-aliased filled ellipical pie (or chord) with alpha blending.
+
+\param renderer The renderer to draw on.
+\param cx X coordinate of the center of the filled pie.
+\param cy Y coordinate of the center of the filled pie.
+\param rx Horizontal radius in pixels of the filled pie.
+\param ry Vertical radius in pixels of the filled pie.
+\param start Starting angle in degrees of the filled pie; zero is right, increasing clockwise.
+\param end Ending angle in degrees of the filled pie; zero is right, increasing clockwise.
+\param chord Set to 0 for a pie (sector) or 1 for a chord (segment).
+\param r The red value of the filled pie to draw. 
+\param g The green value of the filled pie to draw. 
+\param b The blue value of the filled pie to draw. 
+\param a The alpha value of the filled pie to draw.
+/
+\returns Returns 0 on success, -1 on failure.
+*/
+int Gfx::aaFilledPieRGBA(SDL_Renderer * renderer, float cx, float cy, float rx, float ry,
+	float start, float end, Uint32 chord, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+	int nverts, i, result;
+	double *vx, *vy;
+
+	// Sanity check radii 
+	if ((rx <= 0) || (ry <= 0) || (start == end))
+		return -1;
+
+	// Convert degrees to radians
+	start = fmod(start, 360.0) * 2.0 * M_PI / 360.0 ;
+	end = fmod(end, 360.0) * 2.0 * M_PI / 360.0 ;
+	while (start >= end)
+		end += 2.0 * M_PI ;
+
+	// Calculate number of vertices on perimeter
+	nverts = (end - start) * sqrt(rx * ry) / M_PI ;
+	if (nverts < 2)
+		nverts = 2 ;
+	if (nverts > 180)
+		nverts = 180 ;
+
+	// Allocate combined vertex array 
+	vx = vy = (double *) malloc(2 * sizeof(double) * (nverts + 1));
+	if (vx == NULL)
+		return (-1);
+
+	// Update pointer to start of vy
+	vy += nverts + 1 ;
+
+	// Calculate vertices:
+	for (i = 0; i < nverts; i++)
+	    {
+		double angle = start + (end - start) * (double) i / (double) (nverts - 1) ; 
+		vx[i] = cx + rx * cos(angle);
+		vy[i] = cy + ry * sin(angle);
+	    }
+
+	// Center:
+	vx[i] = cx ;
+	vy[i] = cy ;
+
+	result = aaFilledPolygonRGBA(renderer, vx, vy, nverts + 1 - (chord != 0), r, g, b, a);
+
+	// Free combined vertex array
+	free(vx);
+
+	return (result);
+}
+
+static int _gfxPrimitivesCompareFloat2(const void *a, const void *b)
+{
+	float diff = *((float *)a + 1) - *((float *)b + 1) ;
+	if (diff != 0.0) return (diff > 0) - (diff < 0) ;
+	diff = *(float *)a - *(float *)b ;
+	return (diff > 0) - (diff < 0) ;
+}
+
+// SDL_RenderLine() is documented as including both end points, but this isn't
+// reliable in Linux so use SDL_RenderPoints() instead, despite being slower.
+static int renderdrawline(SDL_Renderer *renderer, int x1, int y1, int x2, int y2)
+{
+	int result ;
+#ifndef __EMSCRIPTEN__
+	if ((x1 == x2) && (y1 == y2))
+		result = SDL_RenderPoint (renderer, x1, y1) ;
+	else if (y1 == y2)
+	    {
+		int x ;
+		if (x1 > x2) { x = x1 ; x1 = x2 ; x2 = x ; }
+		SDL_FPoint *points = (SDL_FPoint*) malloc ((x2 - x1 + 1) * sizeof(SDL_FPoint)) ;
+		if (points == NULL) return -1 ;
+		for (x = x1; x <= x2; x++)
+		    {
+			points[x - x1].x = x ;
+			points[x - x1].y = y1 ;
+		    }
+		result = SDL_RenderPoints (renderer, points, x2 - x1 + 1) ;
+		free (points) ;
+	    }
+	else if (x1 == x2)
+	    {
+		int y ;
+		if (y1 > y2) { y = y1 ; y1 = y2 ; y2 = y ; }
+		SDL_FPoint *points = (SDL_FPoint*) malloc ((y2 - y1 + 1) * sizeof(SDL_FPoint)) ;
+		if (points == NULL) return -1 ;
+		for (y = y1; y <= y2; y++)
+		    {
+			points[y - y1].x = x1 ;
+			points[y - y1].y = y ;
+		    }
+		result = SDL_RenderPoints (renderer, points, y2 - y1 + 1) ;
+		free (points) ;
+	    }
+	else
+#endif
+		result = SDL_RenderLine (renderer, x1, y1, x2, y2) ;
+	return result ;
+}
+
+
+// This constant determines the maximum size and/or complexity of polygon that can be
+// drawn. Set to 16K the maximum aaArc height is approximately 1100 lines.
+#define POLYSIZE 16384
+
+/*!
+\brief Draw anti-aliased filled polygon with alpha blending.
 
 \param renderer The renderer to draw on.
 \param vx Vertex array containing X coordinates of the points of the filled polygon.
@@ -1116,11 +604,214 @@ bool Gfx::polygonRGBA(SDL_Renderer * renderer, const Sint16 * vx, const Sint16 *
 \param b The blue value of the filed polygon to draw. 
 \param a The alpha value of the filled polygon to draw.
 
-\returns Returns true on success, false on failure.
+\returns Returns 0 on success, -1 on failure, or -2 if the polygon is too large and/or complex.
 */
-bool Gfx::filledPolygonRGBA(SDL_Renderer * renderer, const Sint16 * vx, const Sint16 * vy, int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+int Gfx::aaFilledPolygonRGBA(SDL_Renderer * renderer, const double * vx, const double * vy, int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 {
-	return filledPolygonRGBAMT(renderer, vx, vy, n, r, g, b, a, NULL, NULL);
+	int i, j, xi, yi, result ;
+	double x1, x2, y0, y1, y2, minx, maxx, prec ;
+	float *list, *strip ;
+
+	if (n < 3)
+		return -1 ;
+
+	result = SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND) ;
+
+	// Find extrema:
+	minx = 99999.0 ;
+	maxx = -99999.0 ;
+	prec = 0.00001 ;
+	for (i = 0; i < n; i++)
+	    {
+		double x = vx[i] ;
+		double y = fabs(vy[i]) ;
+		if (x < minx) minx = x ;
+		if (x > maxx) maxx = x ;
+		if (y > prec) prec = y ;
+	    }
+	minx = floor (minx) ;
+	maxx = floor (maxx) ;
+	prec = floor (pow(2,19) / prec) ;
+
+	// Allocate main array, this determines the maximum polygon size and complexity:
+	list = (float *) malloc (POLYSIZE * sizeof(float)) ;
+	if (list == NULL)
+		return -2 ;
+
+	// Build vertex list.  Special x-values used to indicate vertex type:
+	// x = -100001.0 indicates /\, x = -100003.0 indicates \/, x = -100002.0 neither
+	yi = 0 ;
+	y0 = floor(vy[n - 1] * prec) / prec ;
+	y1 = floor(vy[0] * prec) / prec ;
+	for (i = 1; i <= n; i++)
+	    {
+		if (yi > POLYSIZE - 4)
+		    {
+			free (list) ;
+			return -2 ;
+		    }
+		y2 = floor(vy[i % n] * prec) / prec ;
+		if (((y1 < y2) - (y1 > y2)) == ((y0 < y1) - (y0 > y1)))
+		    {
+			list[yi++] = -100002.0 ;
+			list[yi++] = y1 ;
+			list[yi++] = -100002.0 ;
+			list[yi++] = y1 ;
+		    }
+		else
+		    {
+			if (y0 != y1)
+			    {
+				list[yi++] = (y1 < y0) - (y1 > y0) - 100002.0 ;
+				list[yi++] = y1 ;
+			    }
+			if (y1 != y2)
+			    {
+				list[yi++] = (y1 < y2) - (y1 > y2) - 100002.0 ;
+				list[yi++] = y1 ;
+			    }
+		    }
+		y0 = y1 ;
+		y1 = y2 ;
+	    }
+	xi = yi ;
+
+	// Sort vertex list:
+	qsort (list, yi / 2, sizeof(float) * 2, _gfxPrimitivesCompareFloat2) ;
+
+	// Append line list to vertex list:
+	for (i = 1; i <= n; i++)
+	    {
+		double x, y ;
+		double d = 0.5 / prec ;
+
+		x1 = vx[i - 1] ;
+		y1 = floor(vy[i - 1] * prec) / prec ;
+		x2 = vx[i % n] ;
+		y2 = floor(vy[i % n] * prec) / prec ;
+
+		if (y2 < y1) 
+		    {
+			double tmp ;
+			tmp = x1 ; x1 = x2 ; x2 = tmp ;
+			tmp = y1 ; y1 = y2 ; y2 = tmp ;
+		    }
+		if (y2 != y1)
+			y0 = (x2 - x1) / (y2 - y1) ;
+
+		for (j = 1; j < xi; j += 4)
+		    {
+			y = list[j] ;
+			if (((y + d) <= y1) || (y == list[j + 4]))
+				continue ;
+			if ((y -= d) >= y2)
+				break ;
+			if (yi > POLYSIZE - 4)
+			    {
+				free (list) ;
+				return -2 ;
+			    }
+			if (y > y1)
+			    {
+				list[yi++] = x1 + y0 * (y - y1) ;
+				list[yi++] = y ;
+			    }
+			y += d * 2.0 ;
+			if (y < y2)
+			    {
+				list[yi++] = x1 + y0 * (y - y1) ;
+				list[yi++] = y ;
+			    }
+		    }
+
+		y = floor(y1) + 1.0 ;
+		while (y <= y2)
+		    {
+			x = x1 + y0 * (y - y1) ;
+			if (yi > POLYSIZE - 2)
+			    {
+				free (list) ;
+				return -2 ;
+			    }
+			list[yi++] = x ;
+			list[yi++] = y ;
+			y += 1.0 ;
+		    }
+	    }
+
+	// Sort combined list:
+	qsort (list, yi / 2, sizeof(float) * 2, _gfxPrimitivesCompareFloat2) ;
+
+	// Plot lines:
+	strip = (float *) malloc ((maxx - minx + 2) * sizeof(float)) ;
+	if (strip == NULL)
+	    {
+		free (list) ;
+		return -1 ;
+	    }
+	memset (strip, 0, (maxx - minx + 2) * sizeof(float)) ;
+	n = yi ;
+	yi = list[1] ;
+	j = 0 ;
+
+	for (i = 0; i < n - 7; i += 4)
+	    {
+		float x1 = list[i + 0] ;
+		float y1 = list[i + 1] ;
+		float x3 = list[i + 2] ;
+		float x2 = list[i + j + 0] ;
+		float y2 = list[i + j + 1] ;
+		float x4 = list[i + j + 2] ;
+
+		if (x1 + x3 == -200002.0)
+			j += 4 ;
+		else if (x1 + x3 == -200006.0)
+			j -= 4 ;
+		else if ((x1 >= minx) && (x2 >= minx))
+		    {			
+			if (x1 > x2) { float tmp = x1 ; x1 = x2 ; x2 = tmp ; }
+			if (x3 > x4) { float tmp = x3 ; x3 = x4 ; x4 = tmp ; }
+
+			for ( xi = x1 - minx; xi <= x4 - minx; xi++ )
+			    {
+				float u, v ;
+				float x = minx + xi ;
+				if (x < x2)  u = (x - x1 + 1) / (x2 - x1 + 1) ; else u = 1.0 ;
+				if (x >= x3 - 1) v = (x4 - x) / (x4 - x3 + 1) ; else v = 1.0 ;
+				if ((u > 0.0) && (v > 0.0))
+					strip[xi] += (y2 - y1) * (u + v - 1.0) ;
+			    }
+		    }
+
+		if ((yi == (list[i + 5] - 1.0)) || (i == n - 8))
+		    {
+			for (xi = 0; xi <= maxx - minx; xi++)
+			    {
+				if (strip[xi] != 0.0)
+				    {
+					if (strip[xi] >= 0.996)
+					    {
+						int x0 = xi ;
+						while (strip[++xi] >= 0.996) ;
+						xi-- ;
+						result |= SDL_SetRenderDrawColor (renderer, r, g, b, a) ;
+						result |= renderdrawline (renderer, minx + x0, yi, minx + xi, yi) ;
+					    }
+					else
+					    {
+						result |= SDL_SetRenderDrawColor (renderer, r, g, b, a * strip[xi]) ;
+						result |= SDL_RenderPoint (renderer, minx + xi, yi) ;
+					    }
+				    }
+			    }
+			memset (strip, 0, (maxx - minx + 2) * sizeof(float)) ;
+			yi++ ;
+
+		    }
+	    }
+
+	// Free arrays:
+	free (list) ;
+	free (strip) ;
+	return result ;
 }
-
-

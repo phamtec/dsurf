@@ -351,19 +351,9 @@ SDL_Surface *Renderer::renderText(const char *str, const SDL_Color &color) {
 void Renderer::renderFilledPie(const Point &origin, int radius, int start, int end, const SDL_Color &color) {
 
   Point o = origin + _offs;
-	Gfx::filledPieRGBA(_renderer, 
-	  o.x, o.y, radius, start, end,
+  Gfx::aaFilledPieRGBA(_renderer, 
+    o.x, o.y, radius, radius,
+		start, end, 0, 
 		color.r, color.g, color.b, color.a);
 
 }
-
-void Renderer::renderFilledRoundRect(const Rect &rect, int radius, const SDL_Color &color) {
-
-  Rect r = rect + _offs;
-  Gfx::roundedBoxRGBA(_renderer, 
-    r.origin.x, r.origin.y, r.origin.x + r.size.w, r.origin.y + r.size.h,
-		radius, color.r, color.g, color.b, color.a);
-
-}
-
-

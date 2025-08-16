@@ -22,6 +22,13 @@ class Gfx {
 
 public:
   
+  static int aaFilledPieRGBA(SDL_Renderer * renderer, 
+    float cx, float cy, float rx, float ry,
+		float start, float end, Uint32 chord, 
+		Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+			
+private:
+
 	static bool pixelRGBA(SDL_Renderer * renderer, 
 	  Sint16 x, Sint16 y, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 	
@@ -34,33 +41,21 @@ public:
 	static bool lineRGBA(SDL_Renderer * renderer, Sint16 x1, Sint16 y1,
 		Sint16 x2, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-	static bool boxRGBA(SDL_Renderer * renderer, 
-	  Sint16 x1, Sint16 y1, Sint16 x2,
-		Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-
-  static bool roundedBoxRGBA(SDL_Renderer * renderer, 
-    Sint16 x1, Sint16 y1, Sint16 x2,
-		Sint16 y2, Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-		
-	static bool arcRGBA(SDL_Renderer * renderer, 
-	  Sint16 x, Sint16 y, Sint16 rad, Sint16 start, Sint16 end,
-		Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-
-	static bool filledPieRGBA(SDL_Renderer * renderer, 
-	  Sint16 x, Sint16 y, Sint16 rad,
-		Sint16 start, Sint16 end, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-		
-	static bool polygonRGBA(SDL_Renderer * renderer, const Sint16 * vx, const Sint16 * vy,
+	static bool aapolygonRGBA(SDL_Renderer * renderer, 
+	  const Sint16 * vx, const Sint16 * vy,
 		int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-	static bool filledPolygonRGBA(SDL_Renderer * renderer, const Sint16 * vx,
-		const Sint16 * vy, int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+  static int _aalineRGBA(SDL_Renderer * renderer, 
+    Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, 
+    Uint8 r, Uint8 g, Uint8 b, Uint8 a, int draw_endpoint);
+    
+  static bool pixelRGBAWeight(SDL_Renderer * renderer, 
+    Sint16 x, Sint16 y, 
+    Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint32 weight);
 
-private:
-
-  static bool _pieRGBA(SDL_Renderer * renderer, 
-    Sint16 x, Sint16 y, Sint16 rad, Sint16 start, Sint16 end,  
-    Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint8 filled);
+	static int aaFilledPolygonRGBA(SDL_Renderer * renderer, 
+	  const double * vx, const double * vy, int n, 
+	  Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
 };
 
