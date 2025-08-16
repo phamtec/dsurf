@@ -146,6 +146,13 @@ You can read-only surf a JSON file. There are lot's of examples to try out.
 
 Editing text in the dictionary.
 
+## Attributions
+
+### Graphics primitives
+
+- https://github.com/sabdul-khabir/SDL3_gfx
+- Thank you so much to aschiffler at ferzkopp dot net!
+
 ## Change Log
 
 ### 25-Jul-2025
@@ -192,4 +199,4 @@ Walk a JSON file building a simple layout.
 
 - Double click and shift to zoom in our out.
 - Don't keep surface around with text. just texture.
-
+- Nicer drawing.

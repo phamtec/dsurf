@@ -27,14 +27,22 @@ using namespace std;
 Box *Builder::loadFile(const string &fn) {
 
   auto result = rfl::json::load<rfl::Generic>(fn);
-  return walk(*result);
+  if (result) {
+    return walk(*result);
+  }
 
+  return nullptr;
+  
 }
 
 Box *Builder::loadText(const char *text) {
 
   auto result =rfl::json::read<rfl::Generic>(text);
-  return walk(*result);
+  if (result) {
+    return walk(*result);
+  }
+
+  return nullptr;
 
 }
 

@@ -17,4 +17,5 @@ float Sizes::name_var_padding = 40.0l;
 float Sizes::thickness = 10;
 float Sizes::toplinelength = 20;
 float Sizes::bottomlinelength = 100;
+float Sizes::leftlinelength = 30;
 float Sizes::listgap = 20;

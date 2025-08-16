@@ -47,6 +47,18 @@ void List::render(Renderer &renderer, const Point &origin) {
 
 }
 
+rfl::Generic List::getGeneric() { 
+
+  vector<rfl::Generic> obj = vector<rfl::Generic>();
+
+  for (auto&& i: _objs) {
+    obj.push_back(i->getGeneric());
+  }
+  
+  return obj; 
+  
+}
+
 Size List::layoutVector(const Size &size, std::vector<std::unique_ptr<Box> > &list) {
 
   Size newsize = size;
@@ -81,20 +93,10 @@ void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std
 
 void List::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
 
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::orange);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::thickness, size.h - (prop ? 0 : Sizes::thickness))), Colours::orange);
+  renderer.renderFilledRect(Rect(origin + Size((Sizes::group_indent / 2) + Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::orange);
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 40 : 0))), Colours::orange);
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0) + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength)), Colours::orange);
   renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0) + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::orange);
 
 }
 
-rfl::Generic List::getGeneric() { 
-
-  vector<rfl::Generic> obj = vector<rfl::Generic>();
-
-  for (auto&& i: _objs) {
-    obj.push_back(i->getGeneric());
-  }
-  
-  return obj; 
-  
-}

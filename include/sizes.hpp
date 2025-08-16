@@ -36,6 +36,9 @@ public:
   static float bottomlinelength;
     // length of the bottonm lineon dicts and lists.
     
+  static float leftlinelength;
+    // length of the line 
+    
   static float listgap;
     // gap between each item in a list.
 

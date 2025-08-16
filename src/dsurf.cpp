@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
   
 //   Size wsize(500, 500);
 //   Renderer renderer(wsize, 0.01, 1.5, Size(0.0, 0.0));
-//  Renderer renderer(Size(640, 480), 0.01, 0.3, Size(0.0, 0.0));
+//  Renderer renderer(Size(1024, 768), 0.01, 1.0, Size(0.0, 0.0));
   Renderer renderer(Renderer::displaySize() - Size(20, 120), 0.01, 0.3, Size(0.0, 0.0));
 
   // build all of the internal renderer state.
@@ -57,6 +57,12 @@ int main(int argc, char *argv[])
   
   // read in a JSON file if one is specified.
   if (vm.count("input-file") > 0) {
+    string f = vm["input-file"].as< string >();
+    auto obj = Builder::loadFile(f);
+    if (!obj) {
+      cerr << "file '" << f << "' not found." << endl;
+      return 1;
+    }
     renderer.setRoot(Builder::loadFile(vm["input-file"].as< string >()));
   }
 

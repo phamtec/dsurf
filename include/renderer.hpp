@@ -55,6 +55,8 @@ public:
   void renderTexture(SDL_Texture *texture, const Rect &rect);
   void renderRect(const Rect &rect);
   void renderFilledRect(const Rect &rect, const SDL_Color &color);
+  void renderFilledRoundRect(const Rect &rect, int radius, const SDL_Color &color);
+  void renderFilledPie(const Point &origin, int radius, int start, int end, const SDL_Color &color);
 
   bool textTooSmall(const Rect &rect);
     // if the text is too small for the rectangle, return true.
