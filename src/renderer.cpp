@@ -24,6 +24,8 @@
 
 using namespace std;
 
+#define DOUBLE_CLICK_TIME 300
+
 Renderer::~Renderer() {
 
   // font first.
@@ -192,6 +194,15 @@ void Renderer::debugSize() {
 
 }
 
+bool Renderer::isDoubleClick() {
+
+  auto ticks = SDL_GetTicks();
+  bool dbl = (ticks - _lastclick) < DOUBLE_CLICK_TIME;
+  _lastclick = ticks;
+  return dbl;
+  
+}
+
 bool Renderer::processEvents() {
 
   SDL_Event event;
@@ -202,26 +213,28 @@ bool Renderer::processEvents() {
     switch (event.type) {
 
       case SDL_EVENT_MOUSE_BUTTON_DOWN:
-//        cout << "click: " << event.button.x << ", " << event.button.y << endl;
         _mousedown = true;
         _last = Point(event.button.x, event.button.y);
+        if (isDoubleClick()) {
+          Spatial::scaleAndCenter(_size, _osize, _mouse,
+            // up or down depending on shift key
+            (_scale * ((SDL_GetModState() & (SDL_KMOD_LSHIFT | SDL_KMOD_RSHIFT)) ? 0.5 : 2.0)) - _scale, 
+            1.0, &_scale, &_offs);
+        }
         break;
 
       case SDL_EVENT_MOUSE_BUTTON_UP:
-//        cout << "up: " << event.button.x << ", " << event.button.y << endl;
         _mousedown = false;
         break;
 
       case SDL_EVENT_MOUSE_MOTION:
         _mouse = Point(event.motion.x, event.motion.y);
-//        cout << "move: " << event.motion.x << ", " << event.motion.y << endl;
         if (_mousedown) {
           Spatial::calcPan(Point(event.motion.x, event.motion.y), &_last, &_offs, _scale);
         }
         break;
 
       case SDL_EVENT_MOUSE_WHEEL:
-//        cout << event.wheel.y << endl;
         Spatial::scaleAndCenter(_size, _osize, _mouse, event.wheel.y, _scalemult, &_scale, &_offs);
         break;
 

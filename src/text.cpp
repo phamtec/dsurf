@@ -21,9 +21,6 @@
 using namespace std;
 
 Text::~Text() {
-  if (_surface) {
-    SDL_DestroySurface(_surface);
-  }
   if (_texture) {
     SDL_DestroyTexture(_texture);
   }
@@ -31,33 +28,33 @@ Text::~Text() {
 
 void Text::build(Renderer &renderer) {
 
-  _surface = renderer.renderText(_str.c_str(), _fgcolor);
-  if (!_surface) {
+  // create a surface from the text. We don't have
+  // to keep it around after making a texture from it.
+  unique_ptr<SDL_Surface> surface(renderer.renderText(_str.c_str(), _fgcolor));
+  if (!surface) {
     return;
   }
+  // remember the size.
+  _size = Size(surface->w, surface->h);
   
-  _texture = renderer.createTexture(_surface);
-
+  // create a texture.
+  _texture = renderer.createTexture(surface.get());
 }
 
 void Text::render(Renderer &renderer, const Point &origin) {
 
-  if (!_surface) {
+  if (!_texture) {
     SDL_Log("need to build first!");
     return;
   }
   
-  Rect r(origin, Size(_surface->w, _surface->h));
+  Rect r(origin, _size);
   if (renderer.textTooSmall(r)) {
     r -= 4;
     renderer.renderFilledRect(r, _fgcolor);
   }
   else {
-    renderer.renderTexture(_texture, Rect(origin, Size(_surface->w, _surface->h)));
+    renderer.renderTexture(_texture, r);
   }
   
-}
-
-Size Text::size() {
-  return Size(_surface->w, _surface->h);
 }

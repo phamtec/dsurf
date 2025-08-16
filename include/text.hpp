@@ -20,7 +20,6 @@
 #include <string>
 #include <SDL3/SDL_pixels.h>
 
-class SDL_Surface;
 class SDL_Texture;
 
 class Renderer;
@@ -30,8 +29,8 @@ class Point;
 class Text {
 
 public:
-  Text(): _str("??"), _fgcolor(Colours::black), _surface(0), _texture(0) {}
-  Text(const std::string &str, const SDL_Color &fgcolor): _str(str), _fgcolor(fgcolor), _surface(0), _texture(0) {}
+  Text(): _str("??"), _fgcolor(Colours::black), _texture(0) {}
+  Text(const std::string &str, const SDL_Color &fgcolor): _str(str), _fgcolor(fgcolor), _texture(0) {}
   ~Text();
 
   void set(const std::string &str, const SDL_Color &fgcolor) {
@@ -45,7 +44,7 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
     // render the text after first initialising it at x, y
     
-  Size size();
+  Size size() { return _size; }
     // return the size of the text object.
       
   std::string str() { return _str; }
@@ -54,7 +53,7 @@ private:
 
   std::string _str;
   SDL_Color _fgcolor;
-  SDL_Surface *_surface;
+  Size _size;
   SDL_Texture *_texture;
   
 };

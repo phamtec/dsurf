@@ -187,3 +187,9 @@ Walk a JSON file building a simple layout.
 
 - Allow JSON on the clipbaord to be pasted into the window.
 - Allow JSON to be copied from the window.
+
+### 16-Aug-2025
+
+- Double click and shift to zoom in our out.
+- Don't keep surface around with text. just texture.
+

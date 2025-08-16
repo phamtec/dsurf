@@ -33,7 +33,7 @@ class Renderer {
 public:
   Renderer(const Size &wsize, float scalemult, float scale, const Size &offset): 
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
-    _mousedown(false), 
+    _mousedown(false), _lastclick(0),
     _window(0), _renderer(0), _engine(0) 
       {};
   ~Renderer();
@@ -72,10 +72,12 @@ private:
   Size _offs;
   Point _mouse;
   Size _osize;
+  unsigned int _lastclick;
   std::unique_ptr<Box> _root;
   std::unique_ptr<Font> _font;
   
   bool processEvents();
+  bool isDoubleClick();
 
   void debugOffs();
   void debugScale();
