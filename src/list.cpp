@@ -93,10 +93,12 @@ void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std
 
 void List::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
 
-  renderer.renderFilledRect(Rect(origin + Size((Sizes::group_indent / 2) + Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::orange);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 40 : 0))), Colours::orange);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0) + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength)), Colours::orange);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, 0) + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::orange);
+  Point o = origin + Size(Sizes::group_indent / 2, 0);
+  
+  renderer.renderFilledRect(Rect(o + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::orange);
+  renderer.renderFilledRect(Rect(o, Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 40 : 0))), Colours::orange);
+  renderer.renderFilledRect(Rect(o + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength)), Colours::orange);
+  renderer.renderFilledRect(Rect(o + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::orange);
 
 }
 

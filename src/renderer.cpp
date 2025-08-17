@@ -104,9 +104,11 @@ bool Renderer::init(const char *path) {
     return false;
   }
   
+  // allow shared resources to build.
+  resources.build(*this);
+  
   // always just a new dictiionary.
   setRoot(new Dict());
-//  _root.reset(new Dict());
 
   return true;
    
@@ -286,16 +288,38 @@ bool Renderer::processEvents() {
   
 }
 
+void Renderer::setTarget(SDL_Texture *texture) {
+
+  if (!SDL_SetRenderTarget(_renderer, texture)) {
+    SDL_Log("Couldn't set render target: %s", SDL_GetError());
+  }
+
+}
+
+
+SDL_Texture *Renderer::createTexture(int width, int height) {
+
+  SDL_Texture *texture = SDL_CreateTexture(_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
+  if (!texture) {
+    SDL_Log("Couldn't create texture: %s", SDL_GetError());
+    return 0;
+  }
+  return texture;
+
+};
+
+
 SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {
   
   SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, surface);
   if (!texture) {
-    SDL_Log("Couldn't render text: %s", SDL_GetError());
+    SDL_Log("Couldn't create texture from surface: %s", SDL_GetError());
     return 0;
   }
   return texture;
   
 }
+
 
 void Renderer::renderTexture(SDL_Texture *texture, const Rect &rect) {
 

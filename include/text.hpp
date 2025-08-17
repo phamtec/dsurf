@@ -39,10 +39,10 @@ public:
   }
   
   virtual void build(Renderer &renderer);
-    // build the texture and surface ready to render.
+    // build the texture ready to render.
     
   virtual void render(Renderer &renderer, const Point &origin);
-    // render the text after first initialising it at x, y
+    // render the text at x, y
     
   Size size() { return _size; }
     // return the size of the text object.

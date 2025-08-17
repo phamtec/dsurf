@@ -18,6 +18,7 @@
 #include "size.hpp"
 #include "box.hpp"
 #include "font.hpp"
+#include "resources.hpp"
 
 #include <SDL3/SDL_pixels.h>
 
@@ -50,7 +51,9 @@ public:
     // the main render loop.
     
   // functions used to create and render.
+  SDL_Texture *createTexture(int width, int height);
   SDL_Surface *renderText(const char *str, const SDL_Color &color);
+  void setTarget(SDL_Texture *texture);
   SDL_Texture *createTexture(SDL_Surface *surface);
   void renderTexture(SDL_Texture *texture, const Rect &rect);
   void renderRect(const Rect &rect);
@@ -60,6 +63,8 @@ public:
   bool textTooSmall(const Rect &rect);
     // if the text is too small for the rectangle, return true.
     
+  Resources resources;
+  
 private:
 
   Size _size;

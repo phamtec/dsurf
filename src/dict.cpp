@@ -63,14 +63,18 @@ rfl::Generic Dict::getGeneric() {
 
 void Dict::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
 
-  // top right corner
-  renderer.renderFilledPie(origin + Size((Sizes::group_indent / 2) + Sizes::thickness, Sizes::thickness), Sizes::thickness, 180, 270, Colours::plum);
-  renderer.renderFilledRect(Rect(origin + Size((Sizes::group_indent / 2) + Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::plum);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, Sizes::thickness), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 30 : 0))), Colours::plum);
+  Point o = origin + Size(Sizes::group_indent / 2, 0);
+  
+  // top left corner
+   renderer.resources.topleft.render(renderer, o);
+  
+  renderer.renderFilledRect(Rect(o + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::plum);
+  renderer.renderFilledRect(Rect(o + Size(0, Sizes::thickness), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 20 : 0))), Colours::plum);
 
   // bottom left corner
-  renderer.renderFilledPie(origin + Size(Sizes::group_indent / 2, size.h) + Size(Sizes::thickness, -Sizes::thickness), Sizes::thickness, 90, 180, Colours::plum);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength - Sizes::thickness)), Colours::plum);
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::group_indent / 2, size.h - Sizes::thickness) + Size(Sizes::thickness, 0), Size(Sizes::bottomlinelength - Sizes::thickness, Sizes::thickness)), Colours::plum);
+   renderer.resources.bottomleft.render(renderer, o + Size(0, size.h - Sizes::thickness));
+  
+  renderer.renderFilledRect(Rect(o + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength - Sizes::thickness)), Colours::plum);
+  renderer.renderFilledRect(Rect(o + Size(0, size.h - Sizes::thickness) + Size(Sizes::thickness, 0), Size(Sizes::bottomlinelength - Sizes::thickness, Sizes::thickness)), Colours::plum);
 
 }
