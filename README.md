@@ -200,3 +200,9 @@ Walk a JSON file building a simple layout.
 - Double click and shift to zoom in our out.
 - Don't keep surface around with text. just texture.
 - Nicer drawing.
+
+### 17-Aug-2025
+
+- prerender corners of the dict and oversample 4 times to make them look 
+  nicer zooed in.
+  
