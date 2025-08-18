@@ -1,24 +1,24 @@
 {
-  "if": {
-    "p": {
-      "equal": [
-        {
-          "getmember": {
-            "name": "message"
-          }
+    "if": {
+        "p": {
+            "equal": [
+                {
+                    "getmember": {
+                        "name": "message"
+                    }
+                },
+                {
+                    "string": "hello"
+                }
+            ]
         },
-        {
-          "string": "hello"
+        "then": {
+            "setmember": {
+                "name": "message",
+                "value": {
+                    "string": "world"
+                }
+            }
         }
-      ]
-    },
-    "then": {
-      "setmember": {
-        "name": "message",
-        "value": { 
-          "string": "world"
-        }
-      }
     }
-  }
 }

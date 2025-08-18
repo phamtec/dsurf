@@ -101,6 +101,38 @@ BOOST_AUTO_TEST_CASE( parseEmptyListProp )
   
 }
 
+BOOST_AUTO_TEST_CASE( parseListBool )
+{
+  cout << "=== parseListBool ===" << endl;
+
+  testParse("../test/listbool.json");
+  
+}
+
+BOOST_AUTO_TEST_CASE( parseListLong )
+{
+  cout << "=== parseListLong ===" << endl;
+
+  testParse("../test/listlong.json");
+  
+}
+
+BOOST_AUTO_TEST_CASE( parseComplex )
+{
+  cout << "=== parseComplex ===" << endl;
+
+  testParse("../test/complex.json");
+  
+}
+
+BOOST_AUTO_TEST_CASE( parseCode )
+{
+  cout << "=== parseCode ===" << endl;
+
+  testParse("../test/code.json");
+  
+}
+
 BOOST_AUTO_TEST_CASE( genericReflection )
 {
   cout << "=== genericReflection ===" << endl;

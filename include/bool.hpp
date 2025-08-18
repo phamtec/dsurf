@@ -23,6 +23,9 @@ class Bool: public String {
 public:
   Bool(bool value): String(value ? "true" : "false") {}
   
+  // Box
+  virtual rfl::Generic getGeneric() { return _value.str() == "true"; }
+
 };
 
 #endif // H_bool

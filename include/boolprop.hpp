@@ -23,6 +23,9 @@ class BoolProp: public StringProp {
 public:
   BoolProp(const std::string &name, bool value): StringProp(name, value ? "true" : "false") {}
   
+  // Box
+  virtual rfl::Generic getGeneric() { return _value.str() == "true"; }
+
 };
 
 #endif // H_boolprop

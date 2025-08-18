@@ -36,7 +36,7 @@ public:
   virtual std::string getName() { return "????"; };
   virtual rfl::Generic getGeneric();
 
-private:
+protected:
   Text _value;
 };
 

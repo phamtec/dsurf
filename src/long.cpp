@@ -50,3 +50,14 @@ void Long::render(Renderer &renderer, const Point &origin) {
 //  renderer.renderRect(_r);
   
 }
+
+rfl::Generic Long::getGeneric() { 
+  
+  stringstream ss(_value.str());
+  long l;
+  ss >> l;
+
+  return l;
+
+}
+

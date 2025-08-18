@@ -32,7 +32,7 @@ public:
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
   virtual std::string getName() { return "????"; };
-  virtual rfl::Generic getGeneric() { return _value.str(); }
+  virtual rfl::Generic getGeneric();
 
 private:
   Text _value;

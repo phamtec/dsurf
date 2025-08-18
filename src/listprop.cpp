@@ -42,7 +42,7 @@ void ListProp::render(Renderer &renderer, const Point &origin) {
 
   super::render(renderer, origin);
   
-  _name.render(renderer, origin);
+  _name.render(renderer, origin + Point(Sizes::group_indent, -Sizes::thickness));
   List::renderVector(renderer, origin + Point(Sizes::group_indent, 60), _objs);
 
 //  renderer.renderRect(_r);

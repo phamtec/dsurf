@@ -2,12 +2,26 @@
     "name": "Paint the roof",
     "library": [],
     "longprop": 0,
-    "longs": [1, 2, 3],
-    "bools": [true, false, true],
-    "strings": ["a", "b", "c"],
+    "longs": [
+        1,
+        2,
+        3
+    ],
+    "bools": [
+        true,
+        false,
+        true
+    ],
+    "strings": [
+        "a",
+        "b",
+        "c"
+    ],
     "states": [
         {
-            "next": { "nextState": {} },
+            "next": {
+                "nextState": {}
+            },
             "name": "Buy paint",
             "tests": [],
             "guard": true,
@@ -25,7 +39,9 @@
             ]
         },
         {
-            "next": { "nextState": {} },
+            "next": {
+                "nextState": {}
+            },
             "name": "Invite people to paint roof",
             "tests": [],
             "guard": true,
