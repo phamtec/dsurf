@@ -61,6 +61,17 @@ rfl::Generic Dict::getGeneric() {
   
 }
 
+Box *Dict::hitTest(const Point &origin, const Point &p) { 
+
+  Box *hit = List::hitTestVector(origin + Point(Sizes::group_indent, Sizes::listgap), p, _objs);
+  if (hit) {
+    return hit;
+  }
+
+  return super::hitTest(origin, p);
+  
+};
+
 void Dict::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
 
   Point o = origin + Size(Sizes::group_indent / 2, 0);

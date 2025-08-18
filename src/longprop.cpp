@@ -47,8 +47,8 @@ void LongProp::render(Renderer &renderer, const Point &origin) {
 
   super::render(renderer, origin);
   
-  _name.render(renderer, origin + Point(Sizes::group_indent, -Sizes::thickness));
-  _value.render(renderer, Point(origin.x + _name.size().w + Sizes::name_var_padding, origin.y));
+  _name.render(renderer, origin);
+  _value.render(renderer, origin + Point(_name.size().w + Sizes::name_var_padding, 0));
   
 //  renderer.renderRect(_r);
   

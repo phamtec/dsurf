@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
   
 //   Size wsize(500, 500);
 //   Renderer renderer(wsize, 0.01, 1.5, Size(0.0, 0.0));
-//  Renderer renderer(Size(1024, 768), 0.01, 4.0, Size(0.0, 0.0));
+//  Renderer renderer(Size(1024, 768), 0.01, 0.5, Size(0.0, 0.0));
   Renderer renderer(Renderer::displaySize() - Size(20, 120), 0.01, 0.3, Size(0.0, 0.0));
 
   // build all of the internal renderer state.

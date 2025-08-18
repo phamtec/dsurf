@@ -38,6 +38,7 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual std::string getName() { return _name.str(); }
   virtual rfl::Generic getGeneric();
+  virtual Box *hitTest(const Point &origin, const Point &p);
 
   // Pushable
   virtual void push(Box *box) {

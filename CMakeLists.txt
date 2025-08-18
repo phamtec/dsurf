@@ -56,6 +56,7 @@ set(SRC
   src/gfx.cpp
   src/corner.cpp
   src/resources.cpp
+  src/texteditor.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC})

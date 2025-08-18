@@ -37,7 +37,7 @@ Box *Builder::loadFile(const string &fn) {
 
 Box *Builder::loadText(const char *text) {
 
-  auto result =rfl::json::read<rfl::Generic>(text);
+  auto result = rfl::json::read<rfl::Generic>(text);
   if (result) {
     return walk(*result);
   }

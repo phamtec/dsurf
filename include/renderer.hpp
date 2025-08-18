@@ -19,6 +19,7 @@
 #include "box.hpp"
 #include "font.hpp"
 #include "resources.hpp"
+#include "texteditor.hpp"
 
 #include <SDL3/SDL_pixels.h>
 
@@ -28,6 +29,7 @@ class TTF_TextEngine;
 class SDL_Texture;
 class SDL_Surface;
 class Rect;
+class SDL_Cursor;
 
 class Renderer {
 
@@ -35,7 +37,8 @@ public:
   Renderer(const Size &wsize, float scalemult, float scale, const Size &offset): 
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
     _mousedown(false), _lastclick(0),
-    _window(0), _renderer(0), _engine(0) 
+    _window(0), _renderer(0), _engine(0), _editing(false),
+    _pointercursor(0), _editcursor(0)
       {};
   ~Renderer();
   
@@ -81,6 +84,10 @@ private:
   unsigned int _lastclick;
   std::unique_ptr<Box> _root;
   std::unique_ptr<Font> _font;
+  std::unique_ptr<Box> _editor;
+  bool _editing;
+  SDL_Cursor *_pointercursor;
+  SDL_Cursor *_editcursor;
   
   bool processEvents();
   bool isDoubleClick();

@@ -59,6 +59,30 @@ rfl::Generic List::getGeneric() {
   
 }
 
+Box *List::hitTest(const Point &origin, const Point &p) { 
+
+  Box *hit = hitTestVector(origin + Size(Sizes::group_indent, Sizes::listgap), p, _objs);
+  if (hit) {
+    return hit;
+  }
+
+  return super::hitTest(origin, p);
+  
+};
+
+Box* List::hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Box> > &list) {
+
+  Point o = origin;
+  for (auto&& i: list) {
+    if (i->hitTest(o, p)) {
+      return i.get();
+    }
+    o.y += i->_size.h + Sizes::listgap;
+  }
+  return nullptr;
+  
+}
+
 Size List::layoutVector(const Size &size, std::vector<std::unique_ptr<Box> > &list) {
 
   Size newsize = size;
@@ -83,10 +107,10 @@ void List::buildVector(Renderer &renderer, std::vector<std::unique_ptr<Box> > &l
 
 void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Box> > &list) {
 
-  float y = origin.y;
+  Point o = origin;
   for (auto&& i: list) {
-    i->render(renderer, Point(origin.x, y));
-    y += i->_size.h + Sizes::listgap;
+    i->render(renderer, o);
+    o.y += i->_size.h + Sizes::listgap;
   }
 
 }

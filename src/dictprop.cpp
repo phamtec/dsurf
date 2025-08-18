@@ -62,3 +62,14 @@ rfl::Generic DictProp::getGeneric() {
   return obj; 
   
 }
+
+Box *DictProp::hitTest(const Point &origin, const Point &p) { 
+
+  Box *hit = List::hitTestVector(origin + Point(Sizes::group_indent, 60), p, _objs);
+  if (hit) {
+    return hit;
+  }
+
+  return super::hitTest(origin, p);
+  
+};

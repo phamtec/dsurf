@@ -14,6 +14,7 @@
 #ifndef H_point
 #define H_point
 
+#include <SDL3/SDL_rect.h>
 #include <iostream>
 
 class Size;
@@ -56,6 +57,10 @@ public:
 
   friend std::ostream& operator<< (std::ostream& stream, const Point& matrix);
   
+  inline SDL_FPoint spoint() const {
+    return { .x = x, .y = y };
+  }
+
 };
 
 #endif // H_point

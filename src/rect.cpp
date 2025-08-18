@@ -17,3 +17,11 @@ std::ostream& operator <<(std::ostream& stream, const Rect& rect) {
   return stream;
   
 }
+
+bool Rect::contains(const Point &p) {
+
+  SDL_FPoint np = p.spoint();
+  SDL_FRect nr = srect();
+  return SDL_PointInRectFloat(&np, &nr);
+
+}

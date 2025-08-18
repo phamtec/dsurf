@@ -39,6 +39,7 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual std::string getName() { return "????"; };
   virtual rfl::Generic getGeneric();
+  virtual Box *hitTest(const Point &origin, const Point &p);
 
   // Pushable
   virtual void push(Box *box) {
@@ -50,6 +51,7 @@ public:
   static Size layoutVector(const Size &size, std::vector<std::unique_ptr<Box> > &list);
   static void renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Box> > &list);
   static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
+  static Box* hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Box> > &list);
   
 private:
 

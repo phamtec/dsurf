@@ -1,29 +1,29 @@
 /*
-  filledbox.hpp
+  texteditor.hpp
   
   Author: Paul Hamilton (phamtec@mac.com)
-  Date: 12-Aug-2025
+  Date: 18-Aug-2025
     
-  A filled box.
+  Text editor class.
   
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
 */
 
-#ifndef H_filledbox
-#define H_filledbox
+#ifndef H_texteditor
+#define H_texteditor
 
 #include "box.hpp"
 #include "text.hpp"
 #include "colours.hpp"
 
-class FilledBox: public Box {
+class TextEditor: public Box {
 
   typedef Box super;
   
 public:
-  FilledBox(const Size &size): _size(size) {}
+  TextEditor(): _size(100, 100) {}
 
   // Box
   virtual Size layout() { return _size; };
@@ -37,4 +37,4 @@ private:
   
 };
 
-#endif // H_filledbox
+#endif // H_texteditor

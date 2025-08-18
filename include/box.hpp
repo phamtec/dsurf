@@ -51,6 +51,9 @@ public:
   virtual void render(Renderer &renderer, const Point &origin) {};
     // render this object to the screen.
 
+  virtual Box *hitTest(const Point &origin, const Point &p);
+    // find the box at the point.
+    
   Size _size;
     // the size of this object
     

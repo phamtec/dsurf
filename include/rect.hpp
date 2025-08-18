@@ -46,6 +46,8 @@ public:
 
   friend std::ostream& operator<< (std::ostream& stream, const Rect& matrix);
   
+  bool contains(const Point &p);
+  
 };
 
 #endif // H_rect

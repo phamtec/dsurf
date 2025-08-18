@@ -10,3 +10,13 @@
 */
 
 #include "box.hpp"
+
+Box *Box::hitTest(const Point &origin, const Point &p) { 
+
+  if (Rect(origin, _size).contains(p)) {
+    return this; 
+  }
+  
+  return nullptr;
+  
+};

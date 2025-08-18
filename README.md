@@ -206,3 +206,7 @@ Walk a JSON file building a simple layout.
 - prerender corners of the dict and oversample 4 times to make them look 
   nicer zooed in.
   
+### 18-Aug-2025
+
+- Start in on hit testing
+  

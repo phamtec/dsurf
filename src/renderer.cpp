@@ -31,6 +31,13 @@ Renderer::~Renderer() {
 
   // font first.
   _font.reset(0);
+  if (_pointercursor) {
+    SDL_DestroyCursor(_pointercursor);
+  }
+  if (_editcursor) {
+    SDL_DestroyCursor(_editcursor);
+  }
+
   if (_engine) {
     TTF_DestroyRendererTextEngine(_engine);
   }
@@ -110,6 +117,14 @@ bool Renderer::init(const char *path) {
   // always just a new dictiionary.
   setRoot(new Dict());
 
+  // build our editor.
+  _editor.reset(new TextEditor());
+  _editor->build(*this);
+  _editor->layout();
+  
+  _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
+  _editcursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_TEXT);
+  
   return true;
    
 }
@@ -146,6 +161,7 @@ void Renderer::loop() {
     SDL_SetRenderScale(_renderer, _scale, _scale);
 
     _root->render(*this, Point(0.0, 0.0));
+//    _editor->render(*this, Point(0.0, 0.0));
 
     // set the scale back to 1.0 so that our draw will work.
     SDL_SetRenderScale(_renderer, 1.0, 1.0);
@@ -224,6 +240,13 @@ bool Renderer::processEvents() {
             (_scale * ((SDL_GetModState() & (SDL_KMOD_LSHIFT | SDL_KMOD_RSHIFT)) ? 0.5 : 2.0)) - _scale, 
             1.0, &_scale, &_offs);
         }
+        else {
+          Point p = _last * (1 / _scale);
+          Box *hit = _root->hitTest(Point(_offs), p);
+          if (hit) {
+            cout << typeid(*hit).name() << endl;
+          }
+        }
         break;
 
       case SDL_EVENT_MOUSE_BUTTON_UP:
@@ -257,13 +280,26 @@ bool Renderer::processEvents() {
             case SDLK_V:
               {
                 char *text = SDL_GetClipboardText();
-                setRoot(Builder::loadText(text));
+                auto json = Builder::loadText(text);
                 SDL_free(text);
+                if (json) {
+                  setRoot(json);
+                }
               }
               break;
               
             case SDLK_C:
               SDL_SetClipboardText(Builder::getJson(_root.get()).c_str());
+              break;
+              
+            case SDLK_E:
+              _editing = !_editing;
+              if (_editing) {
+                SDL_SetCursor(_editcursor);
+              }
+              else {
+                SDL_SetCursor(_pointercursor);
+              }
               break;
               
             default:
