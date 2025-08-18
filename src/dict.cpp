@@ -66,10 +66,10 @@ void Dict::drawBorder(Renderer &renderer, const Point &origin, const Size &size,
   Point o = origin + Size(Sizes::group_indent / 2, 0);
   
   // top left corner
-   renderer.resources.topleft.render(renderer, o);
-  
+  renderer.resources.topleft.render(renderer, o);
+     
   renderer.renderFilledRect(Rect(o + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::plum);
-  renderer.renderFilledRect(Rect(o + Size(0, Sizes::thickness), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 20 : 0))), Colours::plum);
+  renderer.renderFilledRect(Rect(o + Size(0, Sizes::thickness), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 20 : 0) - Sizes::thickness)), Colours::plum);
 
   // bottom left corner
    renderer.resources.bottomleft.render(renderer, o + Size(0, size.h - Sizes::thickness));
