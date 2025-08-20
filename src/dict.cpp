@@ -42,7 +42,7 @@ void Dict::render(Renderer &renderer, const Point &origin) {
 
   super::render(renderer, origin);
   
-  List::renderVector(renderer, origin + Point(Sizes::group_indent / 2, Sizes::listgap), _objs);
+  List::renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _objs);
 
 //  renderer.renderRect(Rect(origin, _size));
 
@@ -63,7 +63,7 @@ rfl::Generic Dict::getGeneric() {
 
 Box *Dict::hitTest(const Point &origin, const Point &p) { 
 
-  Box *hit = List::hitTestVector(origin + Point(Sizes::group_indent / 2, Sizes::listgap), p, _objs);
+  Box *hit = List::hitTestVector(origin + Point(Sizes::group_indent, Sizes::listgap), p, _objs);
   if (hit) {
     return hit;
   }

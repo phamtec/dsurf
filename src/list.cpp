@@ -41,7 +41,7 @@ void List::render(Renderer &renderer, const Point &origin) {
 
   super::render(renderer, origin);
 
-  renderVector(renderer, origin + Point(Sizes::group_indent / 2, Sizes::listgap), _objs);
+  renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _objs);
   
 //  renderer.renderRect(_r);
 
@@ -61,7 +61,7 @@ rfl::Generic List::getGeneric() {
 
 Box *List::hitTest(const Point &origin, const Point &p) { 
 
-  Box *hit = hitTestVector(origin + Size(Sizes::group_indent / 2, Sizes::listgap), p, _objs);
+  Box *hit = hitTestVector(origin + Size(Sizes::group_indent, Sizes::listgap), p, _objs);
   if (hit) {
     return hit;
   }
