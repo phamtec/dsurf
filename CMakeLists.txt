@@ -75,6 +75,6 @@ add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp sr
 add_test(TestSpatial TestSpatial)
 
 add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp ${OBJSRC} ${UTILSRC})
-  target_link_libraries(TestBuilder reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL)
+  target_link_libraries(TestBuilder reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestBuilder TestBuilder)
