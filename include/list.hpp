@@ -37,7 +37,6 @@ public:
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
-  virtual std::string getName() { return "????"; };
   virtual rfl::Generic getGeneric();
   virtual Box *hitTest(const Point &origin, const Point &p);
 

@@ -57,8 +57,8 @@ public:
   Size _size;
     // the size of this object
     
+  virtual std::string getName() { return "????"; };
   virtual rfl::Generic getGeneric() = 0;
-  virtual std::string getName() = 0;
   
 };
 

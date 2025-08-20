@@ -13,6 +13,9 @@
 
 #include "builder.hpp"
 #include "box.hpp"
+#include "text.hpp"
+#include "corner.hpp"
+#include "renderer.hpp"
 
 #define BOOST_AUTO_TEST_MAIN
 #include <boost/test/unit_test.hpp>
@@ -20,6 +23,18 @@
 #include <fstream>
 
 using namespace std;
+
+// dummy these up so we don't recompile all code
+Text::~Text() {
+}
+void Text::build(Renderer &renderer) {
+}
+void Text::render(Renderer &renderer, const Point &origin) {
+}
+void Corner::render(Renderer &renderer, const Point &origin) {
+}
+void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
+}
 
 void testParse(const string &fname) {
 

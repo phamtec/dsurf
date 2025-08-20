@@ -37,21 +37,7 @@ set(SRC
   src/text.cpp 
   src/renderer.cpp 
   src/builder.cpp 
-  src/stringprop.cpp
-  src/string.cpp
-  src/list.cpp 
-  src/listprop.cpp
-  src/dict.cpp
-  src/dictprop.cpp
-  src/colours.cpp
-  src/sizes.cpp
-  src/long.cpp
-  src/longprop.cpp
-  src/box.cpp
   src/spatial.cpp
-  src/point.cpp
-  src/size.cpp
-  src/rect.cpp
   src/filledbox.cpp
   src/gfx.cpp
   src/corner.cpp
@@ -59,7 +45,27 @@ set(SRC
   src/texteditor.cpp
 )
 
-add_executable(dsurf src/dsurf.cpp ${SRC})
+set(UTILSRC
+  src/colours.cpp
+  src/sizes.cpp
+  src/point.cpp
+  src/size.cpp
+  src/rect.cpp
+)
+
+set(OBJSRC
+  src/stringprop.cpp
+  src/string.cpp
+  src/list.cpp 
+  src/listprop.cpp
+  src/dict.cpp
+  src/dictprop.cpp
+  src/long.cpp
+  src/longprop.cpp
+  src/box.cpp
+)
+
+add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC})
   target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp)
 
 # Tests
@@ -68,7 +74,7 @@ add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp sr
 
 add_test(TestSpatial TestSpatial)
 
-add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp ${SRC})
+add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp ${OBJSRC} ${UTILSRC})
   target_link_libraries(TestBuilder reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL)
 
 add_test(TestBuilder TestBuilder)
