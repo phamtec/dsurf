@@ -33,6 +33,7 @@
 class Renderer;
 class Resources;
 class Point;
+class TextEditor;
 
 #include <rfl.hpp>
 
@@ -54,12 +55,22 @@ public:
   virtual Box *hitTest(const Point &origin, const Point &p);
     // find the box at the point.
     
-  Size _size;
-    // the size of this object
+  virtual void edit(TextEditor *editor) {}
+    // edit this object with the text editor.
     
   virtual std::string getName() { return "????"; };
   virtual rfl::Generic getGeneric() = 0;
-  
+    // return the name and the object for serialization.
+    
+  virtual Point parentOrigin(int index) { return Point(0, 0); };
+    // the origin of the parent.
+    
+  virtual Point origin(int index) { return parentOrigin(index); };
+    // return the origin of this object.
+    
+  Size _size;
+    // the size of this object
+
 };
 
 #endif // H_box

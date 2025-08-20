@@ -23,7 +23,7 @@ class TextEditor: public Box {
   typedef Box super;
   
 public:
-  TextEditor(): _size(100, 100) {}
+  TextEditor(): _origin(0, 0) {}
 
   // Box
   virtual Size layout() { return _size; };
@@ -31,9 +31,7 @@ public:
   virtual std::string getName() { return "????"; }
   virtual rfl::Generic getGeneric() { return 0; }
 
-private:
-
-  Size _size;
+  Point _origin;
   
 };
 

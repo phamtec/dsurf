@@ -72,6 +72,14 @@ Box *Dict::hitTest(const Point &origin, const Point &p) {
   
 };
 
+Point Dict::parentOrigin(int index) {
+
+  cout << "Dict parent " << typeid(*_parent).name() << " index " << _index << endl;
+  
+  return _parent->origin(index) + Point(Sizes::group_indent, Sizes::listgap);
+  
+}
+
 void Dict::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
 
   // top left corner

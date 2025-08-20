@@ -84,10 +84,11 @@ private:
   unsigned int _lastclick;
   std::unique_ptr<Box> _root;
   std::unique_ptr<Font> _font;
-  std::unique_ptr<Box> _editor;
+  std::unique_ptr<TextEditor> _editor;
   bool _editing;
   SDL_Cursor *_pointercursor;
   SDL_Cursor *_editcursor;
+  Point _renderorigin;
   
   bool processEvents();
   bool isDoubleClick();

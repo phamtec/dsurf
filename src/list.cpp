@@ -70,12 +70,26 @@ Box *List::hitTest(const Point &origin, const Point &p) {
   
 };
 
+Point List::parentOrigin(int index) {
+
+  if (!_parent) {
+    cout << "List no parent " << " index " << _index << endl;
+    return Point(Sizes::group_indent, Sizes::listgap);
+  }
+  
+  cout << "List parent " << typeid(*_parent).name() << " index " << _index << endl;
+  
+  return _parent->origin(index) + Size(Sizes::group_indent, Sizes::listgap);
+  
+}
+
 Box* List::hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Box> > &list) {
 
   Point o = origin;
   for (auto&& i: list) {
-    if (i->hitTest(o, p)) {
-      return i.get();
+    Box *hit = i->hitTest(o, p);
+    if (hit) {
+      return hit;
     }
     o.y += i->_size.h + Sizes::listgap;
   }

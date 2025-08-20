@@ -25,8 +25,8 @@ class Builder {
 
 public:
   
-  static Box *walk(const rfl::Generic &g);
-  static Box *walk(const rfl::Generic &g, const std::string &name);
+  static Box *walk(Box *parent, int index, const rfl::Generic &g);
+  static Box *walk(Box *parent, int index, const rfl::Generic &g, const std::string &name);
 
   static Box *loadFile(const std::string &fn);
     // load the JSON file into the renderer.
@@ -39,8 +39,8 @@ public:
     
 private:
   
-  static void walk(const rfl::Object<rfl::Generic> &obj, Pushable *list);
-  static void walk(const std::vector<rfl::Generic > &v, Pushable *list);
+  static void walk(Box *parent, const rfl::Object<rfl::Generic> &obj, Pushable *list);
+  static void walk(Box *parent, const std::vector<rfl::Generic > &v, Pushable *list);
 
 };
 

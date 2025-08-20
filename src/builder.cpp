@@ -28,7 +28,7 @@ Box *Builder::loadFile(const string &fn) {
 
   auto result = rfl::json::load<rfl::Generic>(fn);
   if (result) {
-    return walk(*result);
+    return walk(0, 0, *result);
   }
 
   return nullptr;
@@ -39,28 +39,32 @@ Box *Builder::loadText(const char *text) {
 
   auto result = rfl::json::read<rfl::Generic>(text);
   if (result) {
-    return walk(*result);
+    return walk(0, 0, *result);
   }
 
   return nullptr;
 
 }
 
-Box *Builder::walk(const rfl::Generic &g) {
+Box *Builder::walk(Box *parent, int index, const rfl::Generic &g) {
 
   Box *obj = nullptr;
-  std::visit([&obj](const auto &field) {
+  std::visit([parent, index, &obj](const auto &field) {
   
     using Type = std::decay_t<decltype(field)>;
     if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
-      Pushable *l = new List();
-      walk(field, l);
-      obj = dynamic_cast<Box *>(l);
+      List *l = new List(parent, index);
+//      Pushable *l = new List();
+      walk(l, field, l);
+//      obj = dynamic_cast<Box *>(l);
+      obj = l;
     }
     else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
-      Pushable *d = new Dict();
-      walk(field, d);
-      obj = dynamic_cast<Box *>(d);
+//      Pushable *d = new Dict();
+      Dict *d = new Dict(parent, index);
+      walk(d, field, d);
+//      obj = dynamic_cast<Box *>(d);
+      obj = d;
     }
     else if constexpr (std::is_same<Type, string>()) {
       stringstream ss;
@@ -83,29 +87,29 @@ Box *Builder::walk(const rfl::Generic &g) {
     
 }
 
-Box *Builder::walk(const rfl::Generic &g, const string &name) {
+Box *Builder::walk(Box *parent, int index, const rfl::Generic &g, const string &name) {
 
   Box *obj = nullptr;
-  std::visit([&obj, name](const auto &field) {
+  std::visit([parent, index, &obj, name](const auto &field) {
   
     using Type = std::decay_t<decltype(field)>;
     if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
       ListProp *l = new ListProp(name);
-      walk(field, l);
+      walk(l, field, l);
       obj = l;
     }
     else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
       DictProp *d = new DictProp(name);
-      walk(field, d);
+      walk(d, field, d);
       obj = d;
     }
     else if constexpr (std::is_same<Type, string>()) {
       stringstream ss;
       ss << "\"" << field << "\"";
-      obj = new StringProp(name, ss.str());
+      obj = new StringProp(parent, index, name, ss.str());
     }
     else if constexpr (std::is_same<Type, bool>()) {
-      obj = new BoolProp(name, field);
+      obj = new BoolProp(parent, index, name, field);
     }
     else if constexpr (std::is_same<Type, long long>() || std::is_same<Type, long>()) {
       obj = new LongProp(name, field);
@@ -120,13 +124,15 @@ Box *Builder::walk(const rfl::Generic &g, const string &name) {
     
 }
 
-void Builder::walk(const rfl::Object<rfl::Generic> &obj, Pushable *list) {
+void Builder::walk(Box *parent, const rfl::Object<rfl::Generic> &obj, Pushable *list) {
 
+  int index = 0;
   for (const auto& [k, v]: obj) {
     
     using V = remove_cvref_t<decltype(v)>;
     if (is_same<rfl::Generic, V>::value) {
-      auto obj = walk(v, k);
+      Box *p = dynamic_cast<Box *>(list);
+      auto obj = walk(p, index, v, k);
       if (obj) {
         list->push(obj);
       }
@@ -134,18 +140,20 @@ void Builder::walk(const rfl::Object<rfl::Generic> &obj, Pushable *list) {
     else {
       cout << "unknown type in object " << typeid(v).name();
     }
-    
+    index++;
   }
-
 }
 
-void Builder::walk(const std::vector<rfl::Generic > &v, Pushable *list) {
+void Builder::walk(Box *parent, const std::vector<rfl::Generic > &v, Pushable *list) {
 
+  int index = 0;
   for (auto i: v) {
-    auto obj = walk(i);
+    Box *p = dynamic_cast<Box *>(list);
+    auto obj = walk(p, index, i);
     if (obj) {
       list->push(obj);
     }
+    index++;
   }
 
 }

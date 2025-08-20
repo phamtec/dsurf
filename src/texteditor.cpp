@@ -15,6 +15,6 @@
 
 void TextEditor::render(Renderer &renderer, const Point &origin) {
 
-  renderer.renderFilledRect(Rect(origin, _size), Colours::blue);
+  renderer.renderFilledRect(Rect(_origin, _size), Colours::blue);
   
 }

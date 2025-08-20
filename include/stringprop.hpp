@@ -24,8 +24,9 @@ class StringProp: public Box {
   typedef Box super;
   
 public:
-  StringProp(const std::string &name, const std::string &value): 
-    _name(name, Colours::blue), 
+  StringProp(Box *parent, int index, const std::string &name, const std::string &value):
+    _parent(parent), _index(index),
+    _name(name, Colours::blue),
     _value(value, Colours::green) 
       {}
 
@@ -35,9 +36,13 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual std::string getName() { return _name.str(); }
   virtual rfl::Generic getGeneric();
+  virtual void edit(TextEditor *editor);
+  virtual Point parentOrigin(int index);
 
 protected:
-
+  
+  Box *_parent;
+  int _index;
   Text _name;
   Text _value;
 };

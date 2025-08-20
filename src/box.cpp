@@ -11,9 +11,15 @@
 
 #include "box.hpp"
 
+#include <iostream>
+
+using namespace std;
+
 Box *Box::hitTest(const Point &origin, const Point &p) { 
 
+//  cout << "testing " << typeid(*this).name() << endl;
   if (Rect(origin, _size).contains(p)) {
+//    cout << "hit" << endl;
     return this; 
   }
   

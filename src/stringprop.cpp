@@ -14,6 +14,10 @@
 #include "spatial.hpp"
 #include "renderer.hpp"
 
+#include <iostream>
+
+using namespace std;
+
 Size StringProp::layout() {
 
   _size = _value.size();
@@ -46,4 +50,17 @@ rfl::Generic StringProp::getGeneric() {
 
   return _value.str().substr(1, _value.str().size() - 2); 
   
+}
+
+Point StringProp::parentOrigin(int index) {
+
+  cout << "StringProp parent " << typeid(*_parent).name() << " index " << _index << endl;
+  
+  return _parent->origin(_index);
+  
+}
+
+void StringProp::edit(TextEditor *editor) {
+  editor->_origin = origin(_index);
+  editor->_size = _size;
 }

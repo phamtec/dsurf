@@ -115,7 +115,7 @@ bool Renderer::init(const char *path) {
   resources.build(*this);
   
   // always just a new dictiionary.
-  setRoot(new Dict());
+  setRoot(new Dict(0, 0));
 
   // build our editor.
   _editor.reset(new TextEditor());
@@ -161,7 +161,7 @@ void Renderer::loop() {
     SDL_SetRenderScale(_renderer, _scale, _scale);
 
     _root->render(*this, Point(0.0, 0.0));
-//    _editor->render(*this, Point(0.0, 0.0));
+    _editor->render(*this, Point(0.0, 0.0));
 
     // set the scale back to 1.0 so that our draw will work.
     SDL_SetRenderScale(_renderer, 1.0, 1.0);
@@ -244,7 +244,7 @@ bool Renderer::processEvents() {
           Point p = _last * (1 / _scale);
           Box *hit = _root->hitTest(Point(_offs), p);
           if (hit) {
-            cout << typeid(*hit).name() << endl;
+            hit->edit(_editor.get());
           }
         }
         break;
