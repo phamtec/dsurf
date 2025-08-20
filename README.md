@@ -210,3 +210,7 @@ Walk a JSON file building a simple layout.
 
 - Start in on hit testing
   
+### 20-Aug-2025
+
+- Cleanup rendering.
+  
