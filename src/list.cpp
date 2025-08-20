@@ -41,7 +41,7 @@ void List::render(Renderer &renderer, const Point &origin) {
 
   super::render(renderer, origin);
 
-  renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _objs);
+  renderVector(renderer, origin + Point(Sizes::group_indent / 2, Sizes::listgap), _objs);
   
 //  renderer.renderRect(_r);
 
@@ -61,7 +61,7 @@ rfl::Generic List::getGeneric() {
 
 Box *List::hitTest(const Point &origin, const Point &p) { 
 
-  Box *hit = hitTestVector(origin + Size(Sizes::group_indent, Sizes::listgap), p, _objs);
+  Box *hit = hitTestVector(origin + Size(Sizes::group_indent / 2, Sizes::listgap), p, _objs);
   if (hit) {
     return hit;
   }
@@ -117,12 +117,10 @@ void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std
 
 void List::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
 
-  Point o = origin + Size(Sizes::group_indent / 2, 0);
-  
-  renderer.renderFilledRect(Rect(o + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::orange);
-  renderer.renderFilledRect(Rect(o, Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 40 : 0))), Colours::orange);
-  renderer.renderFilledRect(Rect(o + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength)), Colours::orange);
-  renderer.renderFilledRect(Rect(o + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::orange);
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::orange);
+  renderer.renderFilledRect(Rect(origin, Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 40 : 0))), Colours::orange);
+  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength)), Colours::orange);
+  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::orange);
 
 }
 

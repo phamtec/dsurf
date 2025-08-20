@@ -43,8 +43,8 @@ void DictProp::render(Renderer &renderer, const Point &origin) {
 
   super::render(renderer, origin);
   
-  _name.render(renderer, origin + Point(Sizes::group_indent, -Sizes::thickness));
-  List::renderVector(renderer, origin + Point(Sizes::group_indent, 60), _objs);
+  _name.render(renderer, origin + Point(0, -Sizes::thickness));
+  List::renderVector(renderer, origin + Point(Sizes::group_indent / 2, 60), _objs);
 
 //  renderer.renderRect(_r);
   
@@ -65,7 +65,7 @@ rfl::Generic DictProp::getGeneric() {
 
 Box *DictProp::hitTest(const Point &origin, const Point &p) { 
 
-  Box *hit = List::hitTestVector(origin + Point(Sizes::group_indent, 60), p, _objs);
+  Box *hit = List::hitTestVector(origin + Point(Sizes::group_indent / 2, 60), p, _objs);
   if (hit) {
     return hit;
   }

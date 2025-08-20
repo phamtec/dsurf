@@ -42,7 +42,7 @@ void Dict::render(Renderer &renderer, const Point &origin) {
 
   super::render(renderer, origin);
   
-  List::renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _objs);
+  List::renderVector(renderer, origin + Point(Sizes::group_indent / 2, Sizes::listgap), _objs);
 
 //  renderer.renderRect(Rect(origin, _size));
 
@@ -63,7 +63,7 @@ rfl::Generic Dict::getGeneric() {
 
 Box *Dict::hitTest(const Point &origin, const Point &p) { 
 
-  Box *hit = List::hitTestVector(origin + Point(Sizes::group_indent, Sizes::listgap), p, _objs);
+  Box *hit = List::hitTestVector(origin + Point(Sizes::group_indent / 2, Sizes::listgap), p, _objs);
   if (hit) {
     return hit;
   }
@@ -74,18 +74,16 @@ Box *Dict::hitTest(const Point &origin, const Point &p) {
 
 void Dict::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
 
-  Point o = origin + Size(Sizes::group_indent / 2, 0);
-  
   // top left corner
-  renderer.resources.topleft.render(renderer, o);
+  renderer.resources.topleft.render(renderer, origin);
      
-  renderer.renderFilledRect(Rect(o + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::plum);
-  renderer.renderFilledRect(Rect(o + Size(0, Sizes::thickness), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 20 : 0) - Sizes::thickness)), Colours::plum);
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::plum);
+  renderer.renderFilledRect(Rect(origin + Size(0, Sizes::thickness), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 20 : 0) - Sizes::thickness)), Colours::plum);
 
   // bottom left corner
-   renderer.resources.bottomleft.render(renderer, o + Size(0, size.h - Sizes::thickness));
+   renderer.resources.bottomleft.render(renderer, origin + Size(0, size.h - Sizes::thickness));
   
-  renderer.renderFilledRect(Rect(o + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength - Sizes::thickness)), Colours::plum);
-  renderer.renderFilledRect(Rect(o + Size(0, size.h - Sizes::thickness) + Size(Sizes::thickness, 0), Size(Sizes::bottomlinelength - Sizes::thickness, Sizes::thickness)), Colours::plum);
+  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength - Sizes::thickness)), Colours::plum);
+  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness) + Size(Sizes::thickness, 0), Size(Sizes::bottomlinelength - Sizes::thickness, Sizes::thickness)), Colours::plum);
 
 }
