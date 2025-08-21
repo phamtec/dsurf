@@ -24,8 +24,10 @@ public:
   
   bool init(const char *path);
 
+  
 private:
   friend class Renderer;
+  friend class TextEditor;
   
   TTF_Font *_font;
   

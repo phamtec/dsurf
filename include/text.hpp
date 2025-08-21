@@ -38,10 +38,10 @@ public:
     _fgcolor = fgcolor;
   }
   
-  virtual void build(Renderer &renderer);
+  void build(Renderer &renderer);
     // build the texture ready to render.
     
-  virtual void render(Renderer &renderer, const Point &origin);
+  void render(Renderer &renderer, const Point &origin);
     // render the text at x, y
     
   Size size() { return _size; }

@@ -15,23 +15,43 @@
 #define H_texteditor
 
 #include "box.hpp"
-#include "text.hpp"
-#include "colours.hpp"
+
+class TTF_Text;
+class SDL_Window;
 
 class TextEditor: public Box {
 
   typedef Box super;
   
 public:
-  TextEditor(): _origin(0, 0) {}
-
+  TextEditor(): _text(0), _window(0), _focus(false), _cursor(0) {}
+  ~TextEditor();
+  
+  void focus(const Point &origin, const Size &size, const std::string &s);
+  void insert(const char *text);
+  
   // Box
+  virtual void build(Renderer &renderer);
   virtual Size layout() { return _size; };
   virtual void render(Renderer &renderer, const Point &origin);
-
+  
   Point _origin;
   Size _size;
+
+private:
+
+  TTF_Text *_text;
+  SDL_Window *_window;
+  bool _focus;
+  bool _cursor_visible;
+  Uint64 _last_cursor_change;
+  SDL_FRect _cursor_rect;
+  int _cursor;
   
+  void updateTextInputArea(Renderer &renderer);
+  void drawCursor(Renderer &renderer);
+  void setCursorPosition(int position);
+
 };
 
 #endif // H_texteditor

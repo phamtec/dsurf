@@ -16,6 +16,7 @@
 #include "text.hpp"
 #include "corner.hpp"
 #include "renderer.hpp"
+#include "texteditor.hpp"
 
 #define BOOST_AUTO_TEST_MAIN
 #include <boost/test/unit_test.hpp>
@@ -34,6 +35,8 @@ void Text::render(Renderer &renderer, const Point &origin) {
 void Corner::render(Renderer &renderer, const Point &origin) {
 }
 void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
+}
+void TextEditor::focus(const Point &origin, const Size &size, const string &s) {
 }
 
 void testParse(const string &fname) {

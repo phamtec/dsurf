@@ -221,5 +221,7 @@ Walk a JSON file building a simple layout.
 ### 21-Aug-2025
 
 - Ctrl-E will edit and then when you click on a stringbox the editor will appear.
-- The editor just drawsa square for now.
+- The editor allows you to insert characters at the start but doesn't save etc.
+- First go at real editing.
+
   

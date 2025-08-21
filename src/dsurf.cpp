@@ -46,9 +46,10 @@ int main(int argc, char *argv[])
   }
   
 //   Size wsize(500, 500);
-//   Renderer renderer(wsize, 0.01, 1.5, Size(0.0, 0.0));
-//  Renderer renderer(Size(1024, 768), 0.01, 0.5, Size(0.0, 0.0));
-  Renderer renderer(Renderer::displaySize() - Size(200, 300), 0.01, 0.3, Size(0.0, 0.0));
+//   Renderer renderer(wsize, 0.01, 1.5, Size(0.0, 0.0), false);
+//  Renderer renderer(Size(1024, 768), 0.01, 0.5, Size(0.0, 0.0), false);
+//  Renderer renderer(Renderer::displaySize() - Size(200, 300), 0.01, 0.3, Size(0.0, 0.0), true);
+  Renderer renderer(Renderer::displaySize() - Size(200, 300), 0.01, 0.3, Size(0.0, 0.0), false);
 
   // build all of the internal renderer state.
   if (!renderer.init("../fonts/Monaco.ttf")) {

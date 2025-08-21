@@ -54,7 +54,6 @@ rfl::Generic StringProp::getGeneric() {
 
 void StringProp::edit(TextEditor *editor) {
 
-  editor->_origin = origin();
-  editor->_size = _size;
+  editor->focus(origin(), _size, _name.str());
   
 }
