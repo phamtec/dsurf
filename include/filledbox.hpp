@@ -23,7 +23,7 @@ class FilledBox: public Box {
   typedef Box super;
   
 public:
-  FilledBox(const Size &size): super(nullptr, 0), _size(size) {}
+  FilledBox(const Size &size): _size(size) {}
 
   // Box
   virtual Size layout() { return _size; };

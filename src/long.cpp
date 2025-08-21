@@ -18,7 +18,7 @@
 
 using namespace std;
 
-Long::Long(Box *parent, int index, long value): super(parent, index) {
+Long::Long(Box *parent, int index, long value): _parent(parent), _index(index) {
 
   stringstream ss;
   ss << value;

@@ -18,8 +18,10 @@
 
 #include "box.hpp"
 #include "text.hpp"
+#include "parentable.hpp"
+#include "sizeable.hpp"
 
-class LongProp: public Box {
+class LongProp: public Box, public Parentable, public Sizeable {
 
   typedef Box super;
   
@@ -33,7 +35,18 @@ public:
   virtual std::string getName() { return _name.str(); }
   virtual rfl::Generic getGeneric();
 
+  // Parentable
+  virtual Box *getParent() { return _parent; }
+  virtual int getIndex() { return _index; }
+  
+  // Sizeable
+  virtual Size getSize() { return _size; }
+
 private:
+
+  Box *_parent;
+  int _index;
+  Size _size;
   Text _name;
   Text _value;
 };

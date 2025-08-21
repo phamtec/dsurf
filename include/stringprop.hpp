@@ -18,14 +18,16 @@
 
 #include "box.hpp"
 #include "text.hpp"
+#include "parentable.hpp"
+#include "sizeable.hpp"
 
-class StringProp: public Box {
+class StringProp: public Box, public Parentable, public Sizeable {
 
   typedef Box super;
   
 public:
   StringProp(Box *parent, int index, const std::string &name, const std::string &value):
-    super(parent, index),
+    _parent(parent), _index(index),
     _name(name, Colours::blue),
     _value(value, Colours::green) 
       {}
@@ -38,8 +40,18 @@ public:
   virtual rfl::Generic getGeneric();
   virtual void edit(TextEditor *editor);
 
+  // Parentable
+  virtual Box *getParent() { return _parent; }
+  virtual int getIndex() { return _index; }
+  
+  // Sizeable
+  virtual Size getSize() { return _size; }
+
 protected:
   
+  Box *_parent;
+  int _index;
+  Size _size;
   Text _name;
   Text _value;
 };

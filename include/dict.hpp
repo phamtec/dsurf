@@ -20,16 +20,18 @@
 
 #include "box.hpp"
 #include "pushable.hpp"
+#include "parentable.hpp"
+#include "sizeable.hpp"
 
 #include <memory>
 #include <vector>
 
-class Dict: public Box, public Pushable {
+class Dict: public Box, public Pushable, public Parentable, public Sizeable {
 
   typedef Box super;
 
 public:
-  Dict(Box *parent, int index): super(parent, index) {}
+  Dict(Box *parent, int index): _parent(parent), _index(index) {}
   
   // Box
   virtual void build(Renderer &renderer);
@@ -44,10 +46,20 @@ public:
     _objs.push_back(std::unique_ptr<Box>(box));
   }
   
+  // Parentable
+  virtual Box *getParent() { return _parent; }
+  virtual int getIndex() { return _index; }
+  
+  // Sizeable
+  virtual Size getSize() { return _size; }
+
   static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
 
 private:
 
+  Box *_parent;
+  int _index;
+  Size _size;
   std::vector<std::unique_ptr<Box> > _objs;
 
 };

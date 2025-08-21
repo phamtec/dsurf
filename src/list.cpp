@@ -14,6 +14,7 @@
 #include "colours.hpp"
 #include "sizes.hpp"
 #include "spatial.hpp"
+#include "sizeable.hpp"
 
 #include <iostream>
 
@@ -84,7 +85,13 @@ Box* List::hitTestVector(const Point &origin, const Point &p, std::vector<std::u
     if (hit) {
       return hit;
     }
-    o.y += i->_size.h + Sizes::listgap;
+    Sizeable *sz = dynamic_cast<Sizeable *>(i.get());
+    if (sz) {
+      o.y += sz->getSize().h;
+    }
+    else {
+    }
+    o.y += Sizes::listgap;
   }
   return nullptr;
   
@@ -117,7 +124,11 @@ void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std
   Point o = origin;
   for (auto&& i: list) {
     i->render(renderer, o);
-    o.y += i->_size.h + Sizes::listgap;
+    Sizeable *sz = dynamic_cast<Sizeable *>(i.get());
+    if (sz) {
+      o.y += sz->getSize().h;
+    }
+    o.y += Sizes::listgap;
   }
 
 }
@@ -130,7 +141,11 @@ Point List::localOriginVector(std::vector<std::unique_ptr<Box> > &list, int inde
     if (j == index) {
       return Point(Sizes::group_indent, y);
     }
-    y += i->_size.h + Sizes::listgap;
+    Sizeable *sz = dynamic_cast<Sizeable *>(i.get());
+    if (sz) {
+      y += sz->getSize().h;
+    }
+    y += Sizes::listgap;
     j++;
   }
 

@@ -19,7 +19,7 @@
 using namespace std;
 
 LongProp::LongProp(Box *parent, int index, const std::string &name, long value): 
-  super(parent, index), _name(name, Colours::blue) {
+  _parent(parent), _index(index), _name(name, Colours::blue) {
 
   stringstream ss;
   ss << value;

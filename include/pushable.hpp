@@ -17,9 +17,11 @@
 class Pushable {
 
 public:
+  virtual ~Pushable() {};
 
   virtual void push(Box *box) = 0;
-  
+    // push the object onto the parent.
+    
 private:
   
 };

@@ -22,16 +22,18 @@
 
 #include "box.hpp"
 #include "pushable.hpp"
+#include "parentable.hpp"
+#include "sizeable.hpp"
 
 #include <memory>
 #include <vector>
 
-class List: public Box, public Pushable {
+class List: public Box, public Pushable, public Parentable, public Sizeable  {
 
   typedef Box super;
 
 public:
-  List(Box *parent, int index): super(parent, index) {}
+  List(Box *parent, int index): _parent(parent), _index(index) {}
   
   // Box
   virtual void build(Renderer &renderer);
@@ -40,12 +42,19 @@ public:
   virtual rfl::Generic getGeneric();
   virtual Box *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
-
+  
   // Pushable
   virtual void push(Box *box) {
     _objs.push_back(std::unique_ptr<Box>(box));
   }
   
+  // Parentable
+  virtual Box *getParent() { return _parent; }
+  virtual int getIndex() { return _index; }
+  
+  // Sizeable
+  virtual Size getSize() { return _size; }
+
   // helpers for things that look like a list.
   static void buildVector(Renderer &renderer, std::vector<std::unique_ptr<Box> > &list);
   static Size layoutVector(const Size &size, std::vector<std::unique_ptr<Box> > &list);
@@ -56,6 +65,9 @@ public:
   
 private:
 
+  Box *_parent;
+  int _index;
+  Size _size;
   std::vector<std::unique_ptr<Box> > _objs;
   
 };

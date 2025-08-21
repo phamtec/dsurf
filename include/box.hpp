@@ -31,7 +31,6 @@
 #include "rect.hpp"
 
 class Renderer;
-class Resources;
 class Point;
 class TextEditor;
 
@@ -40,43 +39,33 @@ class TextEditor;
 class Box {
 
 public:
-  Box(Box *parent, int index): _parent(parent), _index(index) {};
+  Box() {};
   virtual ~Box() {};
   
   virtual Size layout() = 0;
     // layout the object.
 
-  virtual void build(Renderer &renderer) {};
+  virtual void build(Renderer &renderer) {}
     // build the texture and surface ready to render.
 
-  virtual void render(Renderer &renderer, const Point &origin) {};
+  virtual void render(Renderer &renderer, const Point &origin) {}
     // render this object to the screen.
 
   virtual Box *hitTest(const Point &origin, const Point &p);
-    // find the box at the point.
+    // recursivle find the box at the point.
     
   virtual void edit(TextEditor *editor) {}
     // edit this object with the text editor.
     
-  virtual std::string getName() { return "????"; };
+  virtual std::string getName() { return "????"; }
   virtual rfl::Generic getGeneric() = 0;
     // return the name and the object for serialization.
     
-  virtual Point localOrigin(int index) { return Point(0, 0); };
-    // the origin of this object (at index) in the parent.
-    // this is implemented in the parent of each object.
-    
   virtual Point origin();
-    // return the origin of this object.
+    // recursivle return the origin of this object.
     
-  Box *_parent;
-    // the parent of this box.
-    
-  int _index;
-    // the index of this box in the parent.
-    
-  Size _size;
-    // the size of this object
+  virtual Point localOrigin(int index) { return Point(); }
+    // return the origin of an object with index in this object.
 
 };
 

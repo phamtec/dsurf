@@ -21,17 +21,19 @@
 #include "box.hpp"
 #include "text.hpp"
 #include "pushable.hpp"
+#include "parentable.hpp"
+#include "sizeable.hpp"
 
 #include <memory>
 #include <vector>
 
-class DictProp: public Box, public Pushable {
+class DictProp: public Box, public Pushable, public Parentable, public Sizeable {
 
   typedef Box super;
 
 public:
   DictProp(Box *parent, int index, const std::string &name): 
-    super(parent, index), _name(name, Colours::blue) 
+    _parent(parent), _index(index), _name(name, Colours::blue) 
       {}
 
   // Box
@@ -48,7 +50,18 @@ public:
     _objs.push_back(std::unique_ptr<Box>(box));
   }
   
+  // Parentable
+  virtual Box *getParent() { return _parent; }
+  virtual int getIndex() { return _index; }
+  
+  // Sizeable
+  virtual Size getSize() { return _size; }
+
 private:
+
+  Box *_parent;
+  int _index;
+  Size _size;
   Text _name;
   std::vector<std::unique_ptr<Box> > _objs;
   
