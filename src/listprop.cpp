@@ -10,11 +10,9 @@
 */
 
 #include "listprop.hpp"
-#include "renderer.hpp"
+
 #include "sizes.hpp"
 #include "list.hpp"
-#include "spatial.hpp"
-#include "writeable.hpp"
 
 #include <iostream>
 

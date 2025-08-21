@@ -10,6 +10,7 @@
 */
 
 #include "box.hpp"
+
 #include "parentable.hpp"
 #include "sizeable.hpp"
 

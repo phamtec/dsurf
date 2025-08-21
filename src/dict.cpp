@@ -10,11 +10,11 @@
 */
 
 #include "dict.hpp"
+
 #include "renderer.hpp"
 #include "colours.hpp"
 #include "sizes.hpp"
 #include "list.hpp"
-#include "spatial.hpp"
 
 #include <iostream>
 

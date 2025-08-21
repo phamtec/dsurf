@@ -10,10 +10,10 @@
 */
 
 #include "list.hpp"
+
 #include "renderer.hpp"
 #include "colours.hpp"
 #include "sizes.hpp"
-#include "spatial.hpp"
 #include "sizeable.hpp"
 
 #include <iostream>
