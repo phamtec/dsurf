@@ -25,8 +25,8 @@ class String: public Box {
   typedef Box super;
   
 public:
-  String(const std::string &value): 
-    _value(value, Colours::green) 
+  String(Box *parent, int index, const std::string &value): 
+    super(parent, index), _value(value, Colours::green) 
       {}
 
   // Box

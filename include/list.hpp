@@ -31,7 +31,7 @@ class List: public Box, public Pushable {
   typedef Box super;
 
 public:
-  List(Box *parent, int index): _parent(), _index(index) {}
+  List(Box *parent, int index): super(parent, index) {}
   
   // Box
   virtual void build(Renderer &renderer);
@@ -39,7 +39,7 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual rfl::Generic getGeneric();
   virtual Box *hitTest(const Point &origin, const Point &p);
-  virtual Point parentOrigin(int index);
+  virtual Point localOrigin(int index);
 
   // Pushable
   virtual void push(Box *box) {
@@ -52,11 +52,10 @@ public:
   static void renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Box> > &list);
   static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
   static Box* hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Box> > &list);
+  static Point localOriginVector(std::vector<std::unique_ptr<Box> > &list, int index, bool prop);
   
 private:
 
-  Box *_parent;
-  int _index;
   std::vector<std::unique_ptr<Box> > _objs;
   
 };

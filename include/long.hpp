@@ -25,7 +25,7 @@ class Long: public Box {
   typedef Box super;
   
 public:
-  Long(long value);
+  Long(Box *parent, int index, long value);
 
   // Box
   virtual void build(Renderer &renderer);

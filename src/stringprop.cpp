@@ -52,15 +52,9 @@ rfl::Generic StringProp::getGeneric() {
   
 }
 
-Point StringProp::parentOrigin(int index) {
-
-  cout << "StringProp parent " << typeid(*_parent).name() << " index " << _index << endl;
-  
-  return _parent->origin(_index);
-  
-}
-
 void StringProp::edit(TextEditor *editor) {
-  editor->_origin = origin(_index);
+
+  editor->_origin = origin();
   editor->_size = _size;
+  
 }

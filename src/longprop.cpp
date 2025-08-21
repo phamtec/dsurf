@@ -18,7 +18,8 @@
 
 using namespace std;
 
-LongProp::LongProp(const std::string &name, long value): _name(name, Colours::blue) {
+LongProp::LongProp(Box *parent, int index, const std::string &name, long value): 
+  super(parent, index), _name(name, Colours::blue) {
 
   stringstream ss;
   ss << value;

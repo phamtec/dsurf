@@ -240,7 +240,7 @@ bool Renderer::processEvents() {
             (_scale * ((SDL_GetModState() & (SDL_KMOD_LSHIFT | SDL_KMOD_RSHIFT)) ? 0.5 : 2.0)) - _scale, 
             1.0, &_scale, &_offs);
         }
-        else {
+        else if (_editing) {
           Point p = _last * (1 / _scale);
           Box *hit = _root->hitTest(Point(_offs), p);
           if (hit) {

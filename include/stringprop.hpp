@@ -25,7 +25,7 @@ class StringProp: public Box {
   
 public:
   StringProp(Box *parent, int index, const std::string &name, const std::string &value):
-    _parent(parent), _index(index),
+    super(parent, index),
     _name(name, Colours::blue),
     _value(value, Colours::green) 
       {}
@@ -37,12 +37,9 @@ public:
   virtual std::string getName() { return _name.str(); }
   virtual rfl::Generic getGeneric();
   virtual void edit(TextEditor *editor);
-  virtual Point parentOrigin(int index);
 
 protected:
   
-  Box *_parent;
-  int _index;
   Text _name;
   Text _value;
 };

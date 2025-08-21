@@ -69,13 +69,13 @@ Box *Builder::walk(Box *parent, int index, const rfl::Generic &g) {
     else if constexpr (std::is_same<Type, string>()) {
       stringstream ss;
       ss << "\"" << field << "\"";
-      obj = new String(ss.str());
+      obj = new String(parent, index, ss.str());
     }
     else if constexpr (std::is_same<Type, bool>()) {
-      obj = new Bool(field);
+      obj = new Bool(parent, index, field);
     }
     else if constexpr (std::is_same<Type, long long>() || std::is_same<Type, long>()) {
-      obj = new Long(field);
+      obj = new Long(parent, index, field);
     }
     else {
       cout << "unknown type in generic " << typeid(field).name() << endl;
@@ -94,12 +94,12 @@ Box *Builder::walk(Box *parent, int index, const rfl::Generic &g, const string &
   
     using Type = std::decay_t<decltype(field)>;
     if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
-      ListProp *l = new ListProp(name);
+      ListProp *l = new ListProp(parent, index, name);
       walk(l, field, l);
       obj = l;
     }
     else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
-      DictProp *d = new DictProp(name);
+      DictProp *d = new DictProp(parent, index, name);
       walk(d, field, d);
       obj = d;
     }
@@ -112,7 +112,7 @@ Box *Builder::walk(Box *parent, int index, const rfl::Generic &g, const string &
       obj = new BoolProp(parent, index, name, field);
     }
     else if constexpr (std::is_same<Type, long long>() || std::is_same<Type, long>()) {
-      obj = new LongProp(name, field);
+      obj = new LongProp(parent, index, name, field);
     }
     else {
       cout << "unknown type in generic " << name << ": " << typeid(field).name() << endl;

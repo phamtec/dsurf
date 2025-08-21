@@ -72,4 +72,11 @@ Box *DictProp::hitTest(const Point &origin, const Point &p) {
 
   return super::hitTest(origin, p);
   
-};
+}
+
+Point DictProp::localOrigin(int index) {
+
+  return List::localOriginVector(_objs, index, true);
+  
+}
+

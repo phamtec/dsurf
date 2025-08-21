@@ -30,7 +30,9 @@ class DictProp: public Box, public Pushable {
   typedef Box super;
 
 public:
-  DictProp(const std::string &name): _name(name, Colours::blue) {}
+  DictProp(Box *parent, int index, const std::string &name): 
+    super(parent, index), _name(name, Colours::blue) 
+      {}
 
   // Box
   virtual void build(Renderer &renderer);
@@ -39,6 +41,7 @@ public:
   virtual std::string getName() { return _name.str(); }
   virtual rfl::Generic getGeneric();
   virtual Box *hitTest(const Point &origin, const Point &p);
+  virtual Point localOrigin(int index);
 
   // Pushable
   virtual void push(Box *box) {

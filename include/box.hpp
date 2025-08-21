@@ -40,7 +40,7 @@ class TextEditor;
 class Box {
 
 public:
-  Box() {};
+  Box(Box *parent, int index): _parent(parent), _index(index) {};
   virtual ~Box() {};
   
   virtual Size layout() = 0;
@@ -62,11 +62,18 @@ public:
   virtual rfl::Generic getGeneric() = 0;
     // return the name and the object for serialization.
     
-  virtual Point parentOrigin(int index) { return Point(0, 0); };
-    // the origin of the parent.
+  virtual Point localOrigin(int index) { return Point(0, 0); };
+    // the origin of this object (at index) in the parent.
+    // this is implemented in the parent of each object.
     
-  virtual Point origin(int index) { return parentOrigin(index); };
+  virtual Point origin();
     // return the origin of this object.
+    
+  Box *_parent;
+    // the parent of this box.
+    
+  int _index;
+    // the index of this box in the parent.
     
   Size _size;
     // the size of this object

@@ -20,8 +20,10 @@
 
 class BoolProp: public StringProp {
 
+  typedef StringProp super;
+
 public:
-  BoolProp(Box *parent, int index, const std::string &name, bool value): StringProp(parent, index, name, value ? "true" : "false") {}
+  BoolProp(Box *parent, int index, const std::string &name, bool value): super(parent, index, name, value ? "true" : "false") {}
   
   // Box
   virtual rfl::Generic getGeneric() { return _value.str() == "true"; }

@@ -108,8 +108,12 @@ make test
 ```
 
 Use the mouse wheel (or double finger up and down on a traockpad) to zoom.
+Double click to zoom in where you clicked. Shift+Double click to zoom back out.
 Click and drag to pan around.
-Hit q to exit.
+
+Keys:
+- Hit q to exit.
+- Hit Ctrl-E to toggle edit mode.
 
 ## Running tests
 
@@ -213,4 +217,9 @@ Walk a JSON file building a simple layout.
 ### 20-Aug-2025
 
 - Cleanup rendering.
+  
+### 21-Aug-2025
+
+- Ctrl-E will edit and then when you click on a stringbox the editor will appear.
+- The editor just drawsa square for now.
   

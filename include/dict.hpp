@@ -29,7 +29,7 @@ class Dict: public Box, public Pushable {
   typedef Box super;
 
 public:
-  Dict(Box *parent, int index): _parent(parent), _index(index) {}
+  Dict(Box *parent, int index): super(parent, index) {}
   
   // Box
   virtual void build(Renderer &renderer);
@@ -37,7 +37,7 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual rfl::Generic getGeneric();
   virtual Box *hitTest(const Point &origin, const Point &p);
-  virtual Point parentOrigin(int index);
+  virtual Point localOrigin(int index);
   
   // Pushable
   virtual void push(Box *box) {
@@ -48,8 +48,6 @@ public:
 
 private:
 
-  Box *_parent;
-  int _index;
   std::vector<std::unique_ptr<Box> > _objs;
 
 };

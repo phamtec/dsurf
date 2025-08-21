@@ -70,4 +70,11 @@ Box *ListProp::hitTest(const Point &origin, const Point &p) {
 
   return super::hitTest(origin, p);
   
-};
+}
+
+Point ListProp::localOrigin(int index) {
+
+  return List::localOriginVector(_objs, index, true);
+  
+}
+

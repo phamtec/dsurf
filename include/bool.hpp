@@ -20,8 +20,10 @@
 
 class Bool: public String {
 
+  typedef String super;
+
 public:
-  Bool(bool value): String(value ? "true" : "false") {}
+  Bool(Box *parent, int index, bool value): super(parent, index, value ? "true" : "false") {}
   
   // Box
   virtual rfl::Generic getGeneric() { return _value.str() == "true"; }

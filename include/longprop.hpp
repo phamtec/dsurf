@@ -24,7 +24,7 @@ class LongProp: public Box {
   typedef Box super;
   
 public:
-  LongProp(const std::string &name, long value);
+  LongProp(Box *parent, int index, const std::string &name, long value);
 
   // Box
   virtual void build(Renderer &renderer);

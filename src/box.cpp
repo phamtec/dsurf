@@ -26,3 +26,12 @@ Box *Box::hitTest(const Point &origin, const Point &p) {
   return nullptr;
   
 };
+
+Point Box::origin() {
+
+  if (!_parent) {
+    return Point();
+  }
+  return _parent->origin() + _parent->localOrigin(_index);
+  
+}

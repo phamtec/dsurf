@@ -23,7 +23,7 @@ class TextEditor: public Box {
   typedef Box super;
   
 public:
-  TextEditor(): _origin(0, 0) {}
+  TextEditor(): super(nullptr, 0), _origin(0, 0) {}
 
   // Box
   virtual Size layout() { return _size; };

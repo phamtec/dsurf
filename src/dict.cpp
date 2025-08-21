@@ -72,11 +72,9 @@ Box *Dict::hitTest(const Point &origin, const Point &p) {
   
 };
 
-Point Dict::parentOrigin(int index) {
+Point Dict::localOrigin(int index) {
 
-  cout << "Dict parent " << typeid(*_parent).name() << " index " << _index << endl;
-  
-  return _parent->origin(index) + Point(Sizes::group_indent, Sizes::listgap);
+  return List::localOriginVector(_objs, index, false);
   
 }
 

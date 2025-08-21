@@ -32,7 +32,8 @@ class ListProp: public Box, public Pushable {
   typedef Box super;
 
 public:
-  ListProp(const std::string &name): _name(name, Colours::blue)
+  ListProp(Box *parent, int index, const std::string &name):
+    super(parent, index), _name(name, Colours::blue)
       {}
   
   // Box
@@ -42,6 +43,7 @@ public:
   virtual std::string getName() { return _name.str(); }
   virtual rfl::Generic getGeneric();
   virtual Box *hitTest(const Point &origin, const Point &p);
+  virtual Point localOrigin(int index);
 
   // Pushable
   virtual void push(Box *box) {

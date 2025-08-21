@@ -70,16 +70,9 @@ Box *List::hitTest(const Point &origin, const Point &p) {
   
 };
 
-Point List::parentOrigin(int index) {
+Point List::localOrigin(int index) {
 
-  if (!_parent) {
-    cout << "List no parent " << " index " << _index << endl;
-    return Point(Sizes::group_indent, Sizes::listgap);
-  }
-  
-  cout << "List parent " << typeid(*_parent).name() << " index " << _index << endl;
-  
-  return _parent->origin(index) + Size(Sizes::group_indent, Sizes::listgap);
+  return localOriginVector(_objs, index, false);
   
 }
 
@@ -129,6 +122,22 @@ void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std
 
 }
 
+Point List::localOriginVector(std::vector<std::unique_ptr<Box> > &list, int index, bool prop) {
+
+  int j=0;
+  int y=Sizes::listgap + (prop ? 40 : 0);
+  for (auto&& i: list) {
+    if (j == index) {
+      return Point(Sizes::group_indent, y);
+    }
+    y += i->_size.h + Sizes::listgap;
+    j++;
+  }
+
+  return Point(0, 0);
+  
+}
+
 void List::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
 
   renderer.renderFilledRect(Rect(origin + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::orange);
@@ -137,4 +146,6 @@ void List::drawBorder(Renderer &renderer, const Point &origin, const Size &size,
   renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::orange);
 
 }
+
+
 
