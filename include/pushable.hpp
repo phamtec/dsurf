@@ -22,8 +22,6 @@ public:
   virtual void push(Box *box) = 0;
     // push the object onto the parent.
     
-private:
-  
 };
 
 #endif // H_pushable

@@ -24,11 +24,12 @@
 #include "pushable.hpp"
 #include "parentable.hpp"
 #include "sizeable.hpp"
+#include "writeable.hpp"
 
 #include <memory>
 #include <vector>
 
-class List: public Box, public Pushable, public Parentable, public Sizeable  {
+class List: public Box, public Pushable, public Parentable, public Sizeable, public Writeable  {
 
   typedef Box super;
 
@@ -39,10 +40,12 @@ public:
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
-  virtual rfl::Generic getGeneric();
   virtual Box *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
   
+  // Writeable
+  virtual rfl::Generic getGeneric();
+
   // Pushable
   virtual void push(Box *box) {
     _objs.push_back(std::unique_ptr<Box>(box));
@@ -62,7 +65,8 @@ public:
   static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
   static Box* hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Box> > &list);
   static Point localOriginVector(std::vector<std::unique_ptr<Box> > &list, int index, bool prop);
-  
+  static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Box> > &list);
+ 
 private:
 
   Box *_parent;

@@ -34,8 +34,6 @@ class Renderer;
 class Point;
 class TextEditor;
 
-#include <rfl.hpp>
-
 class Box {
 
 public:
@@ -47,21 +45,21 @@ public:
 
   virtual void build(Renderer &renderer) {}
     // build the texture and surface ready to render.
-
+    // objects, build yourself and then call super::build(renderer)
+    
   virtual void render(Renderer &renderer, const Point &origin) {}
     // render this object to the screen.
+    // objects, render yourself and then call super::render(renderer, origin)
 
   virtual Box *hitTest(const Point &origin, const Point &p);
     // recursivle find the box at the point.
+    // objects, find the object in your sub objects
+    // and then call super::hitTest(origin, p)
     
   virtual void edit(TextEditor *editor) {}
     // edit this object with the text editor.
     
-  virtual std::string getName() { return "????"; }
-  virtual rfl::Generic getGeneric() = 0;
-    // return the name and the object for serialization.
-    
-  virtual Point origin();
+  Point origin();
     // recursivle return the origin of this object.
     
   virtual Point localOrigin(int index) { return Point(); }

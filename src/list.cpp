@@ -50,13 +50,7 @@ void List::render(Renderer &renderer, const Point &origin) {
 
 rfl::Generic List::getGeneric() { 
 
-  vector<rfl::Generic> obj = vector<rfl::Generic>();
-
-  for (auto&& i: _objs) {
-    obj.push_back(i->getGeneric());
-  }
-  
-  return obj; 
+  return getGenericVector(_objs); 
   
 }
 
@@ -74,6 +68,26 @@ Box *List::hitTest(const Point &origin, const Point &p) {
 Point List::localOrigin(int index) {
 
   return localOriginVector(_objs, index, false);
+  
+}
+
+rfl::Generic List::getGenericVector(std::vector<std::unique_ptr<Box> > &list) { 
+
+  vector<rfl::Generic> obj = vector<rfl::Generic>();
+
+  for (auto&& i: list) {
+    Writeable *wx = dynamic_cast<Writeable *>(i.get());
+    if (wx) {
+      obj.push_back(wx->getGeneric());
+    }
+    else {
+      stringstream ss;
+      ss << typeid(i.get()).name() << " not Writeable";
+      obj.push_back(ss.str());
+    }
+  }
+  
+  return obj; 
   
 }
 

@@ -14,6 +14,7 @@
 #include "sizes.hpp"
 #include "list.hpp"
 #include "spatial.hpp"
+#include "writeable.hpp"
 
 #include <iostream>
 
@@ -51,13 +52,7 @@ void ListProp::render(Renderer &renderer, const Point &origin) {
 
 rfl::Generic ListProp::getGeneric() { 
 
-  vector<rfl::Generic> obj = vector<rfl::Generic>();
-
-  for (auto&& i: _objs) {
-    obj.push_back(i->getGeneric());
-  }
-  
-  return obj; 
+  return List::getGenericVector(_objs); 
   
 }
 

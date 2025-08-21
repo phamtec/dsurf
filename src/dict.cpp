@@ -50,14 +50,7 @@ void Dict::render(Renderer &renderer, const Point &origin) {
 
 rfl::Generic Dict::getGeneric() { 
 
-  rfl::Object<rfl::Generic> obj = rfl::Object<rfl::Generic>();
-
-  for (auto&& i: _objs) {
-    string name = i->getName();
-    obj[name] = i->getGeneric();
-  }
-  
-  return obj; 
+  return getGenericVector(_objs);
   
 }
 
@@ -92,4 +85,23 @@ void Dict::drawBorder(Renderer &renderer, const Point &origin, const Size &size,
   renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength - Sizes::thickness)), Colours::plum);
   renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness) + Size(Sizes::thickness, 0), Size(Sizes::bottomlinelength - Sizes::thickness, Sizes::thickness)), Colours::plum);
 
+}
+
+rfl::Generic Dict::getGenericVector(std::vector<std::unique_ptr<Box> > &list) { 
+
+  rfl::Object<rfl::Generic> obj = rfl::Object<rfl::Generic>();
+
+  for (auto&& i: list) {
+    Writeable *wx = dynamic_cast<Writeable *>(i.get());
+    if (wx) {
+      string name = wx->getName();
+      obj[name] = wx->getGeneric();
+    }
+    else {
+      obj[typeid(i.get()).name()] = "not Writeable";
+    }
+  }
+  
+  return obj; 
+  
 }

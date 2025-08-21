@@ -160,7 +160,11 @@ void Builder::walk(Box *parent, const std::vector<rfl::Generic > &v, Pushable *l
 
 std::string Builder::getJson(Box *box) { 
 
-  return rfl::json::write(box->getGeneric(), rfl::json::pretty); 
+  Writeable *wx = dynamic_cast<Writeable *>(box);
+  if (wx) {
+    return rfl::json::write(wx->getGeneric(), rfl::json::pretty); 
+  }
+  return "not writeable";
   
 }
 

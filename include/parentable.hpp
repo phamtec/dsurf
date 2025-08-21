@@ -25,8 +25,6 @@ public:
   virtual int getIndex() = 0;
     // get the index of this object in the parent.
     
-private:
-  
 };
 
 #endif // H_parentable

@@ -52,14 +52,7 @@ void DictProp::render(Renderer &renderer, const Point &origin) {
 
 rfl::Generic DictProp::getGeneric() { 
 
-  rfl::Object<rfl::Generic> obj = rfl::Object<rfl::Generic>();
-
-  for (auto&& i: _objs) {
-    string name = i->getName();
-    obj[name] = i->getGeneric();
-  }
-  
-  return obj; 
+  return Dict::getGenericVector(_objs);
   
 }
 

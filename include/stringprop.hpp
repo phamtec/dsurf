@@ -20,8 +20,9 @@
 #include "text.hpp"
 #include "parentable.hpp"
 #include "sizeable.hpp"
+#include "writeable.hpp"
 
-class StringProp: public Box, public Parentable, public Sizeable {
+class StringProp: public Box, public Parentable, public Sizeable, public Writeable {
 
   typedef Box super;
   
@@ -36,9 +37,11 @@ public:
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
+  virtual void edit(TextEditor *editor);
+
+  // Writeable
   virtual std::string getName() { return _name.str(); }
   virtual rfl::Generic getGeneric();
-  virtual void edit(TextEditor *editor);
 
   // Parentable
   virtual Box *getParent() { return _parent; }

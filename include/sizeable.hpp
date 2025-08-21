@@ -22,8 +22,6 @@ public:
   virtual Size getSize() = 0;
     // return the size of this object.
     
-private:
-  
 };
 
 #endif // H_sizeable

@@ -21,8 +21,9 @@
 #include "colours.hpp"
 #include "parentable.hpp"
 #include "sizeable.hpp"
+#include "writeable.hpp"
 
-class Long: public Box, public Parentable, public Sizeable {
+class Long: public Box, public Parentable, public Sizeable, public Writeable {
 
   typedef Box super;
   
@@ -33,6 +34,8 @@ public:
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
+
+  // Writeable
   virtual rfl::Generic getGeneric();
 
   // Parentable

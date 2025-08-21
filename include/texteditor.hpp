@@ -28,8 +28,6 @@ public:
   // Box
   virtual Size layout() { return _size; };
   virtual void render(Renderer &renderer, const Point &origin);
-  virtual std::string getName() { return "????"; }
-  virtual rfl::Generic getGeneric() { return 0; }
 
   Point _origin;
   Size _size;
