@@ -76,7 +76,7 @@ rfl::Generic List::getGenericVector(std::vector<std::unique_ptr<Box> > &list) {
   vector<rfl::Generic> obj = vector<rfl::Generic>();
 
   for (auto&& i: list) {
-    Writeable *wx = dynamic_cast<Writeable *>(i.get());
+    auto *wx = dynamic_cast<Writeable *>(i.get());
     if (wx) {
       obj.push_back(wx->getGeneric());
     }

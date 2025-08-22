@@ -1,15 +1,15 @@
 /*
-  long.cpp
+  bool.cpp
   
   Author: Paul Hamilton (phamtec@mac.com)
-  Date: 9-Aug-2025
+  Date: 22-Aug-2025
     
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
 */
 
-#include "long.hpp"
+#include "bool.hpp"
 #include "sizes.hpp"
 #include "spatial.hpp"
 #include "renderer.hpp"
@@ -18,22 +18,20 @@
 
 using namespace std;
 
-Long::Long(Box *parent, int index, long value): _parent(parent), _index(index) {
+Bool::Bool(Box *parent, int index, bool value): _parent(parent), _index(index) {
 
-  stringstream ss;
-  ss << value;
-  _value.set(ss.str(), Colours::green);
+  _value.set(value ? "true" : "false", Colours::green);
   
 }
 
-Size Long::layout() {
+Size Bool::layout() {
 
   _size = _value.size();
   return _size;
   
 }
 
-void Long::build(Renderer &renderer) {
+void Bool::build(Renderer &renderer) {
 
   super::build(renderer);
   
@@ -41,7 +39,7 @@ void Long::build(Renderer &renderer) {
 
 }
 
-void Long::render(Renderer &renderer, const Point &origin) {
+void Bool::render(Renderer &renderer, const Point &origin) {
 
   super::render(renderer, origin);
   
@@ -51,20 +49,9 @@ void Long::render(Renderer &renderer, const Point &origin) {
   
 }
 
-rfl::Generic Long::getGeneric() { 
-  
-  stringstream ss(_value.str());
-  long l;
-  ss >> l;
-
-  return l;
-
-}
-
-void Long::edit(TextEditor *editor) {
+void Bool::edit(TextEditor *editor) {
 
   string v = _value.str();
   editor->focus(origin(), _size, v);
   
 }
-

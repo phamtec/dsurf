@@ -9,16 +9,12 @@
   Box is the abstract base class of all drawn objects.
   
   Box
-    StringProp
-      BoolProp
-    LongProp
-    ListProp
-    DictProp
     String
-      Bool
+    Bool
     Long
     List
     Dict
+    Property
     
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  

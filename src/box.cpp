@@ -38,6 +38,7 @@ Point Box::origin() {
   // see if the object can have a parent.
   Parentable *p = dynamic_cast<Parentable *>(this);
   if (!p) {
+    cerr << "not parentable!" << endl;
     return Point();
   }
   
@@ -46,6 +47,8 @@ Point Box::origin() {
   if (!parent) {
     return Point();
   }
+  
+//  cout << "origin parent " << typeid(*parent).name() << endl;
   
   // recursively calculate the origin.
   return parent->origin() + parent->localOrigin(p->getIndex());

@@ -45,11 +45,16 @@ int main(int argc, char *argv[])
     return 1;
   }
   
-//   Size wsize(500, 500);
-//   Renderer renderer(wsize, 0.01, 1.5, Size(0.0, 0.0), false);
-//  Renderer renderer(Size(1024, 768), 0.01, 0.5, Size(0.0, 0.0), false);
-//  Renderer renderer(Renderer::displaySize() - Size(200, 300), 0.01, 0.3, Size(0.0, 0.0), true);
-  Renderer renderer(Renderer::displaySize() - Size(200, 300), 0.01, 0.3, Size(0.0, 0.0), false);
+//  bool edit = true;
+  bool edit = false;
+  Size wsize = Renderer::displaySize() - Size(200, 300);
+//  Size wsize(500, 500);
+//  Size wsize(1024, 768);
+  double scale = 0.3;
+//   double scale = 1.5;
+//   double scale = 0.5;
+
+  Renderer renderer(wsize, 0.01, scale, Size(0.0, 0.0), edit);
 
   // build all of the internal renderer state.
   if (!renderer.init("../fonts/Monaco.ttf")) {

@@ -14,13 +14,9 @@
 #include "dict.hpp"
 #include "list.hpp"
 #include "string.hpp"
-#include "stringprop.hpp"
 #include "bool.hpp"
-#include "boolprop.hpp"
-#include "dictprop.hpp"
-#include "listprop.hpp"
 #include "long.hpp"
-#include "longprop.hpp"
+#include "property.hpp"
 
 using namespace std;
 
@@ -54,16 +50,12 @@ Box *Builder::walk(Box *parent, int index, const rfl::Generic &g) {
     using Type = std::decay_t<decltype(field)>;
     if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
       List *l = new List(parent, index);
-//      Pushable *l = new List();
       walk(l, field, l);
-//      obj = dynamic_cast<Box *>(l);
       obj = l;
     }
     else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
-//      Pushable *d = new Dict();
       Dict *d = new Dict(parent, index);
       walk(d, field, d);
-//      obj = dynamic_cast<Box *>(d);
       obj = d;
     }
     else if constexpr (std::is_same<Type, string>()) {
@@ -94,25 +86,33 @@ Box *Builder::walk(Box *parent, int index, const rfl::Generic &g, const string &
   
     using Type = std::decay_t<decltype(field)>;
     if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
-      ListProp *l = new ListProp(parent, index, name);
+      auto *l = new List(0, 0);
       walk(l, field, l);
-      obj = l;
+      obj = new Property(parent, index, name, l, true);
+      l->setParent(obj);
     }
     else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
-      DictProp *d = new DictProp(parent, index, name);
+      auto *d = new Dict(0, 0);
       walk(d, field, d);
-      obj = d;
+      obj = new Property(parent, index, name, d, true);
+      d->setParent(obj);
     }
     else if constexpr (std::is_same<Type, string>()) {
       stringstream ss;
       ss << "\"" << field << "\"";
-      obj = new StringProp(parent, index, name, ss.str());
+      auto s = new String(0, 0, ss.str());
+      obj = new Property(parent, index, name, s, false);
+      s->setParent(obj);
     }
     else if constexpr (std::is_same<Type, bool>()) {
-      obj = new BoolProp(parent, index, name, field);
+      auto s = new Bool(0, 0, field);
+      obj = new Property(parent, index, name, s, false);
+      s->setParent(obj);
     }
     else if constexpr (std::is_same<Type, long long>() || std::is_same<Type, long>()) {
-      obj = new LongProp(parent, index, name, field);
+      auto s = new Long(0, 0, field);
+      obj = new Property(parent, index, name, s, false);
+      s->setParent(obj);
     }
     else {
       cout << "unknown type in generic " << name << ": " << typeid(field).name() << endl;
@@ -160,7 +160,7 @@ void Builder::walk(Box *parent, const std::vector<rfl::Generic > &v, Pushable *l
 
 std::string Builder::getJson(Box *box) { 
 
-  Writeable *wx = dynamic_cast<Writeable *>(box);
+  auto *wx = dynamic_cast<Writeable *>(box);
   if (wx) {
     return rfl::json::write(wx->getGeneric(), rfl::json::pretty); 
   }

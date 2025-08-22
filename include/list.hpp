@@ -52,6 +52,7 @@ public:
   }
   
   // Parentable
+  virtual void setParent(Box *parent) { _parent = parent; }
   virtual Box *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   

@@ -54,15 +54,13 @@ set(UTILSRC
 )
 
 set(OBJSRC
-  src/stringprop.cpp
   src/string.cpp
   src/list.cpp 
-  src/listprop.cpp
   src/dict.cpp
-  src/dictprop.cpp
   src/long.cpp
-  src/longprop.cpp
   src/box.cpp
+  src/bool.cpp
+  src/property.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC})

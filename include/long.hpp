@@ -34,11 +34,13 @@ public:
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
+  virtual void edit(TextEditor *editor);
 
   // Writeable
   virtual rfl::Generic getGeneric();
 
   // Parentable
+  virtual void setParent(Box *parent) { _parent = parent; }
   virtual Box *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   

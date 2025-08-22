@@ -1,28 +1,23 @@
 /*
-  listprop.hpp
+  property.hpp
   
   Author: Paul Hamilton (phamtec@mac.com)
-  Date: 6-Aug-2025
+  Date: 22-Aug-2025
     
   List property class.
   
-  "name": [
-    {
-      ... props
-    }
-  ]
+  "name": something
 
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
 */
 
-#ifndef H_listprop
-#define H_listprop
+#ifndef H_property
+#define H_property
 
 #include "box.hpp"
 #include "text.hpp"
-#include "pushable.hpp"
 #include "parentable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
@@ -30,13 +25,14 @@
 #include <memory>
 #include <vector>
 
-class ListProp: public Box, public Pushable, public Parentable, public Sizeable, public Writeable  {
+class Property: public Box, public Parentable, public Sizeable, public Writeable  {
 
   typedef Box super;
 
 public:
-  ListProp(Box *parent, int index, const std::string &name):
-    _parent(parent), _index(index), _name(name, Colours::blue)
+  Property(Box *parent, int index, const std::string &name, Box *obj, bool container):
+    _parent(parent), _index(index), _name(name, Colours::blue), 
+    _obj(obj), _container(container)
       {}
   
   // Box
@@ -50,12 +46,8 @@ public:
   virtual std::string getName() { return _name.str(); }
   virtual rfl::Generic getGeneric();
 
-  // Pushable
-  virtual void push(Box *box) {
-    _objs.push_back(std::unique_ptr<Box>(box));
-  }
-  
   // Parentable
+  virtual void setParent(Box *parent) { _parent = parent; }
   virtual Box *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   
@@ -68,8 +60,9 @@ private:
   int _index;
   Size _size;
   Text _name;
-  std::vector<std::unique_ptr<Box> > _objs;
+  bool _container;
+  std::unique_ptr<Box> _obj;
   
 };
 
-#endif // H_listprop
+#endif // H_property

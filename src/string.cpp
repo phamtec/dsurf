@@ -14,6 +14,8 @@
 #include "spatial.hpp"
 #include "renderer.hpp"
 
+using namespace std;
+
 Size String::layout() {
 
   _size = _value.size();
@@ -42,5 +44,12 @@ void String::render(Renderer &renderer, const Point &origin) {
 rfl::Generic String::getGeneric() { 
 
   return _value.str().substr(1, _value.str().size() - 2); 
+  
+}
+
+void String::edit(TextEditor *editor) {
+
+  string v = _value.str().substr(1, _value.str().size() - 2);
+  editor->focus(origin(), _size, v);
   
 }

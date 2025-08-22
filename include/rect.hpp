@@ -26,6 +26,7 @@ public:
   Rect(): origin(0, 0), size(0, 0) {}
   Rect(const Point &o, const Size &d): origin(o), size(d) {}
   Rect(const SDL_Rect &rect): origin(rect.x, rect.y), size(rect.w, rect.h) {}
+  Rect(const SDL_FRect &rect): origin(rect.x, rect.y), size(rect.w, rect.h) {}
   
   Point origin;
   Size size;

@@ -161,7 +161,10 @@ void Renderer::loop() {
     SDL_SetRenderScale(_renderer, _scale, _scale);
 
     _root->render(*this, Point(0.0, 0.0));
-    _editor->render(*this, Point(0.0, 0.0));
+    
+    if (_editing) {
+      _editor->render(*this, Point(0.0, 0.0));
+    }
 
     // set the scale back to 1.0 so that our draw will work.
     SDL_SetRenderScale(_renderer, 1.0, 1.0);

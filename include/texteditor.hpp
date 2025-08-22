@@ -24,7 +24,7 @@ class TextEditor: public Box {
   typedef Box super;
   
 public:
-  TextEditor(): _text(0), _window(0), _focus(false), _cursor(0) {}
+  TextEditor(): _text(0), _window(0), _cursor(0) {}
   ~TextEditor();
   
   void focus(const Point &origin, const Size &size, const std::string &s);
@@ -42,7 +42,6 @@ private:
 
   TTF_Text *_text;
   SDL_Window *_window;
-  bool _focus;
   bool _cursor_visible;
   Uint64 _last_cursor_change;
   SDL_FRect _cursor_rect;

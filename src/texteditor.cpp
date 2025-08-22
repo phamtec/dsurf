@@ -41,8 +41,11 @@ void TextEditor::build(Renderer &renderer) {
   TTF_SetTextWrapWhitespaceVisible(_text, true);
 
   // We support rendering the composition and candidates
-  SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, "composition,candidates");
+//  SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, "composition,candidates");
 
+  // make the text black
+  TTF_SetTextColor(_text, 0x00, 0x00, 0x00, 0xFF);
+  
   _window = renderer._window;
 }
 
@@ -59,8 +62,7 @@ void TextEditor::focus(const Point &origin, const Size &size, const string &s) {
   TTF_SetTextWrapWidth(_text, _size.w);
   TTF_SetTextString(_text, s.c_str(), s.size());
   SDL_StartTextInput(_window);
-  _focus = true;
-  _cursor = 0;
+  setCursorPosition(s.size());
   
 }
 
@@ -137,15 +139,15 @@ void TextEditor::render(Renderer &renderer, const Point &origin) {
   SDL_FRect r = Rect(_origin + renderer._offs, _size).srect();
   SDL_RenderFillRect(renderer._renderer, &r);
 
-  if (_focus) {
-    SDL_FRect focusRect = r;
-    focusRect.x -= 1;
-    focusRect.y -= 1;
-    focusRect.w += 2;
-    focusRect.h += 2;
-    SDL_SetRenderDrawColor(renderer._renderer, 0x00, 0x00, 0x00, 0xFF);
-    SDL_RenderRect(renderer._renderer, &focusRect);
-  }
+//   if (_focus) {
+//     SDL_FRect focusRect = r;
+//     focusRect.x -= 1;
+//     focusRect.y -= 1;
+//     focusRect.w += 2;
+//     focusRect.h += 2;
+//     SDL_SetRenderDrawColor(renderer._renderer, 0x00, 0x00, 0x00, 0xFF);
+//     SDL_RenderRect(renderer._renderer, &focusRect);
+//   }
   
   /* Draw any highlight */
 //   int marker, length;
@@ -167,29 +169,28 @@ void TextEditor::render(Renderer &renderer, const Point &origin) {
   
   TTF_DrawRendererText(_text, r.x, r.y);
   
-  if (_focus) {
-      // Draw the cursor
-      Uint64 now = SDL_GetTicks();
-      if ((now - _last_cursor_change) >= CURSOR_BLINK_INTERVAL_MS) {
-          _cursor_visible = !_cursor_visible;
-          _last_cursor_change = now;
-      }
-  
-      /* Calculate the cursor rect, used for positioning candidates */
-      TTF_SubString cursor;
-      if (TTF_GetTextSubString(_text, _cursor, &cursor)) {
+    // Draw the cursor
+    Uint64 now = SDL_GetTicks();
+    if ((now - _last_cursor_change) >= CURSOR_BLINK_INTERVAL_MS) {
+        _cursor_visible = !_cursor_visible;
+        _last_cursor_change = now;
+    }
 
-          SDL_RectToFRect(&cursor.rect, &_cursor_rect);
-          if ((cursor.flags & TTF_SUBSTRING_DIRECTION_MASK) == TTF_DIRECTION_RTL) {
-              _cursor_rect.x += cursor.rect.w;
-          }
-          _cursor_rect.x += r.x;
-          _cursor_rect.y += r.y;
-          _cursor_rect.w = 1.0f;
-  
-          updateTextInputArea(renderer);
-      }
-  
+    /* Calculate the cursor rect, used for positioning candidates */
+    TTF_SubString cursor;
+    if (TTF_GetTextSubString(_text, _cursor, &cursor)) {
+
+        SDL_RectToFRect(&cursor.rect, &_cursor_rect);
+        if ((cursor.flags & TTF_SUBSTRING_DIRECTION_MASK) == TTF_DIRECTION_RTL) {
+            _cursor_rect.x += cursor.rect.w;
+        }
+        _cursor_rect.x += r.x;
+        _cursor_rect.y += r.y;
+        _cursor_rect.w = 3.0f;
+
+        updateTextInputArea(renderer);
+    }
+
 //       if (edit->composition_length > 0) {
 //           DrawComposition(edit);
 //       }
@@ -197,11 +198,10 @@ void TextEditor::render(Renderer &renderer, const Point &origin) {
 //       if (edit->candidates) {
 //           DrawCandidates(edit);
 //       }
-  
-      if (_cursor_visible) {
-        drawCursor(renderer);
-      }
-  }
+
+    if (_cursor_visible) {
+      drawCursor(renderer);
+    }
   
 }
 

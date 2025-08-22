@@ -151,6 +151,22 @@ BOOST_AUTO_TEST_CASE( parseCode )
   
 }
 
+BOOST_AUTO_TEST_CASE( parseSimple )
+{
+  cout << "=== parseSimple ===" << endl;
+
+  testParse("../test/simple.json");
+  
+}
+
+BOOST_AUTO_TEST_CASE( parseSimpleProps )
+{
+  cout << "=== parseSimpleProps ===" << endl;
+
+  testParse("../test/simpleprops.json");
+  
+}
+
 BOOST_AUTO_TEST_CASE( genericReflection )
 {
   cout << "=== genericReflection ===" << endl;

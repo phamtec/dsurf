@@ -92,7 +92,7 @@ rfl::Generic Dict::getGenericVector(std::vector<std::unique_ptr<Box> > &list) {
   rfl::Object<rfl::Generic> obj = rfl::Object<rfl::Generic>();
 
   for (auto&& i: list) {
-    Writeable *wx = dynamic_cast<Writeable *>(i.get());
+    auto *wx = dynamic_cast<Writeable *>(i.get());
     if (wx) {
       string name = wx->getName();
       obj[name] = wx->getGeneric();
