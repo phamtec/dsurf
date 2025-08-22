@@ -47,32 +47,43 @@ Box *Builder::walk(Box *parent, int index, const rfl::Generic &g) {
   Box *obj = nullptr;
   std::visit([parent, index, &obj](const auto &field) {
   
+    Parentable *pobj = nullptr;
     using Type = std::decay_t<decltype(field)>;
     if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
-      List *l = new List(parent, index);
+      auto *l = new List();
       walk(l, field, l);
+      pobj = l;
       obj = l;
     }
     else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
-      Dict *d = new Dict(parent, index);
+      auto *d = new Dict();
       walk(d, field, d);
+      pobj = d;
       obj = d;
     }
     else if constexpr (std::is_same<Type, string>()) {
-      stringstream ss;
-      ss << "\"" << field << "\"";
-      obj = new String(parent, index, ss.str());
+      auto s = new String(field);
+      pobj = s;
+      obj = s;
     }
     else if constexpr (std::is_same<Type, bool>()) {
-      obj = new Bool(parent, index, field);
+      auto b = new Bool(field);
+      pobj = b;
+      obj = b;
     }
     else if constexpr (std::is_same<Type, long long>() || std::is_same<Type, long>()) {
-      obj = new Long(parent, index, field);
+      auto l = new Long(field);
+      pobj = l;
+      obj = l;
     }
     else {
       cout << "unknown type in generic " << typeid(field).name() << endl;
     }
 
+    if (pobj) {
+      pobj->setParent(parent, index);
+    }
+    
   }, g.variant());
 
   return obj;
@@ -84,40 +95,56 @@ Box *Builder::walk(Box *parent, int index, const rfl::Generic &g, const string &
   Box *obj = nullptr;
   std::visit([parent, index, &obj, name](const auto &field) {
   
+    Parentable *pobj = nullptr;
     using Type = std::decay_t<decltype(field)>;
     if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
-      auto *l = new List(0, 0);
+      auto *l = new List();
       walk(l, field, l);
-      obj = new Property(parent, index, name, l, true);
-      l->setParent(obj);
+      auto p = new Property(name, l, true);
+      pobj = p;
+//      p->setParent(parent, index);
+      l->setParent(p, 0);
+      obj = p;
+      pobj = p;
     }
     else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
-      auto *d = new Dict(0, 0);
+      auto *d = new Dict();
       walk(d, field, d);
-      obj = new Property(parent, index, name, d, true);
-      d->setParent(obj);
+      auto p = new Property(name, d, true);
+//      p->setParent(parent, index);
+      d->setParent(p, 0);
+      obj = p;
+      pobj = p;
     }
     else if constexpr (std::is_same<Type, string>()) {
-      stringstream ss;
-      ss << "\"" << field << "\"";
-      auto s = new String(0, 0, ss.str());
-      obj = new Property(parent, index, name, s, false);
-      s->setParent(obj);
+      auto s = new String(field);
+      auto p = new Property(name, s, false);
+//      p->setParent(parent, index);
+      s->setParent(p, 0);
+      obj = p;
     }
     else if constexpr (std::is_same<Type, bool>()) {
-      auto s = new Bool(0, 0, field);
-      obj = new Property(parent, index, name, s, false);
-      s->setParent(obj);
+      auto s = new Bool(field);
+      auto p = new Property(name, s, false);
+//      p->setParent(parent, index);
+      s->setParent(p, 0);
+      obj = p;
     }
     else if constexpr (std::is_same<Type, long long>() || std::is_same<Type, long>()) {
-      auto s = new Long(0, 0, field);
-      obj = new Property(parent, index, name, s, false);
-      s->setParent(obj);
+      auto s = new Long(field);
+      auto p = new Property(name, s, false);
+//      p->setParent(parent, index);
+      s->setParent(p, 0);
+      obj = p;
     }
     else {
       cout << "unknown type in generic " << name << ": " << typeid(field).name() << endl;
     }
 
+    if (pobj) {
+      pobj->setParent(parent, index);
+    }
+    
   }, g.variant());
 
   return obj;

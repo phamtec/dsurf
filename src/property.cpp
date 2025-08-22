@@ -12,6 +12,7 @@
 #include "property.hpp"
 
 #include "sizes.hpp"
+#include "texteditor.hpp"
 
 #include <iostream>
 
@@ -85,5 +86,11 @@ Point Property::localOrigin(int index) {
   }
   
   return Point(_name.size().w + Sizes::name_var_padding, 0);
+  
+}
+
+void Property::edit(TextEditor *editor) {
+
+  editor->focus(origin() , _name.size(), _name.str());
   
 }

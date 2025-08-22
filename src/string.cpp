@@ -16,6 +16,13 @@
 
 using namespace std;
 
+String::String(const std::string &value): _parent(0), _index(0) {
+
+  stringstream ss;
+  ss << "\"" << value << "\"";
+  _value.set(ss.str(), Colours::green);
+}
+
 Size String::layout() {
 
   _size = _value.size();

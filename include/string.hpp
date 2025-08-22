@@ -28,9 +28,7 @@ class String: public Box, public Parentable, public Sizeable, public Writeable {
   typedef Box super;
   
 public:
-  String(Box *parent, int index, const std::string &value): 
-    _parent(parent), _index(index), _value(value, Colours::green) 
-      {}
+  String(const std::string &value);
 
   // Box
   virtual void build(Renderer &renderer);
@@ -42,7 +40,7 @@ public:
   virtual rfl::Generic getGeneric();
 
   // Parentable
-  virtual void setParent(Box *parent) { _parent = parent; }
+  virtual void setParent(Box *parent, int index) { _parent = parent; _index = index; }
   virtual Box *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   

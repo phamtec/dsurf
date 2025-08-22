@@ -30,8 +30,8 @@ class Property: public Box, public Parentable, public Sizeable, public Writeable
   typedef Box super;
 
 public:
-  Property(Box *parent, int index, const std::string &name, Box *obj, bool container):
-    _parent(parent), _index(index), _name(name, Colours::blue), 
+  Property(const std::string &name, Box *obj, bool container):
+    _parent(0), _index(0), _name(name, Colours::blue), 
     _obj(obj), _container(container)
       {}
   
@@ -41,13 +41,14 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Box *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
+  virtual void edit(TextEditor *editor);
 
   // Writeable
   virtual std::string getName() { return _name.str(); }
   virtual rfl::Generic getGeneric();
 
   // Parentable
-  virtual void setParent(Box *parent) { _parent = parent; }
+  virtual void setParent(Box *parent, int index) { _parent = parent; _index = index; }
   virtual Box *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   

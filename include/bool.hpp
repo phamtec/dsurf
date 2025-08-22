@@ -28,7 +28,7 @@ class Bool: public Box, public Parentable, public Sizeable, public Writeable {
   typedef Box super;
 
 public:
-  Bool(Box *parent, int index, bool value);
+  Bool(bool value);
   
   // Box
   virtual void build(Renderer &renderer);
@@ -40,7 +40,7 @@ public:
   virtual rfl::Generic getGeneric() { return _value.str() == "true"; }
 
   // Parentable
-  virtual void setParent(Box *parent) { _parent = parent; }
+  virtual void setParent(Box *parent, int index) { _parent = parent; _index = index; }
   virtual Box *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   

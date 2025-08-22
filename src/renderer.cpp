@@ -115,7 +115,7 @@ bool Renderer::init(const char *path) {
   resources.build(*this);
   
   // always just a new dictiionary.
-  setRoot(new Dict(0, 0));
+  setRoot(new Dict());
 
   // build our editor.
   _editor.reset(new TextEditor());

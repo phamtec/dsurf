@@ -28,7 +28,7 @@ class Long: public Box, public Parentable, public Sizeable, public Writeable {
   typedef Box super;
   
 public:
-  Long(Box *parent, int index, long value);
+  Long(long value);
 
   // Box
   virtual void build(Renderer &renderer);
@@ -40,7 +40,7 @@ public:
   virtual rfl::Generic getGeneric();
 
   // Parentable
-  virtual void setParent(Box *parent) { _parent = parent; }
+  virtual void setParent(Box *parent, int index) { _parent = parent; _index = index; }
   virtual Box *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   

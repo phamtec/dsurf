@@ -19,7 +19,7 @@ class Parentable {
 public:
   virtual ~Parentable() {};
 
-  virtual void setParent(Box *) = 0;
+  virtual void setParent(Box *parent, int index) = 0;
     // set the parent.
     
   virtual Box *getParent() = 0;

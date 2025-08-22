@@ -34,7 +34,7 @@ class List: public Box, public Pushable, public Parentable, public Sizeable, pub
   typedef Box super;
 
 public:
-  List(Box *parent, int index): _parent(parent), _index(index) {}
+  List(): _parent(0), _index(0) {}
   
   // Box
   virtual void build(Renderer &renderer);
@@ -52,7 +52,7 @@ public:
   }
   
   // Parentable
-  virtual void setParent(Box *parent) { _parent = parent; }
+  virtual void setParent(Box *parent, int index) { _parent = parent; _index = index; }
   virtual Box *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   

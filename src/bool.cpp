@@ -18,7 +18,7 @@
 
 using namespace std;
 
-Bool::Bool(Box *parent, int index, bool value): _parent(parent), _index(index) {
+Bool::Bool(bool value): _parent(0), _index(0) {
 
   _value.set(value ? "true" : "false", Colours::green);
   
