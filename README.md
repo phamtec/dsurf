@@ -224,4 +224,10 @@ Walk a JSON file building a simple layout.
 - The editor allows you to insert characters at the start but doesn't save etc.
 - First go at real editing.
 
+### 22-Aug-2025
+
+- More work on Editing
+- simplify code base with a Property class.
+
   
+ 
