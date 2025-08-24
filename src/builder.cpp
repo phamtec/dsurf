@@ -42,111 +42,73 @@ Box *Builder::loadText(const char *text) {
 
 }
 
-Box *Builder::walk(Box *parent, int index, const rfl::Generic &g) {
+Box *Builder::castGeneric(const rfl::Generic &g)  {
 
   Box *obj = nullptr;
-  std::visit([parent, index, &obj](const auto &field) {
+  std::visit([&obj](const auto &field) {
   
-    Parentable *pobj = nullptr;
     using Type = std::decay_t<decltype(field)>;
     if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
       auto *l = new List();
       walk(l, field, l);
-      pobj = l;
       obj = l;
     }
     else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
       auto *d = new Dict();
       walk(d, field, d);
-      pobj = d;
       obj = d;
     }
     else if constexpr (std::is_same<Type, string>()) {
-      auto s = new String(field);
-      pobj = s;
-      obj = s;
+      obj = new String(field);
     }
     else if constexpr (std::is_same<Type, bool>()) {
-      auto b = new Bool(field);
-      pobj = b;
-      obj = b;
+      obj = new Bool(field);
     }
     else if constexpr (std::is_same<Type, long long>() || std::is_same<Type, long>()) {
-      auto l = new Long(field);
-      pobj = l;
-      obj = l;
+      obj = new Long(field);
     }
     else {
       cout << "unknown type in generic " << typeid(field).name() << endl;
     }
 
-    if (pobj) {
-      pobj->setParent(parent, index);
-    }
-    
   }, g.variant());
 
+  return obj;
+  
+}
+
+Box *Builder::walk(Box *parent, int index, const rfl::Generic &g) {
+
+  Box *obj = castGeneric(g);
+
+  Parentable *px = dynamic_cast<Parentable *>(obj);
+  if (px) {
+    px->setParent(parent, index);
+  }
+  else {
+    cerr << "obj not parentable!" << endl;
+  }
+    
   return obj;
     
 }
 
 Box *Builder::walk(Box *parent, int index, const rfl::Generic &g, const string &name) {
 
-  Box *obj = nullptr;
-  std::visit([parent, index, &obj, name](const auto &field) {
+  Box *obj = castGeneric(g);
+
+  if (obj) {
+    obj = new Property(name, obj, dynamic_cast<Pushable *>(obj) != 0);
+  }
   
-    Parentable *pobj = nullptr;
-    using Type = std::decay_t<decltype(field)>;
-    if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
-      auto *l = new List();
-      walk(l, field, l);
-      auto p = new Property(name, l, true);
-      pobj = p;
-//      p->setParent(parent, index);
-      l->setParent(p, 0);
-      obj = p;
-      pobj = p;
-    }
-    else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
-      auto *d = new Dict();
-      walk(d, field, d);
-      auto p = new Property(name, d, true);
-//      p->setParent(parent, index);
-      d->setParent(p, 0);
-      obj = p;
-      pobj = p;
-    }
-    else if constexpr (std::is_same<Type, string>()) {
-      auto s = new String(field);
-      auto p = new Property(name, s, false);
-//      p->setParent(parent, index);
-      s->setParent(p, 0);
-      obj = p;
-    }
-    else if constexpr (std::is_same<Type, bool>()) {
-      auto s = new Bool(field);
-      auto p = new Property(name, s, false);
-//      p->setParent(parent, index);
-      s->setParent(p, 0);
-      obj = p;
-    }
-    else if constexpr (std::is_same<Type, long long>() || std::is_same<Type, long>()) {
-      auto s = new Long(field);
-      auto p = new Property(name, s, false);
-//      p->setParent(parent, index);
-      s->setParent(p, 0);
-      obj = p;
-    }
-    else {
-      cout << "unknown type in generic " << name << ": " << typeid(field).name() << endl;
-    }
-
-    if (pobj) {
-      pobj->setParent(parent, index);
-    }
+  Parentable *px = dynamic_cast<Parentable *>(obj);
+  if (px) {
+    px->setParent(parent, index);
+  }
+  else {
+    cerr << "obj not parentable!" << endl;
+  }
     
-  }, g.variant());
-
   return obj;
     
 }

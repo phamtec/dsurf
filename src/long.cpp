@@ -35,16 +35,12 @@ Size Long::layout() {
 
 void Long::build(Renderer &renderer) {
 
-  super::build(renderer);
-  
   _value.build(renderer);
 
 }
 
 void Long::render(Renderer &renderer, const Point &origin) {
 
-  super::render(renderer, origin);
-  
   _value.render(renderer, origin);
   
 //  renderer.renderRect(_r);
@@ -63,8 +59,7 @@ rfl::Generic Long::getGeneric() {
 
 void Long::edit(TextEditor *editor) {
 
-  string v = _value.str();
-  editor->focus(origin(), _size, v);
+  editor->focus(origin(), _size, _value.str());
   
 }
 

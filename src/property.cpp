@@ -18,12 +18,26 @@
 
 using namespace std;
 
+Property::Property(const std::string &name, Box *obj, bool container):
+    _parent(0), _index(0), _name(name, Colours::blue), 
+    _obj(obj), _container(container)
+{
+  Parentable *px = dynamic_cast<Parentable *>(obj);
+  if (!px) {
+    cerr << "obj not parentable!" << endl;
+    return;
+  }
+  px->setParent(this, 0);      
+}
+
 Size Property::layout() {
 
   _size = _obj->layout();
-  _size.w += _name.size().w + Sizes::name_var_padding;
+  
+  Size nsize = _name.size();
+  _size.w += nsize.w + Sizes::name_var_padding;
   if (_container) {
-    _size.h += 70;
+    _size.h += nsize.h + Sizes::thickness;
   }
   return _size;
 
@@ -31,8 +45,6 @@ Size Property::layout() {
 
 void Property::build(Renderer &renderer) {
 
-  super::build(renderer);
-  
   _name.build(renderer);
   _obj->build(renderer);
 
@@ -40,11 +52,9 @@ void Property::build(Renderer &renderer) {
 
 void Property::render(Renderer &renderer, const Point &origin) {
 
-  super::render(renderer, origin);
-  
   if (_container) {
-    _name.render(renderer, origin + Point(0, -10));
-    _obj->render(renderer, origin + Point(0, 60));
+    _name.render(renderer, origin + Point(0, -Sizes::thickness));
+    _obj->render(renderer, origin + Point(0, _name.size().h));
   }
   else {
     _name.render(renderer, origin);
@@ -67,7 +77,8 @@ rfl::Generic Property::getGeneric() {
 
 Box *Property::hitTest(const Point &origin, const Point &p) { 
 
-  Point o = origin + (_container ? Size(0, 60) : Size(_name.size().w + Sizes::name_var_padding, 0));
+  Size nsize = _name.size();
+  Point o = origin + (_container ? Size(0, nsize.h) : Size(nsize.w + Sizes::name_var_padding, 0));
 
   Box *hit = _obj->hitTest(o, p);
   if (hit) {
@@ -85,12 +96,17 @@ Point Property::localOrigin(int index) {
     return Point(0, 0);
   }
   
-  return Point(_name.size().w + Sizes::name_var_padding, 0);
+  Size nsize = _name.size();
+  if (_container) {
+    return Point(0, nsize.h);
+  }
+  
+  return Point(nsize.w + Sizes::name_var_padding, 0);
   
 }
 
 void Property::edit(TextEditor *editor) {
 
-  editor->focus(origin() , _name.size(), _name.str());
+  editor->focus(origin() + Size(0, _container ? -Sizes::thickness : 0), _name.size(), _name.str());
   
 }

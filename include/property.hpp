@@ -30,10 +30,7 @@ class Property: public Box, public Parentable, public Sizeable, public Writeable
   typedef Box super;
 
 public:
-  Property(const std::string &name, Box *obj, bool container):
-    _parent(0), _index(0), _name(name, Colours::blue), 
-    _obj(obj), _container(container)
-      {}
+  Property(const std::string &name, Box *obj, bool container);
   
   // Box
   virtual void build(Renderer &renderer);

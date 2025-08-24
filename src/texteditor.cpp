@@ -29,8 +29,6 @@ TextEditor::~TextEditor() {
 
 void TextEditor::build(Renderer &renderer) {
 
-  super::build(renderer);
-  
   _text = TTF_CreateText(renderer._engine, renderer._font->_font, NULL, 0);
   if (!_text) {
     SDL_Log("couldn't create text");

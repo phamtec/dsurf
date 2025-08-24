@@ -33,16 +33,12 @@ Size Bool::layout() {
 
 void Bool::build(Renderer &renderer) {
 
-  super::build(renderer);
-  
   _value.build(renderer);
 
 }
 
 void Bool::render(Renderer &renderer, const Point &origin) {
 
-  super::render(renderer, origin);
-  
   _value.render(renderer, origin);
   
 //  renderer.renderRect(_r);
@@ -51,7 +47,6 @@ void Bool::render(Renderer &renderer, const Point &origin) {
 
 void Bool::edit(TextEditor *editor) {
 
-  string v = _value.str();
-  editor->focus(origin(), _size, v);
+  editor->focus(origin(), _size, _value.str());
   
 }

@@ -229,5 +229,9 @@ Walk a JSON file building a simple layout.
 - More work on Editing
 - simplify code base with a Property class.
 
-  
+### 24-Aug-2025
+
+- Everything is editable now. Still no saving or complex editing.
+
+
  

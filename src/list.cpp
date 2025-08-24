@@ -30,8 +30,6 @@ Size List::layout() {
 
 void List::build(Renderer &renderer) {
 
-  super::build(renderer);
-  
   buildVector(renderer, _objs);
   
 }
@@ -39,8 +37,6 @@ void List::build(Renderer &renderer) {
 void List::render(Renderer &renderer, const Point &origin) {
 
   drawBorder(renderer, origin, _size, false);
-
-  super::render(renderer, origin);
 
   renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _objs);
   

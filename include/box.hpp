@@ -39,11 +39,11 @@ public:
   virtual Size layout() = 0;
     // layout the object.
 
-  virtual void build(Renderer &renderer) {}
+  virtual void build(Renderer &renderer) = 0;
     // build the texture and surface ready to render.
     // objects, build yourself and then call super::build(renderer)
     
-  virtual void render(Renderer &renderer, const Point &origin) {}
+  virtual void render(Renderer &renderer, const Point &origin) = 0;
     // render this object to the screen.
     // objects, render yourself and then call super::render(renderer, origin)
 

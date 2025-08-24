@@ -30,8 +30,6 @@ Size Dict::layout() {
 
 void Dict::build(Renderer &renderer) {
 
-  super::build(renderer);
-  
   List::buildVector(renderer, _objs);
   
 }
@@ -40,8 +38,6 @@ void Dict::render(Renderer &renderer, const Point &origin) {
 
   drawBorder(renderer, origin, _size, false);
 
-  super::render(renderer, origin);
-  
   List::renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _objs);
 
 //  renderer.renderRect(Rect(origin, _size));

@@ -48,9 +48,13 @@ Point Box::origin() {
     return Point();
   }
   
-//  cout << "origin parent " << typeid(*parent).name() << endl;
+  Point o = parent->origin();
+  Point lo = parent->localOrigin(p->getIndex());
+//   cout << "origin parent " << typeid(*parent).name() << endl;
+//   cout << "o: " << o << endl;
+//   cout << "lo: " << lo << endl;
   
   // recursively calculate the origin.
-  return parent->origin() + parent->localOrigin(p->getIndex());
+  return o + lo;
   
 }

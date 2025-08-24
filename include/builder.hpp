@@ -41,6 +41,7 @@ private:
   
   static void walk(Box *parent, const rfl::Object<rfl::Generic> &obj, Pushable *list);
   static void walk(Box *parent, const std::vector<rfl::Generic > &v, Pushable *list);
+  static Box *castGeneric(const rfl::Generic &g);
 
 };
 

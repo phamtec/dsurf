@@ -32,16 +32,12 @@ Size String::layout() {
 
 void String::build(Renderer &renderer) {
 
-  super::build(renderer);
-  
   _value.build(renderer);
 
 }
 
 void String::render(Renderer &renderer, const Point &origin) {
 
-  super::render(renderer, origin);
-  
   _value.render(renderer, origin);
 
 //  renderer.renderRect(_r);
