@@ -18,30 +18,30 @@
 #include <rfl.hpp>
 #include <vector>
 
-class Box;
+class Element;
 class Pushable;
 
 class Builder {
 
 public:
   
-  static Box *walk(Box *parent, int index, const rfl::Generic &g);
-  static Box *walk(Box *parent, int index, const rfl::Generic &g, const std::string &name);
+  static Element *walk(Element *parent, int index, const rfl::Generic &g);
+  static Element *walk(Element *parent, int index, const rfl::Generic &g, const std::string &name);
 
-  static Box *loadFile(const std::string &fn);
+  static Element *loadFile(const std::string &fn);
     // load the JSON file into the renderer.
     
-  static Box *loadText(const char *text);
+  static Element *loadText(const char *text);
     // load the JSON text into the renderer.
 
-  static std::string getJson(Box *box);
+  static std::string getJson(Element *element);
     // get the JSON representing the box.
     
 private:
   
-  static void walk(Box *parent, const rfl::Object<rfl::Generic> &obj, Pushable *list);
-  static void walk(Box *parent, const std::vector<rfl::Generic > &v, Pushable *list);
-  static Box *castGeneric(const rfl::Generic &g);
+  static void walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Pushable *list);
+  static void walk(Element *parent, const std::vector<rfl::Generic > &v, Pushable *list);
+  static Element *castGeneric(const rfl::Generic &g);
 
 };
 

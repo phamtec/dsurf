@@ -16,21 +16,21 @@
 #ifndef H_string
 #define H_string
 
-#include "box.hpp"
+#include "element.hpp"
 #include "text.hpp"
 #include "colours.hpp"
 #include "parentable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
 
-class String: public Box, public Parentable, public Sizeable, public Writeable {
+class String: public Element, public Parentable, public Sizeable, public Writeable {
 
-  typedef Box super;
+  typedef Element super;
   
 public:
   String(const std::string &value);
 
-  // Box
+  // Element
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
@@ -40,15 +40,15 @@ public:
   virtual rfl::Generic getGeneric();
 
   // Parentable
-  virtual void setParent(Box *parent, int index) { _parent = parent; _index = index; }
-  virtual Box *getParent() { return _parent; }
+  virtual void setParent(Element *parent, int index) { _parent = parent; _index = index; }
+  virtual Element *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   
   // Sizeable
   virtual Size getSize() { return _size; }
 
 protected:
-  Box *_parent;
+  Element *_parent;
   int _index;
   Size _size;
   Text _value;

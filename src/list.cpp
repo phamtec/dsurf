@@ -22,15 +22,15 @@ using namespace std;
 
 Size List::layout() {
 
-  _size = List::layoutVector(Size(0, Sizes::listgap), _objs);
-  _size.h += _objs.size() == 0 ? Sizes::listgap - 10 : Sizes::listgap;
+  _size = List::layoutVector(Size(0, Sizes::listgap), _elements);
+  _size.h += _elements.size() == 0 ? Sizes::listgap - 10 : Sizes::listgap;
   return _size;
   
 }
 
 void List::build(Renderer &renderer) {
 
-  buildVector(renderer, _objs);
+  buildVector(renderer, _elements);
   
 }
 
@@ -38,7 +38,7 @@ void List::render(Renderer &renderer, const Point &origin) {
 
   drawBorder(renderer, origin, _size, false);
 
-  renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _objs);
+  renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _elements);
   
 //  renderer.renderRect(_r);
 
@@ -46,13 +46,13 @@ void List::render(Renderer &renderer, const Point &origin) {
 
 rfl::Generic List::getGeneric() { 
 
-  return getGenericVector(_objs); 
+  return getGenericVector(_elements); 
   
 }
 
-Box *List::hitTest(const Point &origin, const Point &p) { 
+Element *List::hitTest(const Point &origin, const Point &p) { 
 
-  Box *hit = hitTestVector(origin + Size(Sizes::group_indent, Sizes::listgap), p, _objs);
+  Element *hit = hitTestVector(origin + Size(Sizes::group_indent, Sizes::listgap), p, _elements);
   if (hit) {
     return hit;
   }
@@ -63,11 +63,11 @@ Box *List::hitTest(const Point &origin, const Point &p) {
 
 Point List::localOrigin(int index) {
 
-  return localOriginVector(_objs, index, false);
+  return localOriginVector(_elements, index, false);
   
 }
 
-rfl::Generic List::getGenericVector(std::vector<std::unique_ptr<Box> > &list) { 
+rfl::Generic List::getGenericVector(std::vector<std::unique_ptr<Element> > &list) { 
 
   vector<rfl::Generic> obj = vector<rfl::Generic>();
 
@@ -87,11 +87,11 @@ rfl::Generic List::getGenericVector(std::vector<std::unique_ptr<Box> > &list) {
   
 }
 
-Box* List::hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Box> > &list) {
+Element* List::hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Element> > &list) {
 
   Point o = origin;
   for (auto&& i: list) {
-    Box *hit = i->hitTest(o, p);
+    Element *hit = i->hitTest(o, p);
     if (hit) {
       return hit;
     }
@@ -107,7 +107,7 @@ Box* List::hitTestVector(const Point &origin, const Point &p, std::vector<std::u
   
 }
 
-Size List::layoutVector(const Size &size, std::vector<std::unique_ptr<Box> > &list) {
+Size List::layoutVector(const Size &size, std::vector<std::unique_ptr<Element> > &list) {
 
   Size newsize = size;
   for (auto&& i: list) {
@@ -121,7 +121,7 @@ Size List::layoutVector(const Size &size, std::vector<std::unique_ptr<Box> > &li
   
 }
 
-void List::buildVector(Renderer &renderer, std::vector<std::unique_ptr<Box> > &list) {
+void List::buildVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > &list) {
 
   for (auto&& i: list) {
     i->build(renderer);
@@ -129,7 +129,7 @@ void List::buildVector(Renderer &renderer, std::vector<std::unique_ptr<Box> > &l
 
 }
 
-void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Box> > &list) {
+void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Element> > &list) {
 
   Point o = origin;
   for (auto&& i: list) {
@@ -143,7 +143,7 @@ void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std
 
 }
 
-Point List::localOriginVector(std::vector<std::unique_ptr<Box> > &list, int index, bool prop) {
+Point List::localOriginVector(std::vector<std::unique_ptr<Element> > &list, int index, bool prop) {
 
   int j=0;
   int y=Sizes::listgap + (prop ? 40 : 0);

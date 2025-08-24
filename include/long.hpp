@@ -16,21 +16,21 @@
 #ifndef H_long
 #define H_long
 
-#include "box.hpp"
+#include "element.hpp"
 #include "text.hpp"
 #include "colours.hpp"
 #include "parentable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
 
-class Long: public Box, public Parentable, public Sizeable, public Writeable {
+class Long: public Element, public Parentable, public Sizeable, public Writeable {
 
-  typedef Box super;
+  typedef Element super;
   
 public:
   Long(long value);
 
-  // Box
+  // Element
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
@@ -40,8 +40,8 @@ public:
   virtual rfl::Generic getGeneric();
 
   // Parentable
-  virtual void setParent(Box *parent, int index) { _parent = parent; _index = index; }
-  virtual Box *getParent() { return _parent; }
+  virtual void setParent(Element *parent, int index) { _parent = parent; _index = index; }
+  virtual Element *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   
   // Sizeable
@@ -49,7 +49,7 @@ public:
 
 private:
 
-  Box *_parent;
+  Element *_parent;
   int _index;
   Size _size;
   Text _value;

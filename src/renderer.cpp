@@ -129,7 +129,7 @@ bool Renderer::init(const char *path) {
    
 }
 
-void Renderer::setRoot(Box *root) {
+void Renderer::setRoot(Element *root) {
 
   _root.reset(root);
   
@@ -245,7 +245,7 @@ bool Renderer::processEvents() {
         }
         else if (_editing) {
           Point p = _last * (1 / _scale);
-          Box *hit = _root->hitTest(Point(_offs), p);
+          Element *hit = _root->hitTest(Point(_offs), p);
           if (hit) {
             hit->edit(_editor.get());
           }

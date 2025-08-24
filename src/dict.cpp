@@ -22,15 +22,15 @@ using namespace std;
 
 Size Dict::layout() {
 
-  _size = List::layoutVector(Size(0, Sizes::listgap), _objs);
-  _size.h += _objs.size() == 0 ? Sizes::listgap - 10 : 0;
+  _size = List::layoutVector(Size(0, Sizes::listgap), _elements);
+  _size.h += _elements.size() == 0 ? Sizes::listgap - 10 : 0;
   return _size;
   
 }
 
 void Dict::build(Renderer &renderer) {
 
-  List::buildVector(renderer, _objs);
+  List::buildVector(renderer, _elements);
   
 }
 
@@ -38,7 +38,7 @@ void Dict::render(Renderer &renderer, const Point &origin) {
 
   drawBorder(renderer, origin, _size, false);
 
-  List::renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _objs);
+  List::renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _elements);
 
 //  renderer.renderRect(Rect(origin, _size));
 
@@ -46,13 +46,13 @@ void Dict::render(Renderer &renderer, const Point &origin) {
 
 rfl::Generic Dict::getGeneric() { 
 
-  return getGenericVector(_objs);
+  return getGenericVector(_elements);
   
 }
 
-Box *Dict::hitTest(const Point &origin, const Point &p) { 
+Element *Dict::hitTest(const Point &origin, const Point &p) { 
 
-  Box *hit = List::hitTestVector(origin + Point(Sizes::group_indent, Sizes::listgap), p, _objs);
+  Element *hit = List::hitTestVector(origin + Point(Sizes::group_indent, Sizes::listgap), p, _elements);
   if (hit) {
     return hit;
   }
@@ -63,7 +63,7 @@ Box *Dict::hitTest(const Point &origin, const Point &p) {
 
 Point Dict::localOrigin(int index) {
 
-  return List::localOriginVector(_objs, index, false);
+  return List::localOriginVector(_elements, index, false);
   
 }
 
@@ -83,7 +83,7 @@ void Dict::drawBorder(Renderer &renderer, const Point &origin, const Size &size,
 
 }
 
-rfl::Generic Dict::getGenericVector(std::vector<std::unique_ptr<Box> > &list) { 
+rfl::Generic Dict::getGenericVector(std::vector<std::unique_ptr<Element> > &list) { 
 
   rfl::Object<rfl::Generic> obj = rfl::Object<rfl::Generic>();
 

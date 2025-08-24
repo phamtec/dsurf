@@ -1,5 +1,5 @@
 /*
-  box.cpp
+  element.cpp
   
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 9-Aug-2025
@@ -9,7 +9,7 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "box.hpp"
+#include "element.hpp"
 
 #include "parentable.hpp"
 #include "sizeable.hpp"
@@ -18,7 +18,7 @@
 
 using namespace std;
 
-Box *Box::hitTest(const Point &origin, const Point &p) { 
+Element *Element::hitTest(const Point &origin, const Point &p) { 
 
 //  cout << "testing " << typeid(*this).name() << endl;
   Sizeable *sz = dynamic_cast<Sizeable *>(this);
@@ -33,7 +33,7 @@ Box *Box::hitTest(const Point &origin, const Point &p) {
   
 }
 
-Point Box::origin() {
+Point Element::origin() {
 
   // see if the object can have a parent.
   Parentable *p = dynamic_cast<Parentable *>(this);
@@ -43,7 +43,7 @@ Point Box::origin() {
   }
   
   // get the parent.
-  Box *parent = p->getParent();
+  Element *parent = p->getParent();
   if (!parent) {
     return Point();
   }

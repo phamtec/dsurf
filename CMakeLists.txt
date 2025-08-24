@@ -54,11 +54,11 @@ set(UTILSRC
 )
 
 set(OBJSRC
+  src/element.cpp
   src/string.cpp
   src/list.cpp 
   src/dict.cpp
   src/long.cpp
-  src/box.cpp
   src/bool.cpp
   src/property.cpp
 )

@@ -16,7 +16,7 @@
 
 #include "point.hpp"
 #include "size.hpp"
-#include "box.hpp"
+#include "element.hpp"
 #include "font.hpp"
 #include "resources.hpp"
 #include "texteditor.hpp"
@@ -44,7 +44,7 @@ public:
   
   static Size displaySize();
   
-  void setRoot(Box *box);
+  void setRoot(Element *element);
     // switch out the root we will use to render.
     
   bool init(const char *fontpath);
@@ -83,7 +83,7 @@ private:
   Point _mouse;
   Size _osize;
   unsigned int _lastclick;
-  std::unique_ptr<Box> _root;
+  std::unique_ptr<Element> _root;
   std::unique_ptr<Font> _font;
   std::unique_ptr<TextEditor> _editor;
   bool _editing;

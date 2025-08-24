@@ -14,18 +14,18 @@
 #ifndef H_filledbox
 #define H_filledbox
 
-#include "box.hpp"
+#include "element.hpp"
 #include "text.hpp"
 #include "colours.hpp"
 
-class FilledBox: public Box {
+class FilledBox: public Element {
 
-  typedef Box super;
+  typedef Element super;
   
 public:
   FilledBox(const Size &size): _size(size) {}
 
-  // Box
+  // Element
   virtual Size layout() { return _size; };
   virtual void render(Renderer &renderer, const Point &origin);
 

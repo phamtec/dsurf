@@ -20,7 +20,7 @@
 #ifndef H_list
 #define H_list
 
-#include "box.hpp"
+#include "element.hpp"
 #include "pushable.hpp"
 #include "parentable.hpp"
 #include "sizeable.hpp"
@@ -29,51 +29,51 @@
 #include <memory>
 #include <vector>
 
-class List: public Box, public Pushable, public Parentable, public Sizeable, public Writeable  {
+class List: public Element, public Pushable, public Parentable, public Sizeable, public Writeable  {
 
-  typedef Box super;
+  typedef Element super;
 
 public:
   List(): _parent(0), _index(0) {}
   
-  // Box
+  // Element
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
-  virtual Box *hitTest(const Point &origin, const Point &p);
+  virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
   
   // Writeable
   virtual rfl::Generic getGeneric();
 
   // Pushable
-  virtual void push(Box *box) {
-    _objs.push_back(std::unique_ptr<Box>(box));
+  virtual void push(Element *element) {
+    _elements.push_back(std::unique_ptr<Element>(element));
   }
   
   // Parentable
-  virtual void setParent(Box *parent, int index) { _parent = parent; _index = index; }
-  virtual Box *getParent() { return _parent; }
+  virtual void setParent(Element *parent, int index) { _parent = parent; _index = index; }
+  virtual Element *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   
   // Sizeable
   virtual Size getSize() { return _size; }
 
   // helpers for things that look like a list.
-  static void buildVector(Renderer &renderer, std::vector<std::unique_ptr<Box> > &list);
-  static Size layoutVector(const Size &size, std::vector<std::unique_ptr<Box> > &list);
-  static void renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Box> > &list);
+  static void buildVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > &list);
+  static Size layoutVector(const Size &size, std::vector<std::unique_ptr<Element> > &list);
+  static void renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Element> > &list);
   static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
-  static Box* hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Box> > &list);
-  static Point localOriginVector(std::vector<std::unique_ptr<Box> > &list, int index, bool prop);
-  static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Box> > &list);
+  static Element* hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Element> > &list);
+  static Point localOriginVector(std::vector<std::unique_ptr<Element> > &list, int index, bool prop);
+  static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);
  
 private:
 
-  Box *_parent;
+  Element *_parent;
   int _index;
   Size _size;
-  std::vector<std::unique_ptr<Box> > _objs;
+  std::vector<std::unique_ptr<Element> > _elements;
   
 };
 

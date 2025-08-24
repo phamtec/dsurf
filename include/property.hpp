@@ -16,7 +16,7 @@
 #ifndef H_property
 #define H_property
 
-#include "box.hpp"
+#include "element.hpp"
 #include "text.hpp"
 #include "parentable.hpp"
 #include "sizeable.hpp"
@@ -25,18 +25,18 @@
 #include <memory>
 #include <vector>
 
-class Property: public Box, public Parentable, public Sizeable, public Writeable  {
+class Property: public Element, public Parentable, public Sizeable, public Writeable  {
 
-  typedef Box super;
+  typedef Element super;
 
 public:
-  Property(const std::string &name, Box *obj, bool container);
+  Property(const std::string &name, Element *obj, bool container);
   
-  // Box
+  // Element
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
-  virtual Box *hitTest(const Point &origin, const Point &p);
+  virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
   virtual void edit(TextEditor *editor);
 
@@ -45,8 +45,8 @@ public:
   virtual rfl::Generic getGeneric();
 
   // Parentable
-  virtual void setParent(Box *parent, int index) { _parent = parent; _index = index; }
-  virtual Box *getParent() { return _parent; }
+  virtual void setParent(Element *parent, int index) { _parent = parent; _index = index; }
+  virtual Element *getParent() { return _parent; }
   virtual int getIndex() { return _index; }
   
   // Sizeable
@@ -54,12 +54,12 @@ public:
 
 private:
 
-  Box *_parent;
+  Element *_parent;
   int _index;
   Size _size;
   Text _name;
   bool _container;
-  std::unique_ptr<Box> _obj;
+  std::unique_ptr<Element> _obj;
   
 };
 

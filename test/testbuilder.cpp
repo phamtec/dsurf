@@ -12,7 +12,7 @@
 */
 
 #include "builder.hpp"
-#include "box.hpp"
+#include "element.hpp"
 #include "text.hpp"
 #include "corner.hpp"
 #include "renderer.hpp"
@@ -42,8 +42,8 @@ void TextEditor::focus(const Point &origin, const Size &size, const string &s) {
 void testParse(const string &fname) {
 
   // parse in the JSON to our objects.
-  unique_ptr<Box> box(Builder::loadFile(fname));
-  string json = Builder::getJson(box.get());
+  unique_ptr<Element> element(Builder::loadFile(fname));
+  string json = Builder::getJson(element.get());
   
   // read in the original file.
   ifstream f(fname);

@@ -18,7 +18,7 @@
 
 using namespace std;
 
-Property::Property(const std::string &name, Box *obj, bool container):
+Property::Property(const std::string &name, Element *obj, bool container):
     _parent(0), _index(0), _name(name, Colours::blue), 
     _obj(obj), _container(container)
 {
@@ -75,12 +75,12 @@ rfl::Generic Property::getGeneric() {
   
 }
 
-Box *Property::hitTest(const Point &origin, const Point &p) { 
+Element *Property::hitTest(const Point &origin, const Point &p) { 
 
   Size nsize = _name.size();
   Point o = origin + (_container ? Size(0, nsize.h) : Size(nsize.w + Sizes::name_var_padding, 0));
 
-  Box *hit = _obj->hitTest(o, p);
+  Element *hit = _obj->hitTest(o, p);
   if (hit) {
     return hit;
   }

@@ -1,14 +1,14 @@
 /*
-  box.hpp
+  element.hpp
   
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 6-Aug-2025
     
-  Box bass class.
+  Element bass class.
   
-  Box is the abstract base class of all drawn objects.
+  Element is the abstract base class of all drawn objects.
   
-  Box
+  Element
     String
     Bool
     Long
@@ -21,8 +21,8 @@
   https://github.com/phamtec/dsurf
 */
 
-#ifndef H_box
-#define H_box
+#ifndef H_element
+#define H_element
 
 #include "rect.hpp"
 
@@ -30,11 +30,11 @@ class Renderer;
 class Point;
 class TextEditor;
 
-class Box {
+class Element {
 
 public:
-  Box() {};
-  virtual ~Box() {};
+  Element() {};
+  virtual ~Element() {};
   
   virtual Size layout() = 0;
     // layout the object.
@@ -47,8 +47,8 @@ public:
     // render this object to the screen.
     // objects, render yourself and then call super::render(renderer, origin)
 
-  virtual Box *hitTest(const Point &origin, const Point &p);
-    // recursivle find the box at the point.
+  virtual Element *hitTest(const Point &origin, const Point &p);
+    // recursivle find the element at the point.
     // objects, find the object in your sub objects
     // and then call super::hitTest(origin, p)
     
@@ -63,4 +63,4 @@ public:
 
 };
 
-#endif // H_box
+#endif // H_element

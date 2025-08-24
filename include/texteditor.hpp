@@ -14,14 +14,14 @@
 #ifndef H_texteditor
 #define H_texteditor
 
-#include "box.hpp"
+#include "element.hpp"
 
 class TTF_Text;
 class SDL_Window;
 
-class TextEditor: public Box {
+class TextEditor: public Element {
 
-  typedef Box super;
+  typedef Element super;
   
 public:
   TextEditor(): _text(0), _window(0), _cursor(0) {}
@@ -30,7 +30,7 @@ public:
   void focus(const Point &origin, const Size &size, const std::string &s);
   void insert(const char *text);
   
-  // Box
+  // Element
   virtual void build(Renderer &renderer);
   virtual Size layout() { return _size; };
   virtual void render(Renderer &renderer, const Point &origin);
