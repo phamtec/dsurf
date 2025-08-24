@@ -22,6 +22,7 @@
 #include "texteditor.hpp"
 
 #include <SDL3/SDL_pixels.h>
+#include <memory>
 
 class SDL_Window;
 class SDL_Renderer;
