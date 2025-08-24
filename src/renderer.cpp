@@ -232,6 +232,9 @@ bool Renderer::processEvents() {
   
     SDL_ConvertEventToRenderCoordinates(_renderer, &event);
 
+    if (_editing) {
+      _editor->processEvent(event);
+    }
     switch (event.type) {
 
       case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -312,20 +315,6 @@ bool Renderer::processEvents() {
         else {
 //          cout << "ingored key " << event.key.key << endl;
         }
-        break;
-
-    case SDL_EVENT_TEXT_INPUT:
-        if (_editing) {
-          _editor->insert(event.text.text);
-        }
-        break;
-
-    case SDL_EVENT_TEXT_EDITING:
-        cout << "text editing" << endl;
-        break;
-
-    case SDL_EVENT_TEXT_EDITING_CANDIDATES:
-        cout << "text editing candidates" << endl;
         break;
 
      case SDL_EVENT_QUIT:

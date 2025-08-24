@@ -18,6 +18,7 @@
 
 class TTF_Text;
 class SDL_Window;
+union SDL_Event;
 
 class TextEditor: public Element {
 
@@ -28,7 +29,7 @@ public:
   ~TextEditor();
   
   void focus(const Point &origin, const Size &size, const std::string &s);
-  void insert(const char *text);
+  void processEvent(const SDL_Event &event);
   
   // Element
   virtual void build(Renderer &renderer);
@@ -50,6 +51,20 @@ private:
   void updateTextInputArea(Renderer &renderer);
   void drawCursor(Renderer &renderer);
   void setCursorPosition(int position);
+  void insert(const char *text);
+  void moveCursorIndex(int direction);
+  void moveCursorLeft();
+  void moveCursorRight();
+  void moveCursorUp();
+  void moveCursorDown();
+  void moveCursorBeginningOfLine();
+  void moveCursorEndOfLine();
+  void moveCursorBeginning();
+  void moveCursorEnd();
+  void backspace();
+  void backspaceToBeginning();
+  void deleteToEnd();
+  void deleteText();
 
 };
 

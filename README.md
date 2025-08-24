@@ -232,6 +232,6 @@ Walk a JSON file building a simple layout.
 ### 24-Aug-2025
 
 - Everything is editable now. Still no saving or complex editing.
-
+- arrow keys, backspace and delete all work.
 
  
