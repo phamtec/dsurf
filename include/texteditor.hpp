@@ -19,16 +19,17 @@
 class TTF_Text;
 class SDL_Window;
 union SDL_Event;
+class Editable;
 
 class TextEditor: public Element {
 
   typedef Element super;
   
 public:
-  TextEditor(): _text(0), _window(0), _cursor(0) {}
+  TextEditor(): _text(0), _window(0), _cursor(0), _renderer(0), _obj(0) {}
   ~TextEditor();
   
-  void focus(const Point &origin, const Size &size, const std::string &s);
+  void focus(const Point &origin, const Size &size, Editable *obj);
   void processEvent(const SDL_Event &event);
   
   // Element
@@ -47,6 +48,8 @@ private:
   Uint64 _last_cursor_change;
   SDL_FRect _cursor_rect;
   int _cursor;
+  Renderer *_renderer;
+  Editable *_obj;
   
   void updateTextInputArea(Renderer &renderer);
   void drawCursor(Renderer &renderer);
@@ -65,6 +68,7 @@ private:
   void backspaceToBeginning();
   void deleteToEnd();
   void deleteText();
+  void endFocus();
 
 };
 

@@ -225,6 +225,11 @@ bool Renderer::isDoubleClick() {
   
 }
 
+void Renderer::endEdit() {
+  _editing = false;
+  SDL_SetCursor(_pointercursor);
+}
+
 bool Renderer::processEvents() {
 
   SDL_Event event;

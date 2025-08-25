@@ -52,7 +52,21 @@ rfl::Generic String::getGeneric() {
 
 void String::edit(TextEditor *editor) {
 
-  string v = _value.str().substr(1, _value.str().size() - 2);
-  editor->focus(origin(), _size, v);
+  editor->focus(origin(), _size, this);
   
+}
+
+string String::getString() {
+
+  return _value.str().substr(1, _value.str().size() - 2);
+  
+}
+
+void String::setString(Renderer &renderer, const string &s) {
+
+  stringstream ss;
+  ss << "\"" << s << "\"";
+  _value.set(ss.str(), Colours::red);
+  _value.build(renderer);
+
 }

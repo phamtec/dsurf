@@ -47,6 +47,13 @@ void Bool::render(Renderer &renderer, const Point &origin) {
 
 void Bool::edit(TextEditor *editor) {
 
-  editor->focus(origin(), _size, _value.str());
+  editor->focus(origin(), _size, this);
+  
+}
+
+void Bool::setString(Renderer &renderer, const string &s) {
+
+  _value.set(s, Colours::red);
+  _value.build(renderer);
   
 }

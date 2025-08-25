@@ -22,8 +22,9 @@
 #include "parentable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
+#include "editable.hpp"
 
-class Bool: public Element, public Parentable, public Sizeable, public Writeable {
+class Bool: public Element, public Parentable, public Sizeable, public Writeable, public Editable {
 
   typedef Element super;
 
@@ -46,6 +47,10 @@ public:
   
   // Sizeable
   virtual Size getSize() { return _size; }
+
+  // Editable
+  virtual std::string getString() { return _value.str(); }
+  virtual void setString(Renderer &renderer, const std::string &s);
 
 private:
 

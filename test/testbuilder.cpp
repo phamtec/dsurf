@@ -36,7 +36,7 @@ void Corner::render(Renderer &renderer, const Point &origin) {
 }
 void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
 }
-void TextEditor::focus(const Point &origin, const Size &size, const string &s) {
+void TextEditor::focus(const Point &origin, const Size &size, Editable *obj) {
 }
 
 void testParse(const string &fname) {

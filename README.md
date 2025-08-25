@@ -2,7 +2,7 @@
 
 Dictionary Surfer
 
-A Dictionary viewer using SDL.
+A Dictionary viewer/editor using SDL.
 
 ## Prerequsists
 
@@ -103,7 +103,6 @@ make test
 ## Running this
 
 ```
-
 ./dsurf ../test/complex.json
 ```
 
@@ -114,6 +113,12 @@ Click and drag to pan around.
 Keys:
 - Hit q to exit.
 - Hit Ctrl-E to toggle edit mode.
+- Escape to exit edit mode.
+- Ctrl-C will copy a pretty printed dictionary to the clipbaord
+- Ctrl-V will paste in any valid JSON from the clipboard.
+- Arrows left and write to navigate through editing text.
+- Backspace to delete text
+- Type any text in while editing.
 
 ## Running tests
 
@@ -148,7 +153,7 @@ You can read-only surf a JSON file. There are lot's of examples to try out.
 
 ## Current Focus
 
-Editing text in the dictionary.
+Build an app on the mac.
 
 ## Attributions
 
@@ -233,5 +238,10 @@ Walk a JSON file building a simple layout.
 
 - Everything is editable now. Still no saving or complex editing.
 - arrow keys, backspace and delete all work.
+
+ ### 25-Aug-2025
+
+- Version 0.1
+- You can edit any existing text, hit escape and then copy the new dictionary to the clipboard.
 
  

@@ -94,6 +94,7 @@ private:
   
   bool processEvents();
   bool isDoubleClick();
+  void endEdit();
 
   void debugOffs();
   void debugScale();

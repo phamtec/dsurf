@@ -59,7 +59,13 @@ rfl::Generic Long::getGeneric() {
 
 void Long::edit(TextEditor *editor) {
 
-  editor->focus(origin(), _size, _value.str());
+  editor->focus(origin(), _size, this);
   
 }
 
+void Long::setString(Renderer &renderer, const string &s) {
+
+  _value.set(s, Colours::red);
+  _value.build(renderer);
+
+}

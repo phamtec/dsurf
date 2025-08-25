@@ -10,8 +10,10 @@
 */
 
 #include "texteditor.hpp"
+
 #include "colours.hpp"
 #include "renderer.hpp"
+#include "editable.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -45,6 +47,7 @@ void TextEditor::build(Renderer &renderer) {
   TTF_SetTextColor(_text, 0x00, 0x00, 0x00, 0xFF);
   
   _window = renderer._window;
+  _renderer = &renderer;
 }
 
 void TextEditor::processEvent(const SDL_Event &event) {
@@ -109,6 +112,14 @@ void TextEditor::processEvent(const SDL_Event &event) {
           }
           break;
             
+        case SDLK_RETURN:
+            insert("\n");
+            break;
+
+        case SDLK_ESCAPE:
+            endFocus();
+            break;
+
         default:
     //        cout << "got key " << hex << key.key << endl;
           break;
@@ -134,7 +145,7 @@ void TextEditor::processEvent(const SDL_Event &event) {
   
 }
 
-void TextEditor::focus(const Point &origin, const Size &size, const string &s) {
+void TextEditor::focus(const Point &origin, const Size &size, Editable *obj) {
 
   if (!_text) {
     SDL_Log("need to build first!");
@@ -143,12 +154,19 @@ void TextEditor::focus(const Point &origin, const Size &size, const string &s) {
   
   _origin = origin;
   _size = size;
-
+  _obj = obj;
+  
   TTF_SetTextWrapWidth(_text, _size.w);
+  string s =  obj->getString();
   TTF_SetTextString(_text, s.c_str(), s.size());
   SDL_StartTextInput(_window);
   setCursorPosition(s.size());
   
+}
+
+void TextEditor::endFocus() {
+  _obj->setString(*_renderer, _text->text);
+  _renderer->endEdit();
 }
 
 void TextEditor::insert(const char *text) {

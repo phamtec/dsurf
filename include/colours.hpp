@@ -22,6 +22,7 @@ public:
 
   static SDL_Color white;
   static SDL_Color black;
+  static SDL_Color red;
   static SDL_Color blue;
   static SDL_Color green;
   static SDL_Color plum;

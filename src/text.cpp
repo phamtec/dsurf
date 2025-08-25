@@ -28,6 +28,11 @@ Text::~Text() {
 
 void Text::build(Renderer &renderer) {
 
+  if (_texture) {
+    SDL_DestroyTexture(_texture);
+    _texture = 0;
+  }
+
   // create a surface from the text. We don't have
   // to keep it around after making a texture from it.
   unique_ptr<SDL_Surface> surface(renderer.renderText(_str.c_str(), _fgcolor));

@@ -107,6 +107,14 @@ Point Property::localOrigin(int index) {
 
 void Property::edit(TextEditor *editor) {
 
-  editor->focus(origin() + Size(0, _container ? -Sizes::thickness : 0), _name.size(), _name.str());
+  editor->focus(origin() + Size(0, _container ? -Sizes::thickness : 0), _name.size(), this);
   
 }
+
+void Property::setString(Renderer &renderer, const string &s) {
+
+  _name.set(s, Colours::red);
+  _name.build(renderer);
+  
+}
+
