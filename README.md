@@ -149,11 +149,14 @@ If you want to compile things that change in the source dir, just change the com
 
 ## Progress
 
-You can read-only surf a JSON file. There are lot's of examples to try out.
+You can run the app, copy in JSON, edit the JSON nodes as text and then copy it
+back out.
 
 ## Current Focus
 
-Build an app on the mac.
+- Bug fixes
+- Distribution on mac and linux
+- Windows version
 
 ## Attributions
 
