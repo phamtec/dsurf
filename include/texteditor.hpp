@@ -50,6 +50,7 @@ private:
   int _cursor;
   Renderer *_renderer;
   Editable *_obj;
+  bool _ignoretext;
   
   void updateTextInputArea(Renderer &renderer);
   void drawCursor(Renderer &renderer);

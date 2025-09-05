@@ -57,3 +57,9 @@ void Bool::setString(Renderer &renderer, const string &s) {
   _value.build(renderer);
   
 }
+
+void Bool::setState(HUD *hud) {
+
+  hud->setState(Text);
+  
+}

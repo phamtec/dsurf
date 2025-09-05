@@ -36,6 +36,7 @@ public:
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
   virtual void edit(TextEditor *editor);
+  virtual void setState(HUD *hud);
 
   // Writeable
   virtual rfl::Generic getGeneric() { return _value.str() == "true"; }

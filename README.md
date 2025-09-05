@@ -112,13 +112,9 @@ Click and drag to pan around.
 
 Keys:
 - Hit q to exit.
-- Hit Ctrl-E to toggle edit mode.
-- Escape to exit edit mode.
-- Ctrl-C will copy a pretty printed dictionary to the clipbaord
-- Ctrl-V will paste in any valid JSON from the clipboard.
+- Follow the heads up display for other keys.
 - Arrows left and write to navigate through editing text.
 - Backspace to delete text
-- Type any text in while editing.
 
 ## Running tests
 
@@ -154,6 +150,7 @@ back out.
 
 ## Current Focus
 
+- HUD
 - Bug fixes
 - Distribution on mac and linux
 - Windows version
@@ -247,4 +244,10 @@ Walk a JSON file building a simple layout.
 - Version 0.1
 - You can edit any existing text, hit escape and then copy the new dictionary to the clipboard.
 
+ ### 5-Sep-2025
+
+- Version 0.2
+- Heads up display for editing.
+
  
+

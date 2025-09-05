@@ -127,7 +127,10 @@ void TextEditor::processEvent(const SDL_Event &event) {
       break;
       
     case SDL_EVENT_TEXT_INPUT:
-      insert(event.text.text);
+      if (!_ignoretext) {
+        insert(event.text.text);
+      }
+      _ignoretext = false;
       break;
 
     case SDL_EVENT_TEXT_EDITING:
@@ -162,6 +165,7 @@ void TextEditor::focus(const Point &origin, const Size &size, Editable *obj) {
   SDL_StartTextInput(_window);
   setCursorPosition(s.size());
   
+  _ignoretext = true;
 }
 
 void TextEditor::endFocus() {

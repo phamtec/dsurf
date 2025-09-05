@@ -13,6 +13,7 @@
 #include "sizes.hpp"
 #include "spatial.hpp"
 #include "renderer.hpp"
+#include "hud.hpp"
 
 using namespace std;
 
@@ -68,5 +69,11 @@ void String::setString(Renderer &renderer, const string &s) {
   ss << "\"" << s << "\"";
   _value.set(ss.str(), Colours::red);
   _value.build(renderer);
+
+}
+
+void String::setState(HUD *hud) {
+
+  hud->setState(Text);
 
 }

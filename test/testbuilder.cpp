@@ -30,7 +30,7 @@ Text::~Text() {
 }
 void Text::build(Renderer &renderer) {
 }
-void Text::render(Renderer &renderer, const Point &origin) {
+void Text::render(Renderer &renderer, const Point &origin, bool offs) {
 }
 void Corner::render(Renderer &renderer, const Point &origin) {
 }

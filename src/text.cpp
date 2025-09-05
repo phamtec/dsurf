@@ -46,7 +46,7 @@ void Text::build(Renderer &renderer) {
   _texture = renderer.createTexture(surface.get());
 }
 
-void Text::render(Renderer &renderer, const Point &origin) {
+void Text::render(Renderer &renderer, const Point &origin, bool offs) {
 
   if (!_texture) {
     SDL_Log("need to build first!");
@@ -59,7 +59,7 @@ void Text::render(Renderer &renderer, const Point &origin) {
     renderer.renderFilledRect(r, _fgcolor);
   }
   else {
-    renderer.renderTexture(_texture, r);
+    renderer.renderTexture(_texture, r, offs);
   }
   
 }

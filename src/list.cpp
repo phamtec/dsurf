@@ -67,6 +67,13 @@ Point List::localOrigin(int index) {
   
 }
 
+void List::setState(HUD *hud) {
+
+  hud->setState(None);
+  
+}
+
+
 rfl::Generic List::getGenericVector(std::vector<std::unique_ptr<Element> > &list) { 
 
   vector<rfl::Generic> obj = vector<rfl::Generic>();

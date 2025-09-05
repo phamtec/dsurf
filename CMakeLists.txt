@@ -43,6 +43,8 @@ set(SRC
   src/corner.cpp
   src/resources.cpp
   src/texteditor.cpp
+  src/hud.cpp
+  src/shortcut.cpp
 )
 
 set(UTILSRC

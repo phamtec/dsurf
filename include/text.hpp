@@ -41,7 +41,7 @@ public:
   void build(Renderer &renderer);
     // build the texture ready to render.
     
-  void render(Renderer &renderer, const Point &origin);
+  void render(Renderer &renderer, const Point &origin, bool offs=true);
     // render the text at x, y
     
   Size size() { return _size; }

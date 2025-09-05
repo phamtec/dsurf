@@ -20,6 +20,7 @@
 #include "font.hpp"
 #include "resources.hpp"
 #include "texteditor.hpp"
+#include "hud.hpp"
 
 #include <SDL3/SDL_pixels.h>
 #include <memory>
@@ -38,8 +39,8 @@ public:
   Renderer(const Size &wsize, float scalemult, float scale, const Size &offset, bool editing): 
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
     _mousedown(false), _lastclick(0),
-    _window(0), _renderer(0), _engine(0), _editing(editing),
-    _pointercursor(0), _editcursor(0)
+    _window(0), _renderer(0), _engine(0), _editing(editing)/*,
+    _pointercursor(0), _editcursor(0)*/
       {};
   ~Renderer();
   
@@ -59,7 +60,7 @@ public:
   SDL_Surface *renderText(const char *str, const SDL_Color &color);
   void setTarget(SDL_Texture *texture);
   SDL_Texture *createTexture(SDL_Surface *surface);
-  void renderTexture(SDL_Texture *texture, const Rect &rect);
+  void renderTexture(SDL_Texture *texture, const Rect &rect, bool offs=true);
   void renderRect(const Rect &rect);
   void renderFilledRect(const Rect &rect, const SDL_Color &color);
   void renderFilledPie(const Point &origin, int radius, int start, int end, const SDL_Color &color);
@@ -67,6 +68,11 @@ public:
   bool textTooSmall(const Rect &rect);
     // if the text is too small for the rectangle, return true.
   
+  void setDrawColor(const SDL_Color &color);
+  void setScale(double x, double y);
+  void drawRect(const Rect &r);
+  void fillRect(const Rect &r);
+
   Resources resources;
   
 private:
@@ -87,9 +93,10 @@ private:
   std::unique_ptr<Element> _root;
   std::unique_ptr<Font> _font;
   std::unique_ptr<TextEditor> _editor;
+  std::unique_ptr<HUD> _hud;
   bool _editing;
-  SDL_Cursor *_pointercursor;
-  SDL_Cursor *_editcursor;
+//   SDL_Cursor *_pointercursor;
+//   SDL_Cursor *_editcursor;
   Point _renderorigin;
   
   bool processEvents();

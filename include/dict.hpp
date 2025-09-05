@@ -40,6 +40,7 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
+  virtual void setState(HUD *hud);
   
   // Writeable
   virtual rfl::Generic getGeneric();

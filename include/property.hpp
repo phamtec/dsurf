@@ -40,6 +40,7 @@ public:
   virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
   virtual void edit(TextEditor *editor);
+  virtual void setState(HUD *hud);
 
   // Writeable
   virtual std::string getName() { return _name.str(); }

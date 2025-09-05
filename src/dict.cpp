@@ -67,6 +67,12 @@ Point Dict::localOrigin(int index) {
   
 }
 
+void Dict::setState(HUD *hud) {
+
+  hud->setState(None);
+  
+}
+
 void Dict::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
 
   // top left corner

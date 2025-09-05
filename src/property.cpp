@@ -13,6 +13,7 @@
 
 #include "sizes.hpp"
 #include "texteditor.hpp"
+#include "hud.hpp"
 
 #include <iostream>
 
@@ -115,6 +116,12 @@ void Property::setString(Renderer &renderer, const string &s) {
 
   _name.set(s, Colours::red);
   _name.build(renderer);
+  
+}
+
+void Property::setState(HUD *hud) {
+
+  hud->setState(Text);
   
 }
 

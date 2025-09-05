@@ -31,12 +31,12 @@ Renderer::~Renderer() {
 
   // font first.
   _font.reset(0);
-  if (_pointercursor) {
-    SDL_DestroyCursor(_pointercursor);
-  }
-  if (_editcursor) {
-    SDL_DestroyCursor(_editcursor);
-  }
+//   if (_pointercursor) {
+//     SDL_DestroyCursor(_pointercursor);
+//   }
+//   if (_editcursor) {
+//     SDL_DestroyCursor(_editcursor);
+//   }
 
   if (_engine) {
     TTF_DestroyRendererTextEngine(_engine);
@@ -122,8 +122,11 @@ bool Renderer::init(const char *path) {
   _editor->build(*this);
   _editor->layout();
   
-  _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
-  _editcursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_TEXT);
+  _hud.reset(new HUD());
+  _hud->build(*this);
+  
+//   _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
+//   _editcursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_TEXT);
   
   return true;
    
@@ -174,9 +177,37 @@ void Renderer::loop() {
     debugMouse(_mouse);
     debugSize();
     
+    _hud->render(*this, _mouse);
+    
     SDL_RenderPresent(_renderer);
 
   }
+  
+}
+
+void Renderer::setDrawColor(const SDL_Color &color) {
+
+  SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
+  
+}
+
+void Renderer::drawRect(const Rect &r) {
+
+  SDL_FRect sr = r.srect();
+  SDL_RenderRect(_renderer, &sr);
+  
+}
+
+void Renderer::setScale(double x, double y) {
+
+  SDL_SetRenderScale(_renderer, x, y);
+
+}
+
+void Renderer::fillRect(const Rect &r) {
+
+  SDL_FRect sr = r.srect();
+  SDL_RenderFillRect(_renderer, &sr);
   
 }
 
@@ -227,7 +258,7 @@ bool Renderer::isDoubleClick() {
 
 void Renderer::endEdit() {
   _editing = false;
-  SDL_SetCursor(_pointercursor);
+  _hud->setState(Text);
 }
 
 bool Renderer::processEvents() {
@@ -251,13 +282,6 @@ bool Renderer::processEvents() {
             (_scale * ((SDL_GetModState() & (SDL_KMOD_LSHIFT | SDL_KMOD_RSHIFT)) ? 0.5 : 2.0)) - _scale, 
             1.0, &_scale, &_offs);
         }
-        else if (_editing) {
-          Point p = _last * (1 / _scale);
-          Element *hit = _root->hitTest(Point(_offs), p);
-          if (hit) {
-            hit->edit(_editor.get());
-          }
-        }
         break;
 
       case SDL_EVENT_MOUSE_BUTTON_UP:
@@ -268,6 +292,23 @@ bool Renderer::processEvents() {
         _mouse = Point(event.motion.x, event.motion.y);
         if (_mousedown) {
           Spatial::calcPan(Point(event.motion.x, event.motion.y), &_last, &_offs, _scale);
+        }
+        if (!_editing) {
+          // set the hud.
+          Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
+          if (hit) {
+            if (hit == _root.get()) {
+//              cout << "hit root" << endl;
+              _hud->setState(All);
+            }
+            else {
+//              cout << "hit obj" << endl;
+              hit->setState(_hud.get());
+            }
+          }
+          else {
+            _hud->setState(None);
+          }
         }
         break;
 
@@ -286,10 +327,11 @@ bool Renderer::processEvents() {
         break;
                
       case SDL_EVENT_KEY_DOWN:
-        if ((event.key.mod & SDL_KMOD_LGUI) || (event.key.mod & SDL_KMOD_CTRL)) {
-          switch (event.key.key) {
-            case SDLK_V:
-              {
+        switch (event.key.key) {
+          case SDLK_P:
+            {
+              Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
+              if (hit && hit == _root.get()) {
                 char *text = SDL_GetClipboardText();
                 auto json = Builder::loadText(text);
                 SDL_free(text);
@@ -297,30 +339,32 @@ bool Renderer::processEvents() {
                   setRoot(json);
                 }
               }
-              break;
-              
-            case SDLK_C:
-              SDL_SetClipboardText(Builder::getJson(_root.get()).c_str());
-              break;
-              
-            case SDLK_E:
-              _editing = !_editing;
-              if (_editing) {
-                SDL_SetCursor(_editcursor);
+            }
+            break;
+            
+          case SDLK_C:
+            {
+              Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
+              if (hit && hit == _root.get()) {
+                SDL_SetClipboardText(Builder::getJson(hit).c_str());
               }
-              else {
-                SDL_SetCursor(_pointercursor);
+            }
+            break;
+            
+          case SDLK_A:
+            {
+              Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
+              if (hit) {
+                _editing = true;
+                hit->edit(_editor.get());
+                // locate the hud on the edited object.
+                _hud->setEditingLoc((hit->origin() + _offs) * _scale);  
+                _hud->setState(Editing);
               }
-              break;
-              
-            default:
-              break;
-          }
+            }
+            break;
         }
-        else {
-//          cout << "ingored key " << event.key.key << endl;
-        }
-        break;
+       break;
 
      case SDL_EVENT_QUIT:
         return true;
@@ -370,9 +414,9 @@ SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {
 }
 
 
-void Renderer::renderTexture(SDL_Texture *texture, const Rect &rect) {
+void Renderer::renderTexture(SDL_Texture *texture, const Rect &rect, bool offs) {
 
-  Rect r = rect + _offs;
+  Rect r = rect + (offs ? _offs : Size(0, 0));
 
   SDL_FRect sr = r.srect();
   SDL_RenderTexture(_renderer, texture, NULL, &sr);

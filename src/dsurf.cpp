@@ -24,7 +24,7 @@ namespace po = boost::program_options;
 
 int main(int argc, char *argv[])
 {
-  string version = "dsurf v0.1, 25-Aug-2025.";
+  string version = "dsurf v0.2, 5-Sep-2025.";
     
   string usage = "Usage: " + string(argv[0]) + " input-file";
   po::options_description desc("Allowed options");

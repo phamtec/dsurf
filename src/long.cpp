@@ -69,3 +69,9 @@ void Long::setString(Renderer &renderer, const string &s) {
   _value.build(renderer);
 
 }
+
+void Long::setState(HUD *hud) {
+
+  hud->setState(Text);
+  
+}

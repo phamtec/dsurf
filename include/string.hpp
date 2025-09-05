@@ -36,6 +36,7 @@ public:
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
   virtual void edit(TextEditor *editor);
+  virtual void setState(HUD *hud);
 
   // Writeable
   virtual rfl::Generic getGeneric();
@@ -53,10 +54,12 @@ public:
   virtual void setString(Renderer &renderer, const std::string &s);
 
 protected:
+
   Element *_parent;
   int _index;
   Size _size;
   Text _value;
+  
 };
 
 #endif // H_string
