@@ -35,7 +35,7 @@ void Text::build(Renderer &renderer) {
 
   // create a surface from the text. We don't have
   // to keep it around after making a texture from it.
-  unique_ptr<SDL_Surface> surface(renderer.renderText(_str.c_str(), _fgcolor));
+  unique_ptr<SDL_Surface> surface(renderer.renderText(_str, _fgcolor));
   if (!surface) {
     return;
   }

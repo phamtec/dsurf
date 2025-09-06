@@ -16,22 +16,15 @@
 
 using namespace std;
 
-// bool operator | (HUDState lhs, HUDState rhs) {
-//   return static_cast<std::underlying_type_t<HUDState>>(lhs) |
-//     static_cast<std::underlying_type_t<HUDState>>(rhs);
-// }
-// 
-// bool operator & (HUDState lhs, HUDState rhs) {
-//   return static_cast<std::underlying_type_t<HUDState>>(lhs) &
-//     static_cast<std::underlying_type_t<HUDState>>(rhs);
-// }
-
 HUD::HUD() {
 
-  _Append.set("A", "ppend");
-  _Copy.set("C", "opy");
-  _Paste.set("P", "aste");
-  _Escape.set("Esc", " (close)");
+  _Append.set(L"A", L"ppend");
+  _Copy.set(L"C", L"opy");
+  _Paste.set(L"P", L"aste");
+  _Close.set(L"Esc", L"(revert)");
+  _Move.set(L"Arrows", L"(navigate)");
+  _Delete.set(L"Bksp", L"(delete)");
+  _Finish.set(L"Ret|Tab", L"(close)");
 
 }
 
@@ -40,7 +33,10 @@ void HUD::build(Renderer &renderer) {
   _Append.build(renderer);
   _Copy.build(renderer);
   _Paste.build(renderer);
-  _Escape.build(renderer);
+  _Close.build(renderer);
+  _Move.build(renderer);
+  _Delete.build(renderer);
+  _Finish.build(renderer);
   
 }
   
@@ -66,8 +62,9 @@ void HUD::render(Renderer &renderer, const Point &mouse) {
       break;
     case HUDState::Editing:
       draw = true;
-      s = _Escape.size();
-      l = _loc + Size(-10, -30);
+      s = _Move.size();
+      s.h *= 4;
+      l = _loc + Size(0, -10 -s.h);
       break;
     default:
       break;
@@ -89,7 +86,13 @@ void HUD::render(Renderer &renderer, const Point &mouse) {
       _Paste.render(renderer, origin + Size(0, _Copy.size().h));
       break;
     case HUDState::Editing:
-      _Escape.render(renderer, _loc + Size(-10, -30));
+      {
+        Size s = _Move.size();
+        _Close.render(renderer, _loc + Size(0, -10 - (s.h*4)));
+        _Move.render(renderer, _loc + Size(0, -10 - (s.h*3)));
+        _Delete.render(renderer, _loc + Size(0, -10 - (s.h*2)));
+        _Finish.render(renderer, _loc + Size(0, -10 - s.h));
+      }
       break;
     default:
       break;

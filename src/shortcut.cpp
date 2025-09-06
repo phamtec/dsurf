@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void Shortcut::set(const std::string &key, const std::string &text) {
+void Shortcut::set(const wstring &key, const wstring &text) {
 
   _key.set(key, Colours::black);
   _text.set(text, Colours::grey);
@@ -32,18 +32,21 @@ void Shortcut::build(Renderer &renderer) {
 
 void Shortcut::render(Renderer &renderer, const Point &origin) {
 
-  renderer.setScale(0.3, 0.3);
+  double scale = 0.3;
+  renderer.setScale(scale, scale);
   
-  double scale = 1 / 0.3;
-  Point p = origin * scale;
+  double kiscale = 1 / scale;
+  Point p = origin * kiscale;
   
 //  cout << "key " << p << endl;
   _key.render(renderer, p, false);
+  int kwidth = _key.size().w * scale;
   
-  renderer.setScale(0.25, 0.25);
+  scale = 0.22;
+  renderer.setScale(scale, scale);
   
-  scale = 1 / 0.25;
-  p = ((origin + Size(0, 3)) * scale) + Size(_key.size().w + 10, 0);
+  double tiscale = 1 / scale;
+  p = (origin + Size(1.8 + kwidth, 3.5)) * tiscale;
   
 //  cout << "text "  << p << endl;
   _text.render(renderer, p, false);

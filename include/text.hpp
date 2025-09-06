@@ -29,11 +29,11 @@ class Point;
 class Text {
 
 public:
-  Text(): _str("??"), _fgcolor(Colours::black), _texture(0) {}
-  Text(const std::string &str, const SDL_Color &fgcolor): _str(str), _fgcolor(fgcolor), _texture(0) {}
+  Text(): _str(L"??"), _fgcolor(Colours::black), _texture(0) {}
+  Text(const std::wstring &str, const SDL_Color &fgcolor): _str(str), _fgcolor(fgcolor), _texture(0) {}
   ~Text();
 
-  void set(const std::string &str, const SDL_Color &fgcolor) {
+  void set(const std::wstring &str, const SDL_Color &fgcolor) {
     _str = str;
     _fgcolor = fgcolor;
   }
@@ -47,11 +47,11 @@ public:
   Size size() { return _size; }
     // return the size of the text object.
       
-  std::string str() { return _str; }
+  std::wstring str() { return _str; }
     
 private:
 
-  std::string _str;
+  std::wstring _str;
   SDL_Color _fgcolor;
   Size _size;
   SDL_Texture *_texture;

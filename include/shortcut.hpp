@@ -23,7 +23,7 @@ class Shortcut {
 
 public:
 
-  void set(const std::string &key, const std::string &text);
+  void set(const std::wstring &key, const std::wstring &text);
   void build(Renderer &renderer);
   void render(Renderer &renderer, const Point &origin);
   Size size();

@@ -50,8 +50,8 @@ public:
   virtual Size getSize() { return _size; }
 
   // Editable
-  virtual std::string getString() { return _value.str(); }
-  virtual void setString(Renderer &renderer, const std::string &s);
+  virtual std::wstring getString() { return _value.str(); }
+  virtual void setString(Renderer &renderer, const std::wstring &s);
 
   // HUDable
   virtual void setState(HUD *hud);

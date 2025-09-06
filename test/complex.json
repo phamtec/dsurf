@@ -33,7 +33,7 @@
                 },
                 {
                     "type": "freeFormText",
-                    "text": "Number of coats?",
+                    "text": "Number of coatsӅ",
                     "var": "coats"
                 }
             ]

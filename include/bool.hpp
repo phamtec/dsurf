@@ -39,7 +39,7 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
 
   // Writeable
-  virtual rfl::Generic getGeneric() { return _value.str() == "true"; }
+  virtual rfl::Generic getGeneric() { return _value.str() == L"true"; }
 
   // Parentable
   virtual void setParent(Element *parent, int index) { _parent = parent; _index = index; }
@@ -50,8 +50,8 @@ public:
   virtual Size getSize() { return _size; }
 
   // Editable
-  virtual std::string getString() { return _value.str(); }
-  virtual void setString(Renderer &renderer, const std::string &s);
+  virtual std::wstring getString() { return _value.str(); }
+  virtual void setString(Renderer &renderer, const std::wstring &s);
 
   // HUDable
   virtual void setState(HUD *hud);

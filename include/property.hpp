@@ -33,7 +33,7 @@ class Property: public Element, public Parentable, public Sizeable, public Write
   typedef Element super;
 
 public:
-  Property(const std::string &name, Element *obj, bool container);
+  Property(const std::wstring &name, Element *obj, bool container);
   
   // Element
   virtual void build(Renderer &renderer);
@@ -43,7 +43,7 @@ public:
   virtual Point localOrigin(int index);
 
   // Writeable
-  virtual std::string getName() { return _name.str(); }
+  virtual std::string getName();
   virtual rfl::Generic getGeneric();
 
   // Parentable
@@ -55,8 +55,8 @@ public:
   virtual Size getSize() { return _size; }
 
   // Editable
-  virtual std::string getString() { return _name.str(); }
-  virtual void setString(Renderer &renderer, const std::string &s);
+  virtual std::wstring getString() { return _name.str(); }
+  virtual void setString(Renderer &renderer, const std::wstring &s);
 
   // HUDable
   virtual void setState(HUD *hud);

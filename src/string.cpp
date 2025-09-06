@@ -14,12 +14,13 @@
 #include "spatial.hpp"
 #include "renderer.hpp"
 #include "hud.hpp"
+#include "unicode.hpp"
 
 using namespace std;
 
-String::String(const std::string &value): _parent(0), _index(0) {
+String::String(const std::wstring &value): _parent(0), _index(0) {
 
-  stringstream ss;
+  wstringstream ss;
   ss << "\"" << value << "\"";
   _value.set(ss.str(), Colours::green);
 }
@@ -47,7 +48,7 @@ void String::render(Renderer &renderer, const Point &origin) {
 
 rfl::Generic String::getGeneric() { 
 
-  return _value.str().substr(1, _value.str().size() - 2); 
+  return Unicode::convert(getString());
   
 }
 
@@ -61,15 +62,15 @@ void String::processKey(Renderer &renderer, SDL_Keycode code) {
   
 }
 
-string String::getString() {
+wstring String::getString() {
 
   return _value.str().substr(1, _value.str().size() - 2);
   
 }
 
-void String::setString(Renderer &renderer, const string &s) {
+void String::setString(Renderer &renderer, const wstring &s) {
 
-  stringstream ss;
+  wstringstream ss;
   ss << "\"" << s << "\"";
   _value.set(ss.str(), Colours::red);
   _value.build(renderer);

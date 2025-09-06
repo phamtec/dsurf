@@ -64,7 +64,7 @@ public:
     
   // functions used to create and render.
   SDL_Texture *createTexture(int width, int height);
-  SDL_Surface *renderText(const char *str, const SDL_Color &color);
+  SDL_Surface *renderText(const std::wstring &str, const SDL_Color &color);
   void setTarget(SDL_Texture *texture);
   SDL_Texture *createTexture(SDL_Surface *surface);
   void renderTexture(SDL_Texture *texture, const Rect &rect, bool offs=true);

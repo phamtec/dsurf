@@ -320,7 +320,7 @@ bool Renderer::processEvents() {
         break;
                
       case SDL_EVENT_KEY_DOWN:
-        {
+        if (!_editor->capture()) {
           Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
           if (hit) {
             Keyable *kx = dynamic_cast<Keyable *>(hit);
@@ -452,9 +452,12 @@ bool Renderer::textTooSmall(const Rect &rect) {
   
 }
 
-SDL_Surface *Renderer::renderText(const char *str, const SDL_Color &color) {
+SDL_Surface *Renderer::renderText(const std::wstring &str, const SDL_Color &color) {
 
-  SDL_Surface *surface = TTF_RenderText_Shaded(_font->_font, str, 0, color, Colours::white);
+//  wcout << "w " << str << endl;
+  char* u8str = SDL_iconv_wchar_utf8(str.c_str());
+  SDL_Surface *surface = TTF_RenderText_Shaded(_font->_font, u8str, 0, color, Colours::white);
+  SDL_free(u8str);
   if (!surface) {
     SDL_Log("could not create surface");
     return 0;

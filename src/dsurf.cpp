@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
 
   // build all of the internal renderer state.
   if (!renderer.init("../fonts/Monaco.ttf")) {
+//  if (!renderer.init("../fonts/Geneva.ttf")) {
     return 1;
   }
   

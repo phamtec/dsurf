@@ -71,7 +71,7 @@ private:
   void backspaceToBeginning();
   void deleteToEnd();
   void deleteText();
-  void endFocus();
+  void endFocus(bool changed);
 
 };
 

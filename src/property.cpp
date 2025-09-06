@@ -20,7 +20,7 @@
 
 using namespace std;
 
-Property::Property(const std::string &name, Element *obj, bool container):
+Property::Property(const std::wstring &name, Element *obj, bool container):
     _parent(0), _index(0), _name(name, Colours::blue), 
     _obj(obj), _container(container)
 {
@@ -65,6 +65,13 @@ void Property::render(Renderer &renderer, const Point &origin) {
   
 //  renderer.renderRect(_r);
 
+}
+
+std::string Property::getName() {
+
+  wstring s = _name.str();
+  return string(s.begin(), s.end());
+  
 }
 
 rfl::Generic Property::getGeneric() { 
@@ -117,7 +124,7 @@ void Property::processKey(Renderer &renderer, SDL_Keycode code) {
   
 }
 
-void Property::setString(Renderer &renderer, const string &s) {
+void Property::setString(Renderer &renderer, const wstring &s) {
 
   _name.set(s, Colours::red);
   _name.build(renderer);

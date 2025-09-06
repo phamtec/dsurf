@@ -252,6 +252,9 @@ Walk a JSON file building a simple layout.
 ### 6-Sep-2025
 
 - Introduce Hudable and Keyable and seperate HUD and Key concerns to objects.
+- Grow edit box
+- Nicer HUD
+- Unicode
 
 
 

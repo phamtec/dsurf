@@ -38,7 +38,7 @@ void TextEditor::build(Renderer &renderer) {
   }
 
   // Show the whitespace when wrapping, so it can be edited
-  TTF_SetTextWrapWhitespaceVisible(_text, true);
+//  TTF_SetTextWrapWhitespaceVisible(_text, true);
 
   // We support rendering the composition and candidates
 //  SDL_SetHint(SDL_HINT_IME_IMPLEMENTED_UI, "composition,candidates");
@@ -117,11 +117,12 @@ void TextEditor::processEvent(const SDL_Event &event) {
           break;
             
         case SDLK_RETURN:
-            insert("\n");
+        case SDLK_TAB:
+            endFocus(true);
             break;
 
         case SDLK_ESCAPE:
-            endFocus();
+            endFocus(false);
             break;
 
         default:
@@ -163,21 +164,29 @@ void TextEditor::focus(const Point &origin, const Size &size, Editable *obj) {
   _size = size;
   _obj = obj;
   
-  TTF_SetTextWrapWidth(_text, _size.w);
-  string s =  obj->getString();
-  TTF_SetTextString(_text, s.c_str(), s.size());
+//  TTF_SetTextWrapWidth(_text, _size.w);
+  wstring ws =  obj->getString();
+  char* u8str = SDL_iconv_wchar_utf8(ws.c_str());
+  TTF_SetTextString(_text, u8str, 0);
+  SDL_free(u8str);
   SDL_StartTextInput(_window);
-  setCursorPosition(s.size());
+  setCursorPosition(ws.size());
   
   _ignoretext = true;
   _editing = true;
   
 }
 
-void TextEditor::endFocus() {
-  _obj->setString(*_renderer, _text->text);
+void TextEditor::endFocus(bool changed) {
+
+  // unicode?
+  if (changed) {
+    string s(_text->text);
+    _obj->setString(*_renderer, wstring(s.begin(), s.end()));
+  }
   _editing = false;
   _renderer->endEdit();
+  
 }
 
 void TextEditor::insert(const char *text) {
@@ -197,6 +206,13 @@ void TextEditor::insert(const char *text) {
   size_t length = SDL_strlen(text);
   TTF_InsertTextString(_text, _cursor, text, length);
   setCursorPosition((int)(_cursor + length));
+
+  // grow the text box
+  int w, h;
+  TTF_GetTextSize(_text, &w, &h);
+  if (w > _size.w) {
+    _size.w = w;
+  }
 
 }
 

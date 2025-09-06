@@ -31,7 +31,7 @@ class String: public Element, public Parentable, public Sizeable, public Writeab
   typedef Element super;
   
 public:
-  String(const std::string &value);
+  String(const std::wstring &value);
 
   // Element
   virtual void build(Renderer &renderer);
@@ -50,8 +50,8 @@ public:
   virtual Size getSize() { return _size; }
 
   // Editable
-  virtual std::string getString();
-  virtual void setString(Renderer &renderer, const std::string &s);
+  virtual std::wstring getString();
+  virtual void setString(Renderer &renderer, const std::wstring &s);
 
   // HUDable
   virtual void setState(HUD *hud);

@@ -20,7 +20,7 @@ using namespace std;
 
 Bool::Bool(bool value): _parent(0), _index(0) {
 
-  _value.set(value ? "true" : "false", Colours::green);
+  _value.set(value ? L"true" : L"false", Colours::green);
   
 }
 
@@ -55,7 +55,7 @@ void Bool::processKey(Renderer &renderer, SDL_Keycode code) {
   
 }
 
-void Bool::setString(Renderer &renderer, const string &s) {
+void Bool::setString(Renderer &renderer, const wstring &s) {
 
   _value.set(s, Colours::red);
   _value.build(renderer);

@@ -20,7 +20,7 @@ using namespace std;
 
 Long::Long(long value): _parent(0), _index(0) {
 
-  stringstream ss;
+  wstringstream ss;
   ss << value;
   _value.set(ss.str(), Colours::green);
   
@@ -49,7 +49,7 @@ void Long::render(Renderer &renderer, const Point &origin) {
 
 rfl::Generic Long::getGeneric() { 
   
-  stringstream ss(_value.str());
+  wstringstream ss(_value.str());
   long l;
   ss >> l;
 
@@ -67,7 +67,7 @@ void Long::processKey(Renderer &renderer, SDL_Keycode code) {
   
 }
 
-void Long::setString(Renderer &renderer, const string &s) {
+void Long::setString(Renderer &renderer, const wstring &s) {
 
   _value.set(s, Colours::red);
   _value.build(renderer);

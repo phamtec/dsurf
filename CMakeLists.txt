@@ -53,6 +53,7 @@ set(UTILSRC
   src/point.cpp
   src/size.cpp
   src/rect.cpp
+  src/unicode.cpp
 )
 
 set(OBJSRC

@@ -43,7 +43,10 @@ private:
   Shortcut _Append;
   Shortcut _Copy;
   Shortcut _Paste;
-  Shortcut _Escape;
+  Shortcut _Close;
+  Shortcut _Move;
+  Shortcut _Delete;
+  Shortcut _Finish;
 
 };
 

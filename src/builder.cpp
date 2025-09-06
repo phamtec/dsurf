@@ -17,6 +17,7 @@
 #include "bool.hpp"
 #include "long.hpp"
 #include "property.hpp"
+#include "unicode.hpp"
 
 using namespace std;
 
@@ -59,7 +60,7 @@ Element *Builder::castGeneric(const rfl::Generic &g)  {
       obj = d;
     }
     else if constexpr (std::is_same<Type, string>()) {
-      obj = new String(field);
+      obj = new String(Unicode::convert(field));
     }
     else if constexpr (std::is_same<Type, bool>()) {
       obj = new Bool(field);
@@ -98,7 +99,7 @@ Element *Builder::walk(Element *parent, int index, const rfl::Generic &g, const 
   Element *obj = castGeneric(g);
 
   if (obj) {
-    obj = new Property(name, obj, dynamic_cast<Pushable *>(obj) != 0);
+    obj = new Property(Unicode::convert(name), obj, dynamic_cast<Pushable *>(obj) != 0);
   }
   
   Parentable *px = dynamic_cast<Parentable *>(obj);

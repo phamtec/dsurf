@@ -21,8 +21,8 @@ class Editable {
 public:
   virtual ~Editable() {};
 
-  virtual std::string getString() = 0;
-  virtual void setString(Renderer &renderer, const std::string &s) = 0;
+  virtual std::wstring getString() = 0;
+  virtual void setString(Renderer &renderer, const std::wstring &s) = 0;
     // get and set the value as a string.
     
 };
