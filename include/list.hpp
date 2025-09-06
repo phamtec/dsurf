@@ -25,11 +25,13 @@
 #include "parentable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
+#include "hudable.hpp"
+#include "keyable.hpp"
 
 #include <memory>
 #include <vector>
 
-class List: public Element, public Pushable, public Parentable, public Sizeable, public Writeable  {
+class List: public Element, public Pushable, public Parentable, public Sizeable, public Writeable, public HUDable, public Keyable  {
 
   typedef Element super;
 
@@ -42,7 +44,6 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
-  virtual void setState(HUD *hud);
   
   // Writeable
   virtual rfl::Generic getGeneric();
@@ -59,6 +60,12 @@ public:
   
   // Sizeable
   virtual Size getSize() { return _size; }
+
+  // HUDable
+  virtual void setState(HUD *hud);
+
+  // Keyable
+  virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
   // helpers for things that look like a list.
   static void buildVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > &list);

@@ -249,5 +249,9 @@ Walk a JSON file building a simple layout.
 - Version 0.2
 - Heads up display for editing.
 
- 
+### 6-Sep-2025
+
+- Introduce Hudable and Keyable and seperate HUD and Key concerns to objects.
+
+
 

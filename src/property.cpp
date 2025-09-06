@@ -14,6 +14,7 @@
 #include "sizes.hpp"
 #include "texteditor.hpp"
 #include "hud.hpp"
+#include "renderer.hpp"
 
 #include <iostream>
 
@@ -106,9 +107,13 @@ Point Property::localOrigin(int index) {
   
 }
 
-void Property::edit(TextEditor *editor) {
+void Property::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  editor->focus(origin() + Size(0, _container ? -Sizes::thickness : 0), _name.size(), this);
+  switch (code) {
+    case SDLK_A:
+      renderer.editText(this, origin() + Size(0, _container ? -Sizes::thickness : 0), _name.size());
+      break;
+  }
   
 }
 

@@ -10,11 +10,13 @@
 */
 
 #include "renderer.hpp"
+
 #include "spatial.hpp"
 #include "builder.hpp"
 #include "colours.hpp"
 #include "dict.hpp"
 #include "gfx.hpp"
+#include "editable.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -118,7 +120,7 @@ bool Renderer::init(const char *path) {
   setRoot(new Dict());
 
   // build our editor.
-  _editor.reset(new TextEditor());
+  _editor.reset(new TextEditor(_startedit));
   _editor->build(*this);
   _editor->layout();
   
@@ -164,18 +166,15 @@ void Renderer::loop() {
     SDL_SetRenderScale(_renderer, _scale, _scale);
 
     _root->render(*this, Point(0.0, 0.0));
-    
-    if (_editing) {
-      _editor->render(*this, Point(0.0, 0.0));
-    }
+    _editor->render(*this, Point(0.0, 0.0));
 
     // set the scale back to 1.0 so that our draw will work.
     SDL_SetRenderScale(_renderer, 1.0, 1.0);
   
-    debugOffs();
-    debugScale();
-    debugMouse(_mouse);
-    debugSize();
+//     debugOffs();
+//     debugScale();
+//     debugMouse(_mouse);
+//     debugSize();
     
     _hud->render(*this, _mouse);
     
@@ -257,7 +256,6 @@ bool Renderer::isDoubleClick() {
 }
 
 void Renderer::endEdit() {
-  _editing = false;
   _hud->setState(Text);
 }
 
@@ -268,9 +266,8 @@ bool Renderer::processEvents() {
   
     SDL_ConvertEventToRenderCoordinates(_renderer, &event);
 
-    if (_editing) {
-      _editor->processEvent(event);
-    }
+    _editor->processEvent(event);
+
     switch (event.type) {
 
       case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -293,17 +290,13 @@ bool Renderer::processEvents() {
         if (_mousedown) {
           Spatial::calcPan(Point(event.motion.x, event.motion.y), &_last, &_offs, _scale);
         }
-        if (!_editing) {
+        if (!_editor->capture()) {
           // set the hud.
           Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
           if (hit) {
-            if (hit == _root.get()) {
-//              cout << "hit root" << endl;
-              _hud->setState(All);
-            }
-            else {
-//              cout << "hit obj" << endl;
-              hit->setState(_hud.get());
+            HUDable *hx = dynamic_cast<HUDable *>(hit);
+            if (hx) {
+              hx->setState(_hud.get());
             }
           }
           else {
@@ -327,44 +320,16 @@ bool Renderer::processEvents() {
         break;
                
       case SDL_EVENT_KEY_DOWN:
-        switch (event.key.key) {
-          case SDLK_P:
-            {
-              Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
-              if (hit && hit == _root.get()) {
-                char *text = SDL_GetClipboardText();
-                auto json = Builder::loadText(text);
-                SDL_free(text);
-                if (json) {
-                  setRoot(json);
-                }
-              }
+        {
+          Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
+          if (hit) {
+            Keyable *kx = dynamic_cast<Keyable *>(hit);
+            if (kx) {
+              kx->processKey(*this, event.key.key);
             }
-            break;
-            
-          case SDLK_C:
-            {
-              Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
-              if (hit && hit == _root.get()) {
-                SDL_SetClipboardText(Builder::getJson(hit).c_str());
-              }
-            }
-            break;
-            
-          case SDLK_A:
-            {
-              Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
-              if (hit) {
-                _editing = true;
-                hit->edit(_editor.get());
-                // locate the hud on the edited object.
-                _hud->setEditingLoc((hit->origin() + _offs) * _scale);  
-                _hud->setState(Editing);
-              }
-            }
-            break;
+          }
         }
-       break;
+        break;
 
      case SDL_EVENT_QUIT:
         return true;
@@ -378,6 +343,40 @@ bool Renderer::processEvents() {
   }
 
   return false;
+  
+}
+
+void Renderer::copy(Element *element) {
+
+  SDL_SetClipboardText(Builder::getJson(element).c_str());
+  
+}
+
+void Renderer::paste() {
+
+  char *text = SDL_GetClipboardText();
+  auto json = Builder::loadText(text);
+  SDL_free(text);
+  if (json) {
+    setRoot(json);
+  }
+  
+}
+
+void Renderer::editText(Element *element, const Point &origin, const Size &size) {
+
+  Editable *ex = dynamic_cast< Editable *>(element);
+  if (!ex) {
+    cerr << "object not text editable." << endl;
+    return;
+  }
+  
+  // focus the editor on the object
+  _editor->focus(origin, size, ex);
+  
+  // locate the hud on the edited object.
+  _hud->setEditingLoc((element->origin() + _offs) * _scale);  
+  _hud->setState(Editing);
   
 }
 

@@ -22,11 +22,13 @@
 #include "sizeable.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
+#include "hudable.hpp"
+#include "keyable.hpp"
 
 #include <memory>
 #include <vector>
 
-class Property: public Element, public Parentable, public Sizeable, public Writeable, public Editable  {
+class Property: public Element, public Parentable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable  {
 
   typedef Element super;
 
@@ -39,8 +41,6 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
-  virtual void edit(TextEditor *editor);
-  virtual void setState(HUD *hud);
 
   // Writeable
   virtual std::string getName() { return _name.str(); }
@@ -57,6 +57,12 @@ public:
   // Editable
   virtual std::string getString() { return _name.str(); }
   virtual void setString(Renderer &renderer, const std::string &s);
+
+  // HUDable
+  virtual void setState(HUD *hud);
+
+  // Keyable
+  virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
 private:
 

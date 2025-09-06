@@ -51,9 +51,13 @@ rfl::Generic String::getGeneric() {
   
 }
 
-void String::edit(TextEditor *editor) {
+void String::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  editor->focus(origin(), _size, this);
+  switch (code) {
+    case SDLK_A:
+      renderer.editText(this, origin(), _size);
+      break;
+  }
   
 }
 

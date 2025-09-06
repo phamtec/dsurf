@@ -52,6 +52,10 @@ void TextEditor::build(Renderer &renderer) {
 
 void TextEditor::processEvent(const SDL_Event &event) {
 
+  if (!_editing) {
+    return;
+  }
+  
   switch (event.type) {
   
     case SDL_EVENT_KEY_DOWN:
@@ -166,10 +170,13 @@ void TextEditor::focus(const Point &origin, const Size &size, Editable *obj) {
   setCursorPosition(s.size());
   
   _ignoretext = true;
+  _editing = true;
+  
 }
 
 void TextEditor::endFocus() {
   _obj->setString(*_renderer, _text->text);
+  _editing = false;
   _renderer->endEdit();
 }
 
@@ -241,6 +248,10 @@ void TextEditor::drawCursor(Renderer &renderer) {
 
 void TextEditor::render(Renderer &renderer, const Point &origin) {
 
+  if (!_editing) {
+    return;
+  }
+  
   /* Clear the text rect to light gray */
   SDL_SetRenderDrawColor(renderer._renderer, 0xCC, 0xCC, 0xCC, 0xFF);
   SDL_FRect r = Rect(_origin + renderer._offs, _size).srect();

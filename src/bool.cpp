@@ -45,9 +45,13 @@ void Bool::render(Renderer &renderer, const Point &origin) {
   
 }
 
-void Bool::edit(TextEditor *editor) {
+void Bool::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  editor->focus(origin(), _size, this);
+  switch (code) {
+    case SDLK_A:
+      renderer.editText(this, origin(), _size);
+      break;
+  }
   
 }
 

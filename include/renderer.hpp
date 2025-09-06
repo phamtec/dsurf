@@ -39,7 +39,7 @@ public:
   Renderer(const Size &wsize, float scalemult, float scale, const Size &offset, bool editing): 
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
     _mousedown(false), _lastclick(0),
-    _window(0), _renderer(0), _engine(0), _editing(editing)/*,
+    _window(0), _renderer(0), _engine(0), _startedit(editing)/*,
     _pointercursor(0), _editcursor(0)*/
       {};
   ~Renderer();
@@ -54,6 +54,13 @@ public:
     
   void loop();
     // the main render loop.
+    
+  void copy(Element *element);
+  void paste();
+    // copy and paste the root element.
+    
+  void editText(Element *element, const Point &origin, const Size &size);
+    // edit the text of an element.
     
   // functions used to create and render.
   SDL_Texture *createTexture(int width, int height);
@@ -79,14 +86,16 @@ private:
   friend class TextEditor;
   
   Size _size;
+  float _scalemult;
+  float _scale;
+  Size _offs;
+  bool _startedit;
+  
   SDL_Window *_window;
   TTF_TextEngine *_engine;
   SDL_Renderer *_renderer;
-  float _scale;
-  float _scalemult;
   bool _mousedown;
   Point _last;
-  Size _offs;
   Point _mouse;
   Size _osize;
   unsigned int _lastclick;
@@ -94,7 +103,6 @@ private:
   std::unique_ptr<Font> _font;
   std::unique_ptr<TextEditor> _editor;
   std::unique_ptr<HUD> _hud;
-  bool _editing;
 //   SDL_Cursor *_pointercursor;
 //   SDL_Cursor *_editcursor;
   Point _renderorigin;

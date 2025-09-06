@@ -23,8 +23,10 @@
 #include "sizeable.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
+#include "hudable.hpp"
+#include "keyable.hpp"
 
-class Bool: public Element, public Parentable, public Sizeable, public Writeable, public Editable {
+class Bool: public Element, public Parentable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable {
 
   typedef Element super;
 
@@ -35,8 +37,6 @@ public:
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
-  virtual void edit(TextEditor *editor);
-  virtual void setState(HUD *hud);
 
   // Writeable
   virtual rfl::Generic getGeneric() { return _value.str() == "true"; }
@@ -52,6 +52,12 @@ public:
   // Editable
   virtual std::string getString() { return _value.str(); }
   virtual void setString(Renderer &renderer, const std::string &s);
+
+  // HUDable
+  virtual void setState(HUD *hud);
+
+  // Keyable
+  virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
 private:
 

@@ -31,7 +31,7 @@ HUD::HUD() {
   _Append.set("A", "ppend");
   _Copy.set("C", "opy");
   _Paste.set("P", "aste");
-  _Escape.set("Esc", "ape");
+  _Escape.set("Esc", " (close)");
 
 }
 

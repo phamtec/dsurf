@@ -28,8 +28,6 @@
 
 class Renderer;
 class Point;
-class TextEditor;
-class HUD;
 
 class Element {
 
@@ -53,17 +51,11 @@ public:
     // objects, find the object in your sub objects
     // and then call super::hitTest(origin, p)
     
-  virtual void edit(TextEditor *editor) {}
-    // edit this object with the text editor.
-    
   Point origin();
     // recursivle return the origin of this object.
     
   virtual Point localOrigin(int index) { return Point(); }
     // return the origin of an object with index in this object.
-
-  virtual void setState(HUD *hud) {}
-    // set the mode in the heads up display.
     
 };
 

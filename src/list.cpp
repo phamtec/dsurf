@@ -69,10 +69,30 @@ Point List::localOrigin(int index) {
 
 void List::setState(HUD *hud) {
 
-  hud->setState(None);
+  if (getParent() == 0) {
+    hud->setState(All);
+  }
+  else {
+    hud->setState(None);
+  }
   
 }
 
+void List::processKey(Renderer &renderer, SDL_Keycode code) {
+
+  if (getParent() == 0) {
+    switch (code) {
+      case SDLK_P:
+        renderer.paste();
+        break;
+        
+      case SDLK_C:
+        renderer.copy(this);
+        break;
+    }
+  }
+  
+}
 
 rfl::Generic List::getGenericVector(std::vector<std::unique_ptr<Element> > &list) { 
 

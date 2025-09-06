@@ -26,11 +26,12 @@ class TextEditor: public Element {
   typedef Element super;
   
 public:
-  TextEditor(): _text(0), _window(0), _cursor(0), _renderer(0), _obj(0) {}
+  TextEditor(bool editing): _text(0), _window(0), _cursor(0), _renderer(0), _obj(0), _editing(editing) {}
   ~TextEditor();
   
   void focus(const Point &origin, const Size &size, Editable *obj);
   void processEvent(const SDL_Event &event);
+  bool capture() { return _editing; }
   
   // Element
   virtual void build(Renderer &renderer);
@@ -41,7 +42,7 @@ public:
   Size _size;
 
 private:
-
+  
   TTF_Text *_text;
   SDL_Window *_window;
   bool _cursor_visible;
@@ -51,6 +52,7 @@ private:
   Renderer *_renderer;
   Editable *_obj;
   bool _ignoretext;
+  bool _editing;
   
   void updateTextInputArea(Renderer &renderer);
   void drawCursor(Renderer &renderer);

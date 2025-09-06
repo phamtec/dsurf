@@ -69,7 +69,28 @@ Point Dict::localOrigin(int index) {
 
 void Dict::setState(HUD *hud) {
 
-  hud->setState(None);
+  if (getParent() == 0) {
+    hud->setState(All);
+  }
+  else {
+    hud->setState(None);
+  }
+  
+}
+
+void Dict::processKey(Renderer &renderer, SDL_Keycode code) {
+
+  if (getParent() == 0) {
+    switch (code) {
+      case SDLK_P:
+        renderer.paste();
+        break;
+        
+      case SDLK_C:
+        renderer.copy(this);
+        break;
+    }
+  }
   
 }
 

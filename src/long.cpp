@@ -57,9 +57,13 @@ rfl::Generic Long::getGeneric() {
 
 }
 
-void Long::edit(TextEditor *editor) {
+void Long::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  editor->focus(origin(), _size, this);
+  switch (code) {
+    case SDLK_A:
+      renderer.editText(this, origin(), _size);
+      break;
+  }
   
 }
 
