@@ -36,11 +36,13 @@ void Corner::render(Renderer &renderer, const Point &origin) {
 }
 void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
 }
-void Renderer::copy(Element *element) {
-}
-void Renderer::paste() {
-}
 void Renderer::editText(Element *element, const Point &origin, const Size &size) {
+}
+void Renderer::setRootState() {
+}
+void Renderer::processRootKey(Element *element, SDL_Keycode code) {
+}
+void Renderer::setTextState() {
 }
 void TextEditor::focus(const Point &origin, const Size &size, Editable *obj) {
 }

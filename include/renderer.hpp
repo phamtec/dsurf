@@ -23,6 +23,7 @@
 #include "hud.hpp"
 
 #include <SDL3/SDL_pixels.h>
+#include <SDL3/SDL_events.h>
 #include <memory>
 
 class SDL_Window;
@@ -55,12 +56,15 @@ public:
   void loop();
     // the main render loop.
     
-  void copy(Element *element);
-  void paste();
-    // copy and paste the root element.
-    
   void editText(Element *element, const Point &origin, const Size &size);
     // edit the text of an element.
+    
+  void setRootState();
+  void processRootKey(Element *element, SDL_Keycode code);
+    // process keys and HUD for the root object.
+   
+  void setTextState();
+    // set the state for the hud when we are over text
     
   // functions used to create and render.
   SDL_Texture *createTexture(int width, int height);
@@ -106,16 +110,18 @@ private:
 //   SDL_Cursor *_pointercursor;
 //   SDL_Cursor *_editcursor;
   Point _renderorigin;
+  int _hudmode;
   
   bool processEvents();
   bool isDoubleClick();
   void endEdit();
+  void setHUD();
 
   void debugOffs();
   void debugScale();
   void debugMouse(const Point &p);
   void debugSize();
-  
+      
 };
 
 #endif // H_renderer

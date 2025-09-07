@@ -256,5 +256,11 @@ Walk a JSON file building a simple layout.
 - Nicer HUD
 - Unicode
 
+### 7-Sep-2025
+
+- Dynamic HUD work. No fixed modes.
+- text editor owns it's modes
+- renderer owns root modes.
+
 
 

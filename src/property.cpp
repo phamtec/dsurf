@@ -131,9 +131,9 @@ void Property::setString(Renderer &renderer, const wstring &s) {
   
 }
 
-void Property::setState(HUD *hud) {
+void Property::setMode(Renderer &renderer, HUD *hud) {
 
-  hud->setState(Text);
+  renderer.setTextState();
   
 }
 

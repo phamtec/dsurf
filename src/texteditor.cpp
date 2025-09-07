@@ -14,6 +14,7 @@
 #include "colours.hpp"
 #include "renderer.hpp"
 #include "editable.hpp"
+#include "hud.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -186,6 +187,35 @@ void TextEditor::endFocus(bool changed) {
   }
   _editing = false;
   _renderer->endEdit();
+  
+}
+
+void TextEditor::registerHUD(HUD *hud) {
+
+  {
+    auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"A", L"ppend"));
+    _hudtext = hud->registerMode(mode);
+  }
+  {
+    auto mode = new HUDMode(true);
+    mode->add(new Shortcut(L"Esc", L"(revert)"));
+    mode->add(new Shortcut(L"Arrows", L"(navigate)"));
+    mode->add(new Shortcut(L"Bksp", L"(delete)"));
+    mode->add(new Shortcut(L"Ret|Tab", L"(close)"));
+    _hudediting = hud->registerMode(mode);
+  }
+
+}
+
+void TextEditor::setHUD(HUD *hud) {
+
+  if (_editing) {
+    hud->setMode(_hudediting);
+  }
+  else {
+    hud->setMode(_hudtext);
+  }
   
 }
 

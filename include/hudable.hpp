@@ -21,7 +21,7 @@ class HUDable {
 public:
   virtual ~HUDable() {};
 
-  virtual void setState(HUD *hud) = 0;
+  virtual void setMode(Renderer &renderer, HUD *hud) = 0;
     // set the mode in the heads up display.
     
 };

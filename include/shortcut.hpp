@@ -22,10 +22,11 @@ class Renderer;
 class Shortcut {
 
 public:
-
-  void set(const std::wstring &key, const std::wstring &text);
+  Shortcut(const std::wstring &key, const std::wstring &text);
+  
   void build(Renderer &renderer);
   void render(Renderer &renderer, const Point &origin);
+  
   Size size();
   
 private:

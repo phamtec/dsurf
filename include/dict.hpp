@@ -60,7 +60,7 @@ public:
   virtual Size getSize() { return _size; }
 
   // HUDable
-  virtual void setState(HUD *hud);
+  virtual void setMode(Renderer &renderer, HUD *hud);
 
   // Keyable
   virtual void processKey(Renderer &renderer, SDL_Keycode code);

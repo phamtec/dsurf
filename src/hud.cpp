@@ -18,84 +18,50 @@ using namespace std;
 
 HUD::HUD() {
 
-  _Append.set(L"A", L"ppend");
-  _Copy.set(L"C", L"opy");
-  _Paste.set(L"P", L"aste");
-  _Close.set(L"Esc", L"(revert)");
-  _Move.set(L"Arrows", L"(navigate)");
-  _Delete.set(L"Bksp", L"(delete)");
-  _Finish.set(L"Ret|Tab", L"(close)");
+  // nothing in first mode.
+  _modes.push_back(0);
 
+}
+
+int HUD::registerMode(HUDMode *mode) {
+
+  _modes.push_back(unique_ptr<HUDMode>(mode));
+  return _modes.size() - 1;
+  
 }
 
 void HUD::build(Renderer &renderer) {
   
-  _Append.build(renderer);
-  _Copy.build(renderer);
-  _Paste.build(renderer);
-  _Close.build(renderer);
-  _Move.build(renderer);
-  _Delete.build(renderer);
-  _Finish.build(renderer);
+  for (auto &&i: _modes) {
+    if (i) {
+      i->build(renderer);
+    }
+  }
   
 }
-  
+
 void HUD::render(Renderer &renderer, const Point &mouse) {
 
   Point origin = mouse + Size(40, -40);
-//    cout << "origin " << origin << endl;
+//  cout << "origin " << origin << endl;
   
-  bool draw = false;
-  Size l(0, 0);
-  Size s(0, 0);
-  switch (_state) {
-    case HUDState::Text:
-      draw = true;
-      s = _Append.size();
-      l = origin;
-      break;
-    case HUDState::All:
-      draw = true;
-      s = _Paste.size();
-      s.h += _Copy.size().h;
-      l = origin;
-      break;
-    case HUDState::Editing:
-      draw = true;
-      s = _Move.size();
-      s.h *= 4;
-      l = _loc + Size(0, -10 -s.h);
-      break;
-    default:
-      break;
+  if (_mode == 0) {
+    return;
   }
   
-  if (draw) {
-    renderer.setDrawColor(Colours::white);
-    renderer.fillRect(Rect(l + Size(-4, -4), s + Size(8, 8)));
-    renderer.setDrawColor(Colours::grey);
-    renderer.drawRect(Rect(l + Size(-4, -4), s + Size(8, 8)));
+  if (_mode >= _modes.size()) {
+    cerr << "state doesn't exist " << _mode << endl;
+    return;
   }
   
-  switch (_state) {
-    case HUDState::Text:
-      _Append.render(renderer, origin);
-      break;
-    case HUDState::All:
-      _Copy.render(renderer, origin + Size(0, 0));
-      _Paste.render(renderer, origin + Size(0, _Copy.size().h));
-      break;
-    case HUDState::Editing:
-      {
-        Size s = _Move.size();
-        _Close.render(renderer, _loc + Size(0, -10 - (s.h*4)));
-        _Move.render(renderer, _loc + Size(0, -10 - (s.h*3)));
-        _Delete.render(renderer, _loc + Size(0, -10 - (s.h*2)));
-        _Finish.render(renderer, _loc + Size(0, -10 - s.h));
-      }
-      break;
-    default:
-      break;
-  }
+  Point l = _modes[_mode]->location(origin, _loc);
+  Size s = _modes[_mode]->size();
 
+  renderer.setDrawColor(Colours::white);
+  renderer.fillRect(Rect(l + Size(-4, -4), s + Size(8, 8)));
+  renderer.setDrawColor(Colours::grey);
+  renderer.drawRect(Rect(l + Size(-4, -4), s + Size(8, 8)));
+  
+  _modes[_mode]->render(renderer, origin, _loc);
+  
 }

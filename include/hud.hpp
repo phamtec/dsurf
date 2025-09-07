@@ -14,40 +14,35 @@
 #ifndef H_hud
 #define H_hud
 
-#include "shortcut.hpp"
 #include "point.hpp"
+#include "hudmode.hpp"
 
 class Renderer;
-
-enum HUDState {
-  None      = 0,
-  Text      = 1,
-  All       = 2,
-  Editing   = 3
-};
 
 class HUD {
 
 public:
   HUD();
 
-  void setState(HUDState state) { _state = state; }
-  void setEditingLoc(const Point &loc) { _loc = loc; }
+  int registerMode(HUDMode *mode);
+    // register a mode for the HUD. it returns the mode index used in setMode
+    // register them ALL before calling build.
+    
   void build(Renderer &renderer);
   void render(Renderer &renderer, const Point &mouse);
   
+  void setMode(int mode) { _mode = mode; }
+    // set the mode to draw in the hub.
+    
+  void setEditingLoc(const Point &loc) { _loc = loc; }
+    // set what we are editing in case a HUD want's to draw at that fixed location.
+    
 private:
   
-  HUDState _state;
+  int _mode;
   Point _loc;
-  Shortcut _Append;
-  Shortcut _Copy;
-  Shortcut _Paste;
-  Shortcut _Close;
-  Shortcut _Move;
-  Shortcut _Delete;
-  Shortcut _Finish;
-
+  std::vector<std::unique_ptr<HUDMode> > _modes;
+  
 };
 
 #endif // H_hud

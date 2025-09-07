@@ -20,6 +20,7 @@ class TTF_Text;
 class SDL_Window;
 union SDL_Event;
 class Editable;
+class HUD;
 
 class TextEditor: public Element {
 
@@ -32,6 +33,8 @@ public:
   void focus(const Point &origin, const Size &size, Editable *obj);
   void processEvent(const SDL_Event &event);
   bool capture() { return _editing; }
+  void registerHUD(HUD *hud);
+  void setHUD(HUD *hud);
   
   // Element
   virtual void build(Renderer &renderer);
@@ -53,6 +56,8 @@ private:
   Editable *_obj;
   bool _ignoretext;
   bool _editing;
+  int _hudtext;
+  int _hudediting;
   
   void updateTextInputArea(Renderer &renderer);
   void drawCursor(Renderer &renderer);

@@ -77,8 +77,8 @@ void String::setString(Renderer &renderer, const wstring &s) {
 
 }
 
-void String::setState(HUD *hud) {
+void String::setMode(Renderer &renderer, HUD *hud) {
 
-  hud->setState(Text);
+  renderer.setTextState();
 
 }

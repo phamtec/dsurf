@@ -44,6 +44,7 @@ set(SRC
   src/resources.cpp
   src/texteditor.cpp
   src/hud.cpp
+  src/hudmode.cpp
   src/shortcut.cpp
 )
 

@@ -67,13 +67,13 @@ Point List::localOrigin(int index) {
   
 }
 
-void List::setState(HUD *hud) {
+void List::setMode(Renderer &renderer, HUD *hud) {
 
   if (getParent() == 0) {
-    hud->setState(All);
+    renderer.setRootState();
   }
   else {
-    hud->setState(None);
+    hud->setMode(0);
   }
   
 }
@@ -81,15 +81,7 @@ void List::setState(HUD *hud) {
 void List::processKey(Renderer &renderer, SDL_Keycode code) {
 
   if (getParent() == 0) {
-    switch (code) {
-      case SDLK_P:
-        renderer.paste();
-        break;
-        
-      case SDLK_C:
-        renderer.copy(this);
-        break;
-    }
+    renderer.processRootKey(this, code);
   }
   
 }

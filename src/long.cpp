@@ -74,8 +74,8 @@ void Long::setString(Renderer &renderer, const wstring &s) {
 
 }
 
-void Long::setState(HUD *hud) {
+void Long::setMode(Renderer &renderer, HUD *hud) {
 
-  hud->setState(Text);
+  renderer.setTextState();
   
 }

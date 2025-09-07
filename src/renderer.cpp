@@ -119,12 +119,24 @@ bool Renderer::init(const char *path) {
   // always just a new dictiionary.
   setRoot(new Dict());
 
+  // build the HUD
+  _hud.reset(new HUD());
+  {
+    auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"C", L"opy"));
+    mode->add(new Shortcut(L"P", L"aste"));
+    _hudmode = _hud->registerMode(mode);
+  }
+
   // build our editor.
   _editor.reset(new TextEditor(_startedit));
   _editor->build(*this);
   _editor->layout();
   
-  _hud.reset(new HUD());
+  // add all the register HUD modes.
+  _editor->registerHUD(_hud.get());
+  
+  // build the hud with all modes
   _hud->build(*this);
   
 //   _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
@@ -255,8 +267,57 @@ bool Renderer::isDoubleClick() {
   
 }
 
+void Renderer::setHUD() {
+
+  Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
+  if (hit) {
+    HUDable *hx = dynamic_cast<HUDable *>(hit);
+    if (hx) {
+      hx->setMode(*this, _hud.get());
+    }
+  }
+  else {
+    _hud->setMode(0);
+  }
+}
+
 void Renderer::endEdit() {
-  _hud->setState(Text);
+
+  setHUD();
+
+}
+
+void Renderer::setRootState() {
+
+  _hud->setMode(_hudmode);
+  
+}
+  
+void Renderer::processRootKey(Element *element, SDL_Keycode code) {
+
+  switch (code) {
+    case SDLK_P:
+      {
+        char *text = SDL_GetClipboardText();
+        auto json = Builder::loadText(text);
+        SDL_free(text);
+        if (json) {
+          setRoot(json);
+        }
+      }
+      break;
+      
+    case SDLK_C:
+      SDL_SetClipboardText(Builder::getJson(element).c_str());
+      break;
+  }
+  
+}
+
+void Renderer::setTextState() {
+
+  _editor->setHUD(_hud.get());
+
 }
 
 bool Renderer::processEvents() {
@@ -291,17 +352,7 @@ bool Renderer::processEvents() {
           Spatial::calcPan(Point(event.motion.x, event.motion.y), &_last, &_offs, _scale);
         }
         if (!_editor->capture()) {
-          // set the hud.
-          Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
-          if (hit) {
-            HUDable *hx = dynamic_cast<HUDable *>(hit);
-            if (hx) {
-              hx->setState(_hud.get());
-            }
-          }
-          else {
-            _hud->setState(None);
-          }
+          setHUD();
         }
         break;
 
@@ -346,23 +397,6 @@ bool Renderer::processEvents() {
   
 }
 
-void Renderer::copy(Element *element) {
-
-  SDL_SetClipboardText(Builder::getJson(element).c_str());
-  
-}
-
-void Renderer::paste() {
-
-  char *text = SDL_GetClipboardText();
-  auto json = Builder::loadText(text);
-  SDL_free(text);
-  if (json) {
-    setRoot(json);
-  }
-  
-}
-
 void Renderer::editText(Element *element, const Point &origin, const Size &size) {
 
   Editable *ex = dynamic_cast< Editable *>(element);
@@ -373,10 +407,10 @@ void Renderer::editText(Element *element, const Point &origin, const Size &size)
   
   // focus the editor on the object
   _editor->focus(origin, size, ex);
+  _editor->setHUD(_hud.get());
   
   // locate the hud on the edited object.
-  _hud->setEditingLoc((element->origin() + _offs) * _scale);  
-  _hud->setState(Editing);
+  _hud->setEditingLoc((element->origin() + _offs) * _scale); 
   
 }
 

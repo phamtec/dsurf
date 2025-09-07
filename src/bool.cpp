@@ -62,8 +62,8 @@ void Bool::setString(Renderer &renderer, const wstring &s) {
   
 }
 
-void Bool::setState(HUD *hud) {
+void Bool::setMode(Renderer &renderer, HUD *hud) {
 
-  hud->setState(Text);
+  renderer.setTextState();
   
 }

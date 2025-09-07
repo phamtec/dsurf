@@ -16,11 +16,9 @@
 
 using namespace std;
 
-void Shortcut::set(const wstring &key, const wstring &text) {
-
-  _key.set(key, Colours::black);
-  _text.set(text, Colours::grey);
-  
+Shortcut::Shortcut(const std::wstring &key, const std::wstring &text): 
+  _key(key, Colours::black),
+  _text(text, Colours::grey) {
 }
 
 void Shortcut::build(Renderer &renderer) {
