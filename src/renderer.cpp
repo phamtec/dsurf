@@ -372,7 +372,9 @@ bool Renderer::processEvents() {
         break;
 
       case SDL_EVENT_MOUSE_WHEEL:
-        Spatial::scaleAndCenter(_size, _osize, _mouse, event.wheel.y, _scalemult, &_scale, &_offs);
+        if (!_editor->capture()) {
+          Spatial::scaleAndCenter(_size, _osize, _mouse, event.wheel.y, _scalemult, &_scale, &_offs);
+        }
         break;
 
       case SDL_EVENT_WINDOW_RESIZED:
