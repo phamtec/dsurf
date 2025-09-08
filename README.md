@@ -150,7 +150,7 @@ back out.
 
 ## Current Focus
 
-- HUD
+- List reordering
 - Bug fixes
 - Distribution on mac and linux
 - Windows version
