@@ -31,8 +31,7 @@ public:
   TextEditor(bool editing): _text(0), _window(0), _cursor(0), _renderer(0), _obj(0), _editing(editing) {}
   ~TextEditor();
   
-  void focus(const Point &origin, const Size &size, Editable *obj);
-  void processEvent(const SDL_Event &event);
+  bool processEvent(Renderer &renderer, const SDL_Event &event);
   bool capture() { return _editing; }
   void registerHUD(HUD *hud);
   void setHUD(HUD *hud);
@@ -60,9 +59,10 @@ private:
   bool _editing;
   int _hudtext;
   int _hudediting;
-  int highlight1;
-  int highlight2;
+  int _highlight1;
+  int _highlight2;
   
+  void focus(Renderer &renderer, const Point &origin, const Size &size, Editable *obj, HUD *hud);
   void updateTextInputArea(Renderer &renderer);
   void drawCursor(Renderer &renderer);
   void setCursorPosition(int position);
@@ -87,6 +87,9 @@ private:
   void endFocus(bool changed);
   bool getHighlightExtents(int *marker, int *length);
   bool deleteHighlight();
+  void mouseDown(Renderer &renderer, float x, float y);
+  void mouseMotion(float x, float y);
+  void mouseUp(float x, float y);
 
 };
 

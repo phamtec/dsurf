@@ -44,8 +44,6 @@ void Renderer::setTextState() {
 }
 void Renderer::processTextKey(Editable *editable, const Point &origin, const Size &size, SDL_Keycode code) {
 }
-void TextEditor::focus(const Point &origin, const Size &size, Editable *obj) {
-}
 
 void testParse(const string &fname) {
 

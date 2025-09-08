@@ -39,9 +39,6 @@ void TextEditor::build(Renderer &renderer) {
     return;
   }
 
-  highlight1 = -1;
-  highlight2 = -1;
-
   // Show the whitespace when wrapping, so it can be edited
 //  TTF_SetTextWrapWhitespaceVisible(_text, true);
 
@@ -55,14 +52,26 @@ void TextEditor::build(Renderer &renderer) {
   _renderer = &renderer;
 }
 
-void TextEditor::processEvent(const SDL_Event &event) {
+bool TextEditor::processEvent(Renderer &renderer, const SDL_Event &event) {
 
   if (!_editing) {
-    return;
+    return false;
   }
   
   switch (event.type) {
   
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+      mouseDown(renderer, event.button.x, event.button.y);
+      break;
+
+    case SDL_EVENT_MOUSE_MOTION:
+      mouseMotion(event.motion.x, event.motion.y);
+      break;
+
+    case SDL_EVENT_MOUSE_BUTTON_UP:
+      mouseUp(event.button.x, event.button.y);
+      break;
+
     case SDL_EVENT_KEY_DOWN:
       switch (event.key.key) {
         case SDLK_A:
@@ -155,7 +164,7 @@ void TextEditor::processEvent(const SDL_Event &event) {
 
         default:
     //        cout << "got key " << hex << key.key << endl;
-          break;
+          return false;
       }
       break;
       
@@ -176,19 +185,21 @@ void TextEditor::processEvent(const SDL_Event &event) {
 
     default:
 //        cout << "got event " << hex << event.type << endl;
-      break;
+      return false;
   }
-  
+ 
+  return true;
+   
 }
 
-void TextEditor::focus(const Point &origin, const Size &size, Editable *obj) {
+void TextEditor::focus(Renderer &renderer, const Point &origin, const Size &size, Editable *obj, HUD *hud) {
 
   if (!_text) {
     SDL_Log("need to build first!");
     return;
   }
   
-  _origin = origin;
+  _origin = origin + renderer._offs;
   _size = size;
   _obj = obj;
   
@@ -197,11 +208,21 @@ void TextEditor::focus(const Point &origin, const Size &size, Editable *obj) {
   char* u8str = SDL_iconv_wchar_utf8(ws.c_str());
   TTF_SetTextString(_text, u8str, 0);
   SDL_free(u8str);
+  
+  // start editing at end by default
   SDL_StartTextInput(_window);
   setCursorPosition(ws.size());
   
   _ignoretext = true;
   _editing = true;
+  
+  // no hilites by default.
+  _highlight1 = -1;
+  _highlight2 = -1;
+  
+  // locate the hud on the edited object.
+  setHUD(hud);
+  hud->setEditingLoc(renderer.localToGlobal(origin));
   
 }
 
@@ -224,6 +245,7 @@ void TextEditor::registerHUD(HUD *hud) {
     auto mode = new HUDMode(false);
     mode->add(new Shortcut(L"A", L"ppend"));
     mode->add(new Shortcut(L"R", L"eplace"));
+    mode->add(new Shortcut(L"I", L"nsert"));
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
     _hudtext = hud->registerMode(mode);
@@ -249,27 +271,17 @@ void TextEditor::processTextKey(Renderer &renderer, Editable *editable, const Po
 
   switch (code) {
     case SDLK_A:
-      {
-        // focus the editor on the object
-        focus(origin, size, editable);
-             
-        // locate the hud on the edited object.
-        setHUD(hud);
-        hud->setEditingLoc(renderer.localToGlobal(origin)); 
-      }
+      focus(renderer, origin, size, editable, hud);    
       break;
       
     case SDLK_R:
-      {
-        // focus the editor on the object
-        focus(origin, size, editable);
-             
-        // locate the hud on the edited object.
-        setHUD(hud);
-        hud->setEditingLoc(renderer.localToGlobal(origin)); 
-        
-        selectAll();
-      }
+      focus(renderer, origin, size, editable, hud);
+      selectAll();
+      break;
+      
+    case SDLK_I:
+      focus(renderer, origin, size, editable, hud);
+      mouseDown(renderer, renderer._mouse.x, renderer._mouse.y);
       break;
       
     case SDLK_C:
@@ -310,15 +322,15 @@ void TextEditor::selectAll()
     return;
   }
   
-  highlight1 = 0;
-  highlight2 = (int)SDL_strlen(_text->text);
+  _highlight1 = 0;
+  _highlight2 = (int)SDL_strlen(_text->text);
 }
 
 bool TextEditor::getHighlightExtents(int *marker, int *length)
 {
-    if (highlight1 >= 0 && highlight2 >= 0) {
-        int marker1 = SDL_min(highlight1, highlight2);
-        int marker2 = SDL_max(highlight1, highlight2);
+    if (_highlight1 >= 0 && _highlight2 >= 0) {
+        int marker1 = SDL_min(_highlight1, _highlight2);
+        int marker2 = SDL_max(_highlight1, _highlight2);
         if (marker2 > marker1) {
             *marker = marker1;
             *length = marker2 - marker1;
@@ -339,8 +351,8 @@ bool TextEditor::deleteHighlight()
   if (getHighlightExtents(&marker, &length)) {
       TTF_DeleteTextString(_text, marker, length);
       setCursorPosition(marker);
-      highlight1 = -1;
-      highlight2 = -1;
+      _highlight1 = -1;
+      _highlight2 = -1;
       return true;
   }
   return false;
@@ -386,8 +398,8 @@ void TextEditor::cut()
         }
         TTF_DeleteTextString(_text, marker, length);
         setCursorPosition(marker);
-        highlight1 = -1;
-        highlight2 = -1;
+        _highlight1 = -1;
+        _highlight2 = -1;
     } else {
         SDL_SetClipboardText(_text->text);
         TTF_DeleteTextString(_text, 0, -1);
@@ -432,6 +444,27 @@ void TextEditor::insert(const char *text) {
 
 }
 
+static int GetCursorTextIndex(int x, const TTF_SubString *substring)
+{
+    if (substring->flags & (TTF_SUBSTRING_LINE_END | TTF_SUBSTRING_TEXT_END)) {
+        return substring->offset;
+    }
+
+    bool round_down;
+    if ((substring->flags & TTF_SUBSTRING_DIRECTION_MASK) == TTF_DIRECTION_RTL) {
+        round_down = (x > (substring->rect.x + substring->rect.w / 2));
+    } else {
+        round_down = (x < (substring->rect.x + substring->rect.w / 2));
+    }
+    if (round_down) {
+        /* Start the cursor before the selected text */
+        return substring->offset;
+    } else {
+        /* Place the cursor after the selected text */
+        return substring->offset + substring->length;
+    }
+}
+
 void TextEditor::setCursorPosition(int position) {
 //     if (edit->composition_length > 0) {
 //         /* Don't let the cursor be moved into the composition */
@@ -451,7 +484,7 @@ void TextEditor::updateTextInputArea(Renderer &renderer) {
     SDL_FPoint window_edit_rect_min;
     SDL_FPoint window_edit_rect_max;
     SDL_FPoint window_cursor;
-    SDL_FRect r = Rect(_origin + renderer._offs, _size).srect();
+    SDL_FRect r = Rect(_origin, _size).srect();
     if (!SDL_RenderCoordinatesToWindow(renderer._renderer, r.x, r.y, &window_edit_rect_min.x, &window_edit_rect_min.y) ||
         !SDL_RenderCoordinatesToWindow(renderer._renderer, r.x + r.w, r.y + r.h, &window_edit_rect_max.x, &window_edit_rect_max.y) ||
         !SDL_RenderCoordinatesToWindow(renderer._renderer, _cursor_rect.x, _cursor_rect.y, &window_cursor.x, &window_cursor.y)) {
@@ -486,19 +519,9 @@ void TextEditor::render(Renderer &renderer, const Point &origin) {
   
   /* Clear the text rect to light gray */
   SDL_SetRenderDrawColor(renderer._renderer, 0xCC, 0xCC, 0xCC, 0xFF);
-  SDL_FRect r = Rect(_origin + renderer._offs, _size).srect();
+  SDL_FRect r = Rect(_origin, _size).srect();
   SDL_RenderFillRect(renderer._renderer, &r);
 
-//   if (_focus) {
-//     SDL_FRect focusRect = r;
-//     focusRect.x -= 1;
-//     focusRect.y -= 1;
-//     focusRect.w += 2;
-//     focusRect.h += 2;
-//     SDL_SetRenderDrawColor(renderer._renderer, 0x00, 0x00, 0x00, 0xFF);
-//     SDL_RenderRect(renderer._renderer, &focusRect);
-//   }
-  
   /* Draw any highlight */
   int marker, length;
   if (getHighlightExtents(&marker, &length)) {
@@ -715,3 +738,63 @@ void TextEditor::deleteText()
     TTF_DeleteTextString(_text, _cursor, (int)length);
 }
 
+void TextEditor::mouseDown(Renderer &renderer, float x, float y)
+{
+  SDL_FRect r = Rect(_origin, _size).srect();
+  
+  float scale = 1 / renderer._scale;
+  
+  SDL_FPoint pt = { x * scale, y * scale };
+  if (!SDL_PointInRectFloat(&pt, &r)) {
+    return;
+  }
+
+  /* Set the cursor position */
+  TTF_SubString substring;
+  int textX = (int)SDL_roundf((x * scale) - (r.x));
+  int textY = (int)SDL_roundf((y * scale) - (r.y));
+  cout << textX << ", " << textY << endl;
+  if (!TTF_GetTextSubStringForPoint(_text, textX, textY, &substring)) {
+      SDL_Log("Couldn't get cursor location: %s", SDL_GetError());
+      return;
+  }
+
+  setCursorPosition(GetCursorTextIndex(textX, &substring));
+//  edit->highlighting = true;
+  _highlight1 = _cursor;
+  _highlight2 = -1;
+  
+}
+
+void TextEditor::mouseMotion(float x, float y)
+{
+//     if (!edit->highlighting) {
+//         return false;
+//     }
+// 
+//     /* Set the highlight position */
+//     TTF_SubString substring;
+//     int textX = (int)SDL_roundf(x - edit->rect.x);
+//     int textY = (int)SDL_roundf(y - edit->rect.y);
+//     if (!TTF_GetTextSubStringForPoint(edit->text, textX, textY, &substring)) {
+//         SDL_Log("Couldn't get cursor location: %s", SDL_GetError());
+//         return false;
+//     }
+// 
+//     SetCursorPosition(edit, GetCursorTextIndex(textX, &substring));
+//     edit->highlight2 = edit->cursor;
+// 
+//     return true;
+}
+
+void TextEditor::mouseUp(float x, float y)
+{
+//     (void)x; (void)y;
+// 
+//     if (!edit->highlighting) {
+//         return false;
+//     }
+// 
+//     edit->highlighting = false;
+//     return true;
+}

@@ -340,7 +340,9 @@ bool Renderer::processEvents() {
   
     SDL_ConvertEventToRenderCoordinates(_renderer, &event);
 
-    _editor->processEvent(event);
+    if (_editor->processEvent(*this, event)) {
+      return false;
+    }
 
     switch (event.type) {
 

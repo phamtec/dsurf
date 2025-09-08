@@ -268,6 +268,6 @@ Walk a JSON file building a simple layout.
 - Select All, Copy, Paste and Cut in text editor
 - Replace mode which selects all.
 - Copy and paste on main mode.
-
+- click to move cursor and Insert mode.
 
 
