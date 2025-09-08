@@ -262,5 +262,12 @@ Walk a JSON file building a simple layout.
 - text editor owns it's modes
 - renderer owns root modes.
 
+### 8-Sep-2025
+
+- Version 0.3
+- Select All, Copy, Paste and Cut in text editor
+- Replace mode which selects all.
+- Copy and paste on main mode.
+
 
 

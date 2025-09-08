@@ -47,11 +47,7 @@ void Bool::render(Renderer &renderer, const Point &origin) {
 
 void Bool::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  switch (code) {
-    case SDLK_A:
-      renderer.editText(this, origin(), _size);
-      break;
-  }
+  renderer.processTextKey(this, origin(), _size, code);
   
 }
 

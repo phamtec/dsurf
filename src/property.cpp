@@ -116,11 +116,7 @@ Point Property::localOrigin(int index) {
 
 void Property::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  switch (code) {
-    case SDLK_A:
-      renderer.editText(this, origin() + Size(0, _container ? -Sizes::thickness : 0), _name.size());
-      break;
-  }
+  renderer.processTextKey(this, origin() + Size(0, _container ? -Sizes::thickness : 0), _name.size(), code);
   
 }
 

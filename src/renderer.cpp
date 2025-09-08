@@ -320,6 +320,19 @@ void Renderer::setTextState() {
 
 }
 
+void Renderer::processTextKey(Editable *editable, const Point &origin, const Size &size, SDL_Keycode code) {
+
+  // pass to the editor.
+  _editor->processTextKey(*this, editable, origin, size, code, _hud.get());
+
+}
+
+Point Renderer::localToGlobal(const Point &p) {
+
+  return (p + _offs) * _scale;
+  
+}
+
 bool Renderer::processEvents() {
 
   SDL_Event event;
@@ -394,23 +407,6 @@ bool Renderer::processEvents() {
   }
 
   return false;
-  
-}
-
-void Renderer::editText(Element *element, const Point &origin, const Size &size) {
-
-  Editable *ex = dynamic_cast< Editable *>(element);
-  if (!ex) {
-    cerr << "object not text editable." << endl;
-    return;
-  }
-  
-  // focus the editor on the object
-  _editor->focus(origin, size, ex);
-  _editor->setHUD(_hud.get());
-  
-  // locate the hud on the edited object.
-  _hud->setEditingLoc((element->origin() + _offs) * _scale); 
   
 }
 

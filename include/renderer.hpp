@@ -56,14 +56,12 @@ public:
   void loop();
     // the main render loop.
     
-  void editText(Element *element, const Point &origin, const Size &size);
-    // edit the text of an element.
-    
   void setRootState();
   void processRootKey(Element *element, SDL_Keycode code);
     // process keys and HUD for the root object.
    
   void setTextState();
+  void processTextKey(Editable *editable, const Point &origin, const Size &size, SDL_Keycode code);
     // set the state for the hud when we are over text
     
   // functions used to create and render.
@@ -78,6 +76,9 @@ public:
 
   bool textTooSmall(const Rect &rect);
     // if the text is too small for the rectangle, return true.
+  
+  Point localToGlobal(const Point &p);
+    // convert the point to global coors (apply offset and scale)
   
   void setDrawColor(const SDL_Color &color);
   void setScale(double x, double y);

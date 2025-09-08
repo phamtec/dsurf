@@ -54,11 +54,7 @@ rfl::Generic String::getGeneric() {
 
 void String::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  switch (code) {
-    case SDLK_A:
-      renderer.editText(this, origin(), _size);
-      break;
-  }
+  renderer.processTextKey(this, origin(), _size, code);
   
 }
 

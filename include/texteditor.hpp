@@ -16,9 +16,10 @@
 
 #include "element.hpp"
 
+#include <SDL3/SDL_events.h>
+
 class TTF_Text;
 class SDL_Window;
-union SDL_Event;
 class Editable;
 class HUD;
 
@@ -35,6 +36,7 @@ public:
   bool capture() { return _editing; }
   void registerHUD(HUD *hud);
   void setHUD(HUD *hud);
+  void processTextKey(Renderer &renderer, Editable *editable, const Point &origin, const Size &size, SDL_Keycode code, HUD *hud);
   
   // Element
   virtual void build(Renderer &renderer);
@@ -58,11 +60,17 @@ private:
   bool _editing;
   int _hudtext;
   int _hudediting;
+  int highlight1;
+  int highlight2;
   
   void updateTextInputArea(Renderer &renderer);
   void drawCursor(Renderer &renderer);
   void setCursorPosition(int position);
   void insert(const char *text);
+  void selectAll();
+  void copy();
+  void paste();
+  void cut();
   void moveCursorIndex(int direction);
   void moveCursorLeft();
   void moveCursorRight();
@@ -77,6 +85,8 @@ private:
   void deleteToEnd();
   void deleteText();
   void endFocus(bool changed);
+  bool getHighlightExtents(int *marker, int *length);
+  bool deleteHighlight();
 
 };
 

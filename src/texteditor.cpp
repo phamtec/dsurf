@@ -15,6 +15,7 @@
 #include "renderer.hpp"
 #include "editable.hpp"
 #include "hud.hpp"
+#include "unicode.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -37,6 +38,9 @@ void TextEditor::build(Renderer &renderer) {
     SDL_Log("couldn't create text");
     return;
   }
+
+  highlight1 = -1;
+  highlight2 = -1;
 
   // Show the whitespace when wrapping, so it can be edited
 //  TTF_SetTextWrapWhitespaceVisible(_text, true);
@@ -61,6 +65,29 @@ void TextEditor::processEvent(const SDL_Event &event) {
   
     case SDL_EVENT_KEY_DOWN:
       switch (event.key.key) {
+        case SDLK_A:
+            if (event.key.mod& SDL_KMOD_CTRL) {
+                selectAll();
+            }
+            break;
+        case SDLK_C:
+            if (event.key.mod& SDL_KMOD_CTRL) {
+                copy();
+            }
+            break;
+
+        case SDLK_V:
+            if (event.key.mod& SDL_KMOD_CTRL) {
+                paste();
+            }
+            break;
+
+        case SDLK_X:
+            if (event.key.mod& SDL_KMOD_CTRL) {
+                cut();
+            }
+            break;
+
         case SDLK_LEFT:
           if (event.key.mod & SDL_KMOD_CTRL) {
             moveCursorBeginningOfLine();
@@ -192,18 +219,75 @@ void TextEditor::endFocus(bool changed) {
 
 void TextEditor::registerHUD(HUD *hud) {
 
+  // the text keys.
   {
     auto mode = new HUDMode(false);
     mode->add(new Shortcut(L"A", L"ppend"));
+    mode->add(new Shortcut(L"R", L"eplace"));
+    mode->add(new Shortcut(L"C", L"opy"));
+    mode->add(new Shortcut(L"P", L"aste"));
     _hudtext = hud->registerMode(mode);
   }
+  
+  // keys while editing
   {
     auto mode = new HUDMode(true);
     mode->add(new Shortcut(L"Esc", L"(revert)"));
     mode->add(new Shortcut(L"Arrows", L"(navigate)"));
     mode->add(new Shortcut(L"Bksp", L"(delete)"));
     mode->add(new Shortcut(L"Ret|Tab", L"(close)"));
+    mode->add(new Shortcut(L"Ctrl+A", L"(select all)"));
+    mode->add(new Shortcut(L"Ctrl+C", L"(copy)"));
+    mode->add(new Shortcut(L"Ctrl+V", L"(paste)"));
+    mode->add(new Shortcut(L"Ctrl+X", L"(cut)"));
     _hudediting = hud->registerMode(mode);
+  }
+
+}
+
+void TextEditor::processTextKey(Renderer &renderer, Editable *editable, const Point &origin, const Size &size, SDL_Keycode code, HUD *hud) {
+
+  switch (code) {
+    case SDLK_A:
+      {
+        // focus the editor on the object
+        focus(origin, size, editable);
+             
+        // locate the hud on the edited object.
+        setHUD(hud);
+        hud->setEditingLoc(renderer.localToGlobal(origin)); 
+      }
+      break;
+      
+    case SDLK_R:
+      {
+        // focus the editor on the object
+        focus(origin, size, editable);
+             
+        // locate the hud on the edited object.
+        setHUD(hud);
+        hud->setEditingLoc(renderer.localToGlobal(origin)); 
+        
+        selectAll();
+      }
+      break;
+      
+    case SDLK_C:
+      {
+        auto ws =  editable->getString();
+        auto u8str = SDL_iconv_wchar_utf8(ws.c_str());
+        SDL_SetClipboardText(u8str);
+        TTF_SetTextString(_text, u8str, 0);
+        SDL_free(u8str);
+      }
+      break;
+
+    case SDLK_P:
+      {
+        auto text = SDL_GetClipboardText();
+        editable->setString(renderer, Unicode::convert(text));
+      }
+      break;
   }
 
 }
@@ -219,6 +303,108 @@ void TextEditor::setHUD(HUD *hud) {
   
 }
 
+void TextEditor::selectAll()
+{
+  if (!_text) {
+    SDL_Log("need to build first!");
+    return;
+  }
+  
+  highlight1 = 0;
+  highlight2 = (int)SDL_strlen(_text->text);
+}
+
+bool TextEditor::getHighlightExtents(int *marker, int *length)
+{
+    if (highlight1 >= 0 && highlight2 >= 0) {
+        int marker1 = SDL_min(highlight1, highlight2);
+        int marker2 = SDL_max(highlight1, highlight2);
+        if (marker2 > marker1) {
+            *marker = marker1;
+            *length = marker2 - marker1;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool TextEditor::deleteHighlight()
+{
+  if (!_text) {
+    SDL_Log("need to build first!");
+    return false;
+  }
+  
+  int marker, length;
+  if (getHighlightExtents(&marker, &length)) {
+      TTF_DeleteTextString(_text, marker, length);
+      setCursorPosition(marker);
+      highlight1 = -1;
+      highlight2 = -1;
+      return true;
+  }
+  return false;
+}
+
+void TextEditor::copy()
+{
+  if (!_text) {
+    SDL_Log("need to build first!");
+    return;
+  }
+  
+  int marker, length;
+  if (getHighlightExtents(&marker, &length)) {
+      char *temp = (char *)SDL_malloc(length + 1);
+      if (temp) {
+          SDL_memcpy(temp, &_text->text[marker], length);
+          temp[length] = '\0';
+          SDL_SetClipboardText(temp);
+          SDL_free(temp);
+      }
+  } else {
+      SDL_SetClipboardText(_text->text);
+  }
+}
+
+void TextEditor::cut()
+{
+  if (!_text) {
+    SDL_Log("need to build first!");
+    return;
+  }
+  
+    /* Copy to clipboard and delete text */
+    int marker, length;
+    if (getHighlightExtents(&marker, &length)) {
+        char *temp = (char *)SDL_malloc(length + 1);
+        if (temp) {
+            SDL_memcpy(temp, &_text->text[marker], length);
+            temp[length] = '\0';
+            SDL_SetClipboardText(temp);
+            SDL_free(temp);
+        }
+        TTF_DeleteTextString(_text, marker, length);
+        setCursorPosition(marker);
+        highlight1 = -1;
+        highlight2 = -1;
+    } else {
+        SDL_SetClipboardText(_text->text);
+        TTF_DeleteTextString(_text, 0, -1);
+    }
+}
+
+void TextEditor::paste()
+{
+  if (!_text) {
+    SDL_Log("need to build first!");
+    return;
+  }
+  
+  const char *text = SDL_GetClipboardText();
+  insert(text);
+}
+
 void TextEditor::insert(const char *text) {
 
   if (!_text) {
@@ -226,7 +412,7 @@ void TextEditor::insert(const char *text) {
     return;
   }
   
-//  EditBox_DeleteHighlight(edit);
+  deleteHighlight();
 
 //   if (edit->composition_length > 0) {
 //       TTF_DeleteTextString(edit->text, edit->composition_start, edit->composition_length);
@@ -314,22 +500,22 @@ void TextEditor::render(Renderer &renderer, const Point &origin) {
 //   }
   
   /* Draw any highlight */
-//   int marker, length;
-//   if (GetHighlightExtents(edit, &marker, &length)) {
-//       TTF_SubString **highlights = TTF_GetTextSubStringsForRange(edit->text, marker, length, NULL);
-//       if (highlights) {
-//           int i;
-//           SDL_SetRenderDrawColor(renderer, 0xEE, 0xEE, 0x00, 0xFF);
-//           for (i = 0; highlights[i]; ++i) {
-//               SDL_FRect rect;
-//               SDL_RectToFRect(&highlights[i]->rect, &rect);
-//               rect.x += x;
-//               rect.y += y;
-//               SDL_RenderFillRect(renderer, &rect);
-//           }
-//           SDL_free(highlights);
-//       }
-//   }
+  int marker, length;
+  if (getHighlightExtents(&marker, &length)) {
+      TTF_SubString **highlights = TTF_GetTextSubStringsForRange(_text, marker, length, NULL);
+      if (highlights) {
+          int i;
+          SDL_SetRenderDrawColor(renderer._renderer, 0xEE, 0xEE, 0x00, 0xFF);
+          for (i = 0; highlights[i]; ++i) {
+              SDL_FRect rect;
+              SDL_RectToFRect(&highlights[i]->rect, &rect);
+              rect.x += r.x;
+              rect.y += r.y;
+              SDL_RenderFillRect(renderer._renderer, &rect);
+          }
+          SDL_free(highlights);
+      }
+  }
   
   TTF_DrawRendererText(_text, r.x, r.y);
   
@@ -486,10 +672,10 @@ void TextEditor::moveCursorEnd()
 void TextEditor::backspace()
 {
 
-//     if (EditBox_DeleteHighlight(edit)) {
-//         return;
-//     }
-// 
+    if (deleteHighlight()) {
+        return;
+    }
+
     if (_cursor > 0) {
         const char *start = &_text->text[_cursor];
         const char *next = start;
@@ -517,10 +703,10 @@ void TextEditor::deleteToEnd()
 
 void TextEditor::deleteText()
 {
-//     if (EditBox_DeleteHighlight(edit)) {
-//         return;
-//     }
-// 
+    if (deleteHighlight()) {
+        return;
+    }
+
     const char *start = &_text->text[_cursor];
     const char *next = start;
     size_t length = SDL_strlen(next);
