@@ -52,6 +52,72 @@ void TextEditor::build(Renderer &renderer) {
   _renderer = &renderer;
 }
 
+void TextEditor::registerHUD(HUD *hud) {
+
+  // the text keys.
+  {
+    auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"A", L"ppend"));
+    mode->add(new Shortcut(L"R", L"eplace"));
+    mode->add(new Shortcut(L"I", L"nsert"));
+    mode->add(new Shortcut(L"C", L"opy"));
+    mode->add(new Shortcut(L"P", L"aste"));
+    _hudtext = hud->registerMode(mode);
+  }
+  
+  // keys while editing
+  {
+    auto mode = new HUDMode(true);
+    mode->add(new Shortcut(L"Esc", L"(revert)"));
+    mode->add(new Shortcut(L"Arrows", L"(navigate)"));
+    mode->add(new Shortcut(L"Bksp", L"(delete)"));
+    mode->add(new Shortcut(L"Ret|Tab", L"(close)"));
+    mode->add(new Shortcut(L"Ctrl+A", L"(select all)"));
+//     mode->add(new Shortcut(L"Ctrl+C", L"(copy)"));
+//     mode->add(new Shortcut(L"Ctrl+V", L"(paste)"));
+//     mode->add(new Shortcut(L"Ctrl+X", L"(cut)"));
+    _hudediting = hud->registerMode(mode);
+  }
+
+}
+
+void TextEditor::processTextKey(Renderer &renderer, Editable *editable, const Point &origin, const Size &size, SDL_Keycode code, HUD *hud) {
+
+  switch (code) {
+    case SDLK_A:
+      focus(renderer, origin, size, editable, hud);    
+      break;
+      
+    case SDLK_R:
+      focus(renderer, origin, size, editable, hud);
+      selectAll();
+      break;
+      
+    case SDLK_I:
+      focus(renderer, origin, size, editable, hud);
+      mouseDown(renderer, renderer._mouse.x, renderer._mouse.y);
+      break;
+      
+    case SDLK_C:
+      {
+        auto ws =  editable->getString();
+        auto u8str = SDL_iconv_wchar_utf8(ws.c_str());
+        SDL_SetClipboardText(u8str);
+        TTF_SetTextString(_text, u8str, 0);
+        SDL_free(u8str);
+      }
+      break;
+
+    case SDLK_P:
+      {
+        auto text = SDL_GetClipboardText();
+        editable->setString(renderer, Unicode::convert(text));
+      }
+      break;
+  }
+
+}
+
 bool TextEditor::processEvent(Renderer &renderer, const SDL_Event &event) {
 
   if (!_editing) {
@@ -79,23 +145,23 @@ bool TextEditor::processEvent(Renderer &renderer, const SDL_Event &event) {
                 selectAll();
             }
             break;
-        case SDLK_C:
-            if (event.key.mod& SDL_KMOD_CTRL) {
-                copy();
-            }
-            break;
-
-        case SDLK_V:
-            if (event.key.mod& SDL_KMOD_CTRL) {
-                paste();
-            }
-            break;
-
-        case SDLK_X:
-            if (event.key.mod& SDL_KMOD_CTRL) {
-                cut();
-            }
-            break;
+//         case SDLK_C:
+//             if (event.key.mod& SDL_KMOD_CTRL) {
+//                 copy();
+//             }
+//             break;
+// 
+//         case SDLK_V:
+//             if (event.key.mod& SDL_KMOD_CTRL) {
+//                 paste();
+//             }
+//             break;
+// 
+//         case SDLK_X:
+//             if (event.key.mod& SDL_KMOD_CTRL) {
+//                 cut();
+//             }
+//             break;
 
         case SDLK_LEFT:
           if (event.key.mod & SDL_KMOD_CTRL) {
@@ -236,72 +302,6 @@ void TextEditor::endFocus(bool changed) {
   _editing = false;
   _renderer->endEdit();
   
-}
-
-void TextEditor::registerHUD(HUD *hud) {
-
-  // the text keys.
-  {
-    auto mode = new HUDMode(false);
-    mode->add(new Shortcut(L"A", L"ppend"));
-    mode->add(new Shortcut(L"R", L"eplace"));
-    mode->add(new Shortcut(L"I", L"nsert"));
-    mode->add(new Shortcut(L"C", L"opy"));
-    mode->add(new Shortcut(L"P", L"aste"));
-    _hudtext = hud->registerMode(mode);
-  }
-  
-  // keys while editing
-  {
-    auto mode = new HUDMode(true);
-    mode->add(new Shortcut(L"Esc", L"(revert)"));
-    mode->add(new Shortcut(L"Arrows", L"(navigate)"));
-    mode->add(new Shortcut(L"Bksp", L"(delete)"));
-    mode->add(new Shortcut(L"Ret|Tab", L"(close)"));
-    mode->add(new Shortcut(L"Ctrl+A", L"(select all)"));
-    mode->add(new Shortcut(L"Ctrl+C", L"(copy)"));
-    mode->add(new Shortcut(L"Ctrl+V", L"(paste)"));
-    mode->add(new Shortcut(L"Ctrl+X", L"(cut)"));
-    _hudediting = hud->registerMode(mode);
-  }
-
-}
-
-void TextEditor::processTextKey(Renderer &renderer, Editable *editable, const Point &origin, const Size &size, SDL_Keycode code, HUD *hud) {
-
-  switch (code) {
-    case SDLK_A:
-      focus(renderer, origin, size, editable, hud);    
-      break;
-      
-    case SDLK_R:
-      focus(renderer, origin, size, editable, hud);
-      selectAll();
-      break;
-      
-    case SDLK_I:
-      focus(renderer, origin, size, editable, hud);
-      mouseDown(renderer, renderer._mouse.x, renderer._mouse.y);
-      break;
-      
-    case SDLK_C:
-      {
-        auto ws =  editable->getString();
-        auto u8str = SDL_iconv_wchar_utf8(ws.c_str());
-        SDL_SetClipboardText(u8str);
-        TTF_SetTextString(_text, u8str, 0);
-        SDL_free(u8str);
-      }
-      break;
-
-    case SDLK_P:
-      {
-        auto text = SDL_GetClipboardText();
-        editable->setString(renderer, Unicode::convert(text));
-      }
-      break;
-  }
-
 }
 
 void TextEditor::setHUD(HUD *hud) {
