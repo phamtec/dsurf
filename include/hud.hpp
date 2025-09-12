@@ -17,6 +17,8 @@
 #include "point.hpp"
 #include "hudmode.hpp"
 
+#include <map>
+
 class Renderer;
 
 class HUD {
@@ -24,9 +26,12 @@ class HUD {
 public:
   HUD();
 
-  int registerMode(HUDMode *mode);
+  int registerMode(const std::string &name, HUDMode *mode);
     // register a mode for the HUD. it returns the mode index used in setMode
     // register them ALL before calling build.
+    
+  int findMode(const std::string &name);
+    // find the index of a previously registered mode.
     
   void build(Renderer &renderer);
   void render(Renderer &renderer, const Point &mouse);
@@ -41,6 +46,7 @@ private:
   
   int _mode;
   Point _loc;
+  std::map<std::string, int> _keys;
   std::vector<std::unique_ptr<HUDMode> > _modes;
   
 };

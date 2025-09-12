@@ -31,6 +31,11 @@ using namespace std;
 
 Renderer::~Renderer() {
 
+  // allow objects to cleanup.
+  if (_root) {
+    _root->destroy(*this);
+  }
+
   // font first.
   _font.reset(0);
 //   if (_pointercursor) {
@@ -125,7 +130,7 @@ bool Renderer::init(const char *path) {
     auto mode = new HUDMode(false);
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
-    _hudmode = _hud->registerMode(mode);
+    _hudmode = _hud->registerMode("root", mode);
   }
 
   // build our editor.
@@ -135,6 +140,9 @@ bool Renderer::init(const char *path) {
   
   // add all the register HUD modes.
   _editor->registerHUD(_hud.get());
+  
+  // initialisation for types after everything has been created.
+  initTypes();
   
   // build the hud with all modes
   _hud->build(*this);
@@ -148,8 +156,18 @@ bool Renderer::init(const char *path) {
 
 void Renderer::setRoot(Element *root) {
 
+  // make sure to cleanup
+  if (_root) {
+    _root->destroy(*this);
+  }
+  
   _root.reset(root);
   
+  // setup the HUD in the object.
+  HUDable *hx = dynamic_cast<HUDable *>(root);
+  if (hx) {
+    hx->initHUD(_hud.get());
+  }
   // build all objects with this renderer.
   _root->build(*this);
   
@@ -293,7 +311,7 @@ void Renderer::setRootState() {
   
 }
   
-void Renderer::processRootKey(Element *element, SDL_Keycode code) {
+bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
 
   switch (code) {
     case SDLK_P:
@@ -305,12 +323,14 @@ void Renderer::processRootKey(Element *element, SDL_Keycode code) {
           setRoot(json);
         }
       }
-      break;
+      return true;
       
     case SDLK_C:
       SDL_SetClipboardText(Builder::getJson(element).c_str());
-      break;
+      return true;
   }
+  
+  return false;
   
 }
 
@@ -395,6 +415,10 @@ bool Renderer::processEvents() {
             if (kx) {
               kx->processKey(*this, event.key.key);
             }
+            HUDable *hx = dynamic_cast<HUDable *>(hit);
+            if (hx) {
+              hx->setMode(*this, _hud.get());
+            }
           }
         }
         break;
@@ -412,6 +436,18 @@ bool Renderer::processEvents() {
 
   return false;
   
+}
+
+void Renderer::clearScale() {
+  _oldscale = _scale;
+  _oldoffs = _offs;
+  _scale = 1.0;
+  _offs = Size(0, 0);
+}
+
+void Renderer::restoreScale() {
+  _scale = _oldscale;
+  _offs = _oldoffs;
 }
 
 void Renderer::setTarget(SDL_Texture *texture) {
@@ -446,6 +482,9 @@ SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {
   
 }
 
+void Renderer::destroyTexture(SDL_Texture *texture) {
+  SDL_DestroyTexture(texture);
+}
 
 void Renderer::renderTexture(SDL_Texture *texture, const Rect &rect, bool offs) {
 

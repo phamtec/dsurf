@@ -62,7 +62,7 @@ void TextEditor::registerHUD(HUD *hud) {
     mode->add(new Shortcut(L"I", L"nsert"));
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
-    _hudtext = hud->registerMode(mode);
+    _hudtext = hud->registerMode("text", mode);
   }
   
   // keys while editing
@@ -76,7 +76,7 @@ void TextEditor::registerHUD(HUD *hud) {
 //     mode->add(new Shortcut(L"Ctrl+C", L"(copy)"));
 //     mode->add(new Shortcut(L"Ctrl+V", L"(paste)"));
 //     mode->add(new Shortcut(L"Ctrl+X", L"(cut)"));
-    _hudediting = hud->registerMode(mode);
+    _hudediting = hud->registerMode("textedit", mode);
   }
 
 }

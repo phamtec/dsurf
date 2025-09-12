@@ -53,22 +53,29 @@ public:
   bool init(const char *fontpath);
     // initialise with th epath to the font file.
     
+  void initTypes();
+    // specifically initialise types.
+    
   void loop();
     // the main render loop.
     
   void setRootState();
-  void processRootKey(Element *element, SDL_Keycode code);
+  bool processRootKey(Element *element, SDL_Keycode code);
     // process keys and HUD for the root object.
    
   void setTextState();
   void processTextKey(Editable *editable, const Point &origin, const Size &size, SDL_Keycode code);
     // set the state for the hud when we are over text
     
-  // functions used to create and render.
+  // dealing with textures.
   SDL_Texture *createTexture(int width, int height);
-  SDL_Surface *renderText(const std::wstring &str, const SDL_Color &color);
   void setTarget(SDL_Texture *texture);
   SDL_Texture *createTexture(SDL_Surface *surface);
+  void destroyTexture(SDL_Texture *texture);
+  
+  // functions used to create and render.  
+  // these all take into account the offset and scqle.
+  SDL_Surface *renderText(const std::wstring &str, const SDL_Color &color);
   void renderTexture(SDL_Texture *texture, const Rect &rect, bool offs=true);
   void renderRect(const Rect &rect);
   void renderFilledRect(const Rect &rect, const SDL_Color &color);
@@ -80,21 +87,28 @@ public:
   Point localToGlobal(const Point &p);
     // convert the point to global coors (apply offset and scale)
   
+  // these are for raw drawing. No offset and scqle.
   void setDrawColor(const SDL_Color &color);
   void setScale(double x, double y);
   void drawRect(const Rect &r);
   void fillRect(const Rect &r);
 
+  void clearScale();
+  void restoreScale();
+  
   Resources resources;
   
 private:
   friend class TextEditor;
-  
+
   Size _size;
   float _scalemult;
   float _scale;
   Size _offs;
   bool _startedit;
+  
+  float _oldscale;
+  Size _oldoffs;
   
   SDL_Window *_window;
   TTF_TextEngine *_engine;

@@ -31,15 +31,18 @@
 #include <memory>
 #include <vector>
 
+class SDL_Texture;
+
 class List: public Element, public Pushable, public Parentable, public Sizeable, public Writeable, public HUDable, public Keyable  {
 
   typedef Element super;
 
 public:
-  List(): _parent(0), _index(0) {}
+  List(): _parent(0), _index(0), _editing(false) {}
   
   // Element
   virtual void build(Renderer &renderer);
+  virtual void destroy(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Element *hitTest(const Point &origin, const Point &p);
@@ -62,10 +65,13 @@ public:
   virtual Size getSize() { return _size; }
 
   // HUDable
+  virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
 
   // Keyable
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
+
+  static void registerHUDModes(HUD *hud);
 
   // helpers for things that look like a list.
   static void buildVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > &list);
@@ -75,6 +81,8 @@ public:
   static Element* hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Element> > &list);
   static Point localOriginVector(std::vector<std::unique_ptr<Element> > &list, int index, bool prop);
   static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);
+  static void initHUDVector(std::vector<std::unique_ptr<Element> > &list, HUD *hud);
+  static void destroyVector(std::vector<std::unique_ptr<Element> > &list, Renderer &renderer);
  
 private:
 
@@ -82,7 +90,17 @@ private:
   int _index;
   Size _size;
   std::vector<std::unique_ptr<Element> > _elements;
+  int _hudrootlist;
+  int _hudlist;
+  int _hudlistedit;
+  bool _editing;
+  Size _oldsize;
   
+  std::vector<SDL_Texture *> _textures;
+  std::vector<Size> _texturesizes;
+  void renderTextures(Renderer &renderer);
+  void killTextures(Renderer &renderer);
+
 };
 
 #endif // H_list

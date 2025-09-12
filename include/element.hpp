@@ -42,6 +42,9 @@ public:
     // build the texture and surface ready to render.
     // objects, build yourself and then call super::build(renderer)
     
+  virtual void destroy(Renderer &renderer) {};
+    // opposite of build, but called with the renderer.
+    
   virtual void render(Renderer &renderer, const Point &origin) = 0;
     // render this object to the screen.
     // objects, render yourself and then call super::render(renderer, origin)
@@ -56,6 +59,9 @@ public:
     
   virtual Point localOrigin(int index) { return Point(); }
     // return the origin of an object with index in this object.
+    
+  Element *root();
+    // return the root object by walking the parent.
     
 };
 

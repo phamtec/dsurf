@@ -42,6 +42,7 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
+  virtual void destroy(Renderer &renderer);
   
   // Writeable
   virtual rfl::Generic getGeneric();
@@ -60,6 +61,7 @@ public:
   virtual Size getSize() { return _size; }
 
   // HUDable
+  virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
 
   // Keyable

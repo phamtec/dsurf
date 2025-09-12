@@ -24,7 +24,7 @@ Corner::~Corner() {
 
 void Corner::build(Renderer &renderer) {
 
-  // over sample it 8 times.
+  // over sample it 4 times.
   int size = Sizes::thickness * 4;
   
   // create texture and set it as the render target.

@@ -46,6 +46,7 @@ set(SRC
   src/hud.cpp
   src/hudmode.cpp
   src/shortcut.cpp
+  src/types.cpp
 )
 
 set(UTILSRC

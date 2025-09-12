@@ -58,3 +58,23 @@ Point Element::origin() {
   return o + lo;
   
 }
+
+Element *Element::root() {
+
+  // walk through Parentable
+  Element *p = this;
+  Element *root = p;
+  while (p) {
+    Parentable *px = dynamic_cast<Parentable *>(p);
+    if (!px) {
+      break;
+    }
+    p = px->getParent();
+    if (p) {
+      root = p;
+    }
+  }
+
+  return root;
+  
+}

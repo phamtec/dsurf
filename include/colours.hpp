@@ -28,6 +28,7 @@ public:
   static SDL_Color plum;
   static SDL_Color orange;
   static SDL_Color grey;
+  static SDL_Color lightGrey;
   
 };
 

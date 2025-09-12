@@ -270,4 +270,10 @@ Walk a JSON file building a simple layout.
 - Copy and paste on main mode.
 - click to move cursor and Insert mode.
 
+### 12-Sep-2025
+
+- Start work on list editing. Allow the list to be collapsed into a fixed height 
+  thing that could be dragged around.
+
+
 

@@ -21,6 +21,9 @@ class HUDable {
 public:
   virtual ~HUDable() {};
 
+  virtual void initHUD(HUD *hud) = 0;
+    // for those objects that deal with the HUD direcrly, initialise them.
+    
   virtual void setMode(Renderer &renderer, HUD *hud) = 0;
     // set the mode in the heads up display.
     

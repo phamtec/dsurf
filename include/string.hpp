@@ -54,6 +54,7 @@ public:
   virtual void setString(Renderer &renderer, const std::wstring &s);
 
   // HUDable
+  virtual void initHUD(HUD *hud) {}
   virtual void setMode(Renderer &renderer, HUD *hud);
 
   // Keyable

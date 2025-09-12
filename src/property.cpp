@@ -52,6 +52,12 @@ void Property::build(Renderer &renderer) {
 
 }
 
+void Property::destroy(Renderer &renderer) {
+
+  _obj->destroy(renderer);
+  
+}
+
 void Property::render(Renderer &renderer, const Point &origin) {
 
   if (_container) {
@@ -125,6 +131,18 @@ void Property::setString(Renderer &renderer, const wstring &s) {
   _name.set(s, Colours::red);
   _name.build(renderer);
   
+}
+
+void Property::initHUD(HUD *hud) {
+
+  auto *hx = dynamic_cast<HUDable *>(_obj.get());
+  if (hx) {
+    hx->initHUD(hud);
+  }
+  else {
+    cerr << typeid(_obj.get()).name() << " not HUDable" << endl;
+  }
+
 }
 
 void Property::setMode(Renderer &renderer, HUD *hud) {

@@ -34,6 +34,12 @@ void Dict::build(Renderer &renderer) {
   
 }
 
+void Dict::destroy(Renderer &renderer) {
+
+  List::destroyVector(_elements, renderer);
+  
+}
+
 void Dict::render(Renderer &renderer, const Point &origin) {
 
   drawBorder(renderer, origin, _size, false);
@@ -64,6 +70,12 @@ Element *Dict::hitTest(const Point &origin, const Point &p) {
 Point Dict::localOrigin(int index) {
 
   return List::localOriginVector(_elements, index, false);
+  
+}
+
+void Dict::initHUD(HUD *hud) {
+
+  List::initHUDVector(_elements, hud);
   
 }
 

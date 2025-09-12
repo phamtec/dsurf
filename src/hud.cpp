@@ -23,10 +23,18 @@ HUD::HUD() {
 
 }
 
-int HUD::registerMode(HUDMode *mode) {
+int HUD::registerMode(const std::string &name, HUDMode *mode) {
 
   _modes.push_back(unique_ptr<HUDMode>(mode));
-  return _modes.size() - 1;
+  int i = _modes.size() - 1;
+  _keys[name] = i;
+  return i;
+  
+}
+
+int HUD::findMode(const std::string &name) {
+
+  return _keys[name];
   
 }
 

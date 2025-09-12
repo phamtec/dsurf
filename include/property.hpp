@@ -41,6 +41,7 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
+  virtual void destroy(Renderer &renderer);
 
   // Writeable
   virtual std::string getName();
@@ -59,6 +60,7 @@ public:
   virtual void setString(Renderer &renderer, const std::wstring &s);
 
   // HUDable
+  virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
 
   // Keyable
