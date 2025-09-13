@@ -65,9 +65,15 @@ void List::render(Renderer &renderer, const Point &origin) {
       renderer.renderFilledRect(Rect(o, Size(FIXED_WIDTH, FIXED_HEIGHT)), Colours::lightGrey);
 
       Size s = _texturesizes[i];
-      float scale = FIXED_HEIGHT / s.h;
-      s.h = FIXED_HEIGHT;
-      s.w *= scale;
+      if (s.h > FIXED_HEIGHT) {
+        float scale = FIXED_HEIGHT / s.h;
+        s.h = FIXED_HEIGHT;
+        s.w *= scale;
+      }
+      else {
+        s.h *= 2;
+        s.w *= 2;
+      }
       Rect r(o, s);
       r -= 10;
       renderer.renderTexture(_textures[i], r);
@@ -99,6 +105,9 @@ void List::renderTextures(Renderer &renderer) {
     if (sz) {
     
       Size s = sz->getSize();
+      if (s.h >= FIXED_HEIGHT) {
+        s.h = FIXED_HEIGHT * 2;
+      }
       Rect r(Point(0, 0), s);
       
       auto texture = renderer.createTexture(s.w, s.h);
