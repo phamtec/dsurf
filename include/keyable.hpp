@@ -17,6 +17,7 @@
 #include <SDL3/SDL_events.h>
 
 class Renderer;
+class Element;
 
 class Keyable {
 
@@ -26,6 +27,12 @@ public:
   virtual void processKey(Renderer &renderer, SDL_Keycode code) = 0;
     // process the keycode to for object.
     
+  static Keyable *cast(Element *obj);
+  
+private:
+
+  static Keyable *_err;
+  
 };
 
 #endif // H_keyable

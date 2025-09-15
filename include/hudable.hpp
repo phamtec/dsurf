@@ -15,6 +15,8 @@
 #define H_hudable
 
 class HUD;
+class Renderer;
+class Element;
 
 class HUDable {
 
@@ -27,6 +29,12 @@ public:
   virtual void setMode(Renderer &renderer, HUD *hud) = 0;
     // set the mode in the heads up display.
     
+  static HUDable *cast(Element *obj);
+  
+private:
+
+  static HUDable *_err;
+  
 };
 
 #endif // H_hudable

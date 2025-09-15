@@ -15,6 +15,7 @@
 #include "colours.hpp"
 #include "sizes.hpp"
 #include "sizeable.hpp"
+#include "listelem.hpp"
 
 #include <iostream>
 #include <SDL3/SDL.h>
@@ -26,14 +27,9 @@ using namespace std;
 
 Size List::layout() {
 
-  if (_editing) {
-    _size.h = (_elements.size() * (Sizes::listgap + FIXED_HEIGHT)) + Sizes::listgap;
-    _size.w = FIXED_WIDTH;
-  }
-  else  {
-    _size = List::layoutVector(Size(0, Sizes::listgap), _elements);
-    _size.h += _elements.size() == 0 ? Sizes::listgap - 10 : Sizes::listgap;
-  }
+  _size = List::layoutVector(Size(0, Sizes::listgap), _elements);
+  _size.h += _elements.size() == 0 ? Sizes::listgap - 10 : Sizes::listgap;
+
   return _size;
   
 }
@@ -46,7 +42,7 @@ void List::build(Renderer &renderer) {
 
 void List::destroy(Renderer &renderer) {
 
-  killTextures(renderer);
+  endEdit(renderer);
 
   // and walk the list.
   destroyVector(_elements, renderer);
@@ -56,72 +52,33 @@ void List::render(Renderer &renderer, const Point &origin) {
 
   drawBorder(renderer, origin, _size, false);
 
-  if (_editing) {
-  
-    // when editing a list we render fixed size elements with previews in them.
-    Point o = origin + Point(Sizes::group_indent, Sizes::listgap);
-    for (int i=0; i<_textures.size(); i++) {
-    
-      renderer.renderFilledRect(Rect(o, Size(FIXED_WIDTH, FIXED_HEIGHT)), Colours::lightGrey);
-
-      Size s = _texturesizes[i];
-      if (s.h > FIXED_HEIGHT) {
-        float scale = FIXED_HEIGHT / s.h;
-        s.h = FIXED_HEIGHT;
-        s.w *= scale;
-      }
-      else {
-        s.h *= 2;
-        s.w *= 2;
-      }
-      Rect r(o, s);
-      r -= 10;
-      renderer.renderTexture(_textures[i], r);
-      
-      o.y += FIXED_HEIGHT + Sizes::listgap;
-    }
-    
-  }
-  else {
-    renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _elements);
-  }
+  renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _elements);
   
 //  renderer.renderRect(_r);
 
 }
 
-void List::killTextures(Renderer &renderer) {
-  for (auto i: _textures) {
-    renderer.destroyTexture(i);
-  }
-  _textures.clear();
-  _texturesizes.clear();
-}
-
-void List::renderTextures(Renderer &renderer) {
+void List::endEdit(Renderer &renderer) {
 
   for (auto& i: _elements) {
-    Sizeable *sz = dynamic_cast<Sizeable *>(i.get());
-    if (sz) {
-    
-      Size s = sz->getSize();
-      if (s.h >= FIXED_HEIGHT) {
-        s.h = FIXED_HEIGHT * 2;
-      }
-      Rect r(Point(0, 0), s);
-      
-      auto texture = renderer.createTexture(s.w, s.h);
-      renderer.setTarget(texture);
-      renderer.setDrawColor(Colours::lightGrey);
-      renderer.fillRect(r);
-      renderer.clearScale();
-      i->render(renderer, Point(0, 0));
-      renderer.restoreScale();
-      renderer.setTarget(0);
-      _textures.push_back(texture);
-      _texturesizes.push_back(s);
-      
+    ListElem *le = dynamic_cast<ListElem *>(i.get());
+    if (!le) {
+      cerr << typeid(i.get()).name() << " not a list element" << endl;
     }
+    le->setEdit(renderer, false);
+  }
+
+}
+
+void List::startEdit(Renderer &renderer) {
+
+  for (auto& i: _elements) {
+    ListElem *le = dynamic_cast<ListElem *>(i.get());
+    if (!le) {
+      cerr << typeid(i.get()).name() << " not a list element" << endl;
+    }
+    
+    le->setEdit(renderer, true);
   }
   
 }
@@ -134,11 +91,9 @@ rfl::Generic List::getGeneric() {
 
 Element *List::hitTest(const Point &origin, const Point &p) { 
 
-  if (!_editing) {
-    Element *hit = hitTestVector(origin + Size(Sizes::group_indent, Sizes::listgap), p, _elements);
-    if (hit) {
-      return hit;
-    }
+  Element *hit = hitTestVector(origin + Size(Sizes::group_indent, Sizes::listgap), p, _elements);
+  if (hit) {
+    return hit;
   }
 
   return super::hitTest(origin, p);
@@ -163,6 +118,7 @@ void List::registerHUDModes(HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"E", L"dit"));
     hud->registerMode("list", mode);
   }
@@ -170,6 +126,7 @@ void List::registerHUDModes(HUD *hud) {
   {
     auto mode = new HUDMode(false);
     mode->add(new Shortcut(L"Esc", L"(finish)"));
+    mode->add(new Shortcut(L"M", L"ove"));
     hud->registerMode("listedit", mode);
   }
 
@@ -214,15 +171,20 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
       return;
     }
   }
-  switch (code) {
+  switch (code) {      
+    case SDLK_C:
+      if (_editing) {
+        break;
+      }
+      renderer.copy(this);
+      break;
+
     case SDLK_E:
       if (_editing) {
         break;
       }
       _editing = true;
-      _oldsize = _size;
-//      _size.h = (_elements.size() * (Sizes::listgap + FIXED_HEIGHT)) + Sizes::listgap;
-      renderTextures(renderer);
+      startEdit(renderer);
       root()->layout();
       break;
       
@@ -231,10 +193,17 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
         break;
       }
       _editing = false;
-      _size = _oldsize;
-      killTextures(renderer);
+      endEdit(renderer);
       root()->layout();
       break;
+
+    case SDLK_M:
+      if (!_editing) {
+        break;
+      }
+      // move the thibg under the cursor.
+      break;
+
   }
   
 }

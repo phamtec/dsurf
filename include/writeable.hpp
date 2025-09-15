@@ -16,6 +16,8 @@
 
 #include <rfl.hpp>
 
+class Element;
+
 class Writeable {
 
 public:
@@ -25,6 +27,12 @@ public:
   virtual rfl::Generic getGeneric() = 0;
     // return the name and the object for serialization.
         
+  static Writeable *cast(Element *obj);
+  
+private:
+
+  static Writeable *_err;
+  
 };
 
 #endif // H_writeable

@@ -16,7 +16,6 @@
 #include "text.hpp"
 #include "corner.hpp"
 #include "renderer.hpp"
-#include "texteditor.hpp"
 
 #define BOOST_AUTO_TEST_MAIN
 #include <boost/test/unit_test.hpp>
@@ -37,8 +36,6 @@ void Corner::render(Renderer &renderer, const Point &origin) {
 void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
 }
 void Renderer::setScale(double x, double y) {
-}
-void Renderer::setRootState() {
 }
 bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
   return false;
@@ -63,6 +60,8 @@ void Renderer::fillRect(const Rect &r) {
 void Renderer::clearScale() {
 }
 void Renderer::restoreScale() {
+}
+void Renderer::copy(Element *element) {
 }
 int HUD::registerMode(const std::string &name, HUDMode *mode) {
   return -1;

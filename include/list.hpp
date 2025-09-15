@@ -31,8 +31,6 @@
 #include <memory>
 #include <vector>
 
-class SDL_Texture;
-
 class List: public Element, public Pushable, public Parentable, public Sizeable, public Writeable, public HUDable, public Keyable  {
 
   typedef Element super;
@@ -94,12 +92,9 @@ private:
   int _hudlist;
   int _hudlistedit;
   bool _editing;
-  Size _oldsize;
   
-  std::vector<SDL_Texture *> _textures;
-  std::vector<Size> _texturesizes;
-  void renderTextures(Renderer &renderer);
-  void killTextures(Renderer &renderer);
+  void startEdit(Renderer &renderer);
+  void endEdit(Renderer &renderer);
 
 };
 

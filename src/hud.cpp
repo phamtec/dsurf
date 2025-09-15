@@ -27,6 +27,7 @@ int HUD::registerMode(const std::string &name, HUDMode *mode) {
 
   _modes.push_back(unique_ptr<HUDMode>(mode));
   int i = _modes.size() - 1;
+//  cout << name << ": " << i << endl;
   _keys[name] = i;
   return i;
   

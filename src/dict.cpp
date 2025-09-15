@@ -73,8 +73,29 @@ Point Dict::localOrigin(int index) {
   
 }
 
+void Dict::registerHUDModes(HUD *hud) {
+
+  {
+    auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"C", L"opy"));
+    mode->add(new Shortcut(L"P", L"aste"));
+    hud->registerMode("rootdict", mode);
+  }
+
+  {
+    auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"C", L"opy"));
+    hud->registerMode("dict", mode);
+  }
+
+}
+
 void Dict::initHUD(HUD *hud) {
 
+  _hudrootdict = hud->findMode("rootdict");
+  _huddict = hud->findMode("dict");
+
+  // and walk the list.
   List::initHUDVector(_elements, hud);
   
 }
@@ -82,18 +103,25 @@ void Dict::initHUD(HUD *hud) {
 void Dict::setMode(Renderer &renderer, HUD *hud) {
 
   if (getParent() == 0) {
-    renderer.setRootState();
+    hud->setMode(_hudrootdict);
   }
   else {
-    hud->setMode(0);
+    hud->setMode(_huddict);
   }
   
 }
 
 void Dict::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  if (getParent() == 0) {
-    renderer.processRootKey(this, code);
+  if (getParent() == 0) {  
+    if (renderer.processRootKey(this, code)) {
+      return;
+    }
+  }
+  switch (code) {      
+    case SDLK_C:
+      renderer.copy(this);
+      break;
   }
   
 }

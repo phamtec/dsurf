@@ -13,6 +13,7 @@
 
 #include "dict.hpp"
 #include "list.hpp"
+#include "listelem.hpp"
 #include "string.hpp"
 #include "bool.hpp"
 #include "long.hpp"
@@ -121,10 +122,21 @@ void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Pushab
     
     using V = remove_cvref_t<decltype(v)>;
     if (is_same<rfl::Generic, V>::value) {
-      Element *p = dynamic_cast<Element *>(list);
-      auto obj = walk(p, index, v, k);
-      if (obj) {
-        list->push(obj);
+      auto *l = dynamic_cast<List *>(list);
+      if (l) {
+        auto obj = walk(l, index, v, k);
+        if (obj) {
+          // interdict the list element.
+          auto le = new ListElem(obj);
+          list->push(le);
+        }
+      }
+      else {
+        auto *px = dynamic_cast<Element *>(list);
+        auto obj = walk(px, index, v, k);
+        if (obj) {
+          list->push(obj);
+        }
       }
     }
     else {
@@ -138,10 +150,21 @@ void Builder::walk(Element *parent, const std::vector<rfl::Generic > &v, Pushabl
 
   int index = 0;
   for (auto i: v) {
-    Element *p = dynamic_cast<Element *>(list);
-    auto obj = walk(p, index, i);
-    if (obj) {
-      list->push(obj);
+    auto *l = dynamic_cast<List *>(list);
+    if (l) {
+      auto obj = walk(l, index, i);
+      if (obj) {
+        // interdict the list element.
+        auto le = new ListElem(obj);
+        list->push(le);
+      }
+    }
+    else {
+      Element *p = dynamic_cast<Element *>(list);
+      auto obj = walk(p, index, i);
+      if (obj) {
+        list->push(obj);
+      }
     }
     index++;
   }

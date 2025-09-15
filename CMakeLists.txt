@@ -61,11 +61,19 @@ set(UTILSRC
 set(OBJSRC
   src/element.cpp
   src/string.cpp
-  src/list.cpp 
+  src/list.cpp
+  src/listelem.cpp
   src/dict.cpp
   src/long.cpp
   src/bool.cpp
   src/property.cpp
+  src/parentable.cpp
+  src/editable.cpp
+  src/hudable.cpp
+  src/keyable.cpp
+  src/pushable.cpp
+  src/sizeable.cpp
+  src/writeable.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC})
@@ -81,3 +89,8 @@ add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp ${OBJSRC} ${UTIL
   target_link_libraries(TestBuilder reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestBuilder TestBuilder)
+
+add_executable(TestErrable test/testerrable.cpp src/element.cpp  ${OBJSRC} ${UTILSRC})
+  target_link_libraries(TestErrable reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+add_test(TestErrable TestErrable)

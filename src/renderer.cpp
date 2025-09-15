@@ -121,17 +121,8 @@ bool Renderer::init(const char *path) {
   // allow shared resources to build.
   resources.build(*this);
   
-  // always just a new dictiionary.
-  setRoot(new Dict());
-
   // build the HUD
   _hud.reset(new HUD());
-  {
-    auto mode = new HUDMode(false);
-    mode->add(new Shortcut(L"C", L"opy"));
-    mode->add(new Shortcut(L"P", L"aste"));
-    _hudmode = _hud->registerMode("root", mode);
-  }
 
   // build our editor.
   _editor.reset(new TextEditor(_startedit));
@@ -147,6 +138,9 @@ bool Renderer::init(const char *path) {
   // build the hud with all modes
   _hud->build(*this);
   
+  // always just a new dictiionary.
+  setRoot(new Dict());
+
 //   _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
 //   _editcursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_TEXT);
   
@@ -168,6 +162,7 @@ void Renderer::setRoot(Element *root) {
   if (hx) {
     hx->initHUD(_hud.get());
   }
+
   // build all objects with this renderer.
   _root->build(*this);
   
@@ -305,12 +300,10 @@ void Renderer::endEdit() {
 
 }
 
-void Renderer::setRootState() {
-
-  _hud->setMode(_hudmode);
-  
+void Renderer::copy(Element *element) {
+  SDL_SetClipboardText(Builder::getJson(element).c_str());
 }
-  
+
 bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
 
   switch (code) {
@@ -326,7 +319,7 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
       return true;
       
     case SDLK_C:
-      SDL_SetClipboardText(Builder::getJson(element).c_str());
+      copy(element);
       return true;
   }
   
@@ -411,13 +404,15 @@ bool Renderer::processEvents() {
         if (!_editor->capture()) {
           Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
           if (hit) {
-            Keyable *kx = dynamic_cast<Keyable *>(hit);
-            if (kx) {
-              kx->processKey(*this, event.key.key);
-            }
             HUDable *hx = dynamic_cast<HUDable *>(hit);
             if (hx) {
               hx->setMode(*this, _hud.get());
+            }
+            // we do keys next since processKet might invalidate
+            // the hit object.
+            Keyable *kx = dynamic_cast<Keyable *>(hit);
+            if (kx) {
+              kx->processKey(*this, event.key.key);
             }
           }
         }

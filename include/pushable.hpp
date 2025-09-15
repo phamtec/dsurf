@@ -14,6 +14,8 @@
 #ifndef H_pushable
 #define H_pushable
 
+class Element;
+
 class Pushable {
 
 public:
@@ -22,6 +24,12 @@ public:
   virtual void push(Element *element) = 0;
     // push the object onto the parent.
     
+  static Pushable *cast(Element *obj);
+  
+private:
+
+  static Pushable *_err;
+  
 };
 
 #endif // H_pushable

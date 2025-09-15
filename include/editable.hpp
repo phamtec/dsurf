@@ -14,7 +14,10 @@
 #ifndef H_editable
 #define H_editable
 
+#include <string>
+
 class Renderer;
+class Element;
 
 class Editable {
 
@@ -25,6 +28,12 @@ public:
   virtual void setString(Renderer &renderer, const std::wstring &s) = 0;
     // get and set the value as a string.
     
+  static Editable *cast(Element *obj);
+  
+private:
+
+  static Editable *_err;
+  
 };
 
 #endif // H_editable

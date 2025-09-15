@@ -14,6 +14,10 @@
 #ifndef H_sizeable
 #define H_sizeable
 
+#include "size.hpp"
+
+class Element;
+
 class Sizeable {
 
 public:
@@ -22,6 +26,12 @@ public:
   virtual Size getSize() = 0;
     // return the size of this object.
     
+  static Sizeable *cast(Element *obj);
+  
+private:
+
+  static Sizeable *_err;
+  
 };
 
 #endif // H_sizeable

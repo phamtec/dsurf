@@ -59,7 +59,6 @@ public:
   void loop();
     // the main render loop.
     
-  void setRootState();
   bool processRootKey(Element *element, SDL_Keycode code);
     // process keys and HUD for the root object.
    
@@ -67,6 +66,9 @@ public:
   void processTextKey(Editable *editable, const Point &origin, const Size &size, SDL_Keycode code);
     // set the state for the hud when we are over text
     
+  void copy(Element *element);
+    // coy the element onto the clipboard
+
   // dealing with textures.
   SDL_Texture *createTexture(int width, int height);
   void setTarget(SDL_Texture *texture);
@@ -125,7 +127,6 @@ private:
 //   SDL_Cursor *_pointercursor;
 //   SDL_Cursor *_editcursor;
   Point _renderorigin;
-  int _hudmode;
   
   bool processEvents();
   bool isDoubleClick();

@@ -1,40 +1,39 @@
 /*
-  dict.hpp
+  listelem.hpp
   
   Author: Paul Hamilton (phamtec@mac.com)
-  Date: 8-Aug-2025
-    
-  Dictionary class.
+  Date: 13-Sep-2025
   
-  {
-    ... props
-  }
+  A list element, used while editing.  
   
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
 */
 
-#ifndef H_dict
-#define H_dict
+#ifndef H_listelem
+#define H_listelem
 
 #include "element.hpp"
-#include "pushable.hpp"
+#include "text.hpp"
 #include "parentable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
+#include "editable.hpp"
 #include "hudable.hpp"
 #include "keyable.hpp"
 
 #include <memory>
 #include <vector>
 
-class Dict: public Element, public Pushable, public Parentable, public Sizeable, public Writeable, public HUDable, public Keyable {
+class ListElem: public Element, public Parentable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable  {
 
   typedef Element super;
 
 public:
-  Dict(): _parent(0), _index(0) {}
+  ListElem(Element *obj);
+  
+  void setEdit(Renderer &renderer, bool state);
   
   // Element
   virtual void build(Renderer &renderer);
@@ -43,15 +42,11 @@ public:
   virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(int index);
   virtual void destroy(Renderer &renderer);
-  
+
   // Writeable
+  virtual std::string getName();
   virtual rfl::Generic getGeneric();
 
-  // Pushable
-  virtual void push(Element *element) {
-    _elements.push_back(std::unique_ptr<Element>(element));
-  }
-  
   // Parentable
   virtual void setParent(Element *parent, int index) { _parent = parent; _index = index; }
   virtual Element *getParent() { return _parent; }
@@ -60,6 +55,10 @@ public:
   // Sizeable
   virtual Size getSize() { return _size; }
 
+  // Editable
+  virtual std::wstring getString();
+  virtual void setString(Renderer &renderer, const std::wstring &s);
+
   // HUDable
   virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
@@ -67,20 +66,16 @@ public:
   // Keyable
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
-  static void registerHUDModes(HUD *hud);
-  
-  static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
-  static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);
-
 private:
 
   Element *_parent;
   int _index;
   Size _size;
-  std::vector<std::unique_ptr<Element> > _elements;
-  int _hudrootdict;
-  int _huddict;
+  bool _editing;
+  std::unique_ptr<Element> _obj;
+  SDL_Texture *_texture;
+  Size _textsize;
   
 };
 
-#endif // H_dict
+#endif // H_listelem

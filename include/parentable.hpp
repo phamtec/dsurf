@@ -14,6 +14,8 @@
 #ifndef H_parentable
 #define H_parentable
 
+class Element;
+
 class Parentable {
 
 public:
@@ -28,6 +30,12 @@ public:
   virtual int getIndex() = 0;
     // get the index of this object in the parent.
     
+  static Parentable *cast(Element *obj);
+  
+private:
+
+  static Parentable *_err;
+  
 };
 
 #endif // H_parentable
