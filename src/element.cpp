@@ -12,7 +12,9 @@
 #include "element.hpp"
 
 #include "parentable.hpp"
+#include "indexable.hpp"
 #include "sizeable.hpp"
+#include "indexable.hpp"
 
 #include <iostream>
 
@@ -20,13 +22,9 @@ using namespace std;
 
 Element *Element::hitTest(const Point &origin, const Point &p) { 
 
-//  cout << "testing " << typeid(*this).name() << endl;
-  Sizeable *sz = dynamic_cast<Sizeable *>(this);
-  if (sz) {
-    if (Rect(origin, sz->getSize()).contains(p)) {
-  //    cout << "hit" << endl;
-      return this; 
-    }
+  if (Rect(origin, Sizeable::cast(this)->getSize()).contains(p)) {
+//    cout << "hit" << endl;
+    return this; 
   }
   
   return nullptr;
@@ -35,21 +33,14 @@ Element *Element::hitTest(const Point &origin, const Point &p) {
 
 Point Element::origin() {
 
-  // see if the object can have a parent.
-  Parentable *p = dynamic_cast<Parentable *>(this);
-  if (!p) {
-    cerr << "not parentable!" << endl;
-    return Point();
-  }
-  
   // get the parent.
-  Element *parent = p->getParent();
+  Element *parent = Parentable::cast(this)->getParent();
   if (!parent) {
     return Point();
   }
   
   Point o = parent->origin();
-  Point lo = parent->localOrigin(p->getIndex());
+  Point lo = parent->localOrigin(Indexable::cast(this)->getIndex());
 //   cout << "origin parent " << typeid(*parent).name() << endl;
 //   cout << "o: " << o << endl;
 //   cout << "lo: " << lo << endl;

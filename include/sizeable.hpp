@@ -27,9 +27,6 @@ public:
     // return the size of this object.
     
   static Sizeable *cast(Element *obj);
-  
-private:
-
   static Sizeable *_err;
   
 };

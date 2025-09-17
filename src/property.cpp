@@ -24,12 +24,8 @@ Property::Property(const std::wstring &name, Element *obj, bool container):
     _parent(0), _index(0), _name(name, Colours::blue), 
     _obj(obj), _container(container)
 {
-  Parentable *px = dynamic_cast<Parentable *>(obj);
-  if (!px) {
-    cerr << "obj not parentable!" << endl;
-    return;
-  }
-  px->setParent(this, 0);      
+  Parentable::cast(obj)->setParent(this);
+  Indexable::cast(obj)->setIndex(0);
 }
 
 Size Property::layout() {

@@ -30,9 +30,6 @@ public:
     // set the mode in the heads up display.
     
   static HUDable *cast(Element *obj);
-  
-private:
-
   static HUDable *_err;
   
 };

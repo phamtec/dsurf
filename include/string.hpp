@@ -20,13 +20,14 @@
 #include "text.hpp"
 #include "colours.hpp"
 #include "parentable.hpp"
+#include "indexable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
 #include "hudable.hpp"
 #include "keyable.hpp"
 
-class String: public Element, public Parentable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable {
+class String: public Element, public Parentable, public Indexable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable {
 
   typedef Element super;
   
@@ -42,8 +43,11 @@ public:
   virtual rfl::Generic getGeneric();
 
   // Parentable
-  virtual void setParent(Element *parent, int index) { _parent = parent; _index = index; }
+  virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
+  
+  // Indexable
+  virtual void setIndex(int index) { _index = index; }
   virtual int getIndex() { return _index; }
   
   // Sizeable

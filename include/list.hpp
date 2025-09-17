@@ -23,6 +23,8 @@
 #include "element.hpp"
 #include "pushable.hpp"
 #include "parentable.hpp"
+#include "indexable.hpp"
+#include "indexable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
 #include "hudable.hpp"
@@ -31,13 +33,16 @@
 #include <memory>
 #include <vector>
 
-class List: public Element, public Pushable, public Parentable, public Sizeable, public Writeable, public HUDable, public Keyable  {
+class List: public Element, public Pushable, public Parentable, public Indexable, public Sizeable, public Writeable, public HUDable, public Keyable  {
 
   typedef Element super;
 
 public:
-  List(): _parent(0), _index(0), _editing(false) {}
+  List(): _parent(0), _index(0), _editing(false), _moveindex(-1)/*, _moveover(-1)*/ {}
   
+  void setMoving(int index);
+    // this object is currently moving.
+    
   // Element
   virtual void build(Renderer &renderer);
   virtual void destroy(Renderer &renderer);
@@ -55,8 +60,11 @@ public:
   }
   
   // Parentable
-  virtual void setParent(Element *parent, int index) { _parent = parent; _index = index; }
+  virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
+  
+  // Indexable
+  virtual void setIndex(int index) { _index = index; }
   virtual int getIndex() { return _index; }
   
   // Sizeable
@@ -65,11 +73,10 @@ public:
   // HUDable
   virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
+  static void registerHUDModes(HUD *hud);
 
   // Keyable
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
-
-  static void registerHUDModes(HUD *hud);
 
   // helpers for things that look like a list.
   static void buildVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > &list);
@@ -82,6 +89,8 @@ public:
   static void initHUDVector(std::vector<std::unique_ptr<Element> > &list, HUD *hud);
   static void destroyVector(std::vector<std::unique_ptr<Element> > &list, Renderer &renderer);
  
+  static List *cast(Element *obj);
+
 private:
 
   Element *_parent;
@@ -91,11 +100,20 @@ private:
   int _hudrootlist;
   int _hudlist;
   int _hudlistedit;
+  int _hudlistmove;
   bool _editing;
+  Point _mouse;
+  int _moveindex;
+  int _moveover;
+  Point _moveoffs;
   
   void startEdit(Renderer &renderer);
   void endEdit(Renderer &renderer);
-
+  Element *otherElementHit(const Point &origin, const Point &p);
+  void reorder();
+  Indexable *findIndex(int index);
+  static void orderElements(std::vector<std::unique_ptr<Element> > &list, std::vector<Element *> *l2);
+    
 };
 
 #endif // H_list

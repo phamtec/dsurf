@@ -28,9 +28,6 @@ public:
     // return the name and the object for serialization.
         
   static Writeable *cast(Element *obj);
-  
-private:
-
   static Writeable *_err;
   
 };

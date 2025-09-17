@@ -150,7 +150,7 @@ back out.
 
 ## Current Focus
 
-- List reordering
+- Build a dictionary from scratch.
 - Bug fixes
 - Distribution on mac and linux
 - Windows version
@@ -275,5 +275,8 @@ Walk a JSON file building a simple layout.
 - Start work on list editing. Allow the list to be collapsed into a fixed height 
   thing that could be dragged around.
 
+### 17-Sep-2025
 
+- Version 0.4
+- Lists can be reordered.
 

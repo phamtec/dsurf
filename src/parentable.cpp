@@ -12,9 +12,10 @@
 */
 
 #include "parentable.hpp"
-#include "element.hpp"
+#include "indexable.hpp"
 
-#include <iostream>
+#include "element.hpp"
+#include "err.hpp"
 
 using namespace std;
 
@@ -22,33 +23,21 @@ class ParentableErr: public Parentable {
 
 public:
 
-  virtual void setParent(Element *parent, int index) {
-    cerr << "obj not parentable!" << endl;
+  virtual void setParent(Element *parent) {
+    Err::typeError(typeid(Parentable));
   }
     
   virtual Element *getParent() {
-    cerr << "obj not parentable!" << endl;
+    Err::typeError(typeid(Parentable));
     return 0;
   }
     
-  virtual int getIndex() {
-    cerr << "obj not parentable!" << endl;
-    return 0;
-  }
-
 };
 
 Parentable *Parentable::_err = nullptr;
 
 Parentable *Parentable::cast(Element *obj) {
 
-  Parentable *px = dynamic_cast<Parentable *>(obj);
-  if (!px) {
-    if (!_err) {
-     _err = new ParentableErr();
-    }
-    px = _err;
-  }
-  return px;
+  return Errable<Parentable, ParentableErr>::cast(obj);
   
 }

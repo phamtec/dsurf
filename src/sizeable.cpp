@@ -12,9 +12,9 @@
 */
 
 #include "sizeable.hpp"
-#include "element.hpp"
 
-#include <iostream>
+#include "element.hpp"
+#include "err.hpp"
 
 using namespace std;
 
@@ -23,7 +23,7 @@ class SizeableErr: public Sizeable {
 public:
 
   virtual Size getSize() {
-    cerr << "obj not sizeable!" << endl;
+    Err::typeError(typeid(Sizeable));
     return Size();
   }
 
@@ -33,13 +33,6 @@ Sizeable *Sizeable::_err = nullptr;
 
 Sizeable *Sizeable::cast(Element *obj) {
 
-  Sizeable *px = dynamic_cast<Sizeable *>(obj);
-  if (!px) {
-    if (!_err) {
-     _err = new SizeableErr();
-    }
-    px = _err;
-  }
-  return px;
+  return Errable<Sizeable, SizeableErr>::cast(obj);
   
 }

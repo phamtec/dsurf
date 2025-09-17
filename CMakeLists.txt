@@ -56,6 +56,8 @@ set(UTILSRC
   src/size.cpp
   src/rect.cpp
   src/unicode.cpp
+  src/err.cpp
+  src/move.cpp
 )
 
 set(OBJSRC
@@ -74,6 +76,7 @@ set(OBJSRC
   src/pushable.cpp
   src/sizeable.cpp
   src/writeable.cpp
+  src/indexable.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC})
@@ -94,3 +97,8 @@ add_executable(TestErrable test/testerrable.cpp src/element.cpp  ${OBJSRC} ${UTI
   target_link_libraries(TestErrable reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestErrable TestErrable)
+
+add_executable(TestMove test/testmove.cpp ${UTILSRC})
+  target_link_libraries(TestMove ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+add_test(TestMove TestMove)

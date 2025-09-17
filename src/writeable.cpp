@@ -12,9 +12,9 @@
 */
 
 #include "writeable.hpp"
-#include "element.hpp"
 
-#include <iostream>
+#include "element.hpp"
+#include "err.hpp"
 
 using namespace std;
 
@@ -23,11 +23,11 @@ class WriteableErr: public Writeable {
 public:
 
   virtual std::string getName() {
-    cerr << "obj not writeable!" << endl;
+    Err::typeError(typeid(Writeable));
     return "???";
   }
   virtual rfl::Generic getGeneric() {
-    cerr << "obj not writeable!" << endl;
+    Err::typeError(typeid(Writeable));
     return 0;
   }
 
@@ -37,13 +37,6 @@ Writeable *Writeable::_err = nullptr;
 
 Writeable *Writeable::cast(Element *obj) {
 
-  Writeable *px = dynamic_cast<Writeable *>(obj);
-  if (!px) {
-    if (!_err) {
-     _err = new WriteableErr();
-    }
-    px = _err;
-  }
-  return px;
+  return Errable<Writeable, WriteableErr>::cast(obj);
   
 }

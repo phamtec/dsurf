@@ -55,6 +55,10 @@ public:
     return Point(x * offset, y * offset);
   }
 
+  inline Point operator/(float offset) const {
+    return Point(x / offset, y / offset);
+  }
+
   friend std::ostream& operator<< (std::ostream& stream, const Point& matrix);
   
   inline SDL_FPoint spoint() const {

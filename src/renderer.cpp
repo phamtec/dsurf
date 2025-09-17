@@ -346,6 +346,12 @@ Point Renderer::localToGlobal(const Point &p) {
   
 }
 
+Point Renderer::noOffset(const Point &p) {
+
+  return p - _offs;
+  
+}
+
 bool Renderer::processEvents() {
 
   SDL_Event event;
@@ -404,15 +410,16 @@ bool Renderer::processEvents() {
         if (!_editor->capture()) {
           Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
           if (hit) {
-            HUDable *hx = dynamic_cast<HUDable *>(hit);
-            if (hx) {
-              hx->setMode(*this, _hud.get());
-            }
-            // we do keys next since processKet might invalidate
-            // the hit object.
             Keyable *kx = dynamic_cast<Keyable *>(hit);
             if (kx) {
               kx->processKey(*this, event.key.key);
+            }
+            // we search again since processKet might invalidate
+            // the hit object.
+            hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
+            HUDable *hx = dynamic_cast<HUDable *>(hit);
+            if (hx) {
+              hx->setMode(*this, _hud.get());
             }
           }
         }

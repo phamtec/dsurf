@@ -12,9 +12,9 @@
 */
 
 #include "editable.hpp"
-#include "element.hpp"
 
-#include <iostream>
+#include "element.hpp"
+#include "err.hpp"
 
 using namespace std;
 
@@ -23,11 +23,11 @@ class EditableErr: public Editable {
 public:
 
   virtual std::wstring getString() {
-    cerr << "obj not editable!" << endl;
+    Err::typeError(typeid(Editable));
     return L"???";
   }
   virtual void setString(Renderer &renderer, const std::wstring &s) {
-    cerr << "obj not editable!" << endl;
+    Err::typeError(typeid(Editable));
   }
 
 };
@@ -36,13 +36,6 @@ Editable *Editable::_err = nullptr;
 
 Editable *Editable::cast(Element *obj) {
 
-  Editable *px = dynamic_cast<Editable *>(obj);
-  if (!px) {
-    if (!_err) {
-     _err = new EditableErr();
-    }
-    px = _err;
-  }
-  return px;
-  
+  return Errable<Editable, EditableErr>::cast(obj);
+
 }

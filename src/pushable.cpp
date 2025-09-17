@@ -12,9 +12,9 @@
 */
 
 #include "pushable.hpp"
-#include "element.hpp"
 
-#include <iostream>
+#include "element.hpp"
+#include "err.hpp"
 
 using namespace std;
 
@@ -23,7 +23,7 @@ class PushableErr: public Pushable {
 public:
 
   virtual void push(Element *element) {
-    cerr << "obj not pushable!" << endl;
+    Err::typeError(typeid(Pushable));
   }
 
 };
@@ -32,13 +32,6 @@ Pushable *Pushable::_err = nullptr;
 
 Pushable *Pushable::cast(Element *obj) {
 
-  Pushable *px = dynamic_cast<Pushable *>(obj);
-  if (!px) {
-    if (!_err) {
-     _err = new PushableErr();
-    }
-    px = _err;
-  }
-  return px;
+  return Errable<Pushable, PushableErr>::cast(obj);
   
 }

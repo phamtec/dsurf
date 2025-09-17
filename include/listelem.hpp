@@ -4,7 +4,10 @@
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 13-Sep-2025
   
-  A list element, used while editing.  
+  A list element. When editing the list, this displays without the underlying
+    content and is used to edit elements in the list.
+    
+  Otherwise it's just a pass through proxy to the underlying element in the list.
   
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
@@ -17,6 +20,7 @@
 #include "element.hpp"
 #include "text.hpp"
 #include "parentable.hpp"
+#include "indexable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
@@ -26,7 +30,7 @@
 #include <memory>
 #include <vector>
 
-class ListElem: public Element, public Parentable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable  {
+class ListElem: public Element, public Parentable, public Indexable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable  {
 
   typedef Element super;
 
@@ -48,8 +52,11 @@ public:
   virtual rfl::Generic getGeneric();
 
   // Parentable
-  virtual void setParent(Element *parent, int index) { _parent = parent; _index = index; }
+  virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
+  
+  // Indexable
+  virtual void setIndex(int index) { _index = index; }
   virtual int getIndex() { return _index; }
   
   // Sizeable
@@ -62,6 +69,7 @@ public:
   // HUDable
   virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
+  static void registerHUDModes(HUD *hud);
 
   // Keyable
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
@@ -75,6 +83,7 @@ private:
   std::unique_ptr<Element> _obj;
   SDL_Texture *_texture;
   Size _textsize;
+  int _hudlistelem;
   
 };
 

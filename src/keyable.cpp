@@ -12,9 +12,9 @@
 */
 
 #include "keyable.hpp"
-#include "element.hpp"
 
-#include <iostream>
+#include "element.hpp"
+#include "err.hpp"
 
 using namespace std;
 
@@ -23,7 +23,7 @@ class KeyableErr: public Keyable {
 public:
 
   virtual void processKey(Renderer &renderer, SDL_Keycode code) {
-    cerr << "obj not keyable!" << endl;
+    Err::typeError(typeid(Keyable));
   }
 
 };
@@ -32,13 +32,6 @@ Keyable *Keyable::_err = nullptr;
 
 Keyable *Keyable::cast(Element *obj) {
 
-  Keyable *px = dynamic_cast<Keyable *>(obj);
-  if (!px) {
-    if (!_err) {
-     _err = new KeyableErr();
-    }
-    px = _err;
-  }
-  return px;
+  return Errable<Keyable, KeyableErr>::cast(obj);
   
 }

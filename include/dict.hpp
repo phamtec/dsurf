@@ -21,6 +21,7 @@
 #include "element.hpp"
 #include "pushable.hpp"
 #include "parentable.hpp"
+#include "indexable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
 #include "hudable.hpp"
@@ -29,7 +30,7 @@
 #include <memory>
 #include <vector>
 
-class Dict: public Element, public Pushable, public Parentable, public Sizeable, public Writeable, public HUDable, public Keyable {
+class Dict: public Element, public Pushable, public Parentable, public Indexable, public Sizeable, public Writeable, public HUDable, public Keyable {
 
   typedef Element super;
 
@@ -53,8 +54,11 @@ public:
   }
   
   // Parentable
-  virtual void setParent(Element *parent, int index) { _parent = parent; _index = index; }
+  virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
+  
+  // Indexable
+  virtual void setIndex(int index) { _index = index; }
   virtual int getIndex() { return _index; }
   
   // Sizeable
@@ -63,11 +67,10 @@ public:
   // HUDable
   virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
+  static void registerHUDModes(HUD *hud);
 
   // Keyable
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
-
-  static void registerHUDModes(HUD *hud);
   
   static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
   static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);

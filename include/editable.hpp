@@ -29,11 +29,8 @@ public:
     // get and set the value as a string.
     
   static Editable *cast(Element *obj);
-  
-private:
-
   static Editable *_err;
-  
+    
 };
 
 #endif // H_editable

@@ -15,6 +15,7 @@
 #include "texteditor.hpp"
 #include "hud.hpp"
 #include "renderer.hpp"
+#include "list.hpp"
 
 #include <iostream>
 
@@ -25,7 +26,8 @@ using namespace std;
 
 ListElem::ListElem(Element *obj): _obj(obj)
 {
-  Parentable::cast(obj)->setParent(this, 0);      
+  Parentable::cast(obj)->setParent(this);      
+  Indexable::cast(obj)->setIndex(0);      
 }
 
 void ListElem::setEdit(Renderer &renderer, bool state) {
@@ -51,6 +53,7 @@ void ListElem::setEdit(Renderer &renderer, bool state) {
   else {
     renderer.destroyTexture(_texture);
     _texture = 0;
+    List::cast(getParent())->setMoving(-1);
   }
   
 }
@@ -77,6 +80,11 @@ void ListElem::build(Renderer &renderer) {
 
 void ListElem::destroy(Renderer &renderer) {
 
+  if (_texture) {
+    renderer.destroyTexture(_texture);
+    _texture = 0;
+  }
+  
   _obj->destroy(renderer);
   
 }
@@ -84,6 +92,7 @@ void ListElem::destroy(Renderer &renderer) {
 void ListElem::render(Renderer &renderer, const Point &origin) {
 
   if (_editing) {
+  
     renderer.renderFilledRect(Rect(origin, Size(FIXED_WIDTH, FIXED_HEIGHT)), Colours::lightGrey);
 
     Size s = _textsize;
@@ -96,9 +105,11 @@ void ListElem::render(Renderer &renderer, const Point &origin) {
       s.h *= 2;
       s.w *= 2;
     }
+    
     Rect r(origin, s);
     r -= 10;
     renderer.renderTexture(_texture, r);
+    
   }
   else {
     _obj->render(renderer, origin);
@@ -120,8 +131,12 @@ rfl::Generic ListElem::getGeneric() {
 
 Element *ListElem::hitTest(const Point &origin, const Point &p) { 
 
-  return _obj->hitTest(origin, p);
+  if (!_editing) {
+    return _obj->hitTest(origin, p);
+  }
   
+    return super::hitTest(origin, p);
+
 }
 
 Point ListElem::localOrigin(int index) {
@@ -132,6 +147,24 @@ Point ListElem::localOrigin(int index) {
 
 void ListElem::processKey(Renderer &renderer, SDL_Keycode code) {
 
+  if (_editing) {
+    switch (code) {
+
+      case SDLK_C:
+        renderer.copy(_obj.get());
+        break;
+
+      case SDLK_ESCAPE:
+        List::cast(getParent())->processKey(renderer, code);
+        break;
+
+      case SDLK_M:
+        List::cast(getParent())->setMoving(getIndex());
+        break;
+    }
+    return;
+  }
+  
   Keyable::cast(_obj.get())->processKey(renderer, code);
   
 }
@@ -148,7 +181,21 @@ void ListElem::setString(Renderer &renderer, const wstring &s) {
   
 }
 
+void ListElem::registerHUDModes(HUD *hud) {
+
+  {
+    auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"Esc", L"(finish)"));
+    mode->add(new Shortcut(L"C", L"opy"));
+    mode->add(new Shortcut(L"M", L"ove"));
+    hud->registerMode("listelem", mode);
+  }
+
+}
+
 void ListElem::initHUD(HUD *hud) {
+
+  _hudlistelem = hud->findMode("listelem");
 
   HUDable::cast(_obj.get())->initHUD(hud);
 
@@ -156,7 +203,12 @@ void ListElem::initHUD(HUD *hud) {
 
 void ListElem::setMode(Renderer &renderer, HUD *hud) {
 
-  HUDable::cast(_obj.get())->setMode(renderer, hud);
+  if (_editing) {
+    hud->setMode(_hudlistelem);
+  }
+  else {
+    HUDable::cast(_obj.get())->setMode(renderer, hud);
+  }
   
 }
 

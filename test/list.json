@@ -8,5 +8,10 @@
         "type": "freeFormText",
         "text": "Number of coats?",
         "var": "coats"
+    },
+    {
+        "type": "button",
+        "text": "OK",
+        "var": "ok"
     }
 ]

@@ -89,6 +89,9 @@ public:
   Point localToGlobal(const Point &p);
     // convert the point to global coors (apply offset and scale)
   
+  Point noOffset(const Point &p);
+    // remove the offset from the point.
+    
   // these are for raw drawing. No offset and scqle.
   void setDrawColor(const SDL_Color &color);
   void setScale(double x, double y);

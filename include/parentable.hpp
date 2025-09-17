@@ -21,19 +21,13 @@ class Parentable {
 public:
   virtual ~Parentable() {};
 
-  virtual void setParent(Element *parent, int index) = 0;
+  virtual void setParent(Element *parent) = 0;
     // set the parent.
     
   virtual Element *getParent() = 0;
     // get the parent of this object.
     
-  virtual int getIndex() = 0;
-    // get the index of this object in the parent.
-    
   static Parentable *cast(Element *obj);
-  
-private:
-
   static Parentable *_err;
   
 };

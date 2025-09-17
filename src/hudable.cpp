@@ -12,21 +12,19 @@
 */
 
 #include "hudable.hpp"
+
 #include "element.hpp"
-
-#include <iostream>
-
-using namespace std;
+#include "err.hpp"
 
 class HUDableErr: public HUDable {
 
 public:
 
   virtual void initHUD(HUD *hud) {
-    cerr << "obj not hudable!" << endl;
+    Err::typeError(typeid(HUDable));
   }
   virtual void setMode(Renderer &renderer, HUD *hud) {
-    cerr << "obj not hudable!" << endl;
+    Err::typeError(typeid(HUDable));
   }
 
 };
@@ -35,13 +33,6 @@ HUDable *HUDable::_err = nullptr;
 
 HUDable *HUDable::cast(Element *obj) {
 
-  HUDable *px = dynamic_cast<HUDable *>(obj);
-  if (!px) {
-    if (!_err) {
-     _err = new HUDableErr();
-    }
-    px = _err;
-  }
-  return px;
+  return Errable<HUDable, HUDableErr>::cast(obj);
   
 }

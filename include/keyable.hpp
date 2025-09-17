@@ -28,11 +28,8 @@ public:
     // process the keycode to for object.
     
   static Keyable *cast(Element *obj);
-  
-private:
-
   static Keyable *_err;
-  
+    
 };
 
 #endif // H_keyable

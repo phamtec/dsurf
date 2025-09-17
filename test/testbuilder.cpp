@@ -63,6 +63,9 @@ void Renderer::restoreScale() {
 }
 void Renderer::copy(Element *element) {
 }
+Point Renderer::noOffset(const Point &p) {
+  return Point();
+}
 int HUD::registerMode(const std::string &name, HUDMode *mode) {
   return -1;
 }

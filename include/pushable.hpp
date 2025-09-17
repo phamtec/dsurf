@@ -25,9 +25,6 @@ public:
     // push the object onto the parent.
     
   static Pushable *cast(Element *obj);
-  
-private:
-
   static Pushable *_err;
   
 };

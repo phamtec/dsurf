@@ -83,13 +83,8 @@ Element *Builder::walk(Element *parent, int index, const rfl::Generic &g) {
 
   Element *obj = castGeneric(g);
 
-  Parentable *px = dynamic_cast<Parentable *>(obj);
-  if (px) {
-    px->setParent(parent, index);
-  }
-  else {
-    cerr << "obj not parentable!" << endl;
-  }
+  Parentable::cast(obj)->setParent(parent);
+  Indexable::cast(obj)->setIndex(index);
     
   return obj;
     
@@ -103,13 +98,8 @@ Element *Builder::walk(Element *parent, int index, const rfl::Generic &g, const 
     obj = new Property(Unicode::convert(name), obj, dynamic_cast<Pushable *>(obj) != 0);
   }
   
-  Parentable *px = dynamic_cast<Parentable *>(obj);
-  if (px) {
-    px->setParent(parent, index);
-  }
-  else {
-    cerr << "obj not parentable!" << endl;
-  }
+  Parentable::cast(obj)->setParent(parent);
+  Indexable::cast(obj)->setIndex(index);
     
   return obj;
     
@@ -128,6 +118,8 @@ void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Pushab
         if (obj) {
           // interdict the list element.
           auto le = new ListElem(obj);
+          le->setParent(parent);
+          le->setIndex(index);
           list->push(le);
         }
       }
@@ -156,6 +148,8 @@ void Builder::walk(Element *parent, const std::vector<rfl::Generic > &v, Pushabl
       if (obj) {
         // interdict the list element.
         auto le = new ListElem(obj);
+        le->setParent(parent);
+        le->setIndex(index);
         list->push(le);
       }
     }
