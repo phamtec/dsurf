@@ -35,7 +35,7 @@ class Dict: public Element, public Pushable, public Parentable, public Indexable
   typedef Element super;
 
 public:
-  Dict(): _parent(0), _index(0) {}
+  Dict(): _parent(0), _index(0), _adding(false) {}
   
   // Element
   virtual void build(Renderer &renderer);
@@ -83,6 +83,10 @@ private:
   std::vector<std::unique_ptr<Element> > _elements;
   int _hudrootdict;
   int _huddict;
+  int _hudadddict;
+  bool _adding;
+  
+  void add(Element *element);
   
 };
 

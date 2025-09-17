@@ -15,6 +15,10 @@
 #include "colours.hpp"
 #include "sizes.hpp"
 #include "list.hpp"
+#include "property.hpp"
+#include "string.hpp"
+#include "long.hpp"
+#include "bool.hpp"
 
 #include <iostream>
 
@@ -24,6 +28,8 @@ Size Dict::layout() {
 
   _size = List::layoutVector(Size(0, Sizes::listgap), _elements);
   _size.h += _elements.size() == 0 ? Sizes::listgap - 10 : 0;
+  _size.w += _elements.size() == 0 ? Sizes::bottomlinelength : 0;
+  
   return _size;
   
 }
@@ -79,13 +85,26 @@ void Dict::registerHUDModes(HUD *hud) {
     auto mode = new HUDMode(false);
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
+    mode->add(new Shortcut(L"A", L"dd"));
     hud->registerMode("rootdict", mode);
   }
 
   {
     auto mode = new HUDMode(false);
     mode->add(new Shortcut(L"C", L"opy"));
+    mode->add(new Shortcut(L"A", L"dd"));
     hud->registerMode("dict", mode);
+  }
+
+  {
+    auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"Esc", L"(finish)"));
+    mode->add(new Shortcut(L"D", L"ict"));
+    mode->add(new Shortcut(L"L", L"ist"));
+    mode->add(new Shortcut(L"S", L"tring"));
+    mode->add(new Shortcut(L"N", L"umber"));
+    mode->add(new Shortcut(L"B", L"ool"));
+    hud->registerMode("adddict", mode);
   }
 
 }
@@ -94,6 +113,7 @@ void Dict::initHUD(HUD *hud) {
 
   _hudrootdict = hud->findMode("rootdict");
   _huddict = hud->findMode("dict");
+  _hudadddict = hud->findMode("adddict");
 
   // and walk the list.
   List::initHUDVector(_elements, hud);
@@ -102,7 +122,10 @@ void Dict::initHUD(HUD *hud) {
 
 void Dict::setMode(Renderer &renderer, HUD *hud) {
 
-  if (getParent() == 0) {
+  if (_adding) {
+      hud->setMode(_hudadddict);
+  }
+  else if (getParent() == 0) {
     hud->setMode(_hudrootdict);
   }
   else {
@@ -122,7 +145,56 @@ void Dict::processKey(Renderer &renderer, SDL_Keycode code) {
     case SDLK_C:
       renderer.copy(this);
       break;
+
+    case SDLK_A:
+      _adding = true;
+      break;
+      
+    case SDLK_ESCAPE:
+      _adding = false;
+      break;
+
+    case SDLK_D:
+      if (!_adding) {
+        return;
+      }
+      add(new Property(L"dict", new Dict(), true));
+      break;
+
+    case SDLK_L:
+      if (!_adding) {
+        return;
+      }
+      add(new Property(L"list", new List(), true));
+      break;
+
+    case SDLK_S:
+      if (!_adding) {
+        return;
+      }
+      add(new Property(L"string", new String(L"value"), false));
+      break;
+
+    case SDLK_N:
+      if (!_adding) {
+        return;
+      }
+      add(new Property(L"long", new Long(0), false));
+      break;
+
+    case SDLK_B:
+      if (!_adding) {
+        return;
+      }
+      add(new Property(L"bool", new Bool(false), false));
+      break;
   }
+  
+}
+
+void Dict::add(Element *element) {
+
+  _adding = false;
   
 }
 
