@@ -15,17 +15,24 @@
 #include "texteditor.hpp"
 #include "hud.hpp"
 #include "renderer.hpp"
+#include "unicode.hpp"
 
 #include <iostream>
 
 using namespace std;
 
 Property::Property(const std::wstring &name, Element *obj, bool container):
-    _parent(0), _index(0), _name(name, Colours::blue), 
+    _parent(0), _index(0), _name(name, Colours::propertyE), 
     _obj(obj), _container(container)
 {
   Parentable::cast(obj)->setParent(this);
   Indexable::cast(obj)->setIndex(0);
+}
+
+string Property::describe() {
+
+  return "Property: " + Unicode::convert(_name.str());
+  
 }
 
 Size Property::layout() {

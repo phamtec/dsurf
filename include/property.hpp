@@ -37,6 +37,7 @@ public:
   Property(const std::wstring &name, Element *obj, bool container);
   
   // Element
+  virtual std::string describe();
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);

@@ -20,3 +20,12 @@ SDL_Color Colours::plum = { 0x8E, 0x45, 0x85, SDL_ALPHA_OPAQUE };
 SDL_Color Colours::orange = { 0xFF, 0xA5, 0x00, SDL_ALPHA_OPAQUE };
 SDL_Color Colours::grey = { 0x80, 0x80, 0x80, SDL_ALPHA_OPAQUE };
 SDL_Color Colours::lightGrey = { 0xF0, 0xF0, 0xF0, SDL_ALPHA_OPAQUE };
+SDL_Color Colours::lime = { 0x8B, 0xB0, 0x6F, SDL_ALPHA_OPAQUE };
+SDL_Color Colours::turquoise = { 0x53, 0xB6, 0xAC, SDL_ALPHA_OPAQUE };
+
+SDL_Color Colours::dictE = plum;
+SDL_Color Colours::listE = orange;
+SDL_Color Colours::stringE = green;
+SDL_Color Colours::longE = turquoise;
+SDL_Color Colours::boolE = lime;
+SDL_Color Colours::propertyE = blue;

@@ -33,10 +33,10 @@ void Corner::build(Renderer &renderer) {
   
   // draw...
   if (_topleft) {
-    renderer.renderFilledPie(Point(size, size), size, 180, 270, Colours::plum);
+    renderer.renderFilledPie(Point(size, size), size, 180, 270, Colours::dictE);
   }
   else {
-    renderer.renderFilledPie(Point(size, 0), size, 90, 180, Colours::plum);
+    renderer.renderFilledPie(Point(size, 0), size, 90, 180, Colours::dictE);
   }
   
   renderer.setTarget(0);

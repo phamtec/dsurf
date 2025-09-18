@@ -51,7 +51,7 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
 }
 void Renderer::setTextState() {
 }
-void Renderer::processTextKey(Editable *editable, const Point &origin, const Size &size, SDL_Keycode code) {
+void Renderer::processTextKey(Element *element, const Point &origin, const Size &size, SDL_Keycode code) {
 }
 SDL_Texture *Renderer::createTexture(int width, int height) {
   return 0;
@@ -74,6 +74,11 @@ void Renderer::copy(Element *element) {
 }
 Point Renderer::noOffset(const Point &p) {
   return Point();
+}
+void Renderer::initElement(Element *parent, int index, Element *element) {
+}
+Point Renderer::localToGlobal(const Point &p) {
+  return p;
 }
 int HUD::registerMode(const std::string &name, HUDMode *mode) {
   return -1;

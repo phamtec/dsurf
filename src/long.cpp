@@ -22,7 +22,7 @@ Long::Long(long value): _parent(0), _index(0) {
 
   wstringstream ss;
   ss << value;
-  _value.set(ss.str(), Colours::green);
+  _value.set(ss.str(), Colours::longE);
   
 }
 

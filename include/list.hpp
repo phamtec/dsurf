@@ -38,12 +38,13 @@ class List: public Element, public Pushable, public Parentable, public Indexable
   typedef Element super;
 
 public:
-  List(): _parent(0), _index(0), _editing(false), _moveindex(-1)/*, _moveover(-1)*/ {}
+  List(): _parent(0), _index(0), _editing(false), _moveindex(-1), _moveover(-1), _adding(false) {}
   
   void setMoving(int index);
     // this object is currently moving.
     
   // Element
+  virtual std::string describe();
   virtual void build(Renderer &renderer);
   virtual void destroy(Renderer &renderer);
   virtual Size layout();
@@ -58,6 +59,7 @@ public:
   virtual void push(Element *element) {
     _elements.push_back(std::unique_ptr<Element>(element));
   }
+  virtual void remove(Renderer &renderer, Element *element);
   
   // Parentable
   virtual void setParent(Element *parent) { _parent = parent; }
@@ -88,6 +90,7 @@ public:
   static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);
   static void initHUDVector(std::vector<std::unique_ptr<Element> > &list, HUD *hud);
   static void destroyVector(std::vector<std::unique_ptr<Element> > &list, Renderer &renderer);
+  static bool removeFromVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > *list, Element *element);
  
   static List *cast(Element *obj);
 
@@ -101,6 +104,8 @@ private:
   int _hudlist;
   int _hudlistedit;
   int _hudlistmove;
+  int _hudaddlist;
+  bool _adding;
   bool _editing;
   Point _mouse;
   int _moveindex;
@@ -113,6 +118,7 @@ private:
   void reorder();
   Indexable *findIndex(int index);
   static void orderElements(std::vector<std::unique_ptr<Element> > &list, std::vector<Element *> *l2);
+  void add(Renderer &renderer, Element *element);
     
 };
 

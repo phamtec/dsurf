@@ -29,6 +29,16 @@ public:
   static SDL_Color orange;
   static SDL_Color grey;
   static SDL_Color lightGrey;
+  static SDL_Color lime;
+  static SDL_Color turquoise;
+  
+  // specific colours for elements
+  static SDL_Color dictE;
+  static SDL_Color listE;
+  static SDL_Color stringE;
+  static SDL_Color longE;
+  static SDL_Color boolE;
+  static SDL_Color propertyE;
   
 };
 

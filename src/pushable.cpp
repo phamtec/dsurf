@@ -25,6 +25,9 @@ public:
   virtual void push(Element *element) {
     Err::typeError(typeid(Pushable));
   }
+  virtual void remove(Renderer &renderer, Element *element) {
+    Err::typeError(typeid(Pushable));
+  }
 
 };
 

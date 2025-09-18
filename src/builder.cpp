@@ -105,7 +105,7 @@ Element *Builder::walk(Element *parent, int index, const rfl::Generic &g, const 
     
 }
 
-void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Pushable *list) {
+void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Element *list) {
 
   int index = 0;
   for (const auto& [k, v]: obj) {
@@ -120,14 +120,14 @@ void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Pushab
           auto le = new ListElem(obj);
           le->setParent(parent);
           le->setIndex(index);
-          list->push(le);
+          Pushable::cast(list)->push(le);
         }
       }
       else {
         auto *px = dynamic_cast<Element *>(list);
         auto obj = walk(px, index, v, k);
         if (obj) {
-          list->push(obj);
+          Pushable::cast(list)->push(obj);
         }
       }
     }
@@ -138,7 +138,7 @@ void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Pushab
   }
 }
 
-void Builder::walk(Element *parent, const std::vector<rfl::Generic > &v, Pushable *list) {
+void Builder::walk(Element *parent, const std::vector<rfl::Generic > &v, Element *list) {
 
   int index = 0;
   for (auto i: v) {
@@ -150,14 +150,13 @@ void Builder::walk(Element *parent, const std::vector<rfl::Generic > &v, Pushabl
         auto le = new ListElem(obj);
         le->setParent(parent);
         le->setIndex(index);
-        list->push(le);
+        Pushable::cast(list)->push(le);
       }
     }
     else {
-      Element *p = dynamic_cast<Element *>(list);
-      auto obj = walk(p, index, i);
+      auto obj = walk(list, index, i);
       if (obj) {
-        list->push(obj);
+        Pushable::cast(list)->push(obj);
       }
     }
     index++;

@@ -15,15 +15,22 @@
 #include "indexable.hpp"
 #include "sizeable.hpp"
 #include "indexable.hpp"
+#include "err.hpp"
 
 #include <iostream>
 
 using namespace std;
 
+std::string Element::describe() {
+
+  return Err::demangle(typeid(*this));
+  
+}
+
 Element *Element::hitTest(const Point &origin, const Point &p) { 
 
   if (Rect(origin, Sizeable::cast(this)->getSize()).contains(p)) {
-//    cout << "hit" << endl;
+//    cout << "hit " << describe() << endl;
     return this; 
   }
   

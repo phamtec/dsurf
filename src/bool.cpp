@@ -20,7 +20,7 @@ using namespace std;
 
 Bool::Bool(bool value): _parent(0), _index(0) {
 
-  _value.set(value ? L"true" : L"false", Colours::green);
+  _value.set(value ? L"true" : L"false", Colours::boolE);
   
 }
 

@@ -38,6 +38,7 @@ public:
   Dict(): _parent(0), _index(0), _adding(false) {}
   
   // Element
+  virtual std::string describe();
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
@@ -52,6 +53,7 @@ public:
   virtual void push(Element *element) {
     _elements.push_back(std::unique_ptr<Element>(element));
   }
+  virtual void remove(Renderer &renderer, Element *element);
   
   // Parentable
   virtual void setParent(Element *parent) { _parent = parent; }
@@ -86,7 +88,7 @@ private:
   int _hudadddict;
   bool _adding;
   
-  void add(Element *element);
+  void add(Renderer &renderer, const std::wstring &name, Element *element, bool container);
   
 };
 

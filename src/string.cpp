@@ -20,9 +20,8 @@ using namespace std;
 
 String::String(const std::wstring &value): _parent(0), _index(0) {
 
-  wstringstream ss;
-  ss << "\"" << value << "\"";
-  _value.set(ss.str(), Colours::green);
+  _value.set(value, Colours::stringE);
+  
 }
 
 Size String::layout() {
@@ -58,17 +57,9 @@ void String::processKey(Renderer &renderer, SDL_Keycode code) {
   
 }
 
-wstring String::getString() {
-
-  return _value.str().substr(1, _value.str().size() - 2);
-  
-}
-
 void String::setString(Renderer &renderer, const wstring &s) {
 
-  wstringstream ss;
-  ss << "\"" << s << "\"";
-  _value.set(ss.str(), Colours::red);
+  _value.set(s, Colours::red);
   _value.build(renderer);
 
 }

@@ -17,6 +17,7 @@
 #include "dict.hpp"
 #include "gfx.hpp"
 #include "editable.hpp"
+#include "property.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -172,6 +173,15 @@ void Renderer::setRoot(Element *root) {
   _offs = Spatial::center(_size, _osize, _scale);
 //  cout << _offs << endl;
 
+}
+
+void Renderer::initElement(Element *parent, int index, Element *element) {
+
+  Parentable::cast(element)->setParent(parent);
+  Indexable::cast(element)->setIndex(index);
+  element->build(*this);
+  HUDable::cast(element)->initHUD(_hud.get());
+  
 }
 
 void Renderer::loop() {
@@ -333,10 +343,29 @@ void Renderer::setTextState() {
 
 }
 
-void Renderer::processTextKey(Editable *editable, const Point &origin, const Size &size, SDL_Keycode code) {
+void Renderer::processTextKey(Element *element, const Point &origin, const Size &size, SDL_Keycode code) {
 
+  switch (code) {
+    case SDLK_D:
+      {
+        auto p = Parentable::cast(element)->getParent();
+        auto px = dynamic_cast<Pushable *>(p);
+        if (px) {
+          px->remove(*this, element);
+        }
+        else {
+          auto prop = dynamic_cast<Property *>(p);
+          if (prop) {
+//            prop->remove(*this, element);
+          }
+        }
+        return;
+      }
+      break;
+  }
+  
   // pass to the editor.
-  _editor->processTextKey(*this, editable, origin, size, code, _hud.get());
+  _editor->processTextKey(*this, Editable::cast(element), origin, size, code, _hud.get());
 
 }
 

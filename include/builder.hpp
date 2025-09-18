@@ -19,7 +19,6 @@
 #include <vector>
 
 class Element;
-class Pushable;
 
 class Builder {
 
@@ -39,8 +38,8 @@ public:
     
 private:
   
-  static void walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Pushable *list);
-  static void walk(Element *parent, const std::vector<rfl::Generic > &v, Pushable *list);
+  static void walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Element *list);
+  static void walk(Element *parent, const std::vector<rfl::Generic > &v, Element *list);
   static Element *castGeneric(const rfl::Generic &g);
 
 };

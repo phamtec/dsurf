@@ -24,10 +24,25 @@
 
 using namespace std;
 
+string Dict::describe() {
+
+  if (!getParent()) {
+    if (_elements.size() == 0) {
+      return "empty root Dict";
+    }
+    return "root Dict";
+  }
+  if (_elements.size() == 0) {
+    return "empty Dict";
+  }
+  return "Dict";
+  
+}
+
 Size Dict::layout() {
 
   _size = List::layoutVector(Size(0, Sizes::listgap), _elements);
-  _size.h += _elements.size() == 0 ? Sizes::listgap - 10 : 0;
+  _size.h += _elements.size() == 0 ? Sizes::listgap: 0;
   _size.w += _elements.size() == 0 ? Sizes::bottomlinelength : 0;
   
   return _size;
@@ -79,25 +94,34 @@ Point Dict::localOrigin(int index) {
   
 }
 
+void Dict::remove(Renderer &renderer, Element *element) {
+
+  if (List::removeFromVector(renderer, &_elements, element)) {
+    root()->layout();
+  }
+
+}
+
 void Dict::registerHUDModes(HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
-    mode->add(new Shortcut(L"A", L"dd"));
+    mode->add(new Shortcut(L"N", L"ew"));
     hud->registerMode("rootdict", mode);
   }
 
   {
     auto mode = new HUDMode(false);
     mode->add(new Shortcut(L"C", L"opy"));
-    mode->add(new Shortcut(L"A", L"dd"));
+    mode->add(new Shortcut(L"N", L"ew"));
+    mode->add(new Shortcut(L"D", L"elete"));
     hud->registerMode("dict", mode);
   }
 
   {
-    auto mode = new HUDMode(false);
+    auto mode = new HUDMode(true);
     mode->add(new Shortcut(L"Esc", L"(finish)"));
     mode->add(new Shortcut(L"D", L"ict"));
     mode->add(new Shortcut(L"L", L"ist"));
@@ -121,6 +145,8 @@ void Dict::initHUD(HUD *hud) {
 }
 
 void Dict::setMode(Renderer &renderer, HUD *hud) {
+
+  hud->setEditingLoc(renderer.localToGlobal(origin()));
 
   if (_adding) {
       hud->setMode(_hudadddict);
@@ -146,10 +172,6 @@ void Dict::processKey(Renderer &renderer, SDL_Keycode code) {
       renderer.copy(this);
       break;
 
-    case SDLK_A:
-      _adding = true;
-      break;
-      
     case SDLK_ESCAPE:
       _adding = false;
       break;
@@ -158,43 +180,55 @@ void Dict::processKey(Renderer &renderer, SDL_Keycode code) {
       if (!_adding) {
         return;
       }
-      add(new Property(L"dict", new Dict(), true));
+      add(renderer, L"dict", new Dict(), true);
       break;
 
     case SDLK_L:
       if (!_adding) {
         return;
       }
-      add(new Property(L"list", new List(), true));
+      add(renderer, L"list", new List(), true);
       break;
 
     case SDLK_S:
       if (!_adding) {
         return;
       }
-      add(new Property(L"string", new String(L"value"), false));
+      add(renderer, L"string", new String(L"value"), false);
       break;
 
     case SDLK_N:
       if (!_adding) {
+        // also "New"
+        _adding = true;
         return;
       }
-      add(new Property(L"long", new Long(0), false));
+      add(renderer, L"long", new Long(0), false);
       break;
 
     case SDLK_B:
       if (!_adding) {
         return;
       }
-      add(new Property(L"bool", new Bool(false), false));
+      add(renderer, L"bool", new Bool(false), false);
       break;
   }
   
 }
 
-void Dict::add(Element *element) {
+void Dict::add(Renderer &renderer, const std::wstring &name, Element *element, bool container) {
 
   _adding = false;
+  
+  // wrap in a property
+  auto p = new Property(name, element, container); 
+  renderer.initElement(this, _elements.size(), p);
+
+  // add element to our list
+  _elements.push_back(unique_ptr<Element>(p));
+  
+  // make sure it's layed out.
+  root()->layout();
   
 }
 
@@ -203,14 +237,14 @@ void Dict::drawBorder(Renderer &renderer, const Point &origin, const Size &size,
   // top left corner
   renderer.resources.topleft.render(renderer, origin);
      
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::plum);
-  renderer.renderFilledRect(Rect(origin + Size(0, Sizes::thickness), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 20 : 0) - Sizes::thickness)), Colours::plum);
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::dictE);
+  renderer.renderFilledRect(Rect(origin + Size(0, Sizes::thickness), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 20 : 0) - Sizes::thickness)), Colours::dictE);
 
   // bottom left corner
    renderer.resources.bottomleft.render(renderer, origin + Size(0, size.h - Sizes::thickness));
   
-  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength - Sizes::thickness)), Colours::plum);
-  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness) + Size(Sizes::thickness, 0), Size(Sizes::bottomlinelength - Sizes::thickness, Sizes::thickness)), Colours::plum);
+  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength - Sizes::thickness)), Colours::dictE);
+  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness) + Size(Sizes::thickness, 0), Size(Sizes::bottomlinelength - Sizes::thickness, Sizes::thickness)), Colours::dictE);
 
 }
 

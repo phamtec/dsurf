@@ -53,6 +53,9 @@ public:
   bool init(const char *fontpath);
     // initialise with th epath to the font file.
     
+  void initElement(Element *parent, int index, Element *element);
+    // do all the work that would initialise an element.
+    
   void initTypes();
     // specifically initialise types.
     
@@ -63,7 +66,7 @@ public:
     // process keys and HUD for the root object.
    
   void setTextState();
-  void processTextKey(Editable *editable, const Point &origin, const Size &size, SDL_Keycode code);
+  void processTextKey(Element *editable, const Point &origin, const Size &size, SDL_Keycode code);
     // set the state for the hud when we are over text
     
   void copy(Element *element);

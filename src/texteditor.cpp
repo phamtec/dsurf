@@ -62,6 +62,7 @@ void TextEditor::registerHUD(HUD *hud) {
     mode->add(new Shortcut(L"I", L"nsert"));
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
+    mode->add(new Shortcut(L"D", L"elete"));
     _hudtext = hud->registerMode("text", mode);
   }
   

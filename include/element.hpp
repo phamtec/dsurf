@@ -35,6 +35,9 @@ public:
   Element() {};
   virtual ~Element() {};
   
+  virtual std::string describe();
+    // describe this element.
+    
   virtual Size layout() = 0;
     // layout the object.
 

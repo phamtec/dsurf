@@ -18,6 +18,10 @@
 #include "listelem.hpp"
 #include "err.hpp"
 #include "move.hpp"
+#include "dict.hpp"
+#include "string.hpp"
+#include "long.hpp"
+#include "bool.hpp"
 
 #include <iostream>
 #include <SDL3/SDL.h>
@@ -33,10 +37,26 @@ List *List::cast(Element *obj) {
 
 }
 
+string List::describe() {
+
+  if (!getParent()) {
+    if (_elements.size() == 0) {
+      return "empty root List";
+    }
+    return "root List";
+  }
+  if (_elements.size() == 0) {
+    return "empty List";
+  }
+  return "List";
+  
+}
+
 Size List::layout() {
 
   _size = List::layoutVector(Size(0, Sizes::listgap), _elements);
-  _size.h += _elements.size() == 0 ? Sizes::listgap - 10 : Sizes::listgap;
+  _size.h += _elements.size() == 0 ? Sizes::listgap: 0;
+  _size.w += _elements.size() == 0 ? Sizes::bottomlinelength : 0;
 
   return _size;
   
@@ -225,6 +245,7 @@ void List::registerHUDModes(HUD *hud) {
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
     mode->add(new Shortcut(L"E", L"dit"));
+    mode->add(new Shortcut(L"N", L"ew"));
     hud->registerMode("rootlist", mode);
   }
 
@@ -232,20 +253,33 @@ void List::registerHUDModes(HUD *hud) {
     auto mode = new HUDMode(false);
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"E", L"dit"));
+    mode->add(new Shortcut(L"N", L"ew"));
+    mode->add(new Shortcut(L"D", L"elete"));
     hud->registerMode("list", mode);
   }
   
   {
-    auto mode = new HUDMode(false);
+    auto mode = new HUDMode(true);
     mode->add(new Shortcut(L"Esc", L"(finish)"));
     hud->registerMode("listedit", mode);
   }
 
   {
-    auto mode = new HUDMode(false);
+    auto mode = new HUDMode(true);
     mode->add(new Shortcut(L"Esc", L"(finish)"));
     mode->add(new Shortcut(L"D", L"(rop)"));
     hud->registerMode("listmove", mode);
+  }
+
+  {
+    auto mode = new HUDMode(true);
+    mode->add(new Shortcut(L"Esc", L"(finish)"));
+    mode->add(new Shortcut(L"D", L"ict"));
+    mode->add(new Shortcut(L"L", L"ist"));
+    mode->add(new Shortcut(L"S", L"tring"));
+    mode->add(new Shortcut(L"N", L"umber"));
+    mode->add(new Shortcut(L"B", L"ool"));
+    hud->registerMode("addlist", mode);
   }
 
 }
@@ -256,6 +290,7 @@ void List::initHUD(HUD *hud) {
   _hudlist = hud->findMode("list");
   _hudlistedit = hud->findMode("listedit");
   _hudlistmove = hud->findMode("listmove");
+  _hudaddlist = hud->findMode("addlist");
   
   // and walk the list.
   initHUDVector(_elements, hud);
@@ -272,7 +307,12 @@ void List::destroyVector(std::vector<std::unique_ptr<Element> > &list, Renderer 
 
 void List::setMode(Renderer &renderer, HUD *hud) {
 
-  if (_editing) {
+  hud->setEditingLoc(renderer.localToGlobal(origin()));
+
+  if (_adding) {
+    hud->setMode(_hudaddlist);
+  }
+  else if (_editing) {
     if (_moveindex >= 0) {
       hud->setMode(_hudlistmove);
     }
@@ -280,7 +320,7 @@ void List::setMode(Renderer &renderer, HUD *hud) {
       hud->setMode(_hudlistedit);
     }
   }
-  else if (getParent() == 0) {
+  else if (!getParent()) {
     hud->setMode(_hudrootlist);
   }
   else {
@@ -314,6 +354,10 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
       break;
       
     case SDLK_ESCAPE:
+      if (_adding) {
+        _adding = false;
+        break;
+      }
       if (!_editing) {
         break;
       }
@@ -329,16 +373,81 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
       break;
 
     case SDLK_D:
-      if (_moveindex < 0) {
+      if (_adding) {
+        add(renderer, new Dict());
         break;
       }
-      reorder();
-      _moveindex = -1;
-      _moveover = -1;
-      root()->layout();
+      if (_moveindex >= 0) {
+        reorder();
+        _moveindex = -1;
+        _moveover = -1;
+        root()->layout();
+        break;
+      }
+      if (getParent()) {
+        auto le = getParent();
+        if (!le) {
+          cerr << "not in a ListElem!" << endl;
+          break;
+        }
+        Pushable::cast(Parentable::cast(le)->getParent())->remove(renderer, le);
+      }
       break;
 
+    case SDLK_L:
+      if (!_adding) {
+        return;
+      }
+      add(renderer, new List());
+      break;
+
+    case SDLK_S:
+      if (!_adding) {
+        return;
+      }
+      add(renderer, new String(L"value"));
+      break;
+
+    case SDLK_N:
+      if (!_adding) {
+        // also "New"
+        _adding = true;
+        return;
+      }
+      add(renderer, new Long(0));
+      break;
+
+    case SDLK_B:
+      if (!_adding) {
+        return;
+      }
+      add(renderer, new Bool(false));
+      break;
   }
+  
+}
+
+void List::remove(Renderer &renderer, Element *element) {
+  
+  if (removeFromVector(renderer, &_elements, element)) {
+    root()->layout();
+  }
+  
+}
+
+void List::add(Renderer &renderer, Element *element) {
+
+  _adding = false;
+  
+  // wrap in a list element.
+  auto le = new ListElem(element);
+  renderer.initElement(this, _elements.size(), le);
+
+  // and put it in the list.
+  _elements.push_back(unique_ptr<Element>(le));
+  
+  // make sure everything is layed out.
+  root()->layout();
   
 }
 
@@ -497,9 +606,28 @@ void List::initHUDVector(std::vector<std::unique_ptr<Element> > &list, HUD *hud)
 
 void List::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
 
-  renderer.renderFilledRect(Rect(origin + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::orange);
-  renderer.renderFilledRect(Rect(origin, Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 40 : 0))), Colours::orange);
-  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength)), Colours::orange);
-  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::orange);
+  renderer.renderFilledRect(Rect(origin + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::listE);
+  renderer.renderFilledRect(Rect(origin, Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 40 : 0))), Colours::listE);
+  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength)), Colours::listE);
+  renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::listE);
 
+}
+
+bool List::removeFromVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > *list, Element *element) {
+  
+  auto ix = Indexable::cast(element)->getIndex();
+//  cout << "removing " << ix << endl;
+  auto it = find_if(list->begin(), list->end(), [ix](auto& e) { 
+    return Indexable::cast(e.get())->getIndex() == ix;
+  });
+  if (it != list->end()) {
+//    cout << "found" << endl;
+    (*it)->destroy(renderer);
+    list->erase(it);
+    for (int i=0; i<list->size(); i++ ) {
+      Indexable::cast((*list)[i].get())->setIndex(i);
+    }
+    return true;
+  }
+  return false;
 }
