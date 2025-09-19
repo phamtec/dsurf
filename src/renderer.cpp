@@ -184,11 +184,15 @@ void Renderer::initElement(Element *parent, int index, Element *element) {
   
 }
 
-void Renderer::loop() {
+void Renderer::loop(int rep) {
+
+  setupTest(rep);
 
   bool done = false;
   while (!done) {
   
+    processTestMsg();
+
     // handle all the events.
     if (processEvents()) {
       done = true;
@@ -578,5 +582,65 @@ void Renderer::renderFilledPie(const Point &origin, int radius, int start, int e
     o.x, o.y, radius, radius,
 		start, end, 0, 
 		color.r, color.g, color.b, color.a);
+
+}
+void Renderer::setupTest(int rep) {
+
+  _context.reset(new zmq::context_t(1));
+  _rep.reset(new zmq::socket_t(*_context, ZMQ_REP));
+  _rep->bind("tcp://127.0.0.1:" + to_string(rep));
+	cout << "Bound to ZMQ as Local REP on " << rep << endl;
+
+}
+
+void Renderer::processTestMsg() {
+
+  zmq::pollitem_t items [] = {
+      { *_rep, 0, ZMQ_POLLIN, 0 }
+  };
+  const std::chrono::milliseconds timeout{20};
+
+  zmq::message_t message;
+  zmq::poll(&items[0], 1, timeout);
+  if (items[0].revents & ZMQ_POLLIN) {
+  
+    // get the message.
+    zmq::message_t req;
+    auto res = _rep->recv(&req);
+    string m((const char *)req.data(), req.size());
+    
+    auto result = rfl::json::read<TestMsg>(m);
+    if (!result) {
+      testErr("unknown msg");
+      return;
+    }
+    if (result->type == "msg") {
+      cout << "Test msg " << result->msg << endl;
+      testAck();
+      return;
+    }
+    testErr("unknown " + result->type);
+  }
+
+}
+
+void Renderer::testAck() {
+
+  TestMsg reply{ .type = "ack" };
+  string r(rfl::json::write(reply)); 
+  zmq::message_t rep(r.length());
+  memcpy(rep.data(), r.c_str(), r.length());
+  _rep->send(rep);
+
+}
+
+void Renderer::testErr(const string &msg) {
+
+  cerr << "Test error: "<< msg << endl;
+  TestMsg reply{ .type = "err", .msg = msg };
+  string r(rfl::json::write(reply)); 
+  zmq::message_t rep(r.length());
+  memcpy(rep.data(), r.c_str(), r.length());
+  _rep->send(rep);
 
 }

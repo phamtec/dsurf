@@ -26,9 +26,12 @@ int main(int argc, char *argv[])
 {
   string version = "dsurf v0.4, 17-Sep-2025.";
     
+  int repPort;
+
   string usage = "Usage: " + string(argv[0]) + " input-file";
   po::options_description desc("Allowed options");
   desc.add_options()
+    ("repPort", po::value<int>(&repPort)->default_value(3013), "ZMQ Rep port.")
     ("help", "produce help message")
     ("input-file", po::value<string>(), "input file")
     ;
@@ -78,6 +81,6 @@ int main(int argc, char *argv[])
 //  renderer.setRoot(new FilledBox(Size(200, 200)));
 
   // the render loop
-  renderer.loop();
+  renderer.loop(repPort);
   
 }

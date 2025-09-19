@@ -18,6 +18,7 @@ project (dsurf)
   find_package(SDL3 REQUIRED)
   find_package(SDL3_ttf REQUIRED)
   find_package(OpenGL)
+  find_package(cppzmq REQUIRED)
   add_definitions(-DBOOST_ALL_DYN_LINK) 
   enable_testing()
   
@@ -27,10 +28,16 @@ set(CMAKE_CXX_STANDARD 20)
 if (UNIX AND NOT APPLE)
   add_definitions(-funwind-tables) 
 endif ()
+if (APPLE)
+  include_directories(/usr/local/include /opt/homebrew/Cellar/zeromq/4.3.5_2/include)
+  LINK_DIRECTORIES(/opt/homebrew/Cellar/zeromq/4.3.5_2/lib)
+endif ()
 
 include_directories(include)
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
+
+set(LIBS zmq)
 
 set(SRC
   src/font.cpp 
@@ -80,7 +87,10 @@ set(OBJSRC
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC})
-  target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp)
+  target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp ${LIBS})
+
+add_executable(Send test/send.cpp)
+  target_link_libraries(Send ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp ${LIBS})
 
 # Tests
 add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp src/size.cpp)

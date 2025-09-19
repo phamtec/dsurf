@@ -25,6 +25,7 @@
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_events.h>
 #include <memory>
+#include <zmq.hpp>
 
 class SDL_Window;
 class SDL_Renderer;
@@ -59,7 +60,7 @@ public:
   void initTypes();
     // specifically initialise types.
     
-  void loop();
+  void loop(int rep);
     // the main render loop.
     
   bool processRootKey(Element *element, SDL_Keycode code);
@@ -144,6 +145,20 @@ private:
   void debugMouse(const Point &p);
   void debugSize();
       
+  // testing via ZMQ
+  std::unique_ptr<zmq::context_t> _context;
+  std::unique_ptr<zmq::socket_t> _rep;
+
+  struct TestMsg {
+    std::string type;
+    std::string msg;
+  };
+
+  void setupTest(int rep);
+  void processTestMsg();
+  void testAck();
+  void testErr(const std::string &msg);
+
 };
 
 #endif // H_renderer

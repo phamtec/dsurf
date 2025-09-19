@@ -2,6 +2,7 @@ Feature: Hello
 
    Background:
  
-	Scenario: say hello
-	   Then she says "hello"
+   Scenario: say hello
+      When she sends "hello"
+      Then she receives ack
  

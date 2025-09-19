@@ -90,6 +90,14 @@ make
 sudo make install
 ```
 
+#### ZMQ
+
+#### Mac
+
+```
+brew install zmq cppzmq
+```
+
 ## Building this project
 
 ```
