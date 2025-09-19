@@ -28,6 +28,9 @@ public:
   virtual void remove(Renderer &renderer, Element *element) = 0;
       // remove the element
       
+  virtual int count() = 0;
+      // the count of the elements
+      
   static Pushable *cast(Element *obj);
   static Pushable *_err;
   

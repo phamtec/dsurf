@@ -1,15 +1,31 @@
 require 'json'
 
-$lastResult = nil
-
-Then('she says {string}') do |msg|
-  puts msg
+When('she sends key {string} to {string}') do |key, target|
+   result = Send({ "type": "key", "target": "root", "payload": key })
+   expect(result["type"]).to eq("ack")
 end
 
-When('she sends {string}') do |msg|
-   $lastResult = Send({ "type": "msg", "msg": msg })
+Then('{string} contains {int} elements') do |target, count|
+   result = Send({ "type": "count", "target": "root" })
+   expect(result["type"]).to eq("count")
+   expect(result["payload"].to_i).to eq(count)
 end
 
-Then('she receives ack') do
-   expect($lastResult["type"]).to eq("ack")
+Then('she waits {int} seconds') do |n|
+  sleep(n.to_i)
 end
+
+When('she puts the file contents {string} on the clipboard') do |filename|
+   `cat #{filename} | pbcopy`
+end
+
+When('she invalidates the clipboard') do
+   `echo "xx" | pbcopy`
+end
+
+Then('the clipboard contains the file contents {string}') do |filename|
+   json = `cat #{filename}`
+   clip_text = `pbpaste`
+   expect(json).to eq(clip_text)
+end
+

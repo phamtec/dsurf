@@ -151,13 +151,16 @@ private:
 
   struct TestMsg {
     std::string type;
-    std::string msg;
+    std::optional<std::string> target;
+    std::optional<std::string> payload;
   };
 
   void setupTest(int rep);
   void processTestMsg();
+  Element *getTestTarget(const std::optional<std::string> &name);
   void testAck();
   void testErr(const std::string &msg);
+  void testSend(const TestMsg &reply);
 
 };
 

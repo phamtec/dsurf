@@ -54,6 +54,7 @@ public:
     _elements.push_back(std::unique_ptr<Element>(element));
   }
   virtual void remove(Renderer &renderer, Element *element);
+  virtual int count() { return _elements.size(); }
   
   // Parentable
   virtual void setParent(Element *parent) { _parent = parent; }

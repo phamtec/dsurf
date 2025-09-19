@@ -1,6 +1,7 @@
 require "service_manager"
 
-Before('@restart') do
+Before do |scenario|
    ServiceManager.stop
    ServiceManager.start
 end
+

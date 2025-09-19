@@ -28,6 +28,10 @@ public:
   virtual void remove(Renderer &renderer, Element *element) {
     Err::typeError(typeid(Pushable));
   }
+  virtual int count() {
+    Err::typeError(typeid(Pushable));
+    return 0;
+  }
 
 };
 
