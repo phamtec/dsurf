@@ -143,6 +143,20 @@ If you want to compile things that change in the source dir, just change the com
 ../run.sh ../src ./TestSpatial scaleAndCenter
 ```
 
+## Testing
+
+The end to end tests use cucumber (Ruby), to get that going:
+
+```
+bundle install
+```
+
+You will only need to do that once to install the ruby stuff.
+
+```
+./test.sh
+```
+
 ## Progress
 
 You can run the app, copy in JSON, edit the JSON nodes as text and then copy it
