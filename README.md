@@ -150,7 +150,11 @@ back out.
 
 ## Current Focus
 
-- Build a dictionary from scratch.
+- Testability! This project is getting too complex and point and click to design
+  new features is painful.
+  
+## Pipeline
+
 - Bug fixes
 - Distribution on mac and linux
 - Windows version
@@ -279,4 +283,8 @@ Walk a JSON file building a simple layout.
 
 - Version 0.4
 - Lists can be reordered.
+
+### 18-Sep-2025
+
+- adding and removing.
 
