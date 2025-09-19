@@ -307,8 +307,6 @@ void List::destroyVector(std::vector<std::unique_ptr<Element> > &list, Renderer 
 
 void List::setMode(Renderer &renderer, HUD *hud) {
 
-  hud->setEditingLoc(renderer.localToGlobal(origin()));
-
   if (_adding) {
     hud->setMode(_hudaddlist);
   }
@@ -390,7 +388,7 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
           cerr << "not in a ListElem!" << endl;
           break;
         }
-        Pushable::cast(Parentable::cast(le)->getParent())->remove(renderer, le);
+        Listable::cast(Parentable::cast(le)->getParent())->remove(renderer, le);
       }
       break;
 

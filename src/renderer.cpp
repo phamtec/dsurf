@@ -300,6 +300,7 @@ void Renderer::setHUD() {
   if (hit) {
     HUDable *hx = dynamic_cast<HUDable *>(hit);
     if (hx) {
+      _hud->setEditingLoc(localToGlobal(hit->origin()));
       hx->setMode(*this, _hud.get());
     }
   }
@@ -357,7 +358,7 @@ void Renderer::processTextKey(Element *element, const Point &origin, const Size 
     case SDLK_D:
       {
         auto p = Parentable::cast(element)->getParent();
-        auto px = dynamic_cast<Pushable *>(p);
+        auto px = dynamic_cast<Listable *>(p);
         if (px) {
           px->remove(*this, element);
         }
@@ -456,6 +457,7 @@ bool Renderer::processEvents() {
             hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
             HUDable *hx = dynamic_cast<HUDable *>(hit);
             if (hx) {
+              _hud->setEditingLoc(localToGlobal(hit->origin()));
               hx->setMode(*this, _hud.get());
             }
           }

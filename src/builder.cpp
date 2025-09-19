@@ -95,7 +95,7 @@ Element *Builder::walk(Element *parent, int index, const rfl::Generic &g, const 
   Element *obj = castGeneric(g);
 
   if (obj) {
-    obj = new Property(Unicode::convert(name), obj, dynamic_cast<Pushable *>(obj) != 0);
+    obj = new Property(Unicode::convert(name), obj, dynamic_cast<Listable *>(obj) != 0);
   }
   
   Parentable::cast(obj)->setParent(parent);
@@ -120,14 +120,14 @@ void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Elemen
           auto le = new ListElem(obj);
           le->setParent(parent);
           le->setIndex(index);
-          Pushable::cast(list)->push(le);
+          Listable::cast(list)->push(le);
         }
       }
       else {
         auto *px = dynamic_cast<Element *>(list);
         auto obj = walk(px, index, v, k);
         if (obj) {
-          Pushable::cast(list)->push(obj);
+          Listable::cast(list)->push(obj);
         }
       }
     }
@@ -150,13 +150,13 @@ void Builder::walk(Element *parent, const std::vector<rfl::Generic > &v, Element
         auto le = new ListElem(obj);
         le->setParent(parent);
         le->setIndex(index);
-        Pushable::cast(list)->push(le);
+        Listable::cast(list)->push(le);
       }
     }
     else {
       auto obj = walk(list, index, i);
       if (obj) {
-        Pushable::cast(list)->push(obj);
+        Listable::cast(list)->push(obj);
       }
     }
     index++;

@@ -20,7 +20,7 @@
 #include "keyable.hpp"
 #include "parentable.hpp"
 #include "indexable.hpp"
-#include "pushable.hpp"
+#include "listable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
 #include "indexable.hpp"
@@ -200,12 +200,12 @@ BOOST_AUTO_TEST_CASE( parentable )
   
 }
 
-BOOST_AUTO_TEST_CASE( nullPushable )
+BOOST_AUTO_TEST_CASE( nullListable )
 {
-  cout << "=== nullPushable ===" << endl;
+  cout << "=== nullListable ===" << endl;
 
   try {
-    Pushable::cast(0)->push(0);
+    Listable::cast(0)->push(0);
     BOOST_FAIL("Didn't catch");
   }
   catch (string &ex) {
@@ -215,12 +215,12 @@ BOOST_AUTO_TEST_CASE( nullPushable )
   
 }
 
-BOOST_AUTO_TEST_CASE( pushable )
+BOOST_AUTO_TEST_CASE( listable )
 {
-  cout << "=== pushable ===" << endl;
+  cout << "=== listable ===" << endl;
 
   X x;
-  Pushable::cast(&x)->push(0);
+  Listable::cast(&x)->push(0);
   
 }
 

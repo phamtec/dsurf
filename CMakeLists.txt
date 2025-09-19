@@ -81,7 +81,7 @@ set(OBJSRC
   src/editable.cpp
   src/hudable.cpp
   src/keyable.cpp
-  src/pushable.cpp
+  src/listable.cpp
   src/sizeable.cpp
   src/writeable.cpp
   src/indexable.cpp
@@ -104,7 +104,7 @@ add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp ${OBJSRC} ${UTIL
 
 add_test(TestBuilder TestBuilder)
 
-add_executable(TestErrable test/testerrable.cpp src/element.cpp  ${OBJSRC} ${UTILSRC})
+add_executable(TestErrable test/testerrable.cpp src/element.cpp ${OBJSRC} ${UTILSRC})
   target_link_libraries(TestErrable reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestErrable TestErrable)
@@ -113,3 +113,9 @@ add_executable(TestMove test/testmove.cpp ${UTILSRC})
   target_link_libraries(TestMove ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestMove TestMove)
+
+add_executable(TestList test/testlist.cpp src/element.cpp ${OBJSRC} ${UTILSRC})
+  target_link_libraries(TestList reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+add_test(TestList TestList)
+

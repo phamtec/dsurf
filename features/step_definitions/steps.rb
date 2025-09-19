@@ -1,18 +1,22 @@
 require 'json'
 
 When('she sends key {string} to {string}') do |key, target|
-   result = Send({ "type": "key", "target": "root", "payload": key })
+   result = Send({ "type": "key", "target": target, "payload": key })
    expect(result["type"]).to eq("ack")
 end
 
 Then('{string} contains {int} elements') do |target, count|
-   result = Send({ "type": "count", "target": "root" })
+   result = Send({ "type": "count", "target": target })
    expect(result["type"]).to eq("count")
    expect(result["payload"].to_i).to eq(count)
 end
 
 Then('she waits {int} seconds') do |n|
-  sleep(n.to_i)
+  sleep(n)
+end
+
+Then('she waits {float} seconds') do |n|
+  sleep(n)
 end
 
 When('she puts the file contents {string} on the clipboard') do |filename|

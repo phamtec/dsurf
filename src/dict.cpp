@@ -146,8 +146,6 @@ void Dict::initHUD(HUD *hud) {
 
 void Dict::setMode(Renderer &renderer, HUD *hud) {
 
-  hud->setEditingLoc(renderer.localToGlobal(origin()));
-
   if (_adding) {
       hud->setMode(_hudadddict);
   }

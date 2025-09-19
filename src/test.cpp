@@ -12,7 +12,7 @@
 #include "renderer.hpp"
 
 #include "keyable.hpp"
-#include "pushable.hpp"
+#include "listable.hpp"
 #include "hudable.hpp"
 
 #include <rfl/json.hpp>
@@ -51,6 +51,7 @@ void Renderer::processTestMsg() {
       return;
     }
     if (result->type == "key") {
+    
       auto target = getTestTarget(result->target);
       if (!target) {
         return;
@@ -59,6 +60,7 @@ void Renderer::processTestMsg() {
         testErr("missing pqyload");
         return;
       }
+      _hud->setEditingLoc(localToGlobal(target->origin()));
       HUDable::cast(target)->setMode(*this, _hud.get());
       SDL_Keycode code = (*(result->payload))[0];
 //      cout << "sending key " << code << endl;
@@ -72,7 +74,7 @@ void Renderer::processTestMsg() {
         return;
       }
       stringstream ss;
-      ss << Pushable::cast(target)->count();
+      ss << Listable::cast(target)->count();
       TestMsg reply{ .type = "count", .payload = ss.str() };
       testSend(reply);
       return;
@@ -83,15 +85,19 @@ void Renderer::processTestMsg() {
 }
 
 Element *Renderer::getTestTarget(const optional<string> &name) {
-  if (!(name)) {
+
+  if (!name) {
     testErr("missing target");
     return nullptr;
   }
-  if (*(name) != "root") {
-    testErr("only copy from root");
+  
+  auto element = Listable::getByPath(_root.get(), *name);
+  if (!element) {
+    testErr(*name + " invalid");
     return nullptr;
   }
-  return _root.get();
+  return element;
+  
 }
 
 void Renderer::testSend(const TestMsg &reply) {
@@ -105,21 +111,13 @@ void Renderer::testSend(const TestMsg &reply) {
 
 void Renderer::testAck() {
 
-  TestMsg reply{ .type = "ack" };
-  string r(rfl::json::write(reply)); 
-  zmq::message_t rep(r.length());
-  memcpy(rep.data(), r.c_str(), r.length());
-  _rep->send(rep);
+  testSend({ .type = "ack" });
 
 }
 
 void Renderer::testErr(const string &msg) {
 
   cerr << "Test error: "<< msg << endl;
-  TestMsg reply{ .type = "err", .payload = msg };
-  string r(rfl::json::write(reply)); 
-  zmq::message_t rep(r.length());
-  memcpy(rep.data(), r.c_str(), r.length());
-  _rep->send(rep);
+  testSend({ .type = "err", .payload = msg });
 
 }
