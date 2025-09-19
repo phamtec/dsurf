@@ -51,7 +51,6 @@ void Renderer::processTestMsg() {
       return;
     }
     if (result->type == "key") {
-    
       auto target = getTestTarget(result->target);
       if (!target) {
         return;
