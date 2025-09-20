@@ -14,6 +14,7 @@
 #include "keyable.hpp"
 #include "listable.hpp"
 #include "hudable.hpp"
+#include "sizeable.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl.hpp>
@@ -51,35 +52,74 @@ void Renderer::processTestMsg() {
       return;
     }
     if (result->type == "key") {
-      auto target = getTestTarget(result->target);
-      if (!target) {
-        return;
-      }
-      if (!result->payload) {
-        testErr("missing pqyload");
-        return;
-      }
-      _hud->setEditingLoc(localToGlobal(target->origin()));
-      HUDable::cast(target)->setMode(*this, _hud.get());
-      SDL_Keycode code = (*(result->payload))[0];
-//      cout << "sending key " << code << endl;
-      Keyable::cast(target)->processKey(*this, code);
-      testAck();
+    
+      handleTestKey(*result);
       return;
+      
     }
     if (result->type == "count") {
-      auto target = getTestTarget(result->target);
-      if (!target) {
-        return;
-      }
-      stringstream ss;
-      ss << Listable::cast(target)->count();
-      TestMsg reply{ .type = "count", .payload = ss.str() };
-      testSend(reply);
+    
+      handleTestCount(*result);
       return;
+      
     }
     testErr("unknown type " + result->type);
   }
+
+}
+
+void Renderer::handleTestCount(const TestMsg &msg) {
+
+  auto target = getTestTarget(msg.target);
+  if (!target) {
+    testErr("missing target");
+    return;
+  }
+  stringstream ss;
+  ss << Listable::cast(target)->count();
+  TestMsg reply{ .type = "count", .payload = ss.str() };
+  testSend(reply);
+
+}
+
+void Renderer::handleTestKey(const TestMsg &msg) {
+
+  auto target = getTestTarget(msg.target);
+  if (!target) {
+    testErr("missing target");
+    return;
+  }
+  if (!msg.payload) {
+    testErr("missing pqyload");
+    return;
+  }
+  Keyable *kx = dynamic_cast<Keyable *>(target);
+  if (!kx) {
+    testErr("target not Keyable");
+    return;
+  }
+  
+  // set the mouse to be the center of the objects.
+  Rect r(target->origin(), Sizeable::cast(target)->getSize());
+  
+  _mouse = Point((_offs.w + r.origin.x + (r.size.w / 2)) * _scale, (_offs.h + r.origin.y + (r.size.h / 2)) * _scale);
+  
+  SDL_Keycode code = (*msg.payload)[0];
+//      cout << "sending key " << code << endl;
+  kx->processKey(*this, code);
+  
+  // the key might have invalidated the object (like a paste)
+  // so find the target again just in case.
+  target = getTestTarget(msg.target);
+  
+  // render the hud
+  HUDable *hx = dynamic_cast<HUDable *>(target);
+  if (hx) {
+    _hud->setEditingLoc(localToGlobal(r.origin));
+    hx->setMode(*this, _hud.get());
+    _hud->render(*this, _mouse);
+  }
+  testAck();
 
 }
 

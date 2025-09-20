@@ -1,8 +1,11 @@
 require 'json'
 
+$cadence = 0.5
+
 When('she sends key {string} to {string}') do |key, target|
    result = Send({ "type": "key", "target": target, "payload": key })
    expect(result["type"]).to eq("ack")
+   sleep($cadence)
 end
 
 Then('{string} contains {int} elements') do |target, count|
@@ -12,10 +15,6 @@ Then('{string} contains {int} elements') do |target, count|
 end
 
 Then('she waits {int} seconds') do |n|
-  sleep(n)
-end
-
-Then('she waits {float} seconds') do |n|
   sleep(n)
 end
 

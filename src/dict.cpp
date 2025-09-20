@@ -109,6 +109,8 @@ void Dict::registerHUDModes(HUD *hud) {
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
     mode->add(new Shortcut(L"N", L"ew"));
+    mode->add(new Shortcut(L"U", L"ndo"));
+    mode->add(new Shortcut(L"R", L"edo"));
     hud->registerMode("rootdict", mode);
   }
 

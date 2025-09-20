@@ -388,6 +388,7 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
           cerr << "not in a ListElem!" << endl;
           break;
         }
+        // needs to be undoable.
         Listable::cast(Parentable::cast(le)->getParent())->remove(renderer, le);
       }
       break;
@@ -435,6 +436,8 @@ void List::remove(Renderer &renderer, Element *element) {
 
 void List::add(Renderer &renderer, Element *element) {
 
+  // needs to be undable.
+  
   _adding = false;
   
   // wrap in a list element.

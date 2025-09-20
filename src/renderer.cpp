@@ -340,6 +340,14 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
     case SDLK_C:
       copy(element);
       return true;
+
+    case SDLK_U:
+      cout << "undo" << endl;
+      return true;
+
+    case SDLK_R:
+      cout << "redo" << endl;
+      return true;
   }
   
   return false;

@@ -172,8 +172,9 @@ back out.
 
 ## Current Focus
 
-- Testability! This project is getting too complex and point and click to design
-  new features is painful.
+- Undo system.
+-- I was trying to avoid this but deleting nodes is easy and we need a way for you to 
+  easily get back to where you were. It's not that hard :-)
   
 ## Pipeline
 
@@ -313,5 +314,9 @@ Walk a JSON file building a simple layout.
 ### 19-Sep-2025
 
 - Cucumber end to end testing.
+
+### 20-Sep-2025
+
+- Show HUD on screen while automated testing.
 
 

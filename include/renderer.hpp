@@ -161,6 +161,8 @@ private:
   void testAck();
   void testErr(const std::string &msg);
   void testSend(const TestMsg &reply);
+  void handleTestKey(const TestMsg &msg);
+  void handleTestCount(const TestMsg &msg);
 
 };
 
