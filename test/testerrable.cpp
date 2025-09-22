@@ -80,6 +80,14 @@ void Renderer::initElement(Element *parent, int index, Element *element) {
 Point Renderer::localToGlobal(const Point &p) {
   return p;
 }
+void Renderer::registerRootHUDMode(HUDMode *mode) {
+}
+void Renderer::registerTextHUDMode(HUDMode *mode) {
+}
+void Renderer::exec(Change *change) {
+}
+void Renderer::processDeleteKey(Element *element) {
+}
 int HUD::registerMode(const std::string &name, HUDMode *mode) {
   return -1;
 }

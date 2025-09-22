@@ -172,9 +172,7 @@ back out.
 
 ## Current Focus
 
-- Undo system.
--- I was trying to avoid this but deleting nodes is easy and we need a way for you to 
-  easily get back to where you were. It's not that hard :-)
+- Editing multiple objects.
   
 ## Pipeline
 
@@ -318,5 +316,10 @@ Walk a JSON file building a simple layout.
 ### 20-Sep-2025
 
 - Show HUD on screen while automated testing.
+
+### 22-Sep-2025
+
+- Undo/Redo for all modifying commands.
+
 
 

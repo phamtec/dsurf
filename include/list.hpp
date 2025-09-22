@@ -59,9 +59,9 @@ public:
   virtual void push(Element *element) {
     _elements.push_back(std::unique_ptr<Element>(element));
   }
-  virtual void remove(Renderer &renderer, Element *element);
   virtual int count() { return _elements.size(); }
   virtual Element *at(int index) { return _elements[index].get(); }
+  virtual std::vector<std::unique_ptr<Element> > *getElements() { return &_elements; }
   
   // Parentable
   virtual void setParent(Element *parent) { _parent = parent; }
@@ -92,12 +92,11 @@ public:
   static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);
   static void initHUDVector(std::vector<std::unique_ptr<Element> > &list, HUD *hud);
   static void destroyVector(std::vector<std::unique_ptr<Element> > &list, Renderer &renderer);
-  static bool removeFromVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > *list, Element *element);
  
   static List *cast(Element *obj);
 
 private:
-
+  
   Element *_parent;
   int _index;
   Size _size;

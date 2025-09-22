@@ -22,6 +22,7 @@
 #include "string.hpp"
 #include "long.hpp"
 #include "bool.hpp"
+#include "newelement.hpp"
 
 #include <iostream>
 #include <SDL3/SDL.h>
@@ -242,9 +243,7 @@ void List::registerHUDModes(HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
-    mode->add(new Shortcut(L"C", L"opy"));
-    mode->add(new Shortcut(L"P", L"aste"));
-    mode->add(new Shortcut(L"E", L"dit"));
+    Renderer::registerRootHUDMode(mode);
     mode->add(new Shortcut(L"N", L"ew"));
     hud->registerMode("rootlist", mode);
   }
@@ -254,7 +253,7 @@ void List::registerHUDModes(HUD *hud) {
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"E", L"dit"));
     mode->add(new Shortcut(L"N", L"ew"));
-    mode->add(new Shortcut(L"D", L"elete"));
+    Renderer::registerTextHUDMode(mode);
     hud->registerMode("list", mode);
   }
   
@@ -383,13 +382,7 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
         break;
       }
       if (getParent()) {
-        auto le = getParent();
-        if (!le) {
-          cerr << "not in a ListElem!" << endl;
-          break;
-        }
-        // needs to be undoable.
-        Listable::cast(Parentable::cast(le)->getParent())->remove(renderer, le);
+        renderer.processDeleteKey(getParent());
       }
       break;
 
@@ -426,14 +419,6 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
   
 }
 
-void List::remove(Renderer &renderer, Element *element) {
-  
-  if (removeFromVector(renderer, &_elements, element)) {
-    root()->layout();
-  }
-  
-}
-
 void List::add(Renderer &renderer, Element *element) {
 
   // needs to be undable.
@@ -444,11 +429,7 @@ void List::add(Renderer &renderer, Element *element) {
   auto le = new ListElem(element);
   renderer.initElement(this, _elements.size(), le);
 
-  // and put it in the list.
-  _elements.push_back(unique_ptr<Element>(le));
-  
-  // make sure everything is layed out.
-  root()->layout();
+  renderer.exec(new NewElement(this, le));
   
 }
 
@@ -612,23 +593,4 @@ void List::drawBorder(Renderer &renderer, const Point &origin, const Size &size,
   renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength)), Colours::listE);
   renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::listE);
 
-}
-
-bool List::removeFromVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > *list, Element *element) {
-  
-  auto ix = Indexable::cast(element)->getIndex();
-//  cout << "removing " << ix << endl;
-  auto it = find_if(list->begin(), list->end(), [ix](auto& e) { 
-    return Indexable::cast(e.get())->getIndex() == ix;
-  });
-  if (it != list->end()) {
-//    cout << "found" << endl;
-    (*it)->destroy(renderer);
-    list->erase(it);
-    for (int i=0; i<list->size(); i++ ) {
-      Indexable::cast((*list)[i].get())->setIndex(i);
-    }
-    return true;
-  }
-  return false;
 }

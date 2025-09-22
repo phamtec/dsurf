@@ -85,6 +85,8 @@ set(OBJSRC
   src/sizeable.cpp
   src/writeable.cpp
   src/indexable.cpp
+  src/removefromlist.cpp
+  src/newelement.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC})

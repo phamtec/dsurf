@@ -1,6 +1,6 @@
 require 'json'
 
-$cadence = 0.5
+$cadence = 0.1
 
 When('she sends key {string} to {string}') do |key, target|
    result = Send({ "type": "key", "target": target, "payload": key })

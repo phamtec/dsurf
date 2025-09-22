@@ -18,6 +18,7 @@
 #include "gfx.hpp"
 #include "editable.hpp"
 #include "property.hpp"
+#include "removefromlist.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -37,6 +38,11 @@ Renderer::~Renderer() {
     _root->destroy(*this);
   }
 
+  // make sure alkl the chnages objects get destroyed too.
+  for_each(_changes.begin(), _changes.end(), [this](auto&& e) { 
+    e->destroy(*this); 
+  });
+  
   // font first.
   _font.reset(0);
 //   if (_pointercursor) {
@@ -319,13 +325,21 @@ void Renderer::copy(Element *element) {
   SDL_SetClipboardText(Builder::getJson(element).c_str());
 }
 
+void Renderer::registerRootHUDMode(HUDMode *mode) {
+
+  mode->add(new Shortcut(L"C", L"opy"));
+  mode->add(new Shortcut(L"P", L"aste"));
+  mode->add(new Shortcut(L"U", L"ndo"));
+  mode->add(new Shortcut(L"R", L"edo"));
+  
+}
+
 bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
 
   switch (code) {
     case SDLK_P:
       {
         char *text = SDL_GetClipboardText();
-//        cout << text << endl;
         auto json = Builder::loadText(text);
         SDL_free(text);
         if (json) {
@@ -342,11 +356,11 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
       return true;
 
     case SDLK_U:
-      cout << "undo" << endl;
+      undo();
       return true;
 
     case SDLK_R:
-      cout << "redo" << endl;
+      redo();
       return true;
   }
   
@@ -360,25 +374,41 @@ void Renderer::setTextState() {
 
 }
 
+void Renderer::registerTextHUDMode(HUDMode *mode) {
+
+  mode->add(new Shortcut(L"D", L"elete"));
+  
+}
+
+void Renderer::processDeleteKey(Element *element) {
+
+  auto p = Parentable::cast(element)->getParent();
+  auto px = dynamic_cast<Listable *>(p);
+  if (px) {
+    exec(new RemoveFromList(px, element));
+  }
+  else {
+    auto prop = dynamic_cast<Property *>(p);
+    if (prop) {
+      p = Parentable::cast(prop)->getParent();
+      px = dynamic_cast<Listable *>(p);
+      if (px) {
+        exec(new RemoveFromList(px, element));
+      }
+      else {
+        cerr << "Not listable and not in a property" << endl;
+      }
+    }
+  }
+  
+}
+
 void Renderer::processTextKey(Element *element, const Point &origin, const Size &size, SDL_Keycode code) {
 
   switch (code) {
     case SDLK_D:
-      {
-        auto p = Parentable::cast(element)->getParent();
-        auto px = dynamic_cast<Listable *>(p);
-        if (px) {
-          px->remove(*this, element);
-        }
-        else {
-          auto prop = dynamic_cast<Property *>(p);
-          if (prop) {
-//            prop->remove(*this, element);
-          }
-        }
-        return;
-      }
-      break;
+      processDeleteKey(element);
+      return;
   }
   
   // pass to the editor.
@@ -598,3 +628,65 @@ void Renderer::renderFilledPie(const Point &origin, int radius, int start, int e
 		color.r, color.g, color.b, color.a);
 
 }
+
+void Renderer::exec(Change *change) {
+
+  // throw away all the changes after the undo ptr.
+  if (_changes.size() > 0) {
+    auto ii = _undoptr;
+    ii++;
+    for (std::vector<std::unique_ptr<Change> >::iterator i=ii; i != _changes.end(); i++) {
+      _changes.erase(i);
+    }
+  }
+  
+  // execute this change
+  change->exec(*this);
+  _root->layout();
+  
+  // remember it.
+  _changes.push_back(unique_ptr<Change>(change));
+  
+  // point at the last element.
+  _undoptr = _changes.end();
+  _undoptr--;
+  
+}
+
+void Renderer::undo() {
+
+  if (_changes.size() == 0) {
+    cout << "no changes" << endl;
+    return;
+  }
+  
+  (*_undoptr)->undo(*this);
+  _root->layout();
+  
+  if (_undoptr == _changes.begin()) {
+    _undoptr = _changes.end();
+  }
+  else {
+    _undoptr--;
+  }
+}
+
+void Renderer::redo() {
+
+  if (_changes.size() == 0) {
+    cout << "no changes" << endl;
+    return;
+  }
+  
+  if (_undoptr == _changes.end()) {
+    _undoptr = _changes.begin();
+  }
+  else {
+    _undoptr++;
+  }
+  (*_undoptr)->exec(*this);
+  _root->layout();
+  
+}
+
+

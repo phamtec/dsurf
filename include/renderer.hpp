@@ -21,6 +21,7 @@
 #include "resources.hpp"
 #include "texteditor.hpp"
 #include "hud.hpp"
+#include "change.hpp"
 
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_events.h>
@@ -40,7 +41,7 @@ class Renderer {
 public:
   Renderer(const Size &wsize, float scalemult, float scale, const Size &offset, bool editing): 
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
-    _mousedown(false), _lastclick(0),
+    _mousedown(false), _lastclick(0), _undoptr(_changes.end()),
     _window(0), _renderer(0), _engine(0), _startedit(editing)/*,
     _pointercursor(0), _editcursor(0)*/
       {};
@@ -64,15 +65,24 @@ public:
     // the main render loop.
     
   bool processRootKey(Element *element, SDL_Keycode code);
+  static void registerRootHUDMode(HUDMode *mode);
     // process keys and HUD for the root object.
    
   void setTextState();
   void processTextKey(Element *editable, const Point &origin, const Size &size, SDL_Keycode code);
+  static void registerTextHUDMode(HUDMode *mode);
     // set the state for the hud when we are over text
     
+  void processDeleteKey(Element *element);
+
   void copy(Element *element);
     // coy the element onto the clipboard
 
+  // undo/redo
+  void undo();
+  void redo();
+  void exec(Change *change);
+  
   // dealing with textures.
   SDL_Texture *createTexture(int width, int height);
   void setTarget(SDL_Texture *texture);
@@ -135,6 +145,10 @@ private:
 //   SDL_Cursor *_editcursor;
   Point _renderorigin;
   
+  // undo
+  std::vector<std::unique_ptr<Change> > _changes;
+  std::vector<std::unique_ptr<Change> >::iterator _undoptr;
+  
   bool processEvents();
   bool isDoubleClick();
   void endEdit();
@@ -157,7 +171,7 @@ private:
 
   void setupTest(int rep);
   void processTestMsg();
-  Element *getTestTarget(const std::optional<std::string> &name);
+  Element *getTestTarget(const std::optional<std::string> &name, bool silent=false);
   void testAck();
   void testErr(const std::string &msg);
   void testSend(const TestMsg &reply);

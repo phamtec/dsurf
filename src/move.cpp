@@ -52,3 +52,25 @@ void Move::moveObj(vector<Indexable *> &objs, int from, int to) {
   }
 
 }
+
+void Move::shuffleDownFrom(std::vector<Indexable *> *objs, int from) {
+
+  for_each(objs->begin(), objs->end(), [from](auto e) {
+    int ix = e->getIndex();
+    if (ix > from) {
+      e->setIndex(ix-1);
+    }
+  });
+
+}
+
+void Move::shuffleUpFrom(std::vector<Indexable *> *objs, int from) {
+
+  for_each(objs->begin(), objs->end(), [from](auto e) {
+    int ix = e->getIndex();
+    if (ix >= from) {
+      e->setIndex(ix+1);
+    }
+  });
+
+}

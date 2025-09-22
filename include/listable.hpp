@@ -15,6 +15,7 @@
 #define H_listable
 
 #include <string>
+#include <vector>
 
 class Element;
 class Renderer;
@@ -27,15 +28,15 @@ public:
   virtual void push(Element *element) = 0;
     // push the element.
     
-  virtual void remove(Renderer &renderer, Element *element) = 0;
-      // remove the element
-      
   virtual int count() = 0;
       // the count of the elements
       
   virtual Element *at(int index) = 0;
       // return the element at that index
       
+  virtual std::vector<std::unique_ptr<Element> > *getElements() { return nullptr; }
+    // direct access to the elements is necesary for the undo (command) system.
+    
   static Element *getByPath(Element *root, const std::string &path);
     // given a root, get the element by the path given.
     

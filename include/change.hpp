@@ -19,9 +19,14 @@ class Renderer;
 class Change {
 
 public:
-
-  virtual void do(Renderer &renderer) = 0;
+  virtual ~Change() {}
+  
+  virtual void exec(Renderer &renderer) = 0;
   virtual void undo(Renderer &renderer) = 0;
+  
+  virtual void destroy(Renderer &renderer) {};
+    // opposite of build, but called with the renderer.
+    
     
 };
 

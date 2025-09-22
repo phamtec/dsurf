@@ -19,6 +19,7 @@
 #include "string.hpp"
 #include "long.hpp"
 #include "bool.hpp"
+#include "newelement.hpp"
 
 #include <iostream>
 
@@ -94,23 +95,12 @@ Point Dict::localOrigin(int index) {
   
 }
 
-void Dict::remove(Renderer &renderer, Element *element) {
-
-  if (List::removeFromVector(renderer, &_elements, element)) {
-    root()->layout();
-  }
-
-}
-
 void Dict::registerHUDModes(HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
-    mode->add(new Shortcut(L"C", L"opy"));
-    mode->add(new Shortcut(L"P", L"aste"));
+    Renderer::registerRootHUDMode(mode);
     mode->add(new Shortcut(L"N", L"ew"));
-    mode->add(new Shortcut(L"U", L"ndo"));
-    mode->add(new Shortcut(L"R", L"edo"));
     hud->registerMode("rootdict", mode);
   }
 
@@ -118,7 +108,7 @@ void Dict::registerHUDModes(HUD *hud) {
     auto mode = new HUDMode(false);
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"N", L"ew"));
-    mode->add(new Shortcut(L"D", L"elete"));
+    Renderer::registerTextHUDMode(mode);
     hud->registerMode("dict", mode);
   }
 
@@ -224,11 +214,7 @@ void Dict::add(Renderer &renderer, const std::wstring &name, Element *element, b
   auto p = new Property(name, element, container); 
   renderer.initElement(this, _elements.size(), p);
 
-  // add element to our list
-  _elements.push_back(unique_ptr<Element>(p));
-  
-  // make sure it's layed out.
-  root()->layout();
+  renderer.exec(new NewElement(this, p));
   
 }
 

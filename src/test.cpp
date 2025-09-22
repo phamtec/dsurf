@@ -72,9 +72,10 @@ void Renderer::handleTestCount(const TestMsg &msg) {
 
   auto target = getTestTarget(msg.target);
   if (!target) {
-    testErr("missing target");
     return;
   }
+//  cout << "counting: " << target->describe() << endl;
+  
   stringstream ss;
   ss << Listable::cast(target)->count();
   TestMsg reply{ .type = "count", .payload = ss.str() };
@@ -86,7 +87,6 @@ void Renderer::handleTestKey(const TestMsg &msg) {
 
   auto target = getTestTarget(msg.target);
   if (!target) {
-    testErr("missing target");
     return;
   }
   if (!msg.payload) {
@@ -105,12 +105,17 @@ void Renderer::handleTestKey(const TestMsg &msg) {
   _mouse = Point((_offs.w + r.origin.x + (r.size.w / 2)) * _scale, (_offs.h + r.origin.y + (r.size.h / 2)) * _scale);
   
   SDL_Keycode code = (*msg.payload)[0];
-//      cout << "sending key " << code << endl;
+//  cout << "sending key " << code << endl;
   kx->processKey(*this, code);
   
   // the key might have invalidated the object (like a paste)
   // so find the target again just in case.
-  target = getTestTarget(msg.target);
+  target = getTestTarget(msg.target, true);
+  if (!target) {
+    // target is gone, probably deleted.
+    testAck();
+    return;
+  }
   
   // render the hud
   HUDable *hx = dynamic_cast<HUDable *>(target);
@@ -119,22 +124,28 @@ void Renderer::handleTestKey(const TestMsg &msg) {
     hx->setMode(*this, _hud.get());
     _hud->render(*this, _mouse);
   }
+
   testAck();
 
 }
 
-Element *Renderer::getTestTarget(const optional<string> &name) {
+Element *Renderer::getTestTarget(const optional<string> &name, bool silent) {
 
   if (!name) {
-    testErr("missing target");
+    if (!silent) {
+      testErr("missing target");
+    }
     return nullptr;
   }
   
   auto element = Listable::getByPath(_root.get(), *name);
   if (!element) {
-    testErr(*name + " invalid");
+    if (!silent) {
+      testErr(*name + " invalid");
+    }
     return nullptr;
   }
+  
   return element;
   
 }

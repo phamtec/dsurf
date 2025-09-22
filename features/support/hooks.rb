@@ -1,6 +1,6 @@
 require "service_manager"
 
-Before do |scenario|
+After do |scenario|
    ServiceManager.stop
    ServiceManager.start
 end

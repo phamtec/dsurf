@@ -24,6 +24,9 @@ public:
   
   static void moveObj(std::vector<Indexable *> &objs, int from, int to);
 
+  static void shuffleDownFrom(std::vector<Indexable *> *objs, int from);
+  static void shuffleUpFrom(std::vector<Indexable *> *objs, int from);
+    
 };
 
 #endif // H_move
