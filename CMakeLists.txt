@@ -121,3 +121,8 @@ add_executable(TestList test/testlist.cpp src/element.cpp ${OBJSRC} ${UTILSRC})
 
 add_test(TestList TestList)
 
+add_executable(TestMem test/testmem.cpp)
+  target_link_libraries(TestMem ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+add_test(TestMem TestMem)
+

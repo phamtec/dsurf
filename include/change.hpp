@@ -22,8 +22,11 @@ public:
   virtual ~Change() {}
   
   virtual void exec(Renderer &renderer) = 0;
+    // execute (do) the change.
+    
   virtual void undo(Renderer &renderer) = 0;
-  
+    // undo the change.
+    
   virtual void destroy(Renderer &renderer) {};
     // opposite of build, but called with the renderer.
     

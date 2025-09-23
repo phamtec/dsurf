@@ -16,7 +16,6 @@
 
 #include "change.hpp"
 
-#include <vector>
 #include <memory>
 
 class Element;
