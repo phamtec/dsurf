@@ -84,7 +84,6 @@ set(OBJSRC
   src/listable.cpp
   src/sizeable.cpp
   src/writeable.cpp
-  src/indexable.cpp
   src/removefromlist.cpp
   src/newelement.cpp
 )
@@ -101,22 +100,22 @@ add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp sr
 
 add_test(TestSpatial TestSpatial)
 
-add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp ${OBJSRC} ${UTILSRC})
+add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp ${OBJSRC} ${UTILSRC})
   target_link_libraries(TestBuilder reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestBuilder TestBuilder)
 
-add_executable(TestErrable test/testerrable.cpp src/element.cpp ${OBJSRC} ${UTILSRC})
+add_executable(TestErrable test/testerrable.cpp test/dummyobjs.cpp ${OBJSRC} ${UTILSRC})
   target_link_libraries(TestErrable reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestErrable TestErrable)
 
-add_executable(TestMove test/testmove.cpp ${UTILSRC})
-  target_link_libraries(TestMove ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+add_executable(TestMove test/testmove.cpp test/dummyobjs.cpp ${OBJSRC} ${UTILSRC})
+  target_link_libraries(TestMove reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestMove TestMove)
 
-add_executable(TestList test/testlist.cpp src/element.cpp ${OBJSRC} ${UTILSRC})
+add_executable(TestList test/testlist.cpp test/dummyobjs.cpp ${OBJSRC} ${UTILSRC})
   target_link_libraries(TestList reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestList TestList)

@@ -21,7 +21,6 @@
 #include "element.hpp"
 #include "listable.hpp"
 #include "parentable.hpp"
-#include "indexable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
 #include "hudable.hpp"
@@ -30,12 +29,12 @@
 #include <memory>
 #include <vector>
 
-class Dict: public Element, public Listable, public Parentable, public Indexable, public Sizeable, public Writeable, public HUDable, public Keyable {
+class Dict: public Element, public Listable, public Parentable, public Sizeable, public Writeable, public HUDable, public Keyable {
 
   typedef Element super;
 
 public:
-  Dict(): _parent(0), _index(0), _adding(false) {}
+  Dict(): _parent(0), _adding(false) {}
   
   // Element
   virtual std::string describe();
@@ -43,7 +42,7 @@ public:
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Element *hitTest(const Point &origin, const Point &p);
-  virtual Point localOrigin(int index);
+  virtual Point localOrigin(Element *elem);
   virtual void destroy(Renderer &renderer);
   
   // Writeable
@@ -60,10 +59,6 @@ public:
   // Parentable
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
-  
-  // Indexable
-  virtual void setIndex(int index) { _index = index; }
-  virtual int getIndex() { return _index; }
   
   // Sizeable
   virtual Size getSize() { return _size; }
@@ -82,7 +77,6 @@ public:
 private:
 
   Element *_parent;
-  int _index;
   Size _size;
   std::vector<std::unique_ptr<Element> > _elements;
   int _hudrootdict;

@@ -60,8 +60,8 @@ public:
   Point origin();
     // recursivle return the origin of this object.
     
-  virtual Point localOrigin(int index) { return Point(); }
-    // return the origin of an object with index in this object.
+  virtual Point localOrigin(Element *elem) { return Point(); }
+    // return the origin of an object in this object.
     
   Element *root();
     // return the root object by walking the parent.

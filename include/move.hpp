@@ -16,17 +16,19 @@
 
 #include <vector>
 
-class Indexable;
+//class Indexable;
+class Element;
 
 class Move {
 
 public:
   
-  static void moveObj(std::vector<Indexable *> &objs, int from, int to);
+  static void moveObj(std::vector<std::unique_ptr<Element> > *objs, Element *from, Element *to);
 
-  static void shuffleDownFrom(std::vector<Indexable *> *objs, int from);
-  static void shuffleUpFrom(std::vector<Indexable *> *objs, int from);
-    
+private:
+
+  static int getIndex(const std::vector<std::unique_ptr<Element> > &objs, Element *elem);
+  
 };
 
 #endif // H_move

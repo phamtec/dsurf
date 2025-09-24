@@ -20,14 +20,13 @@
 #include "text.hpp"
 #include "colours.hpp"
 #include "parentable.hpp"
-#include "indexable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
 #include "hudable.hpp"
 #include "keyable.hpp"
 
-class Bool: public Element, public Parentable, public Indexable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable {
+class Bool: public Element, public Parentable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable {
 
   typedef Element super;
 
@@ -46,10 +45,6 @@ public:
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
   
-  // Indexable
-  virtual void setIndex(int index) { _index = index; }
-  virtual int getIndex() { return _index; }
-  
   // Sizeable
   virtual Size getSize() { return _size; }
 
@@ -67,7 +62,6 @@ public:
 private:
 
   Element *_parent;
-  int _index;
   Size _size;
   Text _value;
 

@@ -27,7 +27,6 @@ using namespace std;
 ListElem::ListElem(Element *obj): _obj(obj)
 {
   Parentable::cast(obj)->setParent(this);      
-  Indexable::cast(obj)->setIndex(0);      
 }
 
 void ListElem::setEdit(Renderer &renderer, bool state) {
@@ -53,7 +52,7 @@ void ListElem::setEdit(Renderer &renderer, bool state) {
   else {
     renderer.destroyTexture(_texture);
     _texture = 0;
-    List::cast(getParent())->setMoving(-1);
+    List::cast(getParent())->setMoving(nullptr);
   }
   
 }
@@ -139,9 +138,9 @@ Element *ListElem::hitTest(const Point &origin, const Point &p) {
 
 }
 
-Point ListElem::localOrigin(int index) {
+Point ListElem::localOrigin(Element *elem) {
 
-  return _obj->localOrigin(index);
+  return _obj->localOrigin(elem);
   
 }
 
@@ -159,7 +158,7 @@ void ListElem::processKey(Renderer &renderer, SDL_Keycode code) {
         break;
 
       case SDLK_M:
-        List::cast(getParent())->setMoving(getIndex());
+        List::cast(getParent())->setMoving(this);
         break;
     }
     return;

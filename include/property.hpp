@@ -19,7 +19,6 @@
 #include "element.hpp"
 #include "text.hpp"
 #include "parentable.hpp"
-#include "indexable.hpp"
 #include "sizeable.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
@@ -29,7 +28,7 @@
 #include <memory>
 #include <vector>
 
-class Property: public Element, public Parentable, public Indexable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable  {
+class Property: public Element, public Parentable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable  {
 
   typedef Element super;
 
@@ -42,7 +41,7 @@ public:
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Element *hitTest(const Point &origin, const Point &p);
-  virtual Point localOrigin(int index);
+  virtual Point localOrigin(Element *elem);
   virtual void destroy(Renderer &renderer);
 
   // Writeable
@@ -52,10 +51,6 @@ public:
   // Parentable
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
-  
-  // Indexable
-  virtual void setIndex(int index) { _index = index; }
-  virtual int getIndex() { return _index; }
   
   // Sizeable
   virtual Size getSize() { return _size; }
@@ -74,7 +69,6 @@ public:
 private:
 
   Element *_parent;
-  int _index;
   Size _size;
   Text _name;
   bool _container;

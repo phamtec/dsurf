@@ -184,7 +184,6 @@ void Renderer::setRoot(Element *root) {
 void Renderer::initElement(Element *parent, int index, Element *element) {
 
   Parentable::cast(element)->setParent(parent);
-  Indexable::cast(element)->setIndex(index);
   element->build(*this);
   HUDable::cast(element)->initHUD(_hud.get());
   

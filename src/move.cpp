@@ -11,66 +11,81 @@
 
 #include "move.hpp"
 
-#include "indexable.hpp"
+#include "element.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-void Move::moveObj(vector<Indexable *> &objs, int from, int to) {
+int Move::getIndex(const vector<unique_ptr<Element> > &objs, Element *elem) {
 
-//  cout << "move " << from << " -> " << to << endl;
+  for (int i=0; i<objs.size(); i++) {
+    if (objs[i].get() == elem) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+void Move::moveObj(vector<unique_ptr<Element> > *objs, Element *from, Element *to) {
+
+  cout << "move " << from->describe() << " -> " << to->describe() << endl;
+
+  int fromi = getIndex(*objs, from);
+  int toi = getIndex(*objs, to);
+  cout << "indexes " << fromi << " -> " << toi << endl;
   
-  // sort them by index.
-  sort(objs.begin(), objs.end(), [](Indexable *a, Indexable *b) {
-    return a->getIndex() < b->getIndex();
-  });
-
-  if (abs(from - to) == 1) {  
-    // swap adjacent objects.
-    objs[from]->setIndex(to);
-    objs[to]->setIndex(from);
-  }
-  else if (from < to) {
-    // shuffle down
-    for (int i=(from+1); i<=to; i++) {
-      objs[i]->setIndex(i-1);
+  vector<unique_ptr<Element> > newlist;
+  if (abs(fromi - toi) == 1) {
+    int low, high;
+    if (fromi < toi) {
+      low = fromi;
+      high = toi;
     }
-    // move object
-    objs[from]->setIndex(to);
-  }
-  else if (from > to) {
-    // shuffle up
-    for (int i=(to+1); i<=from; i++) {
-      objs[i-1]->setIndex(i);
+    else {
+      low = toi;
+      high = fromi;
     }
-    // move object
-    objs[from]->setIndex(to);
+    for (int i=0; i<low; i++) {
+      newlist.push_back(std::move((*objs)[i]));
+    }
+    newlist.push_back(std::move((*objs)[high]));
+    newlist.push_back(std::move((*objs)[low]));
+    for (int i=high+1; i<objs->size(); i++) {
+      newlist.push_back(std::move((*objs)[i]));
+    }
+  }
+  else if (fromi < toi) {
+    for (int i=0; i<fromi; i++) {
+      newlist.push_back(std::move((*objs)[i]));
+    }
+    for (int i=fromi+1; i<=toi; i++) {
+      newlist.push_back(std::move((*objs)[i]));
+    }
+    newlist.push_back(std::move((*objs)[fromi]));
+    for (int i=toi+1; i<=objs->size()-1; i++) {
+      newlist.push_back(std::move((*objs)[i]));
+    }
+  }
+  else if (fromi > toi) {
+    for (int i=0; i<toi; i++) {
+      newlist.push_back(std::move((*objs)[i]));
+    }
+    newlist.push_back(std::move((*objs)[fromi]));
+    for (int i=toi; i<fromi; i++) {
+      newlist.push_back(std::move((*objs)[i]));
+    }
+    for (int i=fromi+1; i<=objs->size()-1; i++) {
+      newlist.push_back(std::move((*objs)[i]));
+    }
   }
   else {
-    cerr << "no case for " << from << " -> " << to << endl;
+    cerr << "no case for " << fromi << " -> " << toi << endl;
+    return;
   }
+  
+  objs->clear();
+  *objs = std::move(newlist);
 
 }
 
-void Move::shuffleDownFrom(std::vector<Indexable *> *objs, int from) {
-
-  for_each(objs->begin(), objs->end(), [from](auto e) {
-    int ix = e->getIndex();
-    if (ix > from) {
-      e->setIndex(ix-1);
-    }
-  });
-
-}
-
-void Move::shuffleUpFrom(std::vector<Indexable *> *objs, int from) {
-
-  for_each(objs->begin(), objs->end(), [from](auto e) {
-    int ix = e->getIndex();
-    if (ix >= from) {
-      e->setIndex(ix+1);
-    }
-  });
-
-}

@@ -18,7 +18,7 @@
 
 using namespace std;
 
-String::String(const std::wstring &value): _parent(0), _index(0) {
+String::String(const std::wstring &value): _parent(0) {
 
   _value.set(value, Colours::stringE);
   

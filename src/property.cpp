@@ -22,11 +22,10 @@
 using namespace std;
 
 Property::Property(const std::wstring &name, Element *obj, bool container):
-    _parent(0), _index(0), _name(name, Colours::propertyE), 
+    _parent(0), _name(name, Colours::propertyE), 
     _obj(obj), _container(container)
 {
   Parentable::cast(obj)->setParent(this);
-  Indexable::cast(obj)->setIndex(0);
 }
 
 string Property::describe() {
@@ -107,13 +106,8 @@ Element *Property::hitTest(const Point &origin, const Point &p) {
   
 }
 
-Point Property::localOrigin(int index) {
+Point Property::localOrigin(Element *elem) {
 
-  if (index != 0) {
-    cerr << "property values are always at index 0!" << endl;
-    return Point(0, 0);
-  }
-  
   Size nsize = _name.size();
   if (_container) {
     return Point(0, nsize.h);

@@ -39,8 +39,8 @@ private:
 void testDestroyed(const vector<int> &test) {
 
   // print out the destroyed array.
-  copy(test.begin(), test.end() - 1, ostream_iterator<int>(cout, ", "));
-  cout << test.back() << endl;
+  copy(gDestroyed.begin(), gDestroyed.end() - 1, ostream_iterator<int>(cout, ", "));
+  cout << gDestroyed.back() << endl;
 
   BOOST_CHECK_EQUAL_COLLECTIONS(gDestroyed.begin(), gDestroyed.end(), test.begin(), test.end());
 
@@ -78,6 +78,7 @@ BOOST_AUTO_TEST_CASE( eraseVectorUniqPtr )
   {
     vector<unique_ptr<Obj> > objs;
     addObjs(&objs);
+    gDestroyed.push_back(100);
     
     auto i = objs.begin();
     i += 3;
@@ -86,10 +87,13 @@ BOOST_AUTO_TEST_CASE( eraseVectorUniqPtr )
     // array element really gone.
     BOOST_CHECK_EQUAL(objs.size(), 5);
     
+    // one delete so far
+    gDestroyed.push_back(200);
+
     // and let them be destroyed.
   }
   
-  testDestroyed({3, 5, 4, 2, 1, 0});
+  testDestroyed({100, 3, 200, 5, 4, 2, 1, 0});
   
 }
 
@@ -103,6 +107,7 @@ BOOST_AUTO_TEST_CASE( moveVectorUniqPtr )
     {
       vector<unique_ptr<Obj> > objs;
       addObjs(&objs);
+      gDestroyed.push_back(100);
       
       // move 1 out.
       auto i = objs.begin();
@@ -111,11 +116,14 @@ BOOST_AUTO_TEST_CASE( moveVectorUniqPtr )
 
       BOOST_CHECK_EQUAL(objs.size(), 6);
       BOOST_CHECK_EQUAL(objs[1], nullptr);
+
+      // no deletes yet.
+      gDestroyed.push_back(200);
     }
     // and let them be destroyed.
   }
   
-  testDestroyed({5, 4, 3, 2, 0, 1});
+  testDestroyed({100, 200, 5, 4, 3, 2, 0, 1});
   
 }
 
@@ -129,6 +137,7 @@ BOOST_AUTO_TEST_CASE( moveVectorUniqPtrToVector )
     {
       vector<unique_ptr<Obj> > objs;
       addObjs(&objs);
+      gDestroyed.push_back(100);
       
       // move 1 out.
       auto i = objs.begin();
@@ -144,11 +153,41 @@ BOOST_AUTO_TEST_CASE( moveVectorUniqPtrToVector )
 
       BOOST_CHECK_EQUAL(objs.size(), 6);
       BOOST_CHECK_EQUAL(objs[4], nullptr);
+      
+      // no deletes yet.
+      gDestroyed.push_back(200);
     }
     // and let them be destroyed.
   }
   
-  testDestroyed({5, 3, 1, 0, 4, 2});
+  testDestroyed({100, 200, 5, 3, 1, 0, 4, 2});
+  
+}
+
+BOOST_AUTO_TEST_CASE( insertVectorUniqPtr )
+{
+  cout << "=== insertVectorUniqPtr ===" << endl;
+
+  gDestroyed.clear();
+  {
+    vector<unique_ptr<Obj> > objs;
+    addObjs(&objs);
+    gDestroyed.push_back(100);
+    
+    auto i = objs.begin();
+    i += 3;
+    objs.insert(i, unique_ptr<Obj>(new Obj(20)));
+
+    // array element really gone.
+    BOOST_CHECK_EQUAL(objs.size(), 7);
+    
+    // no deletes yet
+    gDestroyed.push_back(200);
+
+    // and let them be destroyed.
+  }
+  
+  testDestroyed({100, 200, 5, 4, 3, 20, 2, 1, 0});
   
 }
 

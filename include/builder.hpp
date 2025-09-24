@@ -24,8 +24,8 @@ class Builder {
 
 public:
   
-  static Element *walk(Element *parent, int index, const rfl::Generic &g);
-  static Element *walk(Element *parent, int index, const rfl::Generic &g, const std::string &name);
+  static Element *walk(Element *parent, const rfl::Generic &g);
+  static Element *walk(Element *parent, const rfl::Generic &g, const std::string &name);
 
   static Element *loadFile(const std::string &fn);
     // load the JSON file into the renderer.

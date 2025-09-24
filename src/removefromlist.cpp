@@ -33,46 +33,28 @@ void RemoveFromList::destroy(Renderer &renderer) {
 
 void RemoveFromList::exec(Renderer &renderer) {
 
-  auto ix = Indexable::cast(_elem)->getIndex();
-  
   auto elements = _list->getElements();
   
-//  cout << "removing " << ix << endl;
-  auto it = find_if(elements->begin(), elements->end(), [ix](auto& e) { 
-    return Indexable::cast(e.get())->getIndex() == ix;
+// //  cout << "removing " << ix << endl;
+  auto it = find_if(elements->begin(), elements->end(), [this](auto& e) { 
+    return e.get() == _elem;
   });
   if (it != elements->end()) {
   
-//    cout << "found" << endl;
+//   cout << "found" << endl;
 
     // save away the old element in the list.
     _oldelem = std::move(*it);
     
     // remove the element from the list (we have it)
     elements->erase(it);
-    
-    // collect all the indexables.
-    vector<Indexable *> objs;
-    transform(elements->begin(), elements->end(), back_inserter(objs), [](auto& e) { return Indexable::cast(e.get()); });
-
-    // make sure all the indexe match up.
-    Move::shuffleDownFrom(&objs, Indexable::cast(_oldelem.get())->getIndex());
   }
 
 }
 
 void RemoveFromList::undo(Renderer &renderer) {
 
-  auto elements = _list->getElements();
-
-  // collect all the indexables.
-  vector<Indexable *> objs;
-  transform(elements->begin(), elements->end(), back_inserter(objs), [](auto& e) { return Indexable::cast(e.get()); });
-
-  // make sure all the indexes will match up.
-  Move::shuffleUpFrom(&objs, Indexable::cast(_oldelem.get())->getIndex());
-
   // give it back to the list.
-  elements->push_back(std::move(_oldelem));
+  _list->getElements()->push_back(std::move(_oldelem));
 
 }

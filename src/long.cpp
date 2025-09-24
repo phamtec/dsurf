@@ -18,7 +18,7 @@
 
 using namespace std;
 
-Long::Long(long value): _parent(0), _index(0) {
+Long::Long(long value): _parent(0) {
 
   wstringstream ss;
   ss << value;

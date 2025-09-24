@@ -26,7 +26,7 @@ Element *Builder::loadFile(const string &fn) {
 
   auto result = rfl::json::load<rfl::Generic>(fn);
   if (result) {
-    return walk(0, 0, *result);
+    return walk(0, *result);
   }
 
   return nullptr;
@@ -37,7 +37,7 @@ Element *Builder::loadText(const char *text) {
 
   auto result = rfl::json::read<rfl::Generic>(text);
   if (result) {
-    return walk(0, 0, *result);
+    return walk(0, *result);
   }
 
   return nullptr;
@@ -79,18 +79,17 @@ Element *Builder::castGeneric(const rfl::Generic &g)  {
   
 }
 
-Element *Builder::walk(Element *parent, int index, const rfl::Generic &g) {
+Element *Builder::walk(Element *parent, const rfl::Generic &g) {
 
   Element *obj = castGeneric(g);
 
   Parentable::cast(obj)->setParent(parent);
-  Indexable::cast(obj)->setIndex(index);
     
   return obj;
     
 }
 
-Element *Builder::walk(Element *parent, int index, const rfl::Generic &g, const string &name) {
+Element *Builder::walk(Element *parent, const rfl::Generic &g, const string &name) {
 
   Element *obj = castGeneric(g);
 
@@ -99,7 +98,6 @@ Element *Builder::walk(Element *parent, int index, const rfl::Generic &g, const 
   }
   
   Parentable::cast(obj)->setParent(parent);
-  Indexable::cast(obj)->setIndex(index);
     
   return obj;
     
@@ -107,25 +105,23 @@ Element *Builder::walk(Element *parent, int index, const rfl::Generic &g, const 
 
 void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Element *list) {
 
-  int index = 0;
   for (const auto& [k, v]: obj) {
     
     using V = remove_cvref_t<decltype(v)>;
     if (is_same<rfl::Generic, V>::value) {
       auto *l = dynamic_cast<List *>(list);
       if (l) {
-        auto obj = walk(l, index, v, k);
+        auto obj = walk(l, v, k);
         if (obj) {
           // interdict the list element.
           auto le = new ListElem(obj);
           le->setParent(parent);
-          le->setIndex(index);
           Listable::cast(list)->push(le);
         }
       }
       else {
         auto *px = dynamic_cast<Element *>(list);
-        auto obj = walk(px, index, v, k);
+        auto obj = walk(px, v, k);
         if (obj) {
           Listable::cast(list)->push(obj);
         }
@@ -134,32 +130,28 @@ void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Elemen
     else {
       cout << "unknown type in object " << typeid(v).name();
     }
-    index++;
   }
 }
 
 void Builder::walk(Element *parent, const std::vector<rfl::Generic > &v, Element *list) {
 
-  int index = 0;
   for (auto i: v) {
     auto *l = dynamic_cast<List *>(list);
     if (l) {
-      auto obj = walk(l, index, i);
+      auto obj = walk(l, i);
       if (obj) {
         // interdict the list element.
         auto le = new ListElem(obj);
         le->setParent(parent);
-        le->setIndex(index);
         Listable::cast(list)->push(le);
       }
     }
     else {
-      auto obj = walk(list, index, i);
+      auto obj = walk(list, i);
       if (obj) {
         Listable::cast(list)->push(obj);
       }
     }
-    index++;
   }
 
 }

@@ -12,9 +12,7 @@
 #include "element.hpp"
 
 #include "parentable.hpp"
-#include "indexable.hpp"
 #include "sizeable.hpp"
-#include "indexable.hpp"
 #include "err.hpp"
 
 #include <iostream>
@@ -47,7 +45,7 @@ Point Element::origin() {
   }
   
   Point o = parent->origin();
-  Point lo = parent->localOrigin(Indexable::cast(this)->getIndex());
+  Point lo = parent->localOrigin(this);
 //   cout << "origin parent " << typeid(*parent).name() << endl;
 //   cout << "o: " << o << endl;
 //   cout << "lo: " << lo << endl;

@@ -89,9 +89,9 @@ Element *Dict::hitTest(const Point &origin, const Point &p) {
   
 };
 
-Point Dict::localOrigin(int index) {
+Point Dict::localOrigin(Element *elem) {
 
-  return List::localOriginVector(_elements, index, false);
+  return List::localOriginVector(_elements, elem, false);
   
 }
 

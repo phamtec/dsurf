@@ -18,7 +18,7 @@
 
 using namespace std;
 
-Bool::Bool(bool value): _parent(0), _index(0) {
+Bool::Bool(bool value): _parent(0) {
 
   _value.set(value ? L"true" : L"false", Colours::boolE);
   
