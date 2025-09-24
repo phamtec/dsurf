@@ -105,26 +105,24 @@ Element *Builder::walk(Element *parent, const rfl::Generic &g, const string &nam
 
 void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Element *list) {
 
+//  cout << "walk object " << list->describe() << endl;
+  
   for (const auto& [k, v]: obj) {
     
     using V = remove_cvref_t<decltype(v)>;
     if (is_same<rfl::Generic, V>::value) {
-      auto *l = dynamic_cast<List *>(list);
-      if (l) {
-        auto obj = walk(l, v, k);
-        if (obj) {
-          // interdict the list element.
-          auto le = new ListElem(obj);
-          le->setParent(parent);
-          Listable::cast(list)->push(le);
+      auto obj = walk(list, v, k);
+      if (obj) {
+        auto elements = Listable::cast(list)->getElements();
+        if (elements) {
+          elements->push_back(unique_ptr<Element>(obj));
+        }
+        else {
+          cerr << "list doesnt provide access to elements" << endl;
         }
       }
       else {
-        auto *px = dynamic_cast<Element *>(list);
-        auto obj = walk(px, v, k);
-        if (obj) {
-          Listable::cast(list)->push(obj);
-        }
+        cerr << "null obj returned for " << list->describe() << endl;
       }
     }
     else {
@@ -135,6 +133,8 @@ void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Elemen
 
 void Builder::walk(Element *parent, const std::vector<rfl::Generic > &v, Element *list) {
 
+//  cout << "walk vector " << list->describe() << endl;
+  
   for (auto i: v) {
     auto *l = dynamic_cast<List *>(list);
     if (l) {
@@ -143,14 +143,20 @@ void Builder::walk(Element *parent, const std::vector<rfl::Generic > &v, Element
         // interdict the list element.
         auto le = new ListElem(obj);
         le->setParent(parent);
-        Listable::cast(list)->push(le);
+        auto elements = Listable::cast(list)->getElements();
+        if (elements) {
+          elements->push_back(unique_ptr<Element>(le));
+        }
+        else {
+          cerr << "list doesnt provide access to elements" << endl;
+        }
+      }
+      else {
+        cerr << "null obj returned for " << l->describe() << endl;
       }
     }
     else {
-      auto obj = walk(list, i);
-      if (obj) {
-        Listable::cast(list)->push(obj);
-      }
+      cerr << "Not List ??" << endl;
     }
   }
 

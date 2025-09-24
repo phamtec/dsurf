@@ -73,7 +73,8 @@ int main(int argc, char *argv[])
       cerr << "file '" << f << "' not found." << endl;
       return 1;
     }
-    renderer.setRoot(Builder::loadFile(vm["input-file"].as< string >()));
+    string name = vm["input-file"].as< string >();
+    renderer.setRoot(Builder::loadFile(name), name);
   }
 
 //  alternate startup which just draws a blue box right in the middle of a small

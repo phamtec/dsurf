@@ -24,9 +24,6 @@ class ListableErr: public Listable {
 
 public:
 
-  virtual void push(Element *element) {
-    Err::typeError(typeid(Listable));
-  }
   virtual void remove(Renderer &renderer, Element *element) {
     Err::typeError(typeid(Listable));
   }

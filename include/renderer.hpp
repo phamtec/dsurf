@@ -49,7 +49,7 @@ public:
   
   static Size displaySize();
   
-  void setRoot(Element *element);
+  void setRoot(Element *element, const std::string &name);
     // switch out the root we will use to render.
     
   bool init(const char *fontpath);
@@ -137,7 +137,8 @@ private:
   Point _mouse;
   Size _osize;
   unsigned int _lastclick;
-  std::unique_ptr<Element> _root;
+  std::vector<std::unique_ptr<Element> > _roots;
+  std::vector<std::unique_ptr<Text> > _rootnames;
   std::unique_ptr<Font> _font;
   std::unique_ptr<TextEditor> _editor;
   std::unique_ptr<HUD> _hud;

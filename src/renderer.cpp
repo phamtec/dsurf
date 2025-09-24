@@ -19,6 +19,8 @@
 #include "editable.hpp"
 #include "property.hpp"
 #include "removefromlist.hpp"
+#include "unicode.hpp"
+#include "sizes.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -34,9 +36,7 @@ using namespace std;
 Renderer::~Renderer() {
 
   // allow objects to cleanup.
-  if (_root) {
-    _root->destroy(*this);
-  }
+  for_each(_roots.begin(), _roots.end(), [this](auto& e) { e->destroy(*this); });
 
   // make sure alkl the chnages objects get destroyed too.
   for_each(_changes.begin(), _changes.end(), [this](auto&& e) { 
@@ -146,7 +146,7 @@ bool Renderer::init(const char *path) {
   _hud->build(*this);
   
   // always just a new dictiionary.
-  setRoot(new Dict());
+  setRoot(new Dict(), "<new>");
 
 //   _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
 //   _editcursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_TEXT);
@@ -155,26 +155,31 @@ bool Renderer::init(const char *path) {
    
 }
 
-void Renderer::setRoot(Element *root) {
+void Renderer::setRoot(Element *element, const string &name) {
 
-  // make sure to cleanup
-  if (_root) {
-    _root->destroy(*this);
-  }
+  // setup the name to draw.
+  _rootnames.clear();
+  _rootnames.push_back(unique_ptr<Text>(new Text()));
+  _rootnames[0]->set(Unicode::convert(name), Colours::black);
+  _rootnames[0]->build(*this);
   
-  _root.reset(root);
+  // make sure to cleanup
+  for_each(_roots.begin(), _roots.end(), [this](auto &e) { e->destroy(*this); } );
+  _roots.clear();
+  
+  _roots.push_back(unique_ptr<Element>(element));
   
   // setup the HUD in the object.
-  HUDable *hx = dynamic_cast<HUDable *>(root);
+  HUDable *hx = dynamic_cast<HUDable *>(element);
   if (hx) {
     hx->initHUD(_hud.get());
   }
 
   // build all objects with this renderer.
-  _root->build(*this);
+  element->build(*this);
   
   // lay it out.
-  _osize = _root->layout();
+  _osize = element->layout();
   
   _offs = Spatial::center(_size, _osize, _scale);
 //  cout << _offs << endl;
@@ -209,8 +214,9 @@ void Renderer::loop(int rep) {
     // set the scale ready to do our calculations.
     SDL_SetRenderScale(_renderer, _scale, _scale);
 
-    _root->render(*this, Point(0.0, 0.0));
-    _editor->render(*this, Point(0.0, 0.0));
+    _rootnames[0]->render(*this, Point(0.0, 0.0));
+    _roots[0]->render(*this, Point(0.0, _rootnames[0]->size().h+Sizes::listgap));
+    _editor->render(*this, Point(0.0, _rootnames[0]->size().h+Sizes::listgap));
 
     // set the scale back to 1.0 so that our draw will work.
     SDL_SetRenderScale(_renderer, 1.0, 1.0);
@@ -301,7 +307,7 @@ bool Renderer::isDoubleClick() {
 
 void Renderer::setHUD() {
 
-  Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
+  Element *hit = _roots[0]->hitTest(Point(_offs), _mouse * (1 / _scale));
   if (hit) {
     HUDable *hx = dynamic_cast<HUDable *>(hit);
     if (hx) {
@@ -342,7 +348,7 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
         auto json = Builder::loadText(text);
         SDL_free(text);
         if (json) {
-          setRoot(json);
+          setRoot(json, "<clipboard>");
         }
         else {
           cerr << "invalid json" << endl;
@@ -483,7 +489,7 @@ bool Renderer::processEvents() {
                
       case SDL_EVENT_KEY_DOWN:
         if (!_editor->capture()) {
-          Element *hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
+          Element *hit = _roots[0]->hitTest(Point(_offs), _mouse * (1 / _scale));
           if (hit) {
             Keyable *kx = dynamic_cast<Keyable *>(hit);
             if (kx) {
@@ -491,7 +497,7 @@ bool Renderer::processEvents() {
             }
             // we search again since processKet might invalidate
             // the hit object.
-            hit = _root->hitTest(Point(_offs), _mouse * (1 / _scale));
+            hit = _roots[0]->hitTest(Point(_offs), _mouse * (1 / _scale));
             HUDable *hx = dynamic_cast<HUDable *>(hit);
             if (hx) {
               _hud->setEditingLoc(localToGlobal(hit->origin()));
@@ -641,7 +647,7 @@ void Renderer::exec(Change *change) {
   
   // execute this change
   change->exec(*this);
-  _root->layout();
+  _roots[0]->layout();
   
   // remember it.
   _changes.push_back(unique_ptr<Change>(change));
@@ -660,7 +666,7 @@ void Renderer::undo() {
   }
   
   (*_undoptr)->undo(*this);
-  _root->layout();
+  _roots[0]->layout();
   
   if (_undoptr == _changes.begin()) {
     _undoptr = _changes.end();
@@ -684,7 +690,7 @@ void Renderer::redo() {
     _undoptr++;
   }
   (*_undoptr)->exec(*this);
-  _root->layout();
+  _roots[0]->layout();
   
 }
 

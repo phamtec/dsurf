@@ -754,7 +754,7 @@ void TextEditor::mouseDown(Renderer &renderer, float x, float y)
   TTF_SubString substring;
   int textX = (int)SDL_roundf((x * scale) - (r.x));
   int textY = (int)SDL_roundf((y * scale) - (r.y));
-  cout << textX << ", " << textY << endl;
+//  cout << textX << ", " << textY << endl;
   if (!TTF_GetTextSubStringForPoint(_text, textX, textY, &substring)) {
       SDL_Log("Couldn't get cursor location: %s", SDL_GetError());
       return;

@@ -138,7 +138,14 @@ Element *Renderer::getTestTarget(const optional<string> &name, bool silent) {
     return nullptr;
   }
   
-  auto element = Listable::getByPath(_root.get(), *name);
+  if (_roots.size() == 0) {
+    if (!silent) {
+      testErr("no roots");
+    }
+    return nullptr;
+  }
+  
+  auto element = Listable::getByPath(_roots[0].get(), *name);
   if (!element) {
     if (!silent) {
       testErr(*name + " invalid");

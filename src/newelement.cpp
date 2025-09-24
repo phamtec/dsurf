@@ -32,15 +32,23 @@ void NewElement::destroy(Renderer &renderer) {
 
 void NewElement::exec(Renderer &renderer) {
 
-  // the element already has a parent and an index, just add it on.
-  _list->getElements()->push_back(unique_ptr<Element>(_elem));
+  auto elements = _list->getElements();
+  if (!elements) {
+    cerr << "list doesnt provide access to elements" << endl;
+    return;
+  }
+
+  elements->push_back(unique_ptr<Element>(_elem));
 
 }
 
 void NewElement::undo(Renderer &renderer) {
 
   auto elements = _list->getElements();
-  
+  if (!elements) {
+    cerr << "list doesnt provide access to elements" << endl;
+    return;
+  }
   auto last = elements->end();
   last--;
   

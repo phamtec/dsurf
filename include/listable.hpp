@@ -25,9 +25,6 @@ class Listable {
 public:
   virtual ~Listable() {};
 
-  virtual void push(Element *element) = 0;
-    // push the element.
-    
   virtual int count() = 0;
       // the count of the elements
       
@@ -36,7 +33,8 @@ public:
       
   virtual std::vector<std::unique_ptr<Element> > *getElements() { return nullptr; }
     // direct access to the elements is necesary for the undo (command) system.
-    
+    // and modifying the data.
+
   static Element *getByPath(Element *root, const std::string &path);
     // given a root, get the element by the path given.
     

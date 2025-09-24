@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE( nullListable )
   cout << "=== nullListable ===" << endl;
 
   try {
-    Listable::cast(0)->push(0);
+    Listable::cast(0)->count();
     BOOST_FAIL("Didn't catch");
   }
   catch (string &ex) {
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE( listable )
   cout << "=== listable ===" << endl;
 
   X x;
-  Listable::cast(&x)->push(0);
+  Listable::cast(&x)->count();
   
 }
 

@@ -33,7 +33,6 @@ public:
   virtual void render(Renderer &renderer, const Point &origin) {}
 
   // Listable
-  virtual void push(Element *element) { _elements.push_back(element); }
   virtual void remove(Renderer &renderer, Element *element) {}
   virtual int count() { return _elements.size(); }
   virtual Element *at(int index) { return _elements[index]; }
@@ -51,9 +50,9 @@ BOOST_AUTO_TEST_CASE( getByPathSimple )
   Obj obj1("obj1");
   Obj obj2("obj2");
   Obj obj3("obj3");
-  root.push(&obj1);
-  root.push(&obj2);
-  root.push(&obj3);
+  root._elements.push_back(&obj1);
+  root._elements.push_back(&obj2);
+  root._elements.push_back(&obj3);
   
   auto elem = Listable::getByPath(&root, "/2");
   BOOST_CHECK(elem != nullptr);
@@ -72,12 +71,12 @@ BOOST_AUTO_TEST_CASE( getByPath )
   Obj obj22("obj22");
   Obj obj23("obj23");
   Obj obj3("obj3");
-  root.push(&obj1);
-  root.push(&obj2);
-  root.push(&obj3);
-  obj2.push(&obj21);
-  obj2.push(&obj22);
-  obj2.push(&obj23);
+  root._elements.push_back(&obj1);
+  root._elements.push_back(&obj2);
+  root._elements.push_back(&obj3);
+  obj2._elements.push_back(&obj21);
+  obj2._elements.push_back(&obj22);
+  obj2._elements.push_back(&obj23);
   
   auto elem = Listable::getByPath(&root, "/1/2");
   BOOST_CHECK(elem != nullptr);
@@ -98,14 +97,14 @@ BOOST_AUTO_TEST_CASE( getByPathDeeper )
   Obj obj231("obj231");
   Obj obj232("obj232");
   Obj obj3("obj3");
-  root.push(&obj1);
-  root.push(&obj2);
-  root.push(&obj3);
-  obj2.push(&obj21);
-  obj2.push(&obj22);
-  obj2.push(&obj23);
-  obj23.push(&obj231);
-  obj23.push(&obj232);
+  root._elements.push_back(&obj1);
+  root._elements.push_back(&obj2);
+  root._elements.push_back(&obj3);
+  obj2._elements.push_back(&obj21);
+  obj2._elements.push_back(&obj22);
+  obj2._elements.push_back(&obj23);
+  obj23._elements.push_back(&obj231);
+  obj23._elements.push_back(&obj232);
   
   auto elem = Listable::getByPath(&root, "/1/2/1");
   BOOST_CHECK(elem != nullptr);

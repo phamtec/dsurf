@@ -54,9 +54,6 @@ public:
   virtual rfl::Generic getGeneric();
 
   // Listable
-  virtual void push(Element *element) {
-    _elements.push_back(std::unique_ptr<Element>(element));
-  }
   virtual int count() { return _elements.size(); }
   virtual Element *at(int index) { return _elements[index].get(); }
   virtual std::vector<std::unique_ptr<Element> > *getElements() { return &_elements; }

@@ -34,8 +34,12 @@ void RemoveFromList::destroy(Renderer &renderer) {
 void RemoveFromList::exec(Renderer &renderer) {
 
   auto elements = _list->getElements();
+  if (!elements) {
+    cerr << "list doesnt provide access to elements" << endl;
+    return;
+  }
   
-// //  cout << "removing " << ix << endl;
+  //  cout << "removing " << ix << endl;
   auto it = find_if(elements->begin(), elements->end(), [this](auto& e) { 
     return e.get() == _elem;
   });
@@ -54,7 +58,13 @@ void RemoveFromList::exec(Renderer &renderer) {
 
 void RemoveFromList::undo(Renderer &renderer) {
 
+  auto elements = _list->getElements();
+  if (!elements) {
+    cerr << "list doesnt provide access to elements" << endl;
+    return;
+  }
+  
   // give it back to the list.
-  _list->getElements()->push_back(std::move(_oldelem));
+  elements->push_back(std::move(_oldelem));
 
 }
