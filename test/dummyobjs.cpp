@@ -15,8 +15,6 @@ void Corner::render(Renderer &renderer, const Point &origin) {
 }
 void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
 }
-void Renderer::setScale(double x, double y) {
-}
 bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
   return false;
 }
@@ -47,9 +45,6 @@ Point Renderer::noOffset(const Point &p) {
   return Point();
 }
 void Renderer::initElement(Element *parent, int index, Element *element) {
-}
-Point Renderer::localToGlobal(const Point &p) {
-  return p;
 }
 void Renderer::registerRootHUDMode(HUDMode *mode) {
 }
