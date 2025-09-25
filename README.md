@@ -326,5 +326,7 @@ Walk a JSON file building a simple layout.
 - Start to edit multiple objects at once.
 - Remove Sizeable. All elements are sizeable.
 - Remove Parentable. All elements are conceivably parentable.
+- Combine HUDable and Keyable into Commandable. Name makes a lot more sense.
+
 
 

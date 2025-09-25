@@ -78,8 +78,7 @@ set(OBJSRC
   src/bool.cpp
   src/property.cpp
   src/editable.cpp
-  src/hudable.cpp
-  src/keyable.cpp
+  src/commandable.cpp
   src/listable.cpp
   src/writeable.cpp
   src/removefromlist.cpp

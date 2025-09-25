@@ -20,13 +20,12 @@
 #include "text.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
-#include "hudable.hpp"
-#include "keyable.hpp"
+#include "commandable.hpp"
 
 #include <memory>
 #include <vector>
 
-class Property: public Element,  public Writeable, public Editable, public HUDable, public Keyable  {
+class Property: public Element,  public Writeable, public Editable, public Commandable  {
 
   typedef Element super;
 
@@ -53,11 +52,9 @@ public:
   virtual std::wstring getString() { return _name.str(); }
   virtual void setString(Renderer &renderer, const std::wstring &s);
 
-  // HUDable
+  // Commandable
   virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
-
-  // Keyable
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
 private:

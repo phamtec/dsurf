@@ -171,9 +171,9 @@ void Renderer::addRoot(Element *element, const string &name) {
   _rootnames.push_back(unique_ptr<Text>(rootname));
   
   // setup the HUD in the object.
-  HUDable *hx = dynamic_cast<HUDable *>(element);
-  if (hx) {
-    hx->initHUD(_hud.get());
+  Commandable *cx = dynamic_cast<Commandable *>(element);
+  if (cx) {
+    cx->initHUD(_hud.get());
   }
 
   // build all objects with this renderer.
@@ -210,7 +210,7 @@ void Renderer::initElement(Element *parent, int index, Element *element) {
 
   element->setParent(parent);
   element->build(*this);
-  HUDable::cast(element)->initHUD(_hud.get());
+  Commandable::cast(element)->initHUD(_hud.get());
   
 }
 
@@ -334,10 +334,10 @@ void Renderer::setHUD() {
   for (auto& i: _roots) {
     Element *hit = i->hitTest(Point(_offs), _mouse * (1 / _scale));
     if (hit) {
-      HUDable *hx = dynamic_cast<HUDable *>(hit);
-      if (hx) {
+      Commandable *cx = dynamic_cast<Commandable *>(hit);
+      if (cx) {
         _hud->setEditingLoc(localToGlobal(hit->origin()));
-        hx->setMode(*this, _hud.get());
+        cx->setMode(*this, _hud.get());
       }
       return;
     }
@@ -517,17 +517,17 @@ bool Renderer::processEvents() {
           for (auto& i: _roots) {
             Element *hit = i->hitTest(Point(_offs), _mouse * (1 / _scale));
             if (hit) {
-              Keyable *kx = dynamic_cast<Keyable *>(hit);
-              if (kx) {
-                kx->processKey(*this, event.key.key);
+              Commandable *cx = dynamic_cast<Commandable *>(hit);
+              if (cx) {
+                cx->processKey(*this, event.key.key);
               }
               // we search again since processKet might invalidate
               // the hit object.
               hit = i->hitTest(Point(_offs), _mouse * (1 / _scale));
-              HUDable *hx = dynamic_cast<HUDable *>(hit);
-              if (hx) {
+              cx = dynamic_cast<Commandable *>(hit);
+              if (cx) {
                 _hud->setEditingLoc(localToGlobal(hit->origin()));
-                hx->setMode(*this, _hud.get());
+                cx->setMode(*this, _hud.get());
               }
               break;
             }

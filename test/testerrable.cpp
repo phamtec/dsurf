@@ -13,8 +13,7 @@
 
 #include "element.hpp"
 #include "editable.hpp"
-#include "hudable.hpp"
-#include "keyable.hpp"
+#include "commandable.hpp"
 #include "listable.hpp"
 #include "writeable.hpp"
 #include "list.hpp"
@@ -58,12 +57,12 @@ BOOST_AUTO_TEST_CASE( editable )
   
 }
 
-BOOST_AUTO_TEST_CASE( nullHudable )
+BOOST_AUTO_TEST_CASE( nullCommandable )
 {
-  cout << "=== nullHudable ===" << endl;
+  cout << "=== nullCommandable ===" << endl;
 
   try {
-    HUDable::cast(0)->initHUD(0);
+    Commandable::cast(0)->initHUD(0);
     BOOST_FAIL("Didn't catch");
   }
   catch (string &ex) {
@@ -73,38 +72,12 @@ BOOST_AUTO_TEST_CASE( nullHudable )
   
 }
 
-BOOST_AUTO_TEST_CASE( hudable )
+BOOST_AUTO_TEST_CASE( commandable )
 {
-  cout << "=== hudable ===" << endl;
+  cout << "=== commandable ===" << endl;
 
   X x;
-  HUDable::cast(&x)->initHUD(0);
-  
-}
-
-BOOST_AUTO_TEST_CASE( nullKeyable )
-{
-  cout << "=== nullKeyable ===" << endl;
-
-  try {
-    Renderer *r = nullptr;
-    Keyable::cast(0)->processKey(*r, 0);
-    BOOST_FAIL("Didn't catch");
-  }
-  catch (string &ex) {
-    // all good.
-    cout << ex << endl;
-  }
-  
-}
-
-BOOST_AUTO_TEST_CASE( keyable )
-{
-  cout << "=== keyable ===" << endl;
-
-  Renderer *r = nullptr;
-  X x;
-  Keyable::cast(&x)->processKey(*r, 0);
+  Commandable::cast(&x)->initHUD(0);
   
 }
 

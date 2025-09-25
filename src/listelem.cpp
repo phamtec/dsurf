@@ -164,7 +164,7 @@ void ListElem::processKey(Renderer &renderer, SDL_Keycode code) {
     return;
   }
   
-  Keyable::cast(_obj.get())->processKey(renderer, code);
+  Commandable::cast(_obj.get())->processKey(renderer, code);
   
 }
 
@@ -196,7 +196,7 @@ void ListElem::initHUD(HUD *hud) {
 
   _hudlistelem = hud->findMode("listelem");
 
-  HUDable::cast(_obj.get())->initHUD(hud);
+  Commandable::cast(_obj.get())->initHUD(hud);
 
 }
 
@@ -206,7 +206,7 @@ void ListElem::setMode(Renderer &renderer, HUD *hud) {
     hud->setMode(_hudlistelem);
   }
   else {
-    HUDable::cast(_obj.get())->setMode(renderer, hud);
+    Commandable::cast(_obj.get())->setMode(renderer, hud);
   }
   
 }

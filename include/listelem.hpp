@@ -21,13 +21,12 @@
 #include "text.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
-#include "hudable.hpp"
-#include "keyable.hpp"
+#include "commandable.hpp"
 
 #include <memory>
 #include <vector>
 
-class ListElem: public Element,  public Writeable, public Editable, public HUDable, public Keyable  {
+class ListElem: public Element,  public Writeable, public Editable, public Commandable  {
 
   typedef Element super;
 
@@ -55,12 +54,10 @@ public:
   virtual std::wstring getString();
   virtual void setString(Renderer &renderer, const std::wstring &s);
 
-  // HUDable
+  // Commandable
   virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
   static void registerHUDModes(HUD *hud);
-
-  // Keyable
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
 private:

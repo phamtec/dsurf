@@ -132,12 +132,12 @@ void Property::setString(Renderer &renderer, const wstring &s) {
 
 void Property::initHUD(HUD *hud) {
 
-  auto *hx = dynamic_cast<HUDable *>(_obj.get());
-  if (hx) {
-    hx->initHUD(hud);
+  auto *cx = dynamic_cast<Commandable *>(_obj.get());
+  if (cx) {
+    cx->initHUD(hud);
   }
   else {
-    cerr << typeid(_obj.get()).name() << " not HUDable" << endl;
+    cerr << typeid(_obj.get()).name() << " not Commandable" << endl;
   }
 
 }

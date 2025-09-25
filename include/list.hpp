@@ -23,13 +23,12 @@
 #include "element.hpp"
 #include "listable.hpp"
 #include "writeable.hpp"
-#include "hudable.hpp"
-#include "keyable.hpp"
+#include "commandable.hpp"
 
 #include <memory>
 #include <vector>
 
-class List: public Element, public Listable,  public Writeable, public HUDable, public Keyable  {
+class List: public Element, public Listable,  public Writeable, public Commandable  {
 
   typedef Element super;
 
@@ -59,22 +58,18 @@ public:
   virtual Element *at(int index) { return _elements[index].get(); }
   virtual std::vector<std::unique_ptr<Element> > *getElements() { return &_elements; }
   
-  // HUDable
+  // Commandable
   virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
   static void registerHUDModes(HUD *hud);
-
-  // Keyable
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
   // helpers for things that look like a list.
   static void buildVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > &list);
   static Size layoutVector(const Size &size, std::vector<std::unique_ptr<Element> > &list);
   static void renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Element> > &list);
-  static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
   static Element* hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Element> > &list);
   static Point localOriginVector(std::vector<std::unique_ptr<Element> > &list, Element *elem, bool prop);
-  static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);
   static void initHUDVector(std::vector<std::unique_ptr<Element> > &list, HUD *hud);
   static void destroyVector(std::vector<std::unique_ptr<Element> > &list, Renderer &renderer);
  
@@ -97,6 +92,8 @@ private:
   Element *_moveover;
   Point _moveoffs;
   
+  static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
+  static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);
   void startEdit(Renderer &renderer);
   void endEdit(Renderer &renderer);
   Element *otherElementHit(const Point &origin, const Point &p);

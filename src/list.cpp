@@ -516,12 +516,12 @@ void List::initHUDVector(std::vector<std::unique_ptr<Element> > &list, HUD *hud)
 
   // order isn't important.
   for_each(list.begin(), list.end(), [hud](auto& e) { 
-    auto *hx = dynamic_cast<HUDable *>(e.get());
-    if (hx) {
-      hx->initHUD(hud);
+    auto *cx = dynamic_cast<Commandable *>(e.get());
+    if (cx) {
+      cx->initHUD(hud);
     }
     else {
-      cerr << typeid(e.get()).name() << " not HUDable" << endl;
+      cerr << typeid(e.get()).name() << " not Commandable" << endl;
     }
   });
   

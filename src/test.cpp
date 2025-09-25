@@ -11,9 +11,8 @@
 
 #include "renderer.hpp"
 
-#include "keyable.hpp"
 #include "listable.hpp"
-#include "hudable.hpp"
+#include "commandable.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl.hpp>
@@ -92,9 +91,9 @@ void Renderer::handleTestKey(const TestMsg &msg) {
     testErr("missing pqyload");
     return;
   }
-  Keyable *kx = dynamic_cast<Keyable *>(target);
-  if (!kx) {
-    testErr("target not Keyable");
+  Commandable *cx = dynamic_cast<Commandable *>(target);
+  if (!cx) {
+    testErr("target not Commandable");
     return;
   }
   
@@ -105,7 +104,7 @@ void Renderer::handleTestKey(const TestMsg &msg) {
   
   SDL_Keycode code = (*msg.payload)[0];
 //  cout << "sending key " << code << endl;
-  kx->processKey(*this, code);
+  cx->processKey(*this, code);
   
   // the key might have invalidated the object (like a paste)
   // so find the target again just in case.
@@ -117,12 +116,15 @@ void Renderer::handleTestKey(const TestMsg &msg) {
   }
   
   // render the hud
-  HUDable *hx = dynamic_cast<HUDable *>(target);
-  if (hx) {
-    _hud->setEditingLoc(localToGlobal(r.origin));
-    hx->setMode(*this, _hud.get());
-    _hud->render(*this, _mouse);
+  cx = dynamic_cast<Commandable *>(target);
+  if (!cx) {
+    testErr("target not Commandable anymore");
+    return;
   }
+  
+  _hud->setEditingLoc(localToGlobal(r.origin));
+  cx->setMode(*this, _hud.get());
+  _hud->render(*this, _mouse);
 
   testAck();
 

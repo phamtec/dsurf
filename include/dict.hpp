@@ -21,13 +21,12 @@
 #include "element.hpp"
 #include "listable.hpp"
 #include "writeable.hpp"
-#include "hudable.hpp"
-#include "keyable.hpp"
+#include "commandable.hpp"
 
 #include <memory>
 #include <vector>
 
-class Dict: public Element, public Listable,  public Writeable, public HUDable, public Keyable {
+class Dict: public Element, public Listable,  public Writeable, public Commandable {
 
   typedef Element super;
 
@@ -54,17 +53,12 @@ public:
   virtual Element *at(int index) { return _elements[index].get(); }
   virtual std::vector<std::unique_ptr<Element> > *getElements() { return &_elements; }
 
-  // HUDable
+  // Commandable
   virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
   static void registerHUDModes(HUD *hud);
-
-  // Keyable
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
   
-  static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
-  static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);
-
 private:
 
   Element *_parent;
@@ -75,6 +69,8 @@ private:
   int _hudadddict;
   bool _adding;
   
+  static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
+  static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);
   void add(Renderer &renderer, const std::wstring &name, Element *element, bool container);
   
 };

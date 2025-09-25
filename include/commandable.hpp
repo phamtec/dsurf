@@ -1,8 +1,8 @@
 /*
-  hudable.hpp
+  commandable.hpp
   
   Author: Paul Hamilton (phamtec@mac.com)
-  Date: 6-Sep-2025
+  Date: 25-Sep-2025
     
   Interface class for dealing with the HUD on objects..
   
@@ -11,17 +11,19 @@
   https://github.com/phamtec/dsurf
 */
 
-#ifndef H_hudable
-#define H_hudable
+#ifndef H_commandable
+#define H_commandable
+
+#include <SDL3/SDL_events.h>
 
 class HUD;
 class Renderer;
 class Element;
 
-class HUDable {
+class Commandable {
 
 public:
-  virtual ~HUDable() {};
+  virtual ~Commandable() {};
 
   virtual void initHUD(HUD *hud) = 0;
     // for those objects that deal with the HUD direcrly, initialise them.
@@ -29,9 +31,12 @@ public:
   virtual void setMode(Renderer &renderer, HUD *hud) = 0;
     // set the mode in the heads up display.
     
-  static HUDable *cast(Element *obj);
-  static HUDable *_err;
+  virtual void processKey(Renderer &renderer, SDL_Keycode code) = 0;
+    // process the keycode to for object.
+    
+  static Commandable *cast(Element *obj);
+  static Commandable *_err;
   
 };
 
-#endif // H_hudable
+#endif // H_commandable
