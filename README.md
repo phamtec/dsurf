@@ -323,10 +323,11 @@ Walk a JSON file building a simple layout.
 
 ### 25-Sep-2025
 
-- Start to edit multiple objects at once.
+- Version 0.6
+- Edit multiple objects at once.
 - Remove Sizeable. All elements are sizeable.
 - Remove Parentable. All elements are conceivably parentable.
 - Combine HUDable and Keyable into Commandable. Name makes a lot more sense.
-
+- Combine name and elem into a tuple.
 
 

@@ -35,6 +35,7 @@ class SDL_Texture;
 class SDL_Surface;
 class Rect;
 class SDL_Cursor;
+class Commandable;
 
 class Renderer {
 
@@ -137,8 +138,8 @@ private:
   Point _mouse;
   Size _osize;
   unsigned int _lastclick;
-  std::vector<std::unique_ptr<Element> > _roots;
-  std::vector<std::unique_ptr<Text> > _rootnames;
+  // the roots contain a Text with the name and the root element.
+  std::vector<std::tuple<std::unique_ptr<Text>, std::unique_ptr<Element> > > _roots;
   std::unique_ptr<Font> _font;
   std::unique_ptr<TextEditor> _editor;
   std::unique_ptr<HUD> _hud;
@@ -154,6 +155,9 @@ private:
   bool isDoubleClick();
   void endEdit();
   void setHUD();
+  void destroyRoots();
+  Point addRootOrigin(Element *element, const Point &origin);
+  std::optional<std::tuple<Commandable *, Element *> > getHit();
 
   void debugOffs();
   void debugScale();

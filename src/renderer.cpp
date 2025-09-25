@@ -36,7 +36,7 @@ using namespace std;
 Renderer::~Renderer() {
 
   // allow objects to cleanup.
-  for_each(_roots.begin(), _roots.end(), [this](auto& e) { e->destroy(*this); });
+  destroyRoots();
 
   // make sure alkl the chnages objects get destroyed too.
   for_each(_changes.begin(), _changes.end(), [this](auto&& e) { 
@@ -63,6 +63,12 @@ Renderer::~Renderer() {
   }
   TTF_Quit();
   SDL_Quit();
+
+}
+
+void Renderer::destroyRoots() {
+
+  for_each(_roots.begin(), _roots.end(), [this](auto& e) { get<1>(e)->destroy(*this); });
 
 }
 
@@ -156,19 +162,18 @@ void Renderer::addRoot(Element *element, const string &name) {
 
   // if there is only 1 element and it is <new> with an empty dict
   // then we replace it.
-  if (_rootnames.size() == 1 && _rootnames[0]->str() == L"<new>") {
-    auto dict = dynamic_cast<Dict *>(_roots[0].get());
+  if (_roots.size() == 1 && get<0>(_roots[0])->str() == L"<new>") {
+    auto dict = dynamic_cast<Dict *>(get<1>(_roots[0]).get());
     if (dict && Listable::cast(dict)->count() == 0) {
-      for_each(_roots.begin(), _roots.end(), [this](auto& e) { e->destroy(*this); });
+      destroyRoots();
       _roots.clear();
-      _rootnames.clear();
     }
   }
   // setup the name to draw.
   auto rootname = new Text();
   rootname->set(Unicode::convert(name), Colours::black);
   rootname->build(*this);
-  _rootnames.push_back(unique_ptr<Text>(rootname));
+//  _rootnames.push_back(unique_ptr<Text>(rootname));
   
   // setup the HUD in the object.
   Commandable *cx = dynamic_cast<Commandable *>(element);
@@ -183,12 +188,12 @@ void Renderer::addRoot(Element *element, const string &name) {
   element->layout();
   
   // remember it.
-  _roots.push_back(unique_ptr<Element>(element));
+  _roots.push_back(tuple<unique_ptr<Text>, unique_ptr<Element> >(rootname, element));
   
   // calculate the total size of all the objects.
   _osize = Size();
-  for (int i=0; i<_roots.size(); i++) {
-    Size s = _roots[i]->size();
+  for (auto& i: _roots) {
+    Size s = get<1>(i)->size();
     _osize.w += s.w;
     if (_osize.w > 0) {
       _osize.w += Sizes::group_indent;
@@ -197,8 +202,8 @@ void Renderer::addRoot(Element *element, const string &name) {
       _osize.h = s.h;
     }
   }
-  if (_rootnames.size() > 0) {
-    _osize.h += _rootnames[0]->size().h;
+  if (_roots.size() > 0) {
+    _osize.h += get<0>(_roots[0])->size().h;
   }
   
   _offs = Spatial::center(_size, _osize, _scale);
@@ -235,10 +240,13 @@ void Renderer::loop(int rep) {
     SDL_SetRenderScale(_renderer, _scale, _scale);
 
     auto x = 0.0;
-    for (int i=0; i<_roots.size(); i++) {
-      _rootnames[i]->render(*this, Point(x, 0.0));
-      _roots[i]->render(*this, Point(x, _rootnames[i]->size().h+Sizes::listgap));
-      x += _roots[i]->size().w+Sizes::group_indent;
+    for (auto& i: _roots) {
+      auto& name = get<0>(i);
+      auto& elem = get<1>(i);
+      
+      name->render(*this, Point(x, 0.0));
+      elem->render(*this, Point(x, name->size().h+Sizes::listgap));
+      x += elem->size().w+Sizes::group_indent;
     }
     _editor->render(*this, Point(0.0, 0.0));
 
@@ -329,18 +337,32 @@ bool Renderer::isDoubleClick() {
   
 }
 
-void Renderer::setHUD() {
+optional<tuple<Commandable *, Element *> > Renderer::getHit() {
 
+  auto x = 0.0;
   for (auto& i: _roots) {
-    Element *hit = i->hitTest(Point(_offs), _mouse * (1 / _scale));
+    auto& name = get<0>(i);
+    auto& elem = get<1>(i);
+
+    Element *hit = elem->hitTest(Point(_offs) + Point(x, name->size().h+Sizes::listgap), _mouse * (1 / _scale));
     if (hit) {
       Commandable *cx = dynamic_cast<Commandable *>(hit);
       if (cx) {
-        _hud->setEditingLoc(localToGlobal(hit->origin()));
-        cx->setMode(*this, _hud.get());
+        return tuple<Commandable *, Element *>(cx, hit);
       }
-      return;
     }
+    x += elem->size().w+Sizes::group_indent;
+  }
+  return nullopt;
+}
+
+void Renderer::setHUD() {
+
+  auto hit = getHit();
+  if (hit) {
+    _hud->setEditingLoc(localToGlobal(addRootOrigin(get<1>(*hit), get<1>(*hit)->origin())));
+    get<0>(*hit)->setMode(*this, _hud.get());
+    return;
   }
   _hud->setMode(0);
 }
@@ -433,7 +455,27 @@ void Renderer::processDeleteKey(Element *element) {
   
 }
 
+Point Renderer::addRootOrigin(Element *element, const Point &origin) {
+
+  Point o = origin;
+  auto root = element->root();
+  auto x = 0.0;
+  for (auto& i: _roots) {
+    auto& name = get<0>(i);
+    auto& elem = get<1>(i);
+    if (elem.get() == root) {
+      o.y += name->size().h + Sizes::listgap;
+      break;
+    }
+    o.x += elem->size().w+Sizes::group_indent;
+  }
+  
+  return o;
+}
+
 void Renderer::processTextKey(Element *element, const Point &origin, const Size &size, SDL_Keycode code) {
+
+  Point o = addRootOrigin(element, origin);
 
   switch (code) {
     case SDLK_D:
@@ -442,7 +484,7 @@ void Renderer::processTextKey(Element *element, const Point &origin, const Size 
   }
   
   // pass to the editor.
-  _editor->processTextKey(*this, Editable::cast(element), origin, size, code, _hud.get());
+  _editor->processTextKey(*this, Editable::cast(element), o, size, code, _hud.get());
 
 }
 
@@ -514,24 +556,11 @@ bool Renderer::processEvents() {
                
       case SDL_EVENT_KEY_DOWN:
         if (!_editor->capture()) {
-          for (auto& i: _roots) {
-            Element *hit = i->hitTest(Point(_offs), _mouse * (1 / _scale));
-            if (hit) {
-              Commandable *cx = dynamic_cast<Commandable *>(hit);
-              if (cx) {
-                cx->processKey(*this, event.key.key);
-              }
-              // we search again since processKet might invalidate
-              // the hit object.
-              hit = i->hitTest(Point(_offs), _mouse * (1 / _scale));
-              cx = dynamic_cast<Commandable *>(hit);
-              if (cx) {
-                _hud->setEditingLoc(localToGlobal(hit->origin()));
-                cx->setMode(*this, _hud.get());
-              }
-              break;
-            }
+          auto hit = getHit();
+          if (hit) {
+            get<0>(*hit)->processKey(*this, event.key.key);
           }
+          setHUD();
         }
         break;
 
@@ -668,7 +697,7 @@ void Renderer::exec(Element *element, Change *change) {
   if (_changes.size() > 0) {
     auto ii = _undoptr;
     ii++;
-    for (std::vector<std::unique_ptr<Change> >::iterator i=ii; i != _changes.end(); i++) {
+    for (auto i=ii; i != _changes.end(); i++) {
       _changes.erase(i);
     }
   }

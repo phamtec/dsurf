@@ -146,7 +146,7 @@ Element *Renderer::getTestTarget(const optional<string> &name, bool silent) {
     return nullptr;
   }
   
-  auto element = Listable::getByPath(_roots[0].get(), *name);
+  auto element = Listable::getByPath(get<1>(_roots[0]).get(), *name);
   if (!element) {
     if (!silent) {
       testErr(*name + " invalid");
