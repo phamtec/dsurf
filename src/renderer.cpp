@@ -188,7 +188,7 @@ void Renderer::addRoot(Element *element, const string &name) {
   // calculate the total size of all the objects.
   _osize = Size();
   for (int i=0; i<_roots.size(); i++) {
-    Size s = Sizeable::cast(_roots[i].get())->getSize();
+    Size s = _roots[i]->size();
     _osize.w += s.w;
     if (_osize.w > 0) {
       _osize.w += Sizes::group_indent;
@@ -238,7 +238,7 @@ void Renderer::loop(int rep) {
     for (int i=0; i<_roots.size(); i++) {
       _rootnames[i]->render(*this, Point(x, 0.0));
       _roots[i]->render(*this, Point(x, _rootnames[i]->size().h+Sizes::listgap));
-      x += Sizeable::cast(_roots[i].get())->getSize().w+Sizes::group_indent;
+      x += _roots[i]->size().w+Sizes::group_indent;
     }
     _editor->render(*this, Point(0.0, 0.0));
 

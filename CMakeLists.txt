@@ -82,7 +82,6 @@ set(OBJSRC
   src/hudable.cpp
   src/keyable.cpp
   src/listable.cpp
-  src/sizeable.cpp
   src/writeable.cpp
   src/removefromlist.cpp
   src/newelement.cpp

@@ -14,7 +14,6 @@
 #include "renderer.hpp"
 #include "colours.hpp"
 #include "sizes.hpp"
-#include "sizeable.hpp"
 #include "listelem.hpp"
 #include "err.hpp"
 #include "move.hpp"
@@ -87,7 +86,7 @@ void List::render(Renderer &renderer, const Point &origin) {
     {
       Point o = origin + Point(Sizes::group_indent, Sizes::listgap);
       for (auto& i: _elements) {
-        Size s = Sizeable::cast(i.get())->getSize();
+        Size s = i->size();
         if (i.get() != _moving) {
           i->render(renderer, o);
         }
@@ -100,7 +99,7 @@ void List::render(Renderer &renderer, const Point &origin) {
       Point o = origin + Point(Sizes::group_indent, Sizes::listgap);
       int index = 0;
       for (auto& i: _elements) {
-        Size s = Sizeable::cast(i.get())->getSize();
+        Size s = i->size();
         if (i.get() == _moving) {
         
           Point ro = o;
@@ -112,7 +111,7 @@ void List::render(Renderer &renderer, const Point &origin) {
           
           // constrain to the list.
           Point lo = this->origin();
-          Size ls = getSize();
+          Size ls = size();
           float top = lo.y + Sizes::listgap;
           float bottom = lo.y + ls.h - s.h - (Sizes::listgap * 2);
           if (ro.y < top) {
@@ -196,7 +195,7 @@ Element *List::otherElementHit(const Point &origin, const Point &p) {
   Point o = origin;
   for (auto& i: _elements) {
     auto obj = i.get();
-    Size s = Sizeable::cast(obj)->getSize();
+    Size s = obj->size();
     if (obj == _moving) {
 //      cout << "ignoreing " << index << endl;
     }
@@ -457,7 +456,7 @@ Element* List::hitTestVector(const Point &origin, const Point &p, std::vector<st
     if (hit) {
       return hit;
     }
-    o.y += Sizeable::cast(i.get())->getSize().h + Sizes::listgap;
+    o.y += i->size().h + Sizes::listgap;
   }
   return nullptr;
   
@@ -492,7 +491,7 @@ void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std
   Point o = origin;
   for (auto& i: list) {
     i->render(renderer, o);
-    o.y += Sizeable::cast(i.get())->getSize().h + Sizes::listgap;
+    o.y += i->size().h + Sizes::listgap;
   }
 
 }
@@ -505,7 +504,7 @@ Point List::localOriginVector(std::vector<std::unique_ptr<Element> > &list, Elem
     if (i.get() == elem) {
       return Point(Sizes::group_indent, y);
     }
-    y += Sizeable::cast(i.get())->getSize().h + Sizes::listgap;
+    y += i->size().h + Sizes::listgap;
     j++;
   }
 

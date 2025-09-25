@@ -14,7 +14,6 @@
 #include "keyable.hpp"
 #include "listable.hpp"
 #include "hudable.hpp"
-#include "sizeable.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl.hpp>
@@ -100,7 +99,7 @@ void Renderer::handleTestKey(const TestMsg &msg) {
   }
   
   // set the mouse to be the center of the objects.
-  Rect r(target->origin(), Sizeable::cast(target)->getSize());
+  Rect r(target->origin(), target->size());
   
   _mouse = Point((_offs.w + r.origin.x + (r.size.w / 2)) * _scale, (_offs.h + r.origin.y + (r.size.h / 2)) * _scale);
   

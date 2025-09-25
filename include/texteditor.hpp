@@ -41,6 +41,7 @@ public:
   virtual void build(Renderer &renderer);
   virtual Size layout() { return _size; };
   virtual void render(Renderer &renderer, const Point &origin);
+  virtual Size size() { return Size(); }
   
   Point _origin;
   Size _size;

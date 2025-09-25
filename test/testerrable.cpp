@@ -17,7 +17,6 @@
 #include "keyable.hpp"
 #include "parentable.hpp"
 #include "listable.hpp"
-#include "sizeable.hpp"
 #include "writeable.hpp"
 #include "list.hpp"
 
@@ -33,6 +32,7 @@ public:
   virtual Size layout() { return Size(); }
   virtual void build(Renderer &renderer) {}
   virtual void render(Renderer &renderer, const Point &origin) {}
+  virtual Size size() { return Size(); }
 };
 
 BOOST_AUTO_TEST_CASE( nullEditable )
@@ -154,30 +154,6 @@ BOOST_AUTO_TEST_CASE( listable )
 
   X x;
   Listable::cast(&x)->count();
-  
-}
-
-BOOST_AUTO_TEST_CASE( nullSizeable )
-{
-  cout << "=== nullSizeable ===" << endl;
-
-  try {
-    Sizeable::cast(0)->getSize();
-    BOOST_FAIL("Didn't catch");
-  }
-  catch (string &ex) {
-    // all good.
-    cout << ex << endl;
-  }
-  
-}
-
-BOOST_AUTO_TEST_CASE( sizeable )
-{
-  cout << "=== sizeable ===" << endl;
-
-  X x;
-  Sizeable::cast(&x)->getSize();
   
 }
 

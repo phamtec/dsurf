@@ -12,7 +12,6 @@
 #include "element.hpp"
 
 #include "parentable.hpp"
-#include "sizeable.hpp"
 #include "err.hpp"
 
 #include <iostream>
@@ -27,7 +26,7 @@ std::string Element::describe() {
 
 Element *Element::hitTest(const Point &origin, const Point &p) { 
 
-  if (Rect(origin, Sizeable::cast(this)->getSize()).contains(p)) {
+  if (Rect(origin, size()).contains(p)) {
 //    cout << "hit " << describe() << endl;
     return this; 
   }

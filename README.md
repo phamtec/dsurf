@@ -324,6 +324,6 @@ Walk a JSON file building a simple layout.
 ### 25-Sep-2025
 
 - Start to edit multiple objects at once.
-
+- Remove Sizeable. All elements are sizeable.
 
 

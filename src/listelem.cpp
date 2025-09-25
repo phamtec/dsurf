@@ -34,7 +34,7 @@ void ListElem::setEdit(Renderer &renderer, bool state) {
   _editing = state;
   
   if (_editing) {
-    _textsize = getSize();
+    _textsize = size();
     if (_textsize.h >= FIXED_HEIGHT) {
       _textsize.h = FIXED_HEIGHT * 2;
     }

@@ -52,6 +52,9 @@ public:
     // render this object to the screen.
     // objects, render yourself and then call super::render(renderer, origin)
 
+  virtual Size size() = 0;
+    // return the size of this element.
+    
   virtual Element *hitTest(const Point &origin, const Point &p);
     // recursivle find the element at the point.
     // objects, find the object in your sub objects

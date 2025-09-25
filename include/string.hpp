@@ -20,13 +20,12 @@
 #include "text.hpp"
 #include "colours.hpp"
 #include "parentable.hpp"
-#include "sizeable.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
 #include "hudable.hpp"
 #include "keyable.hpp"
 
-class String: public Element, public Parentable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable {
+class String: public Element, public Parentable, public Writeable, public Editable, public HUDable, public Keyable {
 
   typedef Element super;
   
@@ -37,6 +36,7 @@ public:
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
+  virtual Size size() { return _size; }
 
   // Writeable
   virtual rfl::Generic getGeneric();
@@ -44,9 +44,6 @@ public:
   // Parentable
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
-  
-  // Sizeable
-  virtual Size getSize() { return _size; }
 
   // Editable
   virtual std::wstring getString() { return _value.str(); }

@@ -19,7 +19,6 @@
 #include "element.hpp"
 #include "text.hpp"
 #include "parentable.hpp"
-#include "sizeable.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
 #include "hudable.hpp"
@@ -28,7 +27,7 @@
 #include <memory>
 #include <vector>
 
-class Property: public Element, public Parentable, public Sizeable, public Writeable, public Editable, public HUDable, public Keyable  {
+class Property: public Element, public Parentable, public Writeable, public Editable, public HUDable, public Keyable  {
 
   typedef Element super;
 
@@ -43,6 +42,7 @@ public:
   virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(Element *elem);
   virtual void destroy(Renderer &renderer);
+  virtual Size size() { return _size; }
 
   // Writeable
   virtual std::string getName();
@@ -51,9 +51,6 @@ public:
   // Parentable
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
-  
-  // Sizeable
-  virtual Size getSize() { return _size; }
 
   // Editable
   virtual std::wstring getString() { return _name.str(); }
