@@ -214,7 +214,7 @@ void Dict::add(Renderer &renderer, const std::wstring &name, Element *element, b
   auto p = new Property(name, element, container); 
   renderer.initElement(this, _elements.size(), p);
 
-  renderer.exec(new NewElement(this, p));
+  renderer.exec(this, new NewElement(this, p));
   
 }
 

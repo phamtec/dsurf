@@ -49,7 +49,7 @@ public:
   
   static Size displaySize();
   
-  void setRoot(Element *element, const std::string &name);
+  void addRoot(Element *element, const std::string &name);
     // switch out the root we will use to render.
     
   bool init(const char *fontpath);
@@ -79,9 +79,9 @@ public:
     // coy the element onto the clipboard
 
   // undo/redo
-  void undo();
-  void redo();
-  void exec(Change *change);
+  void undo(Element *element);
+  void redo(Element *element);
+  void exec(Element *element, Change *change);
   
   // dealing with textures.
   SDL_Texture *createTexture(int width, int height);

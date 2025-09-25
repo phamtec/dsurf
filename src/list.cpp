@@ -413,7 +413,7 @@ void List::add(Renderer &renderer, Element *element) {
   auto le = new ListElem(element);
   renderer.initElement(this, _elements.size(), le);
 
-  renderer.exec(new NewElement(this, le));
+  renderer.exec(this, new NewElement(this, le));
   
 }
 

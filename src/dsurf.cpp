@@ -15,6 +15,7 @@
 #include "builder.hpp"
 #include "element.hpp"
 #include "filledbox.hpp"
+#include "dict.hpp"
 
 #include <iostream>
 #include <boost/program_options.hpp> 
@@ -33,10 +34,10 @@ int main(int argc, char *argv[])
   desc.add_options()
     ("repPort", po::value<int>(&repPort)->default_value(3013), "ZMQ Rep port.")
     ("help", "produce help message")
-    ("input-file", po::value<string>(), "input file")
+    ("input-files", po::value<vector<string> >(), "input files")
     ;
   po::positional_options_description p;
-  p.add("input-file", -1);
+  p.add("input-files", -1);
 
   po::variables_map vm;
   po::store(po::command_line_parser(argc, argv).
@@ -66,15 +67,20 @@ int main(int argc, char *argv[])
   }
   
   // read in a JSON file if one is specified.
-  if (vm.count("input-file") > 0) {
-    string f = vm["input-file"].as< string >();
-    auto obj = Builder::loadFile(f);
-    if (!obj) {
-      cerr << "file '" << f << "' not found." << endl;
-      return 1;
+  if (vm.count("input-files")) {
+    vector<string> files = vm["input-files"].as<vector<string> >();
+    for (auto f: files) {
+      auto obj = Builder::loadFile(f);
+      if (!obj) {
+        cerr << "file '" << f << "' not found." << endl;
+        return 1;
+      }
+      renderer.addRoot(obj, f);
     }
-    string name = vm["input-file"].as< string >();
-    renderer.setRoot(Builder::loadFile(name), name);
+  }
+  else {
+    // always just a new dictiionary.
+    renderer.addRoot(new Dict(), "<new>");
   }
 
 //  alternate startup which just draws a blue box right in the middle of a small

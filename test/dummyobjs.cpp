@@ -50,7 +50,7 @@ void Renderer::registerRootHUDMode(HUDMode *mode) {
 }
 void Renderer::registerTextHUDMode(HUDMode *mode) {
 }
-void Renderer::exec(Change *change) {
+void Renderer::exec(Element *element, Change *change) {
 }
 void Renderer::processDeleteKey(Element *element) {
 }

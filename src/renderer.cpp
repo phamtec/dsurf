@@ -145,9 +145,6 @@ bool Renderer::init(const char *path) {
   // build the hud with all modes
   _hud->build(*this);
   
-  // always just a new dictiionary.
-  setRoot(new Dict(), "<new>");
-
 //   _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
 //   _editcursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_TEXT);
   
@@ -155,19 +152,23 @@ bool Renderer::init(const char *path) {
    
 }
 
-void Renderer::setRoot(Element *element, const string &name) {
+void Renderer::addRoot(Element *element, const string &name) {
 
+  // if there is only 1 element and it is <new> with an empty dict
+  // then we replace it.
+  if (_rootnames.size() == 1 && _rootnames[0]->str() == L"<new>") {
+    auto dict = dynamic_cast<Dict *>(_roots[0].get());
+    if (dict && Listable::cast(dict)->count() == 0) {
+      for_each(_roots.begin(), _roots.end(), [this](auto& e) { e->destroy(*this); });
+      _roots.clear();
+      _rootnames.clear();
+    }
+  }
   // setup the name to draw.
-  _rootnames.clear();
-  _rootnames.push_back(unique_ptr<Text>(new Text()));
-  _rootnames[0]->set(Unicode::convert(name), Colours::black);
-  _rootnames[0]->build(*this);
-  
-  // make sure to cleanup
-  for_each(_roots.begin(), _roots.end(), [this](auto &e) { e->destroy(*this); } );
-  _roots.clear();
-  
-  _roots.push_back(unique_ptr<Element>(element));
+  auto rootname = new Text();
+  rootname->set(Unicode::convert(name), Colours::black);
+  rootname->build(*this);
+  _rootnames.push_back(unique_ptr<Text>(rootname));
   
   // setup the HUD in the object.
   HUDable *hx = dynamic_cast<HUDable *>(element);
@@ -179,7 +180,26 @@ void Renderer::setRoot(Element *element, const string &name) {
   element->build(*this);
   
   // lay it out.
-  _osize = element->layout();
+  element->layout();
+  
+  // remember it.
+  _roots.push_back(unique_ptr<Element>(element));
+  
+  // calculate the total size of all the objects.
+  _osize = Size();
+  for (int i=0; i<_roots.size(); i++) {
+    Size s = Sizeable::cast(_roots[i].get())->getSize();
+    _osize.w += s.w;
+    if (_osize.w > 0) {
+      _osize.w += Sizes::group_indent;
+    }
+    if (s.h > _osize.h) {
+      _osize.h = s.h;
+    }
+  }
+  if (_rootnames.size() > 0) {
+    _osize.h += _rootnames[0]->size().h;
+  }
   
   _offs = Spatial::center(_size, _osize, _scale);
 //  cout << _offs << endl;
@@ -214,9 +234,13 @@ void Renderer::loop(int rep) {
     // set the scale ready to do our calculations.
     SDL_SetRenderScale(_renderer, _scale, _scale);
 
-    _rootnames[0]->render(*this, Point(0.0, 0.0));
-    _roots[0]->render(*this, Point(0.0, _rootnames[0]->size().h+Sizes::listgap));
-    _editor->render(*this, Point(0.0, _rootnames[0]->size().h+Sizes::listgap));
+    auto x = 0.0;
+    for (int i=0; i<_roots.size(); i++) {
+      _rootnames[i]->render(*this, Point(x, 0.0));
+      _roots[i]->render(*this, Point(x, _rootnames[i]->size().h+Sizes::listgap));
+      x += Sizeable::cast(_roots[i].get())->getSize().w+Sizes::group_indent;
+    }
+    _editor->render(*this, Point(0.0, 0.0));
 
     // set the scale back to 1.0 so that our draw will work.
     SDL_SetRenderScale(_renderer, 1.0, 1.0);
@@ -307,17 +331,18 @@ bool Renderer::isDoubleClick() {
 
 void Renderer::setHUD() {
 
-  Element *hit = _roots[0]->hitTest(Point(_offs), _mouse * (1 / _scale));
-  if (hit) {
-    HUDable *hx = dynamic_cast<HUDable *>(hit);
-    if (hx) {
-      _hud->setEditingLoc(localToGlobal(hit->origin()));
-      hx->setMode(*this, _hud.get());
+  for (auto& i: _roots) {
+    Element *hit = i->hitTest(Point(_offs), _mouse * (1 / _scale));
+    if (hit) {
+      HUDable *hx = dynamic_cast<HUDable *>(hit);
+      if (hx) {
+        _hud->setEditingLoc(localToGlobal(hit->origin()));
+        hx->setMode(*this, _hud.get());
+      }
+      return;
     }
   }
-  else {
-    _hud->setMode(0);
-  }
+  _hud->setMode(0);
 }
 
 void Renderer::endEdit() {
@@ -348,7 +373,7 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
         auto json = Builder::loadText(text);
         SDL_free(text);
         if (json) {
-          setRoot(json, "<clipboard>");
+          addRoot(json, "<clipboard>");
         }
         else {
           cerr << "invalid json" << endl;
@@ -361,11 +386,11 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
       return true;
 
     case SDLK_U:
-      undo();
+      undo(element);
       return true;
 
     case SDLK_R:
-      redo();
+      redo(element);
       return true;
   }
   
@@ -390,7 +415,7 @@ void Renderer::processDeleteKey(Element *element) {
   auto p = Parentable::cast(element)->getParent();
   auto px = dynamic_cast<Listable *>(p);
   if (px) {
-    exec(new RemoveFromList(px, element));
+    exec(element, new RemoveFromList(px, element));
   }
   else {
     auto prop = dynamic_cast<Property *>(p);
@@ -398,7 +423,7 @@ void Renderer::processDeleteKey(Element *element) {
       p = Parentable::cast(prop)->getParent();
       px = dynamic_cast<Listable *>(p);
       if (px) {
-        exec(new RemoveFromList(px, element));
+        exec(element, new RemoveFromList(px, element));
       }
       else {
         cerr << "Not listable and not in a property" << endl;
@@ -489,19 +514,22 @@ bool Renderer::processEvents() {
                
       case SDL_EVENT_KEY_DOWN:
         if (!_editor->capture()) {
-          Element *hit = _roots[0]->hitTest(Point(_offs), _mouse * (1 / _scale));
-          if (hit) {
-            Keyable *kx = dynamic_cast<Keyable *>(hit);
-            if (kx) {
-              kx->processKey(*this, event.key.key);
-            }
-            // we search again since processKet might invalidate
-            // the hit object.
-            hit = _roots[0]->hitTest(Point(_offs), _mouse * (1 / _scale));
-            HUDable *hx = dynamic_cast<HUDable *>(hit);
-            if (hx) {
-              _hud->setEditingLoc(localToGlobal(hit->origin()));
-              hx->setMode(*this, _hud.get());
+          for (auto& i: _roots) {
+            Element *hit = i->hitTest(Point(_offs), _mouse * (1 / _scale));
+            if (hit) {
+              Keyable *kx = dynamic_cast<Keyable *>(hit);
+              if (kx) {
+                kx->processKey(*this, event.key.key);
+              }
+              // we search again since processKet might invalidate
+              // the hit object.
+              hit = i->hitTest(Point(_offs), _mouse * (1 / _scale));
+              HUDable *hx = dynamic_cast<HUDable *>(hit);
+              if (hx) {
+                _hud->setEditingLoc(localToGlobal(hit->origin()));
+                hx->setMode(*this, _hud.get());
+              }
+              break;
             }
           }
         }
@@ -634,7 +662,7 @@ void Renderer::renderFilledPie(const Point &origin, int radius, int start, int e
 
 }
 
-void Renderer::exec(Change *change) {
+void Renderer::exec(Element *element, Change *change) {
 
   // throw away all the changes after the undo ptr.
   if (_changes.size() > 0) {
@@ -647,7 +675,9 @@ void Renderer::exec(Change *change) {
   
   // execute this change
   change->exec(*this);
-  _roots[0]->layout();
+  
+  // layout the root.
+  element->root()->layout();
   
   // remember it.
   _changes.push_back(unique_ptr<Change>(change));
@@ -658,7 +688,7 @@ void Renderer::exec(Change *change) {
   
 }
 
-void Renderer::undo() {
+void Renderer::undo(Element *element) {
 
   if (_changes.size() == 0) {
     cout << "no changes" << endl;
@@ -666,7 +696,7 @@ void Renderer::undo() {
   }
   
   (*_undoptr)->undo(*this);
-  _roots[0]->layout();
+  element->root()->layout();
   
   if (_undoptr == _changes.begin()) {
     _undoptr = _changes.end();
@@ -676,7 +706,7 @@ void Renderer::undo() {
   }
 }
 
-void Renderer::redo() {
+void Renderer::redo(Element *element) {
 
   if (_changes.size() == 0) {
     cout << "no changes" << endl;
@@ -690,7 +720,7 @@ void Renderer::redo() {
     _undoptr++;
   }
   (*_undoptr)->exec(*this);
-  _roots[0]->layout();
+  element->root()->layout();
   
 }
 
