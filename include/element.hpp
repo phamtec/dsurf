@@ -38,6 +38,12 @@ public:
   virtual std::string describe();
     // describe this element.
     
+  virtual void setParent(Element *parent) {}
+    // set the parent.
+    
+  virtual Element *getParent() { return nullptr; }
+    // get the parent of this element.
+
   virtual Size layout() = 0;
     // layout the object.
 

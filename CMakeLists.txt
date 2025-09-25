@@ -77,7 +77,6 @@ set(OBJSRC
   src/long.cpp
   src/bool.cpp
   src/property.cpp
-  src/parentable.cpp
   src/editable.cpp
   src/hudable.cpp
   src/keyable.cpp

@@ -208,7 +208,7 @@ void Renderer::addRoot(Element *element, const string &name) {
 
 void Renderer::initElement(Element *parent, int index, Element *element) {
 
-  Parentable::cast(element)->setParent(parent);
+  element->setParent(parent);
   element->build(*this);
   HUDable::cast(element)->initHUD(_hud.get());
   
@@ -412,7 +412,7 @@ void Renderer::registerTextHUDMode(HUDMode *mode) {
 
 void Renderer::processDeleteKey(Element *element) {
 
-  auto p = Parentable::cast(element)->getParent();
+  auto p = element->getParent();
   auto px = dynamic_cast<Listable *>(p);
   if (px) {
     exec(element, new RemoveFromList(px, element));
@@ -420,7 +420,7 @@ void Renderer::processDeleteKey(Element *element) {
   else {
     auto prop = dynamic_cast<Property *>(p);
     if (prop) {
-      p = Parentable::cast(prop)->getParent();
+      p = prop->getParent();
       px = dynamic_cast<Listable *>(p);
       if (px) {
         exec(element, new RemoveFromList(px, element));

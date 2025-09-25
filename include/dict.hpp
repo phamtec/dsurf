@@ -20,7 +20,6 @@
 
 #include "element.hpp"
 #include "listable.hpp"
-#include "parentable.hpp"
 #include "writeable.hpp"
 #include "hudable.hpp"
 #include "keyable.hpp"
@@ -28,7 +27,7 @@
 #include <memory>
 #include <vector>
 
-class Dict: public Element, public Listable, public Parentable, public Writeable, public HUDable, public Keyable {
+class Dict: public Element, public Listable,  public Writeable, public HUDable, public Keyable {
 
   typedef Element super;
 
@@ -37,6 +36,8 @@ public:
   
   // Element
   virtual std::string describe();
+  virtual void setParent(Element *parent) { _parent = parent; }
+  virtual Element *getParent() { return _parent; }
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
@@ -52,10 +53,6 @@ public:
   virtual int count() { return _elements.size(); }
   virtual Element *at(int index) { return _elements[index].get(); }
   virtual std::vector<std::unique_ptr<Element> > *getElements() { return &_elements; }
-  
-  // Parentable
-  virtual void setParent(Element *parent) { _parent = parent; }
-  virtual Element *getParent() { return _parent; }
 
   // HUDable
   virtual void initHUD(HUD *hud);

@@ -11,7 +11,6 @@
 
 #include "element.hpp"
 
-#include "parentable.hpp"
 #include "err.hpp"
 
 #include <iostream>
@@ -38,7 +37,7 @@ Element *Element::hitTest(const Point &origin, const Point &p) {
 Point Element::origin() {
 
   // get the parent.
-  Element *parent = Parentable::cast(this)->getParent();
+  Element *parent = getParent();
   if (!parent) {
     return Point();
   }
@@ -60,11 +59,11 @@ Element *Element::root() {
   Element *p = this;
   Element *root = p;
   while (p) {
-    Parentable *px = dynamic_cast<Parentable *>(p);
-    if (!px) {
-      break;
-    }
-    p = px->getParent();
+//     Parentable *px = dynamic_cast<Parentable *>(p);
+//     if (!px) {
+//       break;
+//     }
+    p = p->getParent();
     if (p) {
       root = p;
     }

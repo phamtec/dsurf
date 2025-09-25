@@ -25,7 +25,7 @@ Property::Property(const std::wstring &name, Element *obj, bool container):
     _parent(0), _name(name, Colours::propertyE), 
     _obj(obj), _container(container)
 {
-  Parentable::cast(obj)->setParent(this);
+  obj->setParent(this);
 }
 
 string Property::describe() {

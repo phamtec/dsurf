@@ -18,7 +18,6 @@
 
 #include "element.hpp"
 #include "text.hpp"
-#include "parentable.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
 #include "hudable.hpp"
@@ -27,7 +26,7 @@
 #include <memory>
 #include <vector>
 
-class Property: public Element, public Parentable, public Writeable, public Editable, public HUDable, public Keyable  {
+class Property: public Element,  public Writeable, public Editable, public HUDable, public Keyable  {
 
   typedef Element super;
 
@@ -35,6 +34,8 @@ public:
   Property(const std::wstring &name, Element *obj, bool container);
   
   // Element
+  virtual void setParent(Element *parent) { _parent = parent; }
+  virtual Element *getParent() { return _parent; }
   virtual std::string describe();
   virtual void build(Renderer &renderer);
   virtual Size layout();
@@ -47,10 +48,6 @@ public:
   // Writeable
   virtual std::string getName();
   virtual rfl::Generic getGeneric();
-
-  // Parentable
-  virtual void setParent(Element *parent) { _parent = parent; }
-  virtual Element *getParent() { return _parent; }
 
   // Editable
   virtual std::wstring getString() { return _name.str(); }

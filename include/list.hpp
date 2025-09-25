@@ -22,7 +22,6 @@
 
 #include "element.hpp"
 #include "listable.hpp"
-#include "parentable.hpp"
 #include "writeable.hpp"
 #include "hudable.hpp"
 #include "keyable.hpp"
@@ -30,7 +29,7 @@
 #include <memory>
 #include <vector>
 
-class List: public Element, public Listable, public Parentable, public Writeable, public HUDable, public Keyable  {
+class List: public Element, public Listable,  public Writeable, public HUDable, public Keyable  {
 
   typedef Element super;
 
@@ -41,6 +40,8 @@ public:
     // this object is currently moving.
     
   // Element
+  virtual void setParent(Element *parent) { _parent = parent; }
+  virtual Element *getParent() { return _parent; }
   virtual std::string describe();
   virtual void build(Renderer &renderer);
   virtual void destroy(Renderer &renderer);
@@ -58,10 +59,6 @@ public:
   virtual Element *at(int index) { return _elements[index].get(); }
   virtual std::vector<std::unique_ptr<Element> > *getElements() { return &_elements; }
   
-  // Parentable
-  virtual void setParent(Element *parent) { _parent = parent; }
-  virtual Element *getParent() { return _parent; }
-
   // HUDable
   virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);

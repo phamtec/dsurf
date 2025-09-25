@@ -15,7 +15,6 @@
 #include "editable.hpp"
 #include "hudable.hpp"
 #include "keyable.hpp"
-#include "parentable.hpp"
 #include "listable.hpp"
 #include "writeable.hpp"
 #include "list.hpp"
@@ -106,30 +105,6 @@ BOOST_AUTO_TEST_CASE( keyable )
   Renderer *r = nullptr;
   X x;
   Keyable::cast(&x)->processKey(*r, 0);
-  
-}
-
-BOOST_AUTO_TEST_CASE( nullParentable )
-{
-  cout << "=== nullParentable ===" << endl;
-
-  try {
-    Parentable::cast(0)->getParent();
-    BOOST_FAIL("Didn't catch");
-  }
-  catch (string &ex) {
-    // all good.
-    cout << ex << endl;
-  }
-  
-}
-
-BOOST_AUTO_TEST_CASE( parentable )
-{
-  cout << "=== parentable ===" << endl;
-
-  X x;
-  Parentable::cast(&x)->getParent();
   
 }
 

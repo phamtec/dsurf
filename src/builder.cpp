@@ -83,7 +83,7 @@ Element *Builder::walk(Element *parent, const rfl::Generic &g) {
 
   Element *obj = castGeneric(g);
 
-  Parentable::cast(obj)->setParent(parent);
+  obj->setParent(parent);
     
   return obj;
     
@@ -97,7 +97,7 @@ Element *Builder::walk(Element *parent, const rfl::Generic &g, const string &nam
     obj = new Property(Unicode::convert(name), obj, dynamic_cast<Listable *>(obj) != 0);
   }
   
-  Parentable::cast(obj)->setParent(parent);
+  obj->setParent(parent);
     
   return obj;
     

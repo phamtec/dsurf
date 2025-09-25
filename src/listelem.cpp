@@ -26,7 +26,7 @@ using namespace std;
 
 ListElem::ListElem(Element *obj): _obj(obj)
 {
-  Parentable::cast(obj)->setParent(this);      
+  obj->setParent(this);      
 }
 
 void ListElem::setEdit(Renderer &renderer, bool state) {
