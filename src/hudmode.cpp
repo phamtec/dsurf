@@ -74,10 +74,10 @@ void HUDMode::render(Renderer &renderer, const Point &origin, const Point &loc) 
 
 }
 
-void HUDMode::setFlag(Renderer &renderer, const std::string &name, bool state) {
+void HUDMode::setFlag(Renderer &renderer, HUDFlags flag, bool state) {
 
-  for_each(_shortcuts.begin(), _shortcuts.end(), [&renderer, name, state](auto &e) {
-    if (e->setFlag(name, state)) {
+  for_each(_shortcuts.begin(), _shortcuts.end(), [&renderer, flag, state](auto &e) {
+    if (e->setFlag(flag, state)) {
       e->build(renderer);
     }
   });

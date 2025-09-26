@@ -38,10 +38,7 @@ Renderer::~Renderer() {
   // allow objects to cleanup.
   destroyRoots();
 
-  // make sure alkl the chnages objects get destroyed too.
-  for_each(_changes.begin(), _changes.end(), [this](auto&& e) { 
-    e->destroy(*this); 
-  });
+  _changes.destroy(*this);
   
   // font first.
   _font.reset(0);
@@ -152,7 +149,7 @@ bool Renderer::init(const char *path) {
   _hud->build(*this);
 
   // make sure the hud flags are set correctly.
-  setUndoFlags();
+  _changes.setUndoFlags(*this, _hud.get());
   
 //   _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
 //   _editcursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_TEXT);
@@ -388,8 +385,8 @@ void Renderer::registerRootHUDMode(HUDMode *mode) {
 
   mode->add(new Shortcut(L"C", L"opy"));
   mode->add(new Shortcut(L"P", L"aste"));
-  mode->add(new Shortcut(L"U", L"ndo", "canundo"));
-  mode->add(new Shortcut(L"R", L"edo", "canredo"));
+  mode->add(new Shortcut(L"U", L"ndo", canUndo));
+  mode->add(new Shortcut(L"R", L"edo", canRedo));
   
 }
 
@@ -415,11 +412,11 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
       return true;
 
     case SDLK_U:
-      undo(element);
+      _changes.undo(*this, _hud.get(), element);
       return true;
 
     case SDLK_R:
-      redo(element);
+      _changes.redo(*this, _hud.get(), element);
       return true;
   }
   
@@ -444,7 +441,7 @@ void Renderer::processDeleteKey(Element *element) {
   auto p = element->getParent();
   auto px = dynamic_cast<Listable *>(p);
   if (px) {
-    exec(element, new RemoveFromList(px, element));
+    _changes.exec(*this, _hud.get(), element, new RemoveFromList(px, element));
   }
   else {
     auto prop = dynamic_cast<Property *>(p);
@@ -452,7 +449,7 @@ void Renderer::processDeleteKey(Element *element) {
       p = prop->getParent();
       px = dynamic_cast<Listable *>(p);
       if (px) {
-        exec(element, new RemoveFromList(px, element));
+        _changes.exec(*this, _hud.get(), element, new RemoveFromList(px, element));
       }
       else {
         cerr << "Not listable and not in a property" << endl;
@@ -699,93 +696,10 @@ void Renderer::renderFilledPie(const Point &origin, int radius, int start, int e
 
 }
 
-void Renderer::setUndoFlags() {
-
-  if (_changes.size() == 0) {
-    _hud->setFlag(*this, "canredo", false);
-    _hud->setFlag(*this, "canundo", false);
-    return;
-  }
-
-  _hud->setFlag(*this, "canredo", _undoptr == _changes.end());
-  _hud->setFlag(*this, "canundo", _undoptr != _changes.end());
-
-}
-
 void Renderer::exec(Element *element, Change *change) {
 
-  // throw away all the changes after the undo ptr.
-  if (_changes.size() > 0) {
-    auto ii = _undoptr;
-    ii++;
-    for (auto i=ii; i != _changes.end(); i++) {
-      _changes.erase(i);
-    }
-  }
+  _changes.exec(*this, _hud.get(), element, change);
   
-  // execute this change
-  change->exec(*this);
-  
-  // layout the root.
-  element->root()->layout();
-  
-  // remember it.
-  _changes.push_back(unique_ptr<Change>(change));
-  
-  // point at the last element.
-  _undoptr = _changes.end() - 1;
-  
-  setUndoFlags();
-  
-}
-
-void Renderer::undo(Element *element) {
-
-  if (_changes.size() == 0) {
-    cout << "no changes" << endl;
-    return;
-  }
-  
-  if (_undoptr == _changes.end()) {
-    cout << "undoptr invalid" << endl;
-    return;
-  }
-  
-  (*_undoptr)->undo(*this);
-  element->root()->layout();
-  
-  if (_undoptr == _changes.begin()) {
-    _undoptr = _changes.end();
-  }
-  else {
-    _undoptr--;
-  }
-  
-  setUndoFlags();
-  
-}
-
-void Renderer::redo(Element *element) {
-
-  if (_changes.size() == 0) {
-    cout << "no changes" << endl;
-    return;
-  }
-  
-  if (_undoptr == _changes.end()) {
-    _undoptr = _changes.begin();
-  }
-  else {
-    _undoptr++;
-  }
-  
-  if (_undoptr != _changes.end()) {
-    (*_undoptr)->exec(*this);
-    element->root()->layout();
-  }
-  
-  setUndoFlags();
-
 }
 
 void Renderer::setError(const string &str) {

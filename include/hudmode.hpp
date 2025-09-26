@@ -17,6 +17,7 @@
 #include "shortcut.hpp"
 #include "point.hpp"
 #include "size.hpp"
+#include "hudflags.hpp"
 
 class Renderer;
 
@@ -34,7 +35,7 @@ public:
   Point location(const Point &origin, const Point &loc);
   Size size();
 
-  void setFlag(Renderer &renderer, const std::string &name, bool state);
+  void setFlag(Renderer &renderer, HUDFlags flag, bool state);
   
 private:
 
@@ -44,4 +45,4 @@ private:
 };
 
 
-#endif // H_hud
+#endif // H_hudmode

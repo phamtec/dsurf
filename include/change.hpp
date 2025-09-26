@@ -14,6 +14,8 @@
 #ifndef H_change
 #define H_change
 
+#include <string>
+
 class Renderer;
 
 class Change {
@@ -21,6 +23,9 @@ class Change {
 public:
   virtual ~Change() {}
   
+  virtual std::string describe() { return "?"; }
+    // describe the change.
+    
   virtual void exec(Renderer &renderer) = 0;
     // execute (do) the change.
     
@@ -29,7 +34,6 @@ public:
     
   virtual void destroy(Renderer &renderer) {};
     // opposite of build, but called with the renderer.
-    
     
 };
 

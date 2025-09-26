@@ -64,5 +64,5 @@ int HUD::findMode(const std::string &name) {
 }
 void HUDMode::add(Shortcut *shortcut) {
 }
-Shortcut::Shortcut(const std::wstring &key, const std::wstring &text, std::optional<std::string> flags) {
+Shortcut::Shortcut(const std::wstring &key, const std::wstring &text, std::optional<HUDFlags> flags) {
 }

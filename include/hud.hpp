@@ -16,6 +16,7 @@
 
 #include "point.hpp"
 #include "hudmode.hpp"
+#include "hudflags.hpp"
 
 #include <map>
 
@@ -42,7 +43,7 @@ public:
   void setEditingLoc(const Point &loc) { _loc = loc; }
     // set what we are editing in case a HUD want's to draw at that fixed location.
   
-  void setFlag(Renderer &renderer, const std::string &name, bool state);
+  void setFlag(Renderer &renderer, HUDFlags flag, bool state);
     // set a flag in the HUD used to conditionally show states.
       
 private:

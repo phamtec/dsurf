@@ -16,26 +16,27 @@
 
 #include "text.hpp"
 #include "point.hpp"
+#include "hudflags.hpp"
 
 class Renderer;
 
 class Shortcut {
 
 public:
-  Shortcut(const std::wstring &key, const std::wstring &text, std::optional<std::string> flags = std::nullopt);
+  Shortcut(const std::wstring &key, const std::wstring &text, std::optional<HUDFlags> flags = std::nullopt);
   
   void build(Renderer &renderer);
   void render(Renderer &renderer, const Point &origin);
   
   Size size();
   
-  bool setFlag(const std::string &name, bool state);
+  bool setFlag(HUDFlags flag, bool state);
 
 private:
 
   std::unique_ptr<Text> _key;
   std::unique_ptr<Text> _text;
-  std::optional<std::string> _flags;
+  std::optional<HUDFlags> _flags;
   bool _state;
 
   void setup(const std::wstring &key, const std::wstring &text);

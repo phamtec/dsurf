@@ -75,11 +75,11 @@ void HUD::render(Renderer &renderer, const Point &mouse) {
   
 }
 
-void HUD::setFlag(Renderer &renderer, const std::string &name, bool state) {
+void HUD::setFlag(Renderer &renderer, HUDFlags flag, bool state) {
 
   for (auto &&i: _modes) {
     if (i) {
-      i->setFlag(renderer, name, state);
+      i->setFlag(renderer, flag, state);
     }
   }
 

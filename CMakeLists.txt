@@ -55,6 +55,7 @@ set(SRC
   src/shortcut.cpp
   src/types.cpp
   src/test.cpp
+  src/changes.cpp
 )
 
 set(UTILSRC
@@ -121,4 +122,9 @@ add_executable(TestMem test/testmem.cpp)
   target_link_libraries(TestMem ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestMem TestMem)
+
+add_executable(TestChanges test/testchanges.cpp src/changes.cpp)
+  target_link_libraries(TestChanges ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+add_test(TestChanges TestChanges)
 

@@ -16,7 +16,7 @@
 
 using namespace std;
 
-Shortcut::Shortcut(const std::wstring &key, const std::wstring &text, std::optional<std::string> flags): 
+Shortcut::Shortcut(const wstring &key, const wstring &text, optional<HUDFlags> flags): 
   _flags(flags), _state(true) {
   
   setup(key, text);
@@ -30,7 +30,7 @@ void Shortcut::build(Renderer &renderer) {
   
 }
 
-void Shortcut::setup(const std::wstring &key, const std::wstring &text) {
+void Shortcut::setup(const wstring &key, const wstring &text) {
 
   auto k = new Text();
   k->set(key, _state ? Colours::black : Colours::grey);
@@ -42,9 +42,9 @@ void Shortcut::setup(const std::wstring &key, const std::wstring &text) {
 
 }
 
-bool Shortcut::setFlag(const std::string &name, bool state) {
+bool Shortcut::setFlag(HUDFlags flag, bool state) {
  
-  if (!_flags || _state == state || *_flags != name) {
+  if (!_flags || _state == state || (*_flags & flag) == 0) {
     return false;
   }
   

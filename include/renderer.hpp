@@ -21,7 +21,7 @@
 #include "resources.hpp"
 #include "texteditor.hpp"
 #include "hud.hpp"
-#include "change.hpp"
+#include "changes.hpp"
 
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_events.h>
@@ -42,7 +42,7 @@ class Renderer {
 public:
   Renderer(const Size &wsize, float scalemult, float scale, const Size &offset, bool editing): 
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
-    _mousedown(false), _lastclick(0), _undoptr(_changes.end()),
+    _mousedown(false), _lastclick(0),
     _window(0), _renderer(0), _engine(0), _startedit(editing)/*,
     _pointercursor(0), _editcursor(0)*/
       {};
@@ -79,11 +79,9 @@ public:
   void copy(Element *element);
     // coy the element onto the clipboard
 
-  // undo/redo
-  void undo(Element *element);
-  void redo(Element *element);
+  // undo system
   void exec(Element *element, Change *change);
-  
+
   // dealing with textures.
   SDL_Texture *createTexture(int width, int height);
   void setTarget(SDL_Texture *texture);
@@ -153,10 +151,7 @@ private:
 //   SDL_Cursor *_pointercursor;
 //   SDL_Cursor *_editcursor;
   Point _renderorigin;
-  
-  // undo
-  std::vector<std::unique_ptr<Change> > _changes;
-  std::vector<std::unique_ptr<Change> >::iterator _undoptr;
+  Changes _changes;
   
   bool processEvents();
   bool isDoubleClick();
@@ -165,13 +160,12 @@ private:
   void destroyRoots();
   Point addRootOrigin(Element *element, const Point &origin);
   std::optional<std::tuple<Commandable *, Element *> > getHit();
-  void setUndoFlags();
 
   void debugOffs();
   void debugScale();
   void debugMouse(const Point &p);
   void debugSize();
-      
+        
   // testing via ZMQ
   std::unique_ptr<zmq::context_t> _context;
   std::unique_ptr<zmq::socket_t> _rep;
