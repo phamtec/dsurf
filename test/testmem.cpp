@@ -66,7 +66,11 @@ BOOST_AUTO_TEST_CASE( vectorUniqPtr )
     // and let them be destroyed.
   }
   
+#ifdef TARGET_OS_X
   testDestroyed({5, 4, 3, 2, 1, 0});
+#else
+  testDestroyed({0, 1, 2, 3, 4, 5});
+#endif
   
 }
 
