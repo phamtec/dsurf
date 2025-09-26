@@ -18,6 +18,8 @@
 #include "point.hpp"
 #include "hudflags.hpp"
 
+#include <optional>
+
 class Renderer;
 
 class Shortcut {
