@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( vectorUniqPtr )
     // and let them be destroyed.
   }
   
-#ifdef TARGET_OS_X
+#ifdef __APPLE__
   testDestroyed({5, 4, 3, 2, 1, 0});
 #else
   testDestroyed({0, 1, 2, 3, 4, 5});
@@ -97,8 +97,12 @@ BOOST_AUTO_TEST_CASE( eraseVectorUniqPtr )
     // and let them be destroyed.
   }
   
+#ifdef __APPLE__
   testDestroyed({100, 3, 200, 5, 4, 2, 1, 0});
-  
+#else
+  testDestroyed({100, 3, 200, 0, 1, 2, 4, 5});
+#endif
+
 }
 
 BOOST_AUTO_TEST_CASE( moveVectorUniqPtr )
@@ -127,7 +131,11 @@ BOOST_AUTO_TEST_CASE( moveVectorUniqPtr )
     // and let them be destroyed.
   }
   
+#ifdef __APPLE__
   testDestroyed({100, 200, 5, 4, 3, 2, 0, 1});
+#else
+  testDestroyed({100, 200, 0, 2, 3, 4, 5, 1});
+#endif
   
 }
 
@@ -164,7 +172,11 @@ BOOST_AUTO_TEST_CASE( moveVectorUniqPtrToVector )
     // and let them be destroyed.
   }
   
+#ifdef __APPLE__
   testDestroyed({100, 200, 5, 3, 1, 0, 4, 2});
+#else
+  testDestroyed({100, 200, 0, 1, 3, 5, 2, 4});
+#endif
   
 }
 
@@ -191,7 +203,11 @@ BOOST_AUTO_TEST_CASE( insertVectorUniqPtr )
     // and let them be destroyed.
   }
   
+#ifdef __APPLE__
   testDestroyed({100, 200, 5, 4, 3, 20, 2, 1, 0});
+#else
+  testDestroyed({100, 200, 0, 1, 2, 20, 3, 4, 5});
+#endif
   
 }
 
