@@ -15,8 +15,8 @@
 #define H_move
 
 #include <vector>
+#include <memory>
 
-//class Indexable;
 class Element;
 
 class Move {
