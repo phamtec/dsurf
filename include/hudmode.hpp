@@ -19,6 +19,8 @@
 #include "size.hpp"
 #include "hudflags.hpp"
 
+#include <vector>
+
 class Renderer;
 
 class HUDMode {
