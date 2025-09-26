@@ -19,16 +19,19 @@ Then('she waits {int} seconds') do |n|
 end
 
 When('she puts the file contents {string} on the clipboard') do |filename|
-   `cat #{filename} | pbcopy`
+  `cat #{filename} | xclip -sel clip`
+#  `cat #{filename} | pbcopy`
 end
 
 When('she invalidates the clipboard') do
-   `echo "xx" | pbcopy`
+  `echo "xx" | xclip -sel clip`
+#  `echo "xx" | pbcopy`
 end
 
 Then('the clipboard contains the file contents {string}') do |filename|
    json = `cat #{filename}`
-   clip_text = `pbpaste`
+   clip_text = `xsel`
+#   clip_text = `pbpaste`
    expect(json).to eq(clip_text)
 end
 
