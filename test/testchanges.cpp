@@ -313,6 +313,3 @@ BOOST_AUTO_TEST_CASE( redoPastEnd )
   BOOST_CHECK_EQUAL(flags.size(), 0);
 
 }
-
-
-

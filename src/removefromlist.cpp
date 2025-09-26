@@ -43,16 +43,19 @@ void RemoveFromList::exec(Renderer &renderer) {
   auto it = find_if(elements->begin(), elements->end(), [this](auto& e) { 
     return e.get() == _elem;
   });
-  if (it != elements->end()) {
+  if (it == elements->end()) {
+    cerr << "elem " << _elem->describe() << " not found to remove!" << endl;
+    return;
+  }
   
 //   cout << "found" << endl;
 
-    // save away the old element in the list.
-    _oldelem = std::move(*it);
-    
-    // remove the element from the list (we have it)
-    elements->erase(it);
-  }
+  // save away the old element in the list.
+  _oldelem = std::move(*it);
+  cerr << "elem saved " << _oldelem->describe() << endl;
+  
+  // remove the element from the list (we have it)
+  elements->erase(it);
 
 }
 
@@ -61,6 +64,11 @@ void RemoveFromList::undo(Renderer &renderer) {
   auto elements = _list->getElements();
   if (!elements) {
     cerr << "list doesnt provide access to elements" << endl;
+    return;
+  }
+  
+  if (!_oldelem) {
+    cerr << "cant undo, old elem is empty!" << endl;
     return;
   }
   

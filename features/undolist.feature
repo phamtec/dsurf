@@ -40,3 +40,14 @@ Feature: Changes can be undone to lists
       And she sends key "u" to "/"
       Then "/" contains 3 elements
   
+   Scenario: Complex changes dont crash
+      And she sends key "d" to "/1"
+      Then "/" contains 2 elements
+      And she sends key "u" to "/"
+      Then "/" contains 3 elements
+      And she sends key "d" to "/1"
+      Then "/" contains 2 elements
+      And she sends key "u" to "/"
+      Then "/" contains 3 elements
+      And she sends key "u" to "/"
+      Then "/" contains 3 elements

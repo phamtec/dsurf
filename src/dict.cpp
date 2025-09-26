@@ -167,10 +167,13 @@ void Dict::processKey(Renderer &renderer, SDL_Keycode code) {
       break;
 
     case SDLK_D:
-      if (!_adding) {
+      if (_adding) {
+        add(renderer, L"dict", new Dict(), true);
         return;
       }
-      add(renderer, L"dict", new Dict(), true);
+      if (getParent()) {
+        renderer.processDeleteKey(getParent());
+      }
       break;
 
     case SDLK_L:
