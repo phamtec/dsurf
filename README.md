@@ -15,7 +15,7 @@ sudo apt-get install -y git g++ gcc build-essential git make \
   libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
   libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
   libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libpipewire-0.3-dev \
-  libwayland-dev libdecor-0-dev liburing-dev libfreetype-dev
+  libwayland-dev libdecor-0-dev liburing-dev libfreetype-dev libssl-dev ruby-bundler
 ```
 
 ### Boost
@@ -90,9 +90,31 @@ make
 sudo make install
 ```
 
+#### CMake
+
+We need CMake 3.30.
+
+### Linux
+
+```
+sudo apt remove -y --purge --auto-remove cmake
+wget https://cmake.org/files/v3.30/cmake-3.30.5.tar.gz
+tar -xzvf cmake-3.30.5.tar.gz
+cd cmake-3.30.5
+./bootstrap
+make -j$(nproc)
+sudo make install
+```
+
 #### ZMQ
 
-#### Mac
+### Linux
+
+```
+sudo apt-get install cppzmq-dev
+```
+
+### Mac
 
 ```
 brew install zmq cppzmq
@@ -156,7 +178,7 @@ If you want to compile things that change in the source dir, just change the com
 The end to end tests use cucumber (Ruby), to get that going:
 
 ```
-bundle install
+sudo bundle install
 ```
 
 You will only need to do that once to install the ruby stuff.
