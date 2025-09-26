@@ -14,6 +14,8 @@
 #include "hud.hpp"
 #include "element.hpp"
 
+#include <algorithm>
+
 using namespace std;
 
 void Changes::destroy(Renderer &renderer) {
