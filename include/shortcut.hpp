@@ -19,6 +19,7 @@
 #include "hudflags.hpp"
 
 #include <optional>
+#include <memory>
 
 class Renderer;
 
