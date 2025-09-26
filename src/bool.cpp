@@ -53,8 +53,9 @@ void Bool::processKey(Renderer &renderer, SDL_Keycode code) {
 
 void Bool::setString(Renderer &renderer, const wstring &s) {
 
-  _value.set(s, Colours::red);
+  _value.set(s, Colours::boolE);
   _value.build(renderer);
+  renderer.setDirty(this);
   
 }
 

@@ -21,9 +21,9 @@ void HUDMode::add(Shortcut *shortcut) {
 
 void HUDMode::build(Renderer &renderer) {
 
-  for (auto &&i: _shortcuts) {
-    i->build(renderer);
-  }
+  for_each(_shortcuts.begin(), _shortcuts.end(), [&renderer](auto& e) {
+    e->build(renderer);
+  });
 
 }
 
@@ -71,5 +71,15 @@ void HUDMode::render(Renderer &renderer, const Point &origin, const Point &loc) 
       _shortcuts[i]->render(renderer, origin + Size(0, (s.h*i)));
     }
   }
+
+}
+
+void HUDMode::setFlag(Renderer &renderer, const std::string &name, bool state) {
+
+  for_each(_shortcuts.begin(), _shortcuts.end(), [&renderer, name, state](auto &e) {
+    if (e->setFlag(name, state)) {
+      e->build(renderer);
+    }
+  });
 
 }

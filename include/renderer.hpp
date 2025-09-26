@@ -116,6 +116,12 @@ public:
   void clearScale();
   void restoreScale();
   
+  void setError(const std::string &str);
+    // show an error.
+    
+  void setDirty(Element *elem);
+    // set the dirty flag for that element.
+    
   Resources resources;
   
 private:
@@ -143,6 +149,7 @@ private:
   std::unique_ptr<Font> _font;
   std::unique_ptr<TextEditor> _editor;
   std::unique_ptr<HUD> _hud;
+  std::unique_ptr<Text> _error;
 //   SDL_Cursor *_pointercursor;
 //   SDL_Cursor *_editcursor;
   Point _renderorigin;
@@ -158,6 +165,7 @@ private:
   void destroyRoots();
   Point addRootOrigin(Element *element, const Point &origin);
   std::optional<std::tuple<Commandable *, Element *> > getHit();
+  void setUndoFlags();
 
   void debugOffs();
   void debugScale();

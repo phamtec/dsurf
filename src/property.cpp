@@ -125,8 +125,9 @@ void Property::processKey(Renderer &renderer, SDL_Keycode code) {
 
 void Property::setString(Renderer &renderer, const wstring &s) {
 
-  _name.set(s, Colours::red);
+  _name.set(s, Colours::propertyE);
   _name.build(renderer);
+  renderer.setDirty(this);
   
 }
 

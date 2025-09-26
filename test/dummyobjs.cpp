@@ -54,6 +54,8 @@ void Renderer::exec(Element *element, Change *change) {
 }
 void Renderer::processDeleteKey(Element *element) {
 }
+void Renderer::setDirty(Element *elem) {
+}
 int HUD::registerMode(const std::string &name, HUDMode *mode) {
   return -1;
 }
@@ -62,5 +64,5 @@ int HUD::findMode(const std::string &name) {
 }
 void HUDMode::add(Shortcut *shortcut) {
 }
-Shortcut::Shortcut(const std::wstring &key, const std::wstring &text) {
+Shortcut::Shortcut(const std::wstring &key, const std::wstring &text, std::optional<std::string> flags) {
 }

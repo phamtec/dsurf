@@ -150,6 +150,9 @@ bool Renderer::init(const char *path) {
   
   // build the hud with all modes
   _hud->build(*this);
+
+  // make sure the hud flags are set correctly.
+  setUndoFlags();
   
 //   _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
 //   _editcursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_TEXT);
@@ -250,6 +253,10 @@ void Renderer::loop(int rep) {
     }
     _editor->render(*this, Point(0.0, 0.0));
 
+    if (_error) {
+      _error->render(*this, Point(0.0, 0.0), false);
+    }
+  
     // set the scale back to 1.0 so that our draw will work.
     SDL_SetRenderScale(_renderer, 1.0, 1.0);
   
@@ -381,8 +388,8 @@ void Renderer::registerRootHUDMode(HUDMode *mode) {
 
   mode->add(new Shortcut(L"C", L"opy"));
   mode->add(new Shortcut(L"P", L"aste"));
-  mode->add(new Shortcut(L"U", L"ndo"));
-  mode->add(new Shortcut(L"R", L"edo"));
+  mode->add(new Shortcut(L"U", L"ndo", "canundo"));
+  mode->add(new Shortcut(L"R", L"edo", "canredo"));
   
 }
 
@@ -398,7 +405,7 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
           addRoot(json, "<clipboard>");
         }
         else {
-          cerr << "invalid json" << endl;
+          setError("Invalid JSON");
         }
       }
       return true;
@@ -555,6 +562,7 @@ bool Renderer::processEvents() {
         break;
                
       case SDL_EVENT_KEY_DOWN:
+        _error.reset();
         if (!_editor->capture()) {
           auto hit = getHit();
           if (hit) {
@@ -691,6 +699,19 @@ void Renderer::renderFilledPie(const Point &origin, int radius, int start, int e
 
 }
 
+void Renderer::setUndoFlags() {
+
+  if (_changes.size() == 0) {
+    _hud->setFlag(*this, "canredo", false);
+    _hud->setFlag(*this, "canundo", false);
+    return;
+  }
+
+  _hud->setFlag(*this, "canredo", _undoptr == _changes.end());
+  _hud->setFlag(*this, "canundo", _undoptr != _changes.end());
+
+}
+
 void Renderer::exec(Element *element, Change *change) {
 
   // throw away all the changes after the undo ptr.
@@ -712,8 +733,9 @@ void Renderer::exec(Element *element, Change *change) {
   _changes.push_back(unique_ptr<Change>(change));
   
   // point at the last element.
-  _undoptr = _changes.end();
-  _undoptr--;
+  _undoptr = _changes.end() - 1;
+  
+  setUndoFlags();
   
 }
 
@@ -721,6 +743,11 @@ void Renderer::undo(Element *element) {
 
   if (_changes.size() == 0) {
     cout << "no changes" << endl;
+    return;
+  }
+  
+  if (_undoptr == _changes.end()) {
+    cout << "undoptr invalid" << endl;
     return;
   }
   
@@ -733,6 +760,9 @@ void Renderer::undo(Element *element) {
   else {
     _undoptr--;
   }
+  
+  setUndoFlags();
+  
 }
 
 void Renderer::redo(Element *element) {
@@ -748,8 +778,45 @@ void Renderer::redo(Element *element) {
   else {
     _undoptr++;
   }
-  (*_undoptr)->exec(*this);
-  element->root()->layout();
+  
+  if (_undoptr != _changes.end()) {
+    (*_undoptr)->exec(*this);
+    element->root()->layout();
+  }
+  
+  setUndoFlags();
+
+}
+
+void Renderer::setError(const string &str) {
+
+  cerr << str << endl;
+
+  auto error = new Text();
+  error->set(Unicode::convert(str), Colours::red);
+  error->build(*this);
+  _error.reset(error);
+  
+}
+
+void Renderer::setDirty(Element *elem) {
+
+  auto root = elem->root();
+  if (!root)  {
+    cerr << "element has no root" << endl;
+    return;
+  }
+  auto r = find_if(_roots.begin(), _roots.end(), [root](auto& e) {
+    return get<1>(e).get() == root;
+  });
+  if (r == _roots.end()) {
+    cerr << "couldnt find elements root." << endl;
+    return;
+  }
+  auto name = new Text();
+  name->set(get<0>(*r)->str(), Colours::red);
+  name->build(*this);
+  get<0>(*r).reset(name);
   
 }
 

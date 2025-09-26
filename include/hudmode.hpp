@@ -34,6 +34,8 @@ public:
   Point location(const Point &origin, const Point &loc);
   Size size();
 
+  void setFlag(Renderer &renderer, const std::string &name, bool state);
+  
 private:
 
   bool _fixed;

@@ -59,8 +59,9 @@ void String::processKey(Renderer &renderer, SDL_Keycode code) {
 
 void String::setString(Renderer &renderer, const wstring &s) {
 
-  _value.set(s, Colours::red);
+  _value.set(s, Colours::stringE);
   _value.build(renderer);
+  renderer.setDirty(this);
 
 }
 

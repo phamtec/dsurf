@@ -22,18 +22,24 @@ class Renderer;
 class Shortcut {
 
 public:
-  Shortcut(const std::wstring &key, const std::wstring &text);
+  Shortcut(const std::wstring &key, const std::wstring &text, std::optional<std::string> flags = std::nullopt);
   
   void build(Renderer &renderer);
   void render(Renderer &renderer, const Point &origin);
   
   Size size();
   
+  bool setFlag(const std::string &name, bool state);
+
 private:
 
-  Text _key;
-  Text _text;
+  std::unique_ptr<Text> _key;
+  std::unique_ptr<Text> _text;
+  std::optional<std::string> _flags;
+  bool _state;
 
+  void setup(const std::wstring &key, const std::wstring &text);
+  
 };
 
 #endif // H_shortcut

@@ -16,15 +16,43 @@
 
 using namespace std;
 
-Shortcut::Shortcut(const std::wstring &key, const std::wstring &text): 
-  _key(key, Colours::black),
-  _text(text, Colours::grey) {
+Shortcut::Shortcut(const std::wstring &key, const std::wstring &text, std::optional<std::string> flags): 
+  _flags(flags), _state(true) {
+  
+  setup(key, text);
+
 }
 
 void Shortcut::build(Renderer &renderer) {
 
-  _key.build(renderer);
-  _text.build(renderer);
+  _key->build(renderer);
+  _text->build(renderer);
+  
+}
+
+void Shortcut::setup(const std::wstring &key, const std::wstring &text) {
+
+  auto k = new Text();
+  k->set(key, _state ? Colours::black : Colours::grey);
+  _key.reset(k);
+
+  auto t = new Text();
+  t->set(text, Colours::grey);
+  _text.reset(t);
+
+}
+
+bool Shortcut::setFlag(const std::string &name, bool state) {
+ 
+  if (!_flags || _state == state || *_flags != name) {
+    return false;
+  }
+  
+  _state = state;
+  
+  setup(_key->str(), _text->str());
+
+  return true;
   
 }
 
@@ -37,8 +65,8 @@ void Shortcut::render(Renderer &renderer, const Point &origin) {
   Point p = origin * kiscale;
   
 //  cout << "key " << p << endl;
-  _key.render(renderer, p, false);
-  int kwidth = _key.size().w * scale;
+  _key->render(renderer, p, false);
+  int kwidth = _key->size().w * scale;
   
   scale = 0.22;
   renderer.setScale(scale, scale);
@@ -47,7 +75,7 @@ void Shortcut::render(Renderer &renderer, const Point &origin) {
   p = (origin + Size(1.8 + kwidth, 3.5)) * tiscale;
   
 //  cout << "text "  << p << endl;
-  _text.render(renderer, p, false);
+  _text->render(renderer, p, false);
 
   renderer.setScale(1.0, 1.0);
 
@@ -55,6 +83,6 @@ void Shortcut::render(Renderer &renderer, const Point &origin) {
 
 Size Shortcut::size() {
 
-  return Size(_key.size().w + _text.size().w, _key.size().h) * 0.3;
+  return Size(_key->size().w + _text->size().w, _key->size().h) * 0.3;
   
 }

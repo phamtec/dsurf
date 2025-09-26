@@ -330,4 +330,9 @@ Walk a JSON file building a simple layout.
 - Combine HUDable and Keyable into Commandable. Name makes a lot more sense.
 - Combine name and elem into a tuple.
 
+### 26-Sep-2025
+
+- Show errors.
+- Disable HUD shortcuts for undo/redo
+
 
