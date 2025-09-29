@@ -138,15 +138,19 @@ void Dict::initHUD(HUD *hud) {
 
 void Dict::setMode(Renderer &renderer, HUD *hud) {
 
+  if (renderer.textTooSmall()) {
+    hud->setMode(0);
+    return;
+  }
   if (_adding) {
-      hud->setMode(_hudadddict);
+    hud->setMode(_hudadddict);
+    return;
   }
-  else if (getParent() == 0) {
+  if (getParent() == 0) {
     hud->setMode(_hudrootdict);
+    return;
   }
-  else {
-    hud->setMode(_huddict);
-  }
+  hud->setMode(_huddict);
   
 }
 

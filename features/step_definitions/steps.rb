@@ -18,20 +18,33 @@ Then('she waits {int} seconds') do |n|
   sleep(n)
 end
 
+def isMac()
+   return RUBY_PLATFORM =~ /darwin/i
+end
+
 When('she puts the file contents {string} on the clipboard') do |filename|
-  `cat #{filename} | xclip -sel clip`
-#  `cat #{filename} | pbcopy`
+   if isMac()
+      `cat #{filename} | pbcopy`
+   else
+      `cat #{filename} | xclip -sel clip`
+   end
 end
 
 When('she invalidates the clipboard') do
-  `echo "xx" | xclip -sel clip`
-#  `echo "xx" | pbcopy`
+   if isMac()
+      `echo "xx" | pbcopy`
+   else
+      `echo "xx" | xclip -sel clip`
+   end
 end
 
 Then('the clipboard contains the file contents {string}') do |filename|
    json = `cat #{filename}`
-   clip_text = `xsel`
-#   clip_text = `pbpaste`
+   if isMac()
+      clip_text = `pbpaste`
+   else
+      clip_text = `xsel`
+   end
    expect(json).to eq(clip_text)
 end
 

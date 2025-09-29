@@ -37,7 +37,7 @@ public:
   void build(Renderer &renderer);
   void render(Renderer &renderer, const Point &mouse);
   
-  void setMode(int mode) { _mode = mode; }
+  void setMode(int mode);
     // set the mode to draw in the hub.
     
   void setEditingLoc(const Point &loc) { _loc = loc; }
@@ -46,12 +46,16 @@ public:
   void setFlag(Renderer &renderer, HUDFlags flag, bool state);
     // set a flag in the HUD used to conditionally show states.
       
+  void setHint(Renderer &renderer, const std::wstring &hint);
+    // set the hud into HINT mode when it's really small.
+    
 private:
   
   int _mode;
   Point _loc;
   std::map<std::string, int> _keys;
   std::vector<std::unique_ptr<HUDMode> > _modes;
+  std::unique_ptr<Text> _hint;
   
 };
 

@@ -23,6 +23,11 @@ HUD::HUD() {
 
 }
 
+void HUD::setMode(int mode) { 
+  _mode = mode;
+  _hint.reset();
+}
+
 int HUD::registerMode(const std::string &name, HUDMode *mode) {
 
   _modes.push_back(unique_ptr<HUDMode>(mode));
@@ -58,6 +63,19 @@ void HUD::render(Renderer &renderer, const Point &mouse) {
     return;
   }
   
+  if (_mode == -1) {
+    double scale = 0.3;
+    renderer.setScale(scale, scale);
+    
+    double kiscale = 1 / scale;
+    Point p = (mouse + Size(10, -10)) * kiscale;
+    
+    _hint->render(renderer, p, false);
+
+    renderer.setScale(1.0, 1.0);
+    return;
+  }
+  
   if (_mode >= _modes.size()) {
     cerr << "state doesn't exist " << _mode << endl;
     return;
@@ -83,4 +101,13 @@ void HUD::setFlag(Renderer &renderer, HUDFlags flag, bool state) {
     }
   }
 
+}
+
+void HUD::setHint(Renderer &renderer, const std::wstring &hint) {
+
+  _mode = -1;
+  auto text = new Text(hint, Colours::black);
+  text->build(renderer);
+  _hint.reset(text);
+  
 }

@@ -291,23 +291,24 @@ void List::destroyVector(std::vector<std::unique_ptr<Element> > &list, Renderer 
 
 void List::setMode(Renderer &renderer, HUD *hud) {
 
+  if (renderer.textTooSmall()) {
+    hud->setMode(0);
+    return;
+  }
+
   if (_adding) {
     hud->setMode(_hudaddlist);
+    return;
   }
-  else if (_editing) {
-    if (_moving) {
-      hud->setMode(_hudlistmove);
-    }
-    else {
-      hud->setMode(_hudlistedit);
-    }
+  if (_editing) {
+    hud->setMode(_moving ? _hudlistmove : _hudlistedit);
+    return;
   }
-  else if (!getParent()) {
+  if (!getParent()) {
     hud->setMode(_hudrootlist);
+    return;
   }
-  else {
-    hud->setMode(_hudlist);
-  }
+  hud->setMode(_hudlist);
   
 }
 

@@ -73,6 +73,11 @@ void Long::setString(Renderer &renderer, const wstring &s) {
 
 void Long::setMode(Renderer &renderer, HUD *hud) {
 
+  if (renderer.textTooSmall()) {
+    hud->setHint(renderer, _value.str());
+    return;
+  }
+
   renderer.setTextState();
   
 }

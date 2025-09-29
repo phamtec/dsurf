@@ -665,9 +665,9 @@ void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
 
 }
 
-bool Renderer::textTooSmall(const Rect &rect) {
+bool Renderer::textTooSmall() {
 
-  return (rect.size.h * _scale) < 9;
+  return _scale < 0.14;
   
 }
 
