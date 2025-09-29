@@ -52,7 +52,7 @@ void RemoveFromList::exec(Renderer &renderer) {
 
   // save away the old element in the list.
   _oldelem = std::move(*it);
-  cerr << "elem saved " << _oldelem->describe() << endl;
+//  cerr << "elem saved " << _oldelem->describe() << endl;
   
   // remove the element from the list (we have it)
   elements->erase(it);
