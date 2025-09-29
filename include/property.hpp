@@ -21,11 +21,12 @@
 #include "writeable.hpp"
 #include "editable.hpp"
 #include "commandable.hpp"
+#include "objable.hpp"
 
 #include <memory>
 #include <vector>
 
-class Property: public Element,  public Writeable, public Editable, public Commandable  {
+class Property: public Element,  public Writeable, public Editable, public Commandable, public Objable  {
 
   typedef Element super;
 
@@ -57,6 +58,9 @@ public:
   virtual void setMode(Renderer &renderer, HUD *hud);
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
+  // Objable
+  virtual void setObj(Renderer &renderer, Element *obj);
+    
 private:
 
   Element *_parent;

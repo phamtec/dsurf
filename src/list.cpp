@@ -411,7 +411,7 @@ void List::add(Renderer &renderer, Element *element) {
   
   // wrap in a list element.
   auto le = new ListElem(element);
-  renderer.initElement(this, _elements.size(), le);
+  renderer.initElement(this, le);
 
   renderer.exec(this, new NewElement(this, le));
   

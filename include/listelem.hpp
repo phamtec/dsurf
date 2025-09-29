@@ -22,11 +22,12 @@
 #include "writeable.hpp"
 #include "editable.hpp"
 #include "commandable.hpp"
+#include "objable.hpp"
 
 #include <memory>
 #include <vector>
 
-class ListElem: public Element,  public Writeable, public Editable, public Commandable  {
+class ListElem: public Element,  public Writeable, public Editable, public Commandable, public Objable  {
 
   typedef Element super;
 
@@ -34,7 +35,8 @@ public:
   ListElem(Element *obj);
   
   void setEdit(Renderer &renderer, bool state);
-  
+    // we are editing the list element.
+    
   // Element
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
@@ -60,6 +62,9 @@ public:
   static void registerHUDModes(HUD *hud);
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
+  // Objable
+  virtual void setObj(Renderer &renderer, Element *obj);
+    
 private:
 
   Element *_parent;

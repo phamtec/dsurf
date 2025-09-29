@@ -16,6 +16,7 @@
 #include "hud.hpp"
 #include "renderer.hpp"
 #include "list.hpp"
+#include "setobj.hpp"
 
 #include <iostream>
 
@@ -210,4 +211,12 @@ void ListElem::setMode(Renderer &renderer, HUD *hud) {
   }
   
 }
+
+void ListElem::setObj(Renderer &renderer, Element *obj) {
+  
+  renderer.initElement(this, obj);
+  renderer.exec(this, new SetObj(&_obj, obj));
+  
+}
+
 

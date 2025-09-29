@@ -16,6 +16,7 @@
 #include "hud.hpp"
 #include "renderer.hpp"
 #include "unicode.hpp"
+#include "setobj.hpp"
 
 #include <iostream>
 
@@ -151,6 +152,13 @@ void Property::setMode(Renderer &renderer, HUD *hud) {
   }
 
   renderer.setTextState();
+  
+}
+
+void Property::setObj(Renderer &renderer, Element *obj) {
+  
+  renderer.initElement(this, obj);
+  renderer.exec(this, new SetObj(&_obj, obj));
   
 }
 

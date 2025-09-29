@@ -59,10 +59,6 @@ Element *Element::root() {
   Element *p = this;
   Element *root = p;
   while (p) {
-//     Parentable *px = dynamic_cast<Parentable *>(p);
-//     if (!px) {
-//       break;
-//     }
     p = p->getParent();
     if (p) {
       root = p;

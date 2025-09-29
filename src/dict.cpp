@@ -20,6 +20,7 @@
 #include "long.hpp"
 #include "bool.hpp"
 #include "newelement.hpp"
+#include "objable.hpp"
 
 #include <iostream>
 
@@ -107,6 +108,7 @@ void Dict::registerHUDModes(HUD *hud) {
   {
     auto mode = new HUDMode(false);
     mode->add(new Shortcut(L"C", L"opy"));
+    mode->add(new Shortcut(L"P", L"aste"));
     mode->add(new Shortcut(L"N", L"ew"));
     Renderer::registerTextHUDMode(mode);
     hud->registerMode("dict", mode);
@@ -166,6 +168,24 @@ void Dict::processKey(Renderer &renderer, SDL_Keycode code) {
       renderer.copy(this);
       break;
 
+    case SDLK_P:
+      {
+        auto elem = renderer.getClipboard();
+        if (elem) {
+          auto dict = dynamic_cast<Dict *>(elem);
+          if (dict) {
+            Objable::cast(getParent())->setObj(renderer, elem);
+          }
+          else {
+            renderer.setError("Not a dictionary");
+          }
+        }
+        else {
+          renderer.setError("Invalid JSON");
+        }
+      }
+      break;
+
     case SDLK_ESCAPE:
       _adding = false;
       break;
@@ -219,7 +239,7 @@ void Dict::add(Renderer &renderer, const std::wstring &name, Element *element, b
   
   // wrap in a property
   auto p = new Property(name, element, container); 
-  renderer.initElement(this, _elements.size(), p);
+  renderer.initElement(this, p);
 
   renderer.exec(this, new NewElement(this, p));
   

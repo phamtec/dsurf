@@ -17,6 +17,8 @@
 #include "listable.hpp"
 #include "writeable.hpp"
 #include "list.hpp"
+#include "objable.hpp"
+#include "renderer.hpp"
 
 #define BOOST_AUTO_TEST_MAIN
 #include <boost/test/unit_test.hpp>

@@ -25,7 +25,7 @@ class Err {
 
 public:
 
-  static void typeError(const std::type_info &type);
+  static void typeError(Element *elem, const std::type_info &type);
     // return a message that the object is not of the type given.
     
   static std::string demangle(const std::type_info &type);
@@ -48,7 +48,7 @@ public:
         throw std::string("nullptr is not a " + Err::demangle(typeid(T)) + "!");
       }
       if (!T::_err) {
-       T::_err = new ErrT();
+       T::_err = new ErrT(obj);
       }
       px = T::_err;
     }

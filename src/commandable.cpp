@@ -19,16 +19,20 @@
 class CommandableErr: public Commandable {
 
 public:
+  CommandableErr(Element *elem): _elem(elem) {}
 
   virtual void initHUD(HUD *hud) {
-    Err::typeError(typeid(Commandable));
+    Err::typeError(_elem, typeid(Commandable));
   }
   virtual void setMode(Renderer &renderer, HUD *hud) {
-    Err::typeError(typeid(Commandable));
+    Err::typeError(_elem, typeid(Commandable));
   }
   virtual void processKey(Renderer &renderer, SDL_Keycode code) {
-    Err::typeError(typeid(Commandable));
+    Err::typeError(_elem, typeid(Commandable));
   }
+
+private:
+  Element *_elem;
 
 };
 

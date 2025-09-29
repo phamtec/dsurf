@@ -23,19 +23,23 @@ using namespace std;
 class ListableErr: public Listable {
 
 public:
+  ListableErr(Element *elem): _elem(elem) {}
 
   virtual void remove(Renderer &renderer, Element *element) {
-    Err::typeError(typeid(Listable));
+    Err::typeError(_elem, typeid(Listable));
   }
   virtual int count() {
-    Err::typeError(typeid(Listable));
+    Err::typeError(_elem, typeid(Listable));
     return 0;
   }
   virtual Element *at(int index) {
-    Err::typeError(typeid(Listable));
+    Err::typeError(_elem, typeid(Listable));
     return nullptr;
   }
 
+private:
+  Element *_elem;
+  
 };
 
 Listable *Listable::_err = nullptr;

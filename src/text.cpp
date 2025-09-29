@@ -54,7 +54,7 @@ void Text::render(Renderer &renderer, const Point &origin, bool offs) {
   }
   
   Rect r(origin, _size);
-  if (!offs && renderer.textTooSmall()) {
+  if (offs && renderer.textTooSmall()) {
     r -= 4;
     renderer.renderFilledRect(r, _fgcolor);
   }

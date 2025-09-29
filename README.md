@@ -360,4 +360,13 @@ Walk a JSON file building a simple layout.
 - Show errors.
 - Disable HUD shortcuts for undo/redo
 
+### 29-Sep-2025
+
+- Small scale HUD shows hints instead of null drawing.
+- Cast errors show the object description
+- start in on being able to paste a dictionary into a property.
+
+
+
+
 

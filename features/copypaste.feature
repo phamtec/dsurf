@@ -8,3 +8,11 @@ Feature: Copy and Paste
       And she invalidates the clipboard
       And she sends key "c" to "/"
       And the clipboard contains the file contents "test/dict.json"
+
+   Scenario: A dictionary can be pasted into an empty dictionary
+      When she puts the file contents "test/listofemptydicts.json" on the clipboard
+      And she sends key "p" to "/"
+      Then "/1" contains 0 elements
+#       And she puts the file contents "test/dict.json" on the clipboard
+#       And she sends key "p" to "/1"
+#       Then "/1" contains 3 elements

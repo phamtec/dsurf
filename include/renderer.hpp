@@ -56,7 +56,7 @@ public:
   bool init(const char *fontpath);
     // initialise with th epath to the font file.
     
-  void initElement(Element *parent, int index, Element *element);
+  void initElement(Element *parent, Element *element);
     // do all the work that would initialise an element.
     
   void initTypes();
@@ -77,8 +77,11 @@ public:
   void processDeleteKey(Element *element);
 
   void copy(Element *element);
-    // coy the element onto the clipboard
+    // copy the element onto the clipboard
 
+  Element *getClipboard();
+    // get the contents of the clipboard as an element.
+    
   // undo system
   void exec(Element *element, Change *change);
 

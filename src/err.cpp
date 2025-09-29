@@ -25,8 +25,8 @@ string Err::demangle(const type_info &type) {
 }
 
 
-void Err::typeError(const type_info &type) {
+void Err::typeError(Element *elem, const std::type_info &type) {
 
-    cerr << "obj not " << demangle(type) << "!" << endl;
+    cerr << "obj " << (elem ? elem->describe() : "empty") << " not " << demangle(type) << "!" << endl;
 
 }

@@ -21,15 +21,19 @@ using namespace std;
 class WriteableErr: public Writeable {
 
 public:
+  WriteableErr(Element *elem): _elem(elem) {}
 
   virtual std::string getName() {
-    Err::typeError(typeid(Writeable));
+    Err::typeError(_elem, typeid(Writeable));
     return "???";
   }
   virtual rfl::Generic getGeneric() {
-    Err::typeError(typeid(Writeable));
+    Err::typeError(_elem, typeid(Writeable));
     return 0;
   }
+
+private:
+  Element *_elem;
 
 };
 

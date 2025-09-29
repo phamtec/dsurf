@@ -211,7 +211,7 @@ void Renderer::addRoot(Element *element, const string &name) {
 
 }
 
-void Renderer::initElement(Element *parent, int index, Element *element) {
+void Renderer::initElement(Element *parent, Element *element) {
 
   element->setParent(parent);
   element->build(*this);
@@ -390,16 +390,23 @@ void Renderer::registerRootHUDMode(HUDMode *mode) {
   
 }
 
+Element *Renderer::getClipboard() {
+
+  char *text = SDL_GetClipboardText();
+  auto json = Builder::loadText(text);
+  SDL_free(text);
+  return json;
+  
+}
+
 bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
 
   switch (code) {
     case SDLK_P:
       {
-        char *text = SDL_GetClipboardText();
-        auto json = Builder::loadText(text);
-        SDL_free(text);
-        if (json) {
-          addRoot(json, "<clipboard>");
+        auto elem = getClipboard();
+        if (elem) {
+          addRoot(elem, "<clipboard>");
         }
         else {
           setError("Invalid JSON");

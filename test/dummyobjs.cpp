@@ -44,7 +44,7 @@ void Renderer::copy(Element *element) {
 Point Renderer::noOffset(const Point &p) {
   return Point();
 }
-void Renderer::initElement(Element *parent, int index, Element *element) {
+void Renderer::initElement(Element *parent, Element *element) {
 }
 void Renderer::registerRootHUDMode(HUDMode *mode) {
 }
@@ -58,6 +58,11 @@ void Renderer::setDirty(Element *elem) {
 }
 bool Renderer::textTooSmall() {
   return false;
+}
+Element *Renderer::getClipboard() {
+  return nullptr;
+}
+void Renderer::setError(const std::string &str) {
 }
 int HUD::registerMode(const std::string &name, HUDMode *mode) {
   return -1;
