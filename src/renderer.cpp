@@ -381,12 +381,18 @@ void Renderer::copy(Element *element) {
   SDL_SetClipboardText(Builder::getJson(element).c_str());
 }
 
-void Renderer::registerRootHUDMode(HUDMode *mode) {
+void Renderer::registerGlobalHUDMode(HUDMode *mode) {
 
-  mode->add(new Shortcut(L"C", L"opy"));
-  mode->add(new Shortcut(L"P", L"aste"));
   mode->add(new Shortcut(L"U", L"ndo", canUndo));
   mode->add(new Shortcut(L"R", L"edo", canRedo));
+  
+}
+
+void Renderer::registerRootHUDMode(HUDMode *mode) {
+
+  registerGlobalHUDMode(mode);
+  mode->add(new Shortcut(L"C", L"opy"));
+  mode->add(new Shortcut(L"P", L"aste"));
   
 }
 
@@ -397,6 +403,14 @@ Element *Renderer::getClipboard() {
   SDL_free(text);
   return json;
   
+}
+
+void Renderer::undo(Element *element) {
+  _changes.undo(*this, _hud.get(), element);
+}
+
+void Renderer::redo(Element *element) {
+  _changes.redo(*this, _hud.get(), element);
 }
 
 bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
@@ -419,11 +433,11 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
       return true;
 
     case SDLK_U:
-      _changes.undo(*this, _hud.get(), element);
+      undo(element);
       return true;
 
     case SDLK_R:
-      _changes.redo(*this, _hud.get(), element);
+      redo(element);
       return true;
   }
   
@@ -492,8 +506,15 @@ void Renderer::processTextKey(Element *element, const Point &origin, const Size 
     case SDLK_D:
       processDeleteKey(element);
       return;
+    case SDLK_U:
+      undo(element);
+      return;
+
+    case SDLK_R:
+      redo(element);
+      return;
   }
-  
+
   // pass to the editor.
   _editor->processTextKey(*this, Editable::cast(element), o, size, code, _hud.get());
 

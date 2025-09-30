@@ -57,6 +57,7 @@ void TextEditor::registerHUD(HUD *hud) {
   // the text keys.
   {
     auto mode = new HUDMode(false);
+    Renderer::registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"A", L"ppend"));
     mode->add(new Shortcut(L"R", L"eplace"));
     mode->add(new Shortcut(L"I", L"nsert"));
@@ -73,10 +74,6 @@ void TextEditor::registerHUD(HUD *hud) {
     mode->add(new Shortcut(L"Arrows", L"(navigate)"));
     mode->add(new Shortcut(L"Bksp", L"(delete)"));
     mode->add(new Shortcut(L"Ret|Tab", L"(close)"));
-    mode->add(new Shortcut(L"Ctrl+A", L"(select all)"));
-//     mode->add(new Shortcut(L"Ctrl+C", L"(copy)"));
-//     mode->add(new Shortcut(L"Ctrl+V", L"(paste)"));
-//     mode->add(new Shortcut(L"Ctrl+X", L"(cut)"));
     _hudediting = hud->registerMode("textedit", mode);
   }
 

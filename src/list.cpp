@@ -235,6 +235,7 @@ void List::registerHUDModes(HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
+    Renderer::registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"E", L"dit"));
     mode->add(new Shortcut(L"N", L"ew"));

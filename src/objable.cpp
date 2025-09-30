@@ -24,6 +24,10 @@ public:
   virtual void setObj(Renderer &renderer, Element *obj) {
     Err::typeError(_elem, typeid(Objable));
   }
+  virtual Element *getObj() {
+    Err::typeError(_elem, typeid(Objable));
+    return nullptr;
+  }
 
 private:
   Element *_elem;

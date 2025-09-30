@@ -27,6 +27,9 @@ public:
   virtual void setObj(Renderer &renderer, Element *obj) = 0;
     // set the object
     
+  virtual Element *getObj() = 0;
+    // get the object.
+
   static Objable *cast(Element *obj);
   static Objable *_err;
     

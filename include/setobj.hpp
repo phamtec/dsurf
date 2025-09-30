@@ -33,7 +33,7 @@ public:
 private:
   std::unique_ptr<Element> *_obj;
   Element *_newobj;
-//  std::unique_ptr<Element> _oldelem;
+  std::unique_ptr<Element> _oldobj;
   
 };
 

@@ -67,6 +67,7 @@ public:
     
   bool processRootKey(Element *element, SDL_Keycode code);
   static void registerRootHUDMode(HUDMode *mode);
+  static void registerGlobalHUDMode(HUDMode *mode);
     // process keys and HUD for the root object.
    
   void setTextState();
@@ -84,6 +85,8 @@ public:
     
   // undo system
   void exec(Element *element, Change *change);
+  void undo(Element *element);
+  void redo(Element *element);
 
   // dealing with textures.
   SDL_Texture *createTexture(int width, int height);

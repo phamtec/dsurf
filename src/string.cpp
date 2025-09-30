@@ -24,6 +24,15 @@ String::String(const std::wstring &value): _parent(0) {
   
 }
 
+std::string String::describe() {
+
+  stringstream ss;
+  ss << "String (";
+  ss << Unicode::convert(_value.str());
+  ss << ")";
+  return ss.str();
+  
+}
 Size String::layout() {
 
   _size = _value.size();

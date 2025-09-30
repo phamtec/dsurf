@@ -366,6 +366,13 @@ Walk a JSON file building a simple layout.
 - Cast errors show the object description
 - start in on being able to paste a dictionary into a property.
 
+### 30-Sep-2025
+
+- Version 0.7
+- Pasting a dictionary into another can be undone
+- Undo and redo are global now.
+
+
 
 
 

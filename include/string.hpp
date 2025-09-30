@@ -31,6 +31,7 @@ public:
   String(const std::wstring &value);
 
   // Element
+  virtual std::string describe();
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
   virtual void build(Renderer &renderer);

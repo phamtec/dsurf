@@ -107,6 +107,7 @@ void Dict::registerHUDModes(HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
+    Renderer::registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
     mode->add(new Shortcut(L"N", L"ew"));

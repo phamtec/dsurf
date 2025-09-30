@@ -48,6 +48,8 @@ void Renderer::initElement(Element *parent, Element *element) {
 }
 void Renderer::registerRootHUDMode(HUDMode *mode) {
 }
+void Renderer::registerGlobalHUDMode(HUDMode *mode) {
+}
 void Renderer::registerTextHUDMode(HUDMode *mode) {
 }
 void Renderer::exec(Element *element, Change *change) {

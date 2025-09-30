@@ -36,7 +36,7 @@ public:
   
   void setEdit(Renderer &renderer, bool state);
     // we are editing the list element.
-    
+      
   // Element
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
@@ -64,6 +64,7 @@ public:
 
   // Objable
   virtual void setObj(Renderer &renderer, Element *obj);
+  virtual Element *getObj() { return _obj.get(); }
     
 private:
 

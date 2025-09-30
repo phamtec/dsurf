@@ -13,6 +13,7 @@
 
 #include "list.hpp"
 #include "move.hpp"
+#include "objable.hpp"
 
 #include <iostream>
 
@@ -40,7 +41,11 @@ void RemoveFromList::exec(Renderer &renderer) {
   }
   
   //  cout << "removing " << ix << endl;
-  auto it = find_if(elements->begin(), elements->end(), [this](auto& e) { 
+  auto it = find_if(elements->begin(), elements->end(), [this](auto& e) {
+    auto ox = dynamic_cast<Objable *>(e.get());
+    if (ox && ox->getObj() == _elem) {
+      return true;
+    }
     return e.get() == _elem;
   });
   if (it == elements->end()) {

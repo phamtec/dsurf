@@ -13,6 +13,7 @@
 
 #include "listable.hpp"
 #include "commandable.hpp"
+#include "objable.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl.hpp>
@@ -152,6 +153,13 @@ Element *Renderer::getTestTarget(const optional<string> &name, bool silent) {
       testErr(*name + " invalid");
     }
     return nullptr;
+  }
+  
+  // the object we foujnd is just a container for another.
+  auto obj = dynamic_cast<Objable *>(element);
+  if (obj) {
+//    cout << "found objable." << endl;
+    return obj->getObj();
   }
   
   return element;

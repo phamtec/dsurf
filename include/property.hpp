@@ -60,6 +60,7 @@ public:
 
   // Objable
   virtual void setObj(Renderer &renderer, Element *obj);
+  virtual Element *getObj() { return _obj.get(); }
     
 private:
 

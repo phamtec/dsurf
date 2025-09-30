@@ -7,7 +7,7 @@ Feature: Changes can be undone to dictionaries
       And she sends key "p" to "/"
       And "/" contains 3 elements
  
-   Scenario: Dict deletes can be undone
+   Scenario: Single Dict deletes can be undone
       And she sends key "d" to "/1"
       And "/" contains 2 elements
       And she sends key "u" to "/"
@@ -29,7 +29,7 @@ Feature: Changes can be undone to dictionaries
       When she sends key "n" to "/"
       And she sends key "s" to "/"
       And "/" contains 4 elements
-      And she sends key "u" to "/"
+      And she sends key "u" to "/1"
       Then "/" contains 3 elements
   
    Scenario: Undo cant be executed when nothing to undo
@@ -56,4 +56,4 @@ Feature: Changes can be undone to dictionaries
       Then "/" contains 1 elements
       And she sends key "r" to "/"
       Then "/" contains 1 elements
-  
+
