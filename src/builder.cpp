@@ -44,6 +44,12 @@ Element *Builder::loadText(const char *text) {
 
 }
 
+void Builder::write(Element *element, const string &file) {
+
+  rfl::json::save(file, Writeable::cast(element)->getGeneric(), rfl::json::pretty);
+
+}
+
 Element *Builder::castGeneric(const rfl::Generic &g)  {
 
   Element *obj = nullptr;

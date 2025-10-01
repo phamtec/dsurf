@@ -142,6 +142,14 @@ bool Renderer::init(const char *path) {
   // add all the register HUD modes.
   _editor->registerHUD(_hud.get());
   
+  {
+    auto mode = new HUDMode(false);
+    registerGlobalHUDMode(mode);
+    mode->add(new Shortcut(L"W", L"rite", canWrite));
+    _rootmode = _hud->registerMode("root", mode);
+    _hud->setFlag(*this, canWrite, false);
+  }
+
   // initialisation for types after everything has been created.
   initTypes();
   
@@ -341,21 +349,26 @@ bool Renderer::isDoubleClick() {
   
 }
 
-optional<tuple<Commandable *, Element *> > Renderer::getHit() {
+optional<Renderer::getHitReturnType> Renderer::getHit() {
 
   auto x = 0.0;
   for (auto& i: _roots) {
     auto& name = get<0>(i);
-    auto& elem = get<1>(i);
+    auto& rootelem = get<1>(i);
 
-    Element *hit = elem->hitTest(Point(_offs) + Point(x, name->size().h+Sizes::listgap), _mouse * (1 / _scale));
+    Element *hit = rootelem->hitTest(Point(_offs) + Point(x, name->size().h+Sizes::listgap), _mouse * (1 / _scale));
     if (hit) {
       Commandable *cx = dynamic_cast<Commandable *>(hit);
       if (cx) {
-        return tuple<Commandable *, Element *>(cx, hit);
+        return getHitReturnType(cx, hit, rootelem.get() == hit, false, name.get());
       }
     }
-    x += elem->size().w+Sizes::group_indent;
+    else {
+      if (Rect(Point(_offs) + Point(x, 0), name->size()).contains(_mouse * (1 / _scale))) {
+        return getHitReturnType(Commandable::cast(rootelem.get()), rootelem.get(), true, true, name.get());
+      }
+    }
+    x += rootelem->size().w+Sizes::group_indent;
   }
   return nullopt;
 }
@@ -364,10 +377,26 @@ void Renderer::setHUD() {
 
   auto hit = getHit();
   if (hit) {
+  
+    // if we are very small and the elem hit IS the root then use the name 
+    if (textTooSmall() && get<2>(*hit)) {
+      _hud->setHint(*this, get<4>(*hit));
+      return;
+    }
+    
     _hud->setEditingLoc(localToGlobal(addRootOrigin(get<1>(*hit), get<1>(*hit)->origin())));
+
+    // if we are on the name, then use that mode.
+    if (get<3>(*hit)) {
+      _hud->setMode(_rootmode);
+      return;
+    }
+    
     get<0>(*hit)->setMode(*this, _hud.get());
+    
     return;
   }
+  
   _hud->setMode(0);
 }
 
@@ -391,8 +420,15 @@ void Renderer::registerGlobalHUDMode(HUDMode *mode) {
 void Renderer::registerRootHUDMode(HUDMode *mode) {
 
   registerGlobalHUDMode(mode);
+  mode->add(new Shortcut(L"W", L"rite", canWrite));
   mode->add(new Shortcut(L"C", L"opy"));
   mode->add(new Shortcut(L"P", L"aste"));
+  
+}
+
+void Renderer::registerTextHUDMode(HUDMode *mode) {
+
+  mode->add(new Shortcut(L"D", L"elete"));
   
 }
 
@@ -405,12 +441,32 @@ Element *Renderer::getClipboard() {
   
 }
 
+void Renderer::write(Element *element) {
+
+  auto root = element->root();
+  
+  auto r = find_if(_roots.begin(), _roots.end(), [root](auto& e) {
+    return get<1>(e).get() == root;
+  });
+  if (r == _roots.end()) {
+    cerr << "couldnt find elements root." << endl;
+    return;
+  }
+
+  Builder::write(root, Unicode::convert(get<0>(*r)->str()));
+  
+  setDirty(root, false);
+  
+}
+
 void Renderer::undo(Element *element) {
   _changes.undo(*this, _hud.get(), element);
+  setDirty(element, true);  
 }
 
 void Renderer::redo(Element *element) {
   _changes.redo(*this, _hud.get(), element);
+  setDirty(element, true);  
 }
 
 bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
@@ -439,6 +495,10 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
     case SDLK_R:
       redo(element);
       return true;
+
+    case SDLK_W:
+      write(element);
+      return true;
   }
   
   return false;
@@ -451,18 +511,12 @@ void Renderer::setTextState() {
 
 }
 
-void Renderer::registerTextHUDMode(HUDMode *mode) {
-
-  mode->add(new Shortcut(L"D", L"elete"));
-  
-}
-
 void Renderer::processDeleteKey(Element *element) {
 
   auto p = element->getParent();
   auto px = dynamic_cast<Listable *>(p);
   if (px) {
-    _changes.exec(*this, _hud.get(), element, new RemoveFromList(px, element));
+    exec(element, new RemoveFromList(px, element));
   }
   else {
     auto prop = dynamic_cast<Property *>(p);
@@ -470,7 +524,7 @@ void Renderer::processDeleteKey(Element *element) {
       p = prop->getParent();
       px = dynamic_cast<Listable *>(p);
       if (px) {
-        _changes.exec(*this, _hud.get(), element, new RemoveFromList(px, element));
+        exec(element, new RemoveFromList(px, element));
       }
       else {
         cerr << "Not listable and not in a property" << endl;
@@ -506,6 +560,7 @@ void Renderer::processTextKey(Element *element, const Point &origin, const Size 
     case SDLK_D:
       processDeleteKey(element);
       return;
+      
     case SDLK_U:
       undo(element);
       return;
@@ -728,6 +783,9 @@ void Renderer::exec(Element *element, Change *change) {
 
   _changes.exec(*this, _hud.get(), element, change);
   
+  // amy change makes it dirty for now.
+  setDirty(element);
+  
 }
 
 void Renderer::setError(const string &str) {
@@ -741,7 +799,7 @@ void Renderer::setError(const string &str) {
   
 }
 
-void Renderer::setDirty(Element *elem) {
+void Renderer::setDirty(Element *elem, bool state) {
 
   auto root = elem->root();
   if (!root)  {
@@ -755,11 +813,14 @@ void Renderer::setDirty(Element *elem) {
     cerr << "couldnt find elements root." << endl;
     return;
   }
+  
   auto name = new Text();
-  name->set(get<0>(*r)->str(), Colours::red);
+  name->set(get<0>(*r)->str(), state ? Colours::red : Colours::black);
   name->build(*this);
   get<0>(*r).reset(name);
   
+  _hud->setFlag(*this, canWrite, state);
+
 }
 
 

@@ -42,7 +42,7 @@ class Renderer {
 public:
   Renderer(const Size &wsize, float scalemult, float scale, const Size &offset, bool editing): 
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
-    _mousedown(false), _lastclick(0),
+    _mousedown(false), _lastclick(0), _rootmode(-1),
     _window(0), _renderer(0), _engine(0), _startedit(editing)/*,
     _pointercursor(0), _editcursor(0)*/
       {};
@@ -83,6 +83,9 @@ public:
   Element *getClipboard();
     // get the contents of the clipboard as an element.
     
+  void write(Element *element);
+    // write back the contents of the root attached to this element.
+
   // undo system
   void exec(Element *element, Change *change);
   void undo(Element *element);
@@ -123,7 +126,7 @@ public:
   void setError(const std::string &str);
     // show an error.
     
-  void setDirty(Element *elem);
+  void setDirty(Element *elem, bool state=true);
     // set the dirty flag for that element.
     
   Resources resources;
@@ -158,6 +161,7 @@ private:
 //   SDL_Cursor *_editcursor;
   Point _renderorigin;
   Changes _changes;
+  int _rootmode;
   
   bool processEvents();
   bool isDoubleClick();
@@ -165,7 +169,13 @@ private:
   void setHUD();
   void destroyRoots();
   Point addRootOrigin(Element *element, const Point &origin);
-  std::optional<std::tuple<Commandable *, Element *> > getHit();
+  
+  typedef std::tuple<Commandable *, Element *, bool, bool, Text *> getHitReturnType;
+    // the commandable interface and the raw element
+    // bool is whether it's the root, next one is if the name is hit, 
+    // and the root text object at the end.
+  std::optional<getHitReturnType> getHit();
+
 
   void debugOffs();
   void debugScale();

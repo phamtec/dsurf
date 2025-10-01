@@ -56,7 +56,7 @@ void Renderer::exec(Element *element, Change *change) {
 }
 void Renderer::processDeleteKey(Element *element) {
 }
-void Renderer::setDirty(Element *elem) {
+void Renderer::setDirty(Element *elem, bool state) {
 }
 bool Renderer::textTooSmall() {
   return false;

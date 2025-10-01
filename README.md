@@ -372,6 +372,11 @@ Walk a JSON file building a simple layout.
 - Pasting a dictionary into another can be undone
 - Undo and redo are global now.
 
+### 1-Oct-2025
+
+- Version 0.8
+- You can save changes to disk.
+
 
 
 

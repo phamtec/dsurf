@@ -25,7 +25,7 @@ namespace po = boost::program_options;
 
 int main(int argc, char *argv[])
 {
-  string version = "dsurf v0.7, 30-Sep-2025.";
+  string version = "dsurf v0.8, 1-Oct-2025.";
     
   int repPort;
 

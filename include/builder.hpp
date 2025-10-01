@@ -36,6 +36,9 @@ public:
   static std::string getJson(Element *element);
     // get the JSON representing the box.
     
+  static void write(Element *element, const std::string &file);
+    // write out the generic object.
+    
 private:
   
   static void walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Element *list);
