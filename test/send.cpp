@@ -50,10 +50,12 @@ int main(int argc, char *argv[]) {
   
   zmq::message_t msg(str.length());
   memcpy(msg.data(), str.c_str(), str.length());
-  req.send(msg);
+//  req.send(msg);
+  req.send(msg, zmq::send_flags::none);
 
   zmq::message_t reply;
-  req.recv(&reply);
+//  req.recv(&reply);
+  auto res = req.recv(reply, zmq::recv_flags::none);
   string r((const char *)reply.data(), reply.size());
 
   cout << r << endl;

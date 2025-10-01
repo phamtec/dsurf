@@ -42,7 +42,8 @@ void Renderer::processTestMsg() {
   
     // get the message.
     zmq::message_t req;
-    auto res = _rep->recv(&req);
+//    auto res = _rep->recv(&req);
+    auto res = _rep->recv(req, zmq::recv_flags::none);
     string m((const char *)req.data(), req.size());
     
     auto result = rfl::json::read<TestMsg>(m);
