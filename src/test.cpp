@@ -42,8 +42,11 @@ void Renderer::processTestMsg() {
   
     // get the message.
     zmq::message_t req;
-//    auto res = _rep->recv(&req);
+#if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)
+    auto res = _rep->recv(&req);
+#else
     auto res = _rep->recv(req, zmq::recv_flags::none);
+#endif
     string m((const char *)req.data(), req.size());
     
     auto result = rfl::json::read<TestMsg>(m);
@@ -172,7 +175,11 @@ void Renderer::testSend(const TestMsg &reply) {
   string r(rfl::json::write(reply)); 
   zmq::message_t rep(r.length());
   memcpy(rep.data(), r.c_str(), r.length());
-  _rep->send(rep);
+#if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)
+ _rep->send(rep);
+#else
+  _rep->send(rep, zmq::send_flags::none);
+#endif
 
 }
 

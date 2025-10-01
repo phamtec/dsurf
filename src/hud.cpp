@@ -25,7 +25,7 @@ HUD::HUD() {
 
 void HUD::setMode(int mode) { 
   _mode = mode;
-  _hint.reset();
+  _hint = nullptr;
 }
 
 int HUD::registerMode(const std::string &name, HUDMode *mode) {
@@ -103,11 +103,9 @@ void HUD::setFlag(Renderer &renderer, HUDFlags flag, bool state) {
 
 }
 
-void HUD::setHint(Renderer &renderer, const std::wstring &hint) {
+void HUD::setHint(Renderer &renderer, Text *hint) {
 
   _mode = -1;
-  auto text = new Text(hint, Colours::black);
-  text->build(renderer);
-  _hint.reset(text);
+  _hint = hint;
   
 }

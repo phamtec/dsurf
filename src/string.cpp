@@ -33,6 +33,7 @@ std::string String::describe() {
   return ss.str();
   
 }
+
 Size String::layout() {
 
   _size = _value.size();
@@ -77,7 +78,7 @@ void String::setString(Renderer &renderer, const wstring &s) {
 void String::setMode(Renderer &renderer, HUD *hud) {
 
   if (renderer.textTooSmall()) {
-    hud->setHint(renderer, _value.str());
+    hud->setHint(renderer, &_value);
     return;
   }
 

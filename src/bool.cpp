@@ -62,7 +62,7 @@ void Bool::setString(Renderer &renderer, const wstring &s) {
 void Bool::setMode(Renderer &renderer, HUD *hud) {
 
   if (renderer.textTooSmall()) {
-    hud->setHint(renderer, _value.str());
+    hud->setHint(renderer, &_value);
     return;
   }
 

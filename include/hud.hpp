@@ -46,7 +46,7 @@ public:
   void setFlag(Renderer &renderer, HUDFlags flag, bool state);
     // set a flag in the HUD used to conditionally show states.
       
-  void setHint(Renderer &renderer, const std::wstring &hint);
+  void setHint(Renderer &renderer, Text *hint);
     // set the hud into HINT mode when it's really small.
     
 private:
@@ -55,7 +55,7 @@ private:
   Point _loc;
   std::map<std::string, int> _keys;
   std::vector<std::unique_ptr<HUDMode> > _modes;
-  std::unique_ptr<Text> _hint;
+  Text *_hint;
   
 };
 

@@ -147,7 +147,7 @@ void Property::initHUD(HUD *hud) {
 void Property::setMode(Renderer &renderer, HUD *hud) {
 
   if (renderer.textTooSmall()) {
-    hud->setHint(renderer, _name.str());
+    hud->setHint(renderer, &_name);
     return;
   }
 

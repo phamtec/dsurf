@@ -74,7 +74,7 @@ int HUD::findMode(const std::string &name) {
 }
 void HUDMode::add(Shortcut *shortcut) {
 }
-void HUD::setHint(Renderer &renderer, const std::wstring &hint) {
+void HUD::setHint(Renderer &renderer, Text *hint) {
 }
 void HUD::setMode(int mode) {
 } 
