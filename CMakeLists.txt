@@ -88,7 +88,14 @@ set(OBJSRC
   src/setobj.cpp
 )
 
-add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC})
+set(MODSRC
+  src/modules.cpp
+  modules/project/main.cpp
+  modules/project/root.cpp
+  modules/project/obj.cpp
+)
+
+add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC})
   target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp ${LIBS})
 
 add_executable(Send test/send.cpp)
@@ -100,7 +107,7 @@ add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp sr
 
 add_test(TestSpatial TestSpatial)
 
-add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp ${OBJSRC} ${UTILSRC})
+add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
   target_link_libraries(TestBuilder reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestBuilder TestBuilder)

@@ -1,0 +1,15 @@
+{
+  "project": {
+    "name": "Test Project",
+    "objects": [
+      {
+        "name": "Complex JSON",
+        "file": "complex.json"
+      },
+      {
+        "name": "Dictionary JSON",
+        "file": "dict.json"
+      }
+    ]
+  }
+}

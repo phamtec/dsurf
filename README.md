@@ -377,6 +377,12 @@ Walk a JSON file building a simple layout.
 - Version 0.8
 - You can save changes to disk.
 
+### 2-Oct-2025
+
+- Start in on the idea of "modules"
+- First module started which is a project.
+
+
 
 
 

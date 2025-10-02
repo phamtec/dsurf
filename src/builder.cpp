@@ -19,6 +19,7 @@
 #include "long.hpp"
 #include "property.hpp"
 #include "unicode.hpp"
+#include "modules.hpp"
 
 using namespace std;
 
@@ -26,7 +27,14 @@ Element *Builder::loadFile(const string &fn) {
 
   auto result = rfl::json::load<rfl::Generic>(fn);
   if (result) {
+  
+    auto elem = Modules::load(*result);
+    if (elem) {
+      return elem;
+    }
+
     return walk(0, *result);
+
   }
 
   return nullptr;
@@ -178,3 +186,97 @@ std::string Builder::getJson(Element *element) {
   
 }
 
+optional<rfl::Object<rfl::Generic> > Builder::getObject(const rfl::Generic &obj) {
+
+  optional<rfl::Object<rfl::Generic> > dict;
+  std::visit([&obj, &dict](const auto &field) {
+  
+    if constexpr (is_same<decay_t<decltype(field)>, rfl::Object<rfl::Generic> >()) {
+      dict = field;
+    }
+
+  }, obj.variant());
+
+  return dict;
+  
+}
+
+optional<string> Builder::getString(const rfl::Generic &obj) {
+
+  optional<string> str;
+  std::visit([&obj, &str](const auto &field) {
+  
+    if constexpr (is_same<decay_t<decltype(field)>, string>()) {
+      str = field;
+    }
+
+  }, obj.variant());
+
+  return str;
+  
+}
+
+optional<vector<rfl::Generic> > Builder::getVector(const rfl::Generic &obj) {
+
+  optional<vector<rfl::Generic> > v;
+  std::visit([&obj, &v](const auto &field) {
+  
+    if constexpr (is_same<decay_t<decltype(field)>, vector<rfl::Generic> >()) {
+      v = field;
+    }
+
+  }, obj.variant());
+
+  return v;
+  
+}
+
+optional<rfl::Object<rfl::Generic> > Builder::getObject(std::optional<rfl::Object<rfl::Generic> > dict, const std::string &name) {
+
+  if (!dict) {
+    return nullopt;
+  }
+  
+  auto d = getObject(*dict);
+  if (!d) {
+    return nullopt;
+  }
+  
+  auto prop = d->get(name);
+  if (!prop) {
+    return nullopt;
+  }
+  
+  return getObject(*prop);
+  
+}
+
+optional<string> Builder::getString(std::optional<rfl::Object<rfl::Generic> > dict, const std::string &name) {
+
+  if (!dict) {
+    return nullopt;
+  }
+  
+  auto prop = dict->get(name);
+  if (!prop) {
+    return nullopt;
+  }
+  
+  return getString(*prop);
+  
+}
+
+optional<vector<rfl::Generic> > Builder::getVector(optional<rfl::Object<rfl::Generic> > dict, const string &name) {
+
+  if (!dict) {
+    return nullopt;
+  }
+  
+  auto prop = dict->get(name);
+  if (!prop) {
+    return nullopt;
+  }
+  
+  return getVector(*prop);
+
+}
