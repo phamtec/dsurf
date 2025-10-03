@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     return 1;
   }
   
-  // read in a JSON file if one is specified.
+  // read in a file if one is specified.
   if (vm.count("input-files")) {
     vector<string> files = vm["input-files"].as<vector<string> >();
     for_each(files.begin(), files.end(), [&renderer](auto f) { 

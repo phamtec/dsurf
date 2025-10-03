@@ -21,25 +21,46 @@
 #include "unicode.hpp"
 #include "modules.hpp"
 
+#include <rfl/json.hpp>
+#include <rfl/yaml.hpp>
+#include <filesystem>
+
 using namespace std;
+namespace fs = std::filesystem;
 
 Element *Builder::loadFile(const string &fn, bool raw) {
 
-  auto result = rfl::json::load<rfl::Generic>(fn);
-  if (result) {
-  
-    if (!raw) {
-      auto elem = Modules::load(*result, fn);
-      if (elem) {
-        return elem;
-      }
+  fs::path p = fn;
+  rfl::Generic obj;
+  if (p.extension() == ".json") {
+    auto result = rfl::json::load<rfl::Generic>(fn);
+    if (!result) {
+      cerr << "couldn't load json " << fn << endl;
+      return nullptr;
     }
-
-    return walk(0, *result);
-
+    obj = *result;
+  }
+  else  if (p.extension() == ".yaml") {
+    auto result = rfl::yaml::load<rfl::Generic>(fn);
+    if (!result) {
+      cerr << "couldn't load yaml " << fn << endl;
+      return nullptr;
+    }
+    obj = *result;
+  }
+  else {
+    cerr << "unknown file type " << fn << endl;
+    return nullptr;
+  }
+  
+  if (!raw) {
+    auto elem = Modules::load(obj, fn);
+    if (elem) {
+      return elem;
+    }
   }
 
-  return nullptr;
+  return walk(0, obj);
   
 }
 
@@ -54,10 +75,18 @@ Element *Builder::loadText(const char *text) {
 
 }
 
-void Builder::write(Element *element, const string &file) {
+void Builder::write(Element *element, const string &fn) {
 
-  rfl::json::save(file, Writeable::cast(element)->getGeneric(), rfl::json::pretty);
-
+  fs::path p = fn;
+  if (p.extension() == ".json") {
+    rfl::json::save(fn, Writeable::cast(element)->getGeneric(), rfl::json::pretty);
+  }
+  else  if (p.extension() == ".yaml") {
+    rfl::yaml::save(fn, Writeable::cast(element)->getGeneric());
+  }
+  else {
+    cerr << "unknown file type " << fn << endl;
+  }
 }
 
 Element *Builder::castGeneric(const rfl::Generic &g)  {
@@ -184,7 +213,17 @@ std::string Builder::getJson(Element *element) {
   if (wx) {
     return rfl::json::write(wx->getGeneric(), rfl::json::pretty); 
   }
-  return "not writeable";
+  return "not Writeable";
+  
+}
+
+std::string Builder::getYaml(Element *element) { 
+
+  auto *wx = dynamic_cast<Writeable *>(element);
+  if (wx) {
+    return rfl::yaml::write(wx->getGeneric()); 
+  }
+  return "not Writeable";
   
 }
 

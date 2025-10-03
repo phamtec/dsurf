@@ -14,7 +14,6 @@
 #ifndef H_builder
 #define H_builder
 
-#include <rfl/json.hpp>
 #include <rfl.hpp>
 #include <vector>
 
@@ -35,8 +34,11 @@ public:
     // load the JSON text into the renderer.
 
   static std::string getJson(Element *element);
-    // get the JSON representing the box.
+    // get the JSON representing the element.
     
+  static std::string getYaml(Element *element);
+    // get the YAML representing the element.
+
   static void write(Element *element, const std::string &file);
     // write out the generic object.
     

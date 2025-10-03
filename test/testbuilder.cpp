@@ -20,14 +20,23 @@
 #include <boost/test/unit_test.hpp>
 
 #include <fstream>
+#include <filesystem>
+#include <rfl/json.hpp>
+#include <rfl/yaml.hpp>
 
 using namespace std;
+namespace fs = std::filesystem;
 
-void testParse(const string &fname) {
+void testJSON(const string &fname) {
 
   // parse in the JSON to our objects.
   unique_ptr<Element> element(Builder::loadFile(fname));
   string json = Builder::getJson(element.get());
+  
+  // only test things that are writeable.
+  if (json == "not Writeable") {
+    return;
+  }
   
   // read in the original file.
   ifstream f(fname);
@@ -39,116 +48,51 @@ void testParse(const string &fname) {
 
 }
 
-BOOST_AUTO_TEST_CASE( parseEmptyDict )
-{
-  cout << "=== parseEmptyDict ===" << endl;
+void testYAML(const string &fname) {
 
-  testParse("../test/emptydict.json");
+  // parse in the JSON to our objects.
+  unique_ptr<Element> element(Builder::loadFile(fname));
+  string yaml = Builder::getYaml(element.get());
   
+  // only test things that are writeable.
+  if (yaml == "not Writeable") {
+    return;
+  }
+  
+  // read in the original file.
+  ifstream f(fname);
+  BOOST_CHECK(f);
+  string input(istreambuf_iterator<char>(f), {});
+    
+  // make sure they are identical.
+  BOOST_CHECK_EQUAL(yaml, input);
+
 }
 
-BOOST_AUTO_TEST_CASE( parseDict )
+BOOST_AUTO_TEST_CASE( parseJSON )
 {
-  cout << "=== parseDict ===" << endl;
+  cout << "=== parseJSON ===" << endl;
 
-  testParse("../test/dict.json");
-
+  for (auto& e : fs::directory_iterator("../test")) {
+    if (e.path().extension() == ".json") {
+      cout << "  === " << e.path() << " ===" << endl;
+      testJSON(e.path().string());
+    }
+  }
+    
 }
 
-BOOST_AUTO_TEST_CASE( parseEmptyList )
+BOOST_AUTO_TEST_CASE( parseYAML )
 {
-  cout << "=== parseEmptyList ===" << endl;
+  cout << "=== parseYAML ===" << endl;
 
-  testParse("../test/emptylist.json");
-  
-}
-
-BOOST_AUTO_TEST_CASE( parseList )
-{
-  cout << "=== parseList ===" << endl;
-
-  testParse("../test/list.json");
-  
-}
-
-BOOST_AUTO_TEST_CASE( parseDictProp )
-{
-  cout << "=== parseDictProp ===" << endl;
-
-  testParse("../test/dictprop.json");
-  
-}
-
-BOOST_AUTO_TEST_CASE( parseListProp )
-{
-  cout << "=== parseListProp ===" << endl;
-
-  testParse("../test/listprop.json");
-  
-}
-
-BOOST_AUTO_TEST_CASE( parseEmptyDictProp )
-{
-  cout << "=== parseEmptyDictProp ===" << endl;
-
-  testParse("../test/emptydictprop.json");
-  
-}
-
-BOOST_AUTO_TEST_CASE( parseEmptyListProp )
-{
-  cout << "=== parseEmptyListProp ===" << endl;
-
-  testParse("../test/emptylistprop.json");
-  
-}
-
-BOOST_AUTO_TEST_CASE( parseListBool )
-{
-  cout << "=== parseListBool ===" << endl;
-
-  testParse("../test/listbool.json");
-  
-}
-
-BOOST_AUTO_TEST_CASE( parseListLong )
-{
-  cout << "=== parseListLong ===" << endl;
-
-  testParse("../test/listlong.json");
-  
-}
-
-BOOST_AUTO_TEST_CASE( parseComplex )
-{
-  cout << "=== parseComplex ===" << endl;
-
-  testParse("../test/complex.json");
-  
-}
-
-BOOST_AUTO_TEST_CASE( parseCode )
-{
-  cout << "=== parseCode ===" << endl;
-
-  testParse("../test/code.json");
-  
-}
-
-BOOST_AUTO_TEST_CASE( parseSimple )
-{
-  cout << "=== parseSimple ===" << endl;
-
-  testParse("../test/simple.json");
-  
-}
-
-BOOST_AUTO_TEST_CASE( parseSimpleProps )
-{
-  cout << "=== parseSimpleProps ===" << endl;
-
-  testParse("../test/simpleprops.json");
-  
+  for (auto& e : fs::directory_iterator("../test")) {
+    if (e.path().extension() == ".yaml") {
+      cout << "  === " << e.path() << " ===" << endl;
+      testYAML(e.path().string());
+    }
+  }
+    
 }
 
 BOOST_AUTO_TEST_CASE( genericReflection )

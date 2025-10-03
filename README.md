@@ -4,6 +4,10 @@ Dictionary Surfer
 
 A Dictionary viewer/editor using SDL.
 
+Dictionary types supported:
+- JSON
+- YAML
+
 ## Prerequsists
 
 #### Linux
@@ -82,12 +86,15 @@ sudo make install
 #### from source
 
 ```
+brew install bison
 git clone https://github.com/getml/reflect-cpp.git
 cd reflect-cpp
-mkdir build
-cd build
-cmake ..
-make
+git submodule update --init
+./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
+./vcpkg/bootstrap-vcpkg.bat # Windows
+cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_YAML=ON
+cmake --build build -j 4 # gcc, clang
+cmake --build build --config Release -j 4 # MSVC
 sudo make install
 ```
 
@@ -385,6 +392,7 @@ Walk a JSON file building a simple layout.
 ### 3-Oct-2025
 
 - Projects can load files.
+- Add YAML support.
 
 
 

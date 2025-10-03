@@ -19,6 +19,7 @@ project (dsurf)
   find_package(SDL3_ttf REQUIRED)
   find_package(OpenGL)
   find_package(cppzmq REQUIRED)
+  find_package(yaml-cpp REQUIRED)
   add_definitions(-DBOOST_ALL_DYN_LINK) 
   enable_testing()
   
@@ -96,7 +97,7 @@ set(MODSRC
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC})
-  target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp ${LIBS})
+  target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp yaml-cpp::yaml-cpp ${LIBS})
 
 add_executable(Send test/send.cpp)
   target_link_libraries(Send ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp ${LIBS})
@@ -108,7 +109,7 @@ add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp sr
 add_test(TestSpatial TestSpatial)
 
 add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
-  target_link_libraries(TestBuilder reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  target_link_libraries(TestBuilder reflectcpp yaml-cpp::yaml-cpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestBuilder TestBuilder)
 

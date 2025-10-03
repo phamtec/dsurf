@@ -182,7 +182,7 @@ void Dict::processKey(Renderer &renderer, SDL_Keycode code) {
           }
         }
         else {
-          renderer.setError("Invalid JSON");
+          renderer.setError("Invalid Dict");
         }
       }
       break;
