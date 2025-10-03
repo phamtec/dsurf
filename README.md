@@ -81,7 +81,7 @@ make
 sudo make install
 ```
 
-### JSON
+### cpp-reflect
 
 #### from source
 
