@@ -55,7 +55,7 @@ void ProjectRoot::render(Renderer &renderer, const Point &origin) {
 
   _name.render(renderer, origin);
 
-  float y = origin.y;
+  float y = origin.y + _name.size().h + Sizes::text_padding;
   for (auto& i: _objs) {
     i->render(renderer, origin + Size(Sizes::group_indent, y));
     y += i->size().h + Sizes::text_padding;

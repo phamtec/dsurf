@@ -87,6 +87,7 @@ set(OBJSRC
   src/newelement.cpp
   src/objable.cpp
   src/setobj.cpp
+  src/root.cpp
 )
 
 set(MODSRC

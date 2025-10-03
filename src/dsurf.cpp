@@ -16,6 +16,7 @@
 #include "element.hpp"
 #include "filledbox.hpp"
 #include "dict.hpp"
+#include "root.hpp"
 
 #include <iostream>
 #include <boost/program_options.hpp> 
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
   }
   else {
     // always just a new dictiionary.
-    renderer.addRoot(new Dict(), "<new>");
+    renderer.addRoot(new Root("<new>", new Dict()));
   }
 
 //  alternate startup which just draws a blue box right in the middle of a small

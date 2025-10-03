@@ -21,14 +21,21 @@
 #include "bool.hpp"
 #include "newelement.hpp"
 #include "objable.hpp"
+#include "root.hpp"
 
 #include <iostream>
 
 using namespace std;
 
+bool Dict::isParentRoot() {
+  
+  return dynamic_cast<Root *>(_parent) != nullptr;
+  
+}
+
 string Dict::describe() {
 
-  if (!getParent()) {
+  if (isParentRoot()) {
     if (_elements.size() == 0) {
       return "empty root Dict";
     }
@@ -149,7 +156,7 @@ void Dict::setMode(Renderer &renderer, HUD *hud) {
     hud->setMode(_hudadddict);
     return;
   }
-  if (getParent() == 0) {
+  if (isParentRoot()) {
     hud->setMode(_hudrootdict);
     return;
   }
@@ -159,7 +166,7 @@ void Dict::setMode(Renderer &renderer, HUD *hud) {
 
 void Dict::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  if (getParent() == 0) {  
+  if (isParentRoot()) {  
     if (renderer.processRootKey(this, code)) {
       return;
     }
@@ -196,7 +203,7 @@ void Dict::processKey(Renderer &renderer, SDL_Keycode code) {
         add(renderer, L"dict", new Dict(), true);
         return;
       }
-      if (getParent()) {
+      if (!isParentRoot()) {
         renderer.processDeleteKey(getParent());
       }
       break;

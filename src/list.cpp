@@ -22,6 +22,7 @@
 #include "long.hpp"
 #include "bool.hpp"
 #include "newelement.hpp"
+#include "root.hpp"
 
 #include <iostream>
 #include <SDL3/SDL.h>
@@ -31,6 +32,12 @@
 
 using namespace std;
 
+bool List::isParentRoot() {
+  
+  return dynamic_cast<Root *>(_parent) != nullptr;
+  
+}
+
 List *List::cast(Element *obj) {
 
   return ThrowErrable<List>::cast(obj);
@@ -39,7 +46,7 @@ List *List::cast(Element *obj) {
 
 string List::describe() {
 
-  if (!getParent()) {
+  if (isParentRoot()) {
     if (_elements.size() == 0) {
       return "empty root List";
     }
@@ -305,7 +312,7 @@ void List::setMode(Renderer &renderer, HUD *hud) {
     hud->setMode(_moving ? _hudlistmove : _hudlistedit);
     return;
   }
-  if (!getParent()) {
+  if (isParentRoot()) {
     hud->setMode(_hudrootlist);
     return;
   }
@@ -315,7 +322,7 @@ void List::setMode(Renderer &renderer, HUD *hud) {
 
 void List::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  if (getParent() == 0) {  
+  if (isParentRoot()) {  
     if (renderer.processRootKey(this, code)) {
       return;
     }
@@ -368,7 +375,7 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
         root()->layout();
         break;
       }
-      if (getParent()) {
+      if (!isParentRoot()) {
         renderer.processDeleteKey(getParent());
       }
       break;

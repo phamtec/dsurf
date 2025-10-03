@@ -59,7 +59,7 @@ Element *Listable::getByIndex(Element *elem, const string &str) {
     string i = str.substr(0, slash);
     auto sub = getByIndex(elem, i);
     if (!sub) {
-//      cerr << "element " << elem->describe() << " has nothing at " << i << endl;
+      cerr << "element " << elem->describe() << " has nothing at " << i << endl;
       return nullptr;
     }    
     return getByIndex(sub, str.substr(slash+1));
@@ -70,8 +70,8 @@ Element *Listable::getByIndex(Element *elem, const string &str) {
   int index;
   ss >> index;
   if (cast(elem)->count() <= index) {
-//     cerr << "element " << ss.str() << " doesn't exist" << endl;
-//     cerr << "element " << elem->describe() << " has " << cast(elem)->count() << endl;
+//     cout << "element " << ss.str() << " doesn't exist" << endl;
+//     cout << "element " << elem->describe() << " has " << cast(elem)->count() << endl;
     return nullptr;
   }
   

@@ -95,6 +95,8 @@ void HUD::render(Renderer &renderer, const Point &mouse) {
 
 void HUD::setFlag(Renderer &renderer, HUDFlags flag, bool state) {
 
+//  cout << "setFlag " << flag << ": " << state << endl;
+  
   for (auto &&i: _modes) {
     if (i) {
       i->setFlag(renderer, flag, state);

@@ -59,7 +59,7 @@ void TextEditor::registerHUD(HUD *hud) {
     auto mode = new HUDMode(false);
     Renderer::registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"A", L"ppend"));
-    mode->add(new Shortcut(L"R", L"eplace"));
+    mode->add(new Shortcut(L"S", L"elect all"));
     mode->add(new Shortcut(L"I", L"nsert"));
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
@@ -86,7 +86,7 @@ void TextEditor::processTextKey(Renderer &renderer, Editable *editable, const Po
       focus(renderer, origin, size, editable, hud);    
       break;
       
-    case SDLK_R:
+    case SDLK_S:
       focus(renderer, origin, size, editable, hud);
       selectAll();
       break;

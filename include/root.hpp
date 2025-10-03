@@ -1,40 +1,41 @@
 /*
-  dict.hpp
+  root.hpp
   
   Author: Paul Hamilton (phamtec@mac.com)
-  Date: 8-Aug-2025
+  Date: 3-Oct-2025
+  
+  The root element.
     
-  Dictionary class.
-  
-  {
-    ... props
-  }
-  
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
 */
 
-#ifndef H_dict
-#define H_dict
+#ifndef H_root
+#define H_root
 
 #include "element.hpp"
-#include "listable.hpp"
-#include "writeable.hpp"
 #include "commandable.hpp"
+#include "writeable.hpp"
+#include "editable.hpp"
+#include "text.hpp"
 
 #include <memory>
 #include <vector>
 
-class Dict: public Element, public Listable,  public Writeable, public Commandable {
+class Root: public Element,  public Writeable, public Editable, public Commandable  {
 
   typedef Element super;
 
 public:
-  Dict(): _parent(0), _adding(false) {}
+  Root(const std::string &filename, Element *obj);
+  
+  Element *getObj() { return _obj.get(); }
+  std::string getFilename();
+  Text *getFilenameObj() { return &_filename; }
+  void setDirty(Renderer &renderer, bool state);
   
   // Element
-  virtual std::string describe();
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
   virtual void build(Renderer &renderer);
@@ -44,37 +45,28 @@ public:
   virtual Point localOrigin(Element *elem);
   virtual void destroy(Renderer &renderer);
   virtual Size size() { return _size; }
-  
+
   // Writeable
+  virtual std::string getName();
   virtual rfl::Generic getGeneric();
 
-  // Listable
-  virtual int count() { return _elements.size(); }
-  virtual Element *at(int index) { return _elements[index].get(); }
-  virtual std::vector<std::unique_ptr<Element> > *getElements() { return &_elements; }
+  // Editable
+  virtual std::wstring getString();
+  virtual void setString(Renderer &renderer, const std::wstring &s);
 
   // Commandable
   virtual void initHUD(HUD *hud);
   virtual void setMode(Renderer &renderer, HUD *hud);
   static void registerHUDModes(HUD *hud);
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
-  
+
 private:
 
   Element *_parent;
   Size _size;
-  std::vector<std::unique_ptr<Element> > _elements;
-  int _hudrootdict;
-  int _huddict;
-  int _hudadddict;
-  bool _adding;
-  
-  bool isParentRoot();
-
-  static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
-  static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);
-  void add(Renderer &renderer, const std::wstring &name, Element *element, bool container);
+  std::unique_ptr<Element> _obj;
+  Text _filename;
   
 };
 
-#endif // H_dict
+#endif // H_listelem

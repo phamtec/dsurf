@@ -42,7 +42,7 @@ class Renderer {
 public:
   Renderer(const Size &wsize, float scalemult, float scale, const Size &offset, bool editing): 
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
-    _mousedown(false), _lastclick(0), _rootmode(-1),
+    _mousedown(false), _lastclick(0),
     _window(0), _renderer(0), _engine(0), _startedit(editing)/*,
     _pointercursor(0), _editcursor(0)*/
       {};
@@ -50,7 +50,7 @@ public:
   
   static Size displaySize();
   
-  void addRoot(Element *element, const std::string &name);
+  void addRoot(Element *element);
     // switch out the root we will use to render.
     
   void addFile(const std::string &filename, bool raw);
@@ -155,8 +155,7 @@ private:
   Point _mouse;
   Size _osize;
   unsigned int _lastclick;
-  // the roots contain a Text with the name and the root element.
-  std::vector<std::tuple<std::unique_ptr<Text>, std::unique_ptr<Element> > > _roots;
+  std::vector<std::unique_ptr<Element> > _roots;
   std::unique_ptr<Font> _font;
   std::unique_ptr<TextEditor> _editor;
   std::unique_ptr<HUD> _hud;
@@ -165,7 +164,6 @@ private:
 //   SDL_Cursor *_editcursor;
   Point _renderorigin;
   Changes _changes;
-  int _rootmode;
   
   bool processEvents();
   bool isDoubleClick();
@@ -174,9 +172,9 @@ private:
   void destroyRoots();
   Point addRootOrigin(Element *element, const Point &origin);
   
-  typedef std::tuple<Commandable *, Element *, bool, bool, Text *> getHitReturnType;
+  typedef std::tuple<Commandable *, Element *, bool, Text *> getHitReturnType;
     // the commandable interface and the raw element
-    // bool is whether it's the root, next one is if the name is hit, 
+    // bool is whether it's the root, 
     // and the root text object at the end.
   std::optional<getHitReturnType> getHit();
 

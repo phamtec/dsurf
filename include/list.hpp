@@ -99,6 +99,7 @@ private:
   Element *otherElementHit(const Point &origin, const Point &p);
   void reorder();
   void add(Renderer &renderer, Element *element);
+  bool isParentRoot();
     
 };
 

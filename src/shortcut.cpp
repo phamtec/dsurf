@@ -32,6 +32,8 @@ void Shortcut::build(Renderer &renderer) {
 
 void Shortcut::setup(const wstring &key, const wstring &text) {
 
+//  wcout << "Shortcut: " << key << ": " << _state << endl;
+  
   auto k = new Text();
   k->set(key, _state ? Colours::black : Colours::grey);
   _key.reset(k);

@@ -20,6 +20,7 @@
 #include "property.hpp"
 #include "unicode.hpp"
 #include "modules.hpp"
+#include "root.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl/yaml.hpp>
@@ -60,18 +61,22 @@ Element *Builder::loadFile(const string &fn, bool raw) {
     }
   }
 
-  return walk(0, obj);
+  // parse out the object.
+  auto elem = walk(0, obj);
+  
+  // interdict the root element.
+  return new Root(fn, elem);
   
 }
 
 Element *Builder::loadText(const char *text) {
 
   auto result = rfl::json::read<rfl::Generic>(text);
-  if (result) {
-    return walk(0, *result);
+  if (!result) {
+    return nullptr;
   }
-
-  return nullptr;
+  
+  return walk(0, *result);
 
 }
 

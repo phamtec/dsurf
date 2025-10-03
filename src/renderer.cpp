@@ -21,6 +21,7 @@
 #include "removefromlist.hpp"
 #include "unicode.hpp"
 #include "sizes.hpp"
+#include "root.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -65,7 +66,7 @@ Renderer::~Renderer() {
 
 void Renderer::destroyRoots() {
 
-  for_each(_roots.begin(), _roots.end(), [this](auto& e) { get<1>(e)->destroy(*this); });
+  for_each(_roots.begin(), _roots.end(), [this](auto& e) { e->destroy(*this); });
 
 }
 
@@ -142,14 +143,6 @@ bool Renderer::init(const char *path) {
   // add all the register HUD modes.
   _editor->registerHUD(_hud.get());
   
-  {
-    auto mode = new HUDMode(false);
-    registerGlobalHUDMode(mode);
-    mode->add(new Shortcut(L"W", L"rite", canWrite));
-    _rootmode = _hud->registerMode("root", mode);
-    _hud->setFlag(*this, canWrite, false);
-  }
-
   // initialisation for types after everything has been created.
   initTypes();
   
@@ -158,6 +151,9 @@ bool Renderer::init(const char *path) {
 
   // make sure the hud flags are set correctly.
   _changes.setUndoFlags(*this, _hud.get());
+  
+  // other flags we have.
+  _hud->setFlag(*this, canWrite, false);
   
 //   _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
 //   _editcursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_TEXT);
@@ -174,27 +170,28 @@ void Renderer::addFile(const string &filename, bool raw) {
     return;
   }
   
-  addRoot(obj, filename);
+  addRoot(obj);
   
 }
 
-void Renderer::addRoot(Element *element, const string &name) {
+//void Renderer::addRoot(Element *element, const string &name) {
+void Renderer::addRoot(Element *element) {
 
   // if there is only 1 element and it is <new> with an empty dict
   // then we replace it.
-  if (_roots.size() == 1 && get<0>(_roots[0])->str() == L"<new>") {
-    auto dict = dynamic_cast<Dict *>(get<1>(_roots[0]).get());
-    if (dict && Listable::cast(dict)->count() == 0) {
-      destroyRoots();
-      _roots.clear();
+  if (_roots.size() == 1) {
+    auto root = dynamic_cast<Root *>(_roots[0].get());
+    if (root) {
+      if (root->getFilename() == "<new>") {
+        auto dict = dynamic_cast<Dict *>(root->getObj());
+        if (dict && Listable::cast(dict)->count() == 0) {
+          destroyRoots();
+          _roots.clear();
+        }
+      }
     }
   }
-  // setup the name to draw.
-  auto rootname = new Text();
-  rootname->set(Unicode::convert(name), Colours::black);
-  rootname->build(*this);
-//  _rootnames.push_back(unique_ptr<Text>(rootname));
-  
+
   // setup the HUD in the object.
   Commandable *cx = dynamic_cast<Commandable *>(element);
   if (cx) {
@@ -208,12 +205,12 @@ void Renderer::addRoot(Element *element, const string &name) {
   element->layout();
   
   // remember it.
-  _roots.push_back(tuple<unique_ptr<Text>, unique_ptr<Element> >(rootname, element));
+  _roots.push_back(unique_ptr<Element>(element));
   
   // calculate the total size of all the objects.
   _osize = Size();
   for (auto& i: _roots) {
-    Size s = get<1>(i)->size();
+    Size s = i->size();
     _osize.w += s.w;
     if (_osize.w > 0) {
       _osize.w += Sizes::group_indent;
@@ -222,10 +219,6 @@ void Renderer::addRoot(Element *element, const string &name) {
       _osize.h = s.h;
     }
   }
-  if (_roots.size() > 0) {
-    _osize.h += get<0>(_roots[0])->size().h;
-  }
-  
   _offs = Spatial::center(_size, _osize, _scale);
 //  cout << _offs << endl;
 
@@ -259,14 +252,11 @@ void Renderer::loop(int rep) {
     // set the scale ready to do our calculations.
     SDL_SetRenderScale(_renderer, _scale, _scale);
 
+    // space out all the roots.
     auto x = 0.0;
     for (auto& i: _roots) {
-      auto& name = get<0>(i);
-      auto& elem = get<1>(i);
-      
-      name->render(*this, Point(x, 0.0));
-      elem->render(*this, Point(x, name->size().h+Sizes::listgap));
-      x += elem->size().w+Sizes::group_indent;
+      i->render(*this, Point(x, 0));
+      x += i->size().w+Sizes::group_indent;
     }
     _editor->render(*this, Point(0.0, 0.0));
 
@@ -365,22 +355,20 @@ optional<Renderer::getHitReturnType> Renderer::getHit() {
 
   auto x = 0.0;
   for (auto& i: _roots) {
-    auto& name = get<0>(i);
-    auto& rootelem = get<1>(i);
 
-    Element *hit = rootelem->hitTest(Point(_offs) + Point(x, name->size().h+Sizes::listgap), _mouse * (1 / _scale));
+    Element *hit = i->hitTest(Point(_offs) + Point(x, 0), _mouse * (1 / _scale));
     if (hit) {
       Commandable *cx = dynamic_cast<Commandable *>(hit);
       if (cx) {
-        return getHitReturnType(cx, hit, rootelem.get() == hit, false, name.get());
+        auto root = dynamic_cast<Root *>(i.get());
+        if (root) {
+          return getHitReturnType(cx, hit, i.get() == hit, root->getFilenameObj());
+        }
+        return getHitReturnType(cx, hit, i.get() == hit, nullptr);
       }
     }
-    else {
-      if (Rect(Point(_offs) + Point(x, 0), name->size()).contains(_mouse * (1 / _scale))) {
-        return getHitReturnType(Commandable::cast(rootelem.get()), rootelem.get(), true, true, name.get());
-      }
-    }
-    x += rootelem->size().w+Sizes::group_indent;
+
+    x += i->size().w+Sizes::group_indent;
   }
   return nullopt;
 }
@@ -392,18 +380,12 @@ void Renderer::setHUD() {
   
     // if we are very small and the elem hit IS the root then use the name 
     if (textTooSmall() && get<2>(*hit)) {
-      _hud->setHint(*this, get<4>(*hit));
+      _hud->setHint(*this, get<3>(*hit));
       return;
     }
     
     _hud->setEditingLoc(localToGlobal(addRootOrigin(get<1>(*hit), get<1>(*hit)->origin())));
 
-    // if we are on the name, then use that mode.
-    if (get<3>(*hit)) {
-      _hud->setMode(_rootmode);
-      return;
-    }
-    
     get<0>(*hit)->setMode(*this, _hud.get());
     
     return;
@@ -447,25 +429,29 @@ void Renderer::registerTextHUDMode(HUDMode *mode) {
 Element *Renderer::getClipboard() {
 
   char *text = SDL_GetClipboardText();
-  auto json = Builder::loadText(text);
+  auto elem = Builder::loadText(text);
   SDL_free(text);
-  return json;
+  return elem;
   
 }
 
 void Renderer::write(Element *element) {
 
-  auto root = element->root();
+  auto root = dynamic_cast<Root *>(element->root());
+  if (!root) {
+    cerr << "no root or root isn't a Root!" << endl;
+    return;
+  }
   
   auto r = find_if(_roots.begin(), _roots.end(), [root](auto& e) {
-    return get<1>(e).get() == root;
+    return e.get() == root;
   });
   if (r == _roots.end()) {
     cerr << "couldnt find elements root." << endl;
     return;
   }
 
-  Builder::write(root, Unicode::convert(get<0>(*r)->str()));
+  Builder::write(root->getObj(), root->getFilename());
   
   setDirty(root, false);
   
@@ -488,7 +474,7 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
       {
         auto elem = getClipboard();
         if (elem) {
-          addRoot(elem, "<clipboard>");
+          addRoot(new Root("<clipboard>", elem));
         }
         else {
           setError("Invalid JSON");
@@ -552,13 +538,10 @@ Point Renderer::addRootOrigin(Element *element, const Point &origin) {
   auto root = element->root();
   auto x = 0.0;
   for (auto& i: _roots) {
-    auto& name = get<0>(i);
-    auto& elem = get<1>(i);
-    if (elem.get() == root) {
-      o.y += name->size().h + Sizes::listgap;
+    if (i.get() == root) {
       break;
     }
-    o.x += elem->size().w+Sizes::group_indent;
+    o.x += i->size().w+Sizes::group_indent;
   }
   
   return o;
@@ -813,23 +796,20 @@ void Renderer::setError(const string &str) {
 
 void Renderer::setDirty(Element *elem, bool state) {
 
-  auto root = elem->root();
+  auto root = dynamic_cast<Root *>(elem->root());
   if (!root)  {
-    cerr << "element has no root" << endl;
+    cerr << "element has no root or not a Root" << endl;
     return;
   }
   auto r = find_if(_roots.begin(), _roots.end(), [root](auto& e) {
-    return get<1>(e).get() == root;
+    return e.get() == root;
   });
   if (r == _roots.end()) {
     cerr << "couldnt find elements root." << endl;
     return;
   }
-  
-  auto name = new Text();
-  name->set(get<0>(*r)->str(), state ? Colours::red : Colours::black);
-  name->build(*this);
-  get<0>(*r).reset(name);
+    
+  root->setDirty(*this, state);
   
   _hud->setFlag(*this, canWrite, state);
 

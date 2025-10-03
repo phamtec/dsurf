@@ -14,6 +14,7 @@
 #include "listable.hpp"
 #include "commandable.hpp"
 #include "objable.hpp"
+#include "root.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl.hpp>
@@ -96,6 +97,9 @@ void Renderer::handleTestKey(const TestMsg &msg) {
     testErr("missing pqyload");
     return;
   }
+  
+//  cout << "sending to " << target->describe() << endl;
+
   Commandable *cx = dynamic_cast<Commandable *>(target);
   if (!cx) {
     testErr("target not Commandable");
@@ -151,7 +155,15 @@ Element *Renderer::getTestTarget(const optional<string> &name, bool silent) {
     return nullptr;
   }
   
-  auto element = Listable::getByPath(get<1>(_roots[0]).get(), *name);
+  auto root = dynamic_cast<Root *>(_roots[0].get());
+  if (!root) {
+    if (!silent) {
+      testErr("root obj is not a Root");
+    }
+    return nullptr;
+  }
+  
+  auto element = Listable::getByPath(root->getObj(), *name);
   if (!element) {
     if (!silent) {
       testErr(*name + " invalid");
@@ -159,7 +171,7 @@ Element *Renderer::getTestTarget(const optional<string> &name, bool silent) {
     return nullptr;
   }
   
-  // the object we foujnd is just a container for another.
+  // the object we found is just a container for another.
   auto obj = dynamic_cast<Objable *>(element);
   if (obj) {
 //    cout << "found objable." << endl;
