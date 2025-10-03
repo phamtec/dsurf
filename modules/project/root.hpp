@@ -18,6 +18,8 @@
 #include "text.hpp"
 #include "commandable.hpp"
 
+#include <vector>
+
 class Element;
 
 class ProjectRoot: public Element, public Commandable {

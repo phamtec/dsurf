@@ -20,7 +20,7 @@ sudo apt-get install -y git g++ gcc build-essential git make \
   libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
   libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libpipewire-0.3-dev \
   libwayland-dev libdecor-0-dev liburing-dev libfreetype-dev \
-  libssl-dev ruby-bundler xclip xsel
+  libssl-dev ruby-bundler xclip xsel libyaml-cpp-dev
 ```
 
 ### Boost
@@ -85,8 +85,15 @@ sudo make install
 
 #### from source
 
+##### On the Mac
+
 ```
-brew install bison
+brew install bison yaml-cpp
+```
+
+##### on any platform
+
+```
 git clone https://github.com/getml/reflect-cpp.git
 cd reflect-cpp
 git submodule update --init
@@ -95,6 +102,7 @@ git submodule update --init
 cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_YAML=ON
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
+cd build
 sudo make install
 ```
 
