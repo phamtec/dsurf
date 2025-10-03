@@ -14,6 +14,7 @@
 #include "list.hpp"
 #include "listelem.hpp"
 #include "dict.hpp"
+#include "modules.hpp"
 
 void Renderer::initTypes() {
 
@@ -21,5 +22,6 @@ void Renderer::initTypes() {
   List::registerHUDModes(_hud.get());
   ListElem::registerHUDModes(_hud.get());
   Dict::registerHUDModes(_hud.get());
+  Modules::registerHUDModes(_hud.get());
 
 }

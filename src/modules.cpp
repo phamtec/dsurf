@@ -15,15 +15,21 @@
 
 using namespace std;
 
-Element *Modules::load(const rfl::Generic &obj) {
+Element *Modules::load(const rfl::Generic &obj, const string &filename) {
 
   // all the modules might register and be used here.
   Project p;
   if (p.isA(obj)) {
     cout << "found a project module" << endl;
-    return p.load(obj);
+    return p.load(obj, filename);
   }
     
   return nullptr;
+  
+}
+
+void Modules::registerHUDModes(HUD *hud) {
+
+  Project::registerHUDModes(hud);
   
 }

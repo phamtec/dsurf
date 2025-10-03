@@ -13,10 +13,15 @@
 #include "builder.hpp"
 #include "root.hpp"
 #include "obj.hpp"
+#include "hud.hpp"
+#include "hudmode.hpp"
+#include "shortcut.hpp"
 
 #include <iostream>
+#include <filesystem>
 
 using namespace std;
+namespace fs = std::filesystem;
 
 bool Project::isA(const rfl::Generic &obj) {
 
@@ -31,7 +36,7 @@ bool Project::isA(const rfl::Generic &obj) {
   
 }
 
-Element *Project::load(const rfl::Generic &obj) {
+Element *Project::load(const rfl::Generic &obj, const string &filename) {
 
   auto project = Builder::getObject(Builder::getObject(obj), "project");
   if (!project) {
@@ -49,7 +54,7 @@ Element *Project::load(const rfl::Generic &obj) {
     return nullptr;
   }
   std::vector<Element *> objs;
-  transform(objects->begin(), objects->end(), back_inserter(objs), [](auto e) -> Element * {
+  transform(objects->begin(), objects->end(), back_inserter(objs), [filename](auto e) -> Element * {
     auto obj = Builder::getObject(e);
     if (!obj) {
       cerr << "obj is not an object!" << endl;
@@ -65,9 +70,28 @@ Element *Project::load(const rfl::Generic &obj) {
       cerr << "no file in obj!" << endl;
       return nullptr;
     }
-    return new ProjectObj(*name, *file);
+    fs::path p = filename;
+    p = p.parent_path();
+    p /= *file;
+    return new ProjectObj(*name, p);
   });
   
-  return new ProjectRoot(*name, objs);
+  return new ProjectRoot(*name, filename, objs);
   
+}
+
+void Project::registerHUDModes(HUD *hud) {
+
+  {
+    auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"E", L"dit"));
+    hud->registerMode("projectroot", mode);
+  }
+
+  {
+    auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"L", L"oad"));
+    hud->registerMode("projectobj", mode);
+  }
+
 }

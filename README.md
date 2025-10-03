@@ -382,6 +382,11 @@ Walk a JSON file building a simple layout.
 - Start in on the idea of "modules"
 - First module started which is a project.
 
+### 3-Oct-2025
+
+- Projects can load files.
+
+
 
 
 

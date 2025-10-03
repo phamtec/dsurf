@@ -16,10 +16,11 @@
 
 #include "element.hpp"
 #include "text.hpp"
+#include "commandable.hpp"
 
 class Element;
 
-class ProjectObj: public Element {
+class ProjectObj: public Element, public Commandable {
 
 public:
   ProjectObj(const std::string &name, const std::string &filename);
@@ -32,13 +33,19 @@ public:
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Size size() { return _size; }
 
+  // Commandable
+  virtual void initHUD(HUD *hud);
+  virtual void setMode(Renderer &renderer, HUD *hud);
+  virtual void processKey(Renderer &renderer, SDL_Keycode code);
+
 protected:
 
   Element *_parent;
   Size _size;
   Text _name;
   std::string _filename;
-
+  int _hudobj;
+  
 };
 
 #endif // H_project_obj

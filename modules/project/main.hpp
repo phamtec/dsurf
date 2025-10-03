@@ -16,12 +16,16 @@
 
 #include "module.hpp"
 
+class HUD;
+
 class Project: public Module {
 
 public:
 
   virtual bool isA(const rfl::Generic &obj);
-  virtual Element *load(const rfl::Generic &obj);
+  virtual Element *load(const rfl::Generic &obj, const std::string &filename);
+  
+  static void registerHUDModes(HUD *hud);
   
 private:
 

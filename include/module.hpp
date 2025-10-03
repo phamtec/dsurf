@@ -25,8 +25,10 @@ public:
   virtual bool isA(const rfl::Generic &obj) = 0;
     // return true if the object is the module..
     
-  virtual Element *load(const rfl::Generic &obj) = 0;
+  virtual Element *load(const rfl::Generic &obj, const std::string &filename) = 0;
     // create the module element from the generic object.
+    // we pass the filename so that modules can learn things like the relative path
+    // etc.
     
 };
 

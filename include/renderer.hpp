@@ -53,6 +53,10 @@ public:
   void addRoot(Element *element, const std::string &name);
     // switch out the root we will use to render.
     
+  void addFile(const std::string &filename, bool raw);
+    // add the file
+    // if raw is specified, modules are bypassed.
+
   bool init(const char *fontpath);
     // initialise with th epath to the font file.
     

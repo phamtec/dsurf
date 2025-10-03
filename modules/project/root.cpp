@@ -17,7 +17,7 @@
 
 using namespace std;
 
-ProjectRoot::ProjectRoot(const std::string &name, std::vector<Element *> &objs): _parent(0) {
+ProjectRoot::ProjectRoot(const string &name, const string &filename, vector<Element *> &objs): _parent(0), _filename(filename) {
 
   _name.set(Unicode::convert(name), Colours::black);
   
@@ -31,8 +31,14 @@ Size ProjectRoot::layout() {
 
   _size = _name.size();
   for_each(_objs.begin(), _objs.end(), [this](auto& e) {
-    _size.h += e->layout().h + Sizes::text_padding;
+  
+    Size s = e->layout();
+    _size.h += s.h + Sizes::text_padding;
+    if (_size.w < s.w) {
+      _size.w = s.w;
+    }
   });
+  
   return _size;
   
 }
@@ -58,3 +64,61 @@ void ProjectRoot::render(Renderer &renderer, const Point &origin) {
 //  renderer.renderRect(_r);
 
 }
+
+Element *ProjectRoot::hitTest(const Point &origin, const Point &p) { 
+
+  Point o = origin + Size(Sizes::group_indent, _name.size().h);
+  for (auto& i: _objs) {
+    Element *hit = i->hitTest(o, p);
+    if (hit) {
+      return hit;
+    }
+    o.y += i->size().h + Sizes::text_padding;
+  }
+
+  return super::hitTest(origin, p);
+  
+}
+
+Point ProjectRoot::localOrigin(Element *elem) {
+
+  int j=0;
+  int y=0;
+  for (auto& i: _objs) {
+    if (i.get() == elem) {
+      return Point(Sizes::group_indent, y);
+    }
+    y += i->size().h + Sizes::text_padding;
+    j++;
+  }
+
+  return Point(0, 0);
+  
+}
+
+void ProjectRoot::initHUD(HUD *hud) {
+
+  _hudroot = hud->findMode("projectroot");
+
+  for_each(_objs.begin(), _objs.end(), [hud](auto& e) { 
+    Commandable::cast(e.get())->initHUD(hud);
+  });
+
+}
+
+void ProjectRoot::setMode(Renderer &renderer, HUD *hud) {
+
+  hud->setMode(_hudroot);
+  
+}
+
+void ProjectRoot::processKey(Renderer &renderer, SDL_Keycode code) {
+
+  switch (code) {      
+    case SDLK_E:
+      renderer.addFile(_filename, true);
+      break;
+  }
+
+}
+

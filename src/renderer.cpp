@@ -166,6 +166,18 @@ bool Renderer::init(const char *path) {
    
 }
 
+void Renderer::addFile(const string &filename, bool raw) {
+
+  auto obj = Builder::loadFile(filename, raw);
+  if (!obj) {
+    cerr << "file '" << filename << "' not found." << endl;
+    return;
+  }
+  
+  addRoot(obj, filename);
+  
+}
+
 void Renderer::addRoot(Element *element, const string &name) {
 
   // if there is only 1 element and it is <new> with an empty dict

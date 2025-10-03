@@ -61,12 +61,6 @@ rfl::Generic String::getGeneric() {
   
 }
 
-void String::processKey(Renderer &renderer, SDL_Keycode code) {
-
-  renderer.processTextKey(this, origin(), _size, code);
-  
-}
-
 void String::setString(Renderer &renderer, const wstring &s) {
 
   _value.set(s, Colours::stringE);
@@ -85,3 +79,10 @@ void String::setMode(Renderer &renderer, HUD *hud) {
   renderer.setTextState();
 
 }
+
+void String::processKey(Renderer &renderer, SDL_Keycode code) {
+
+  renderer.processTextKey(this, origin(), _size, code);
+  
+}
+

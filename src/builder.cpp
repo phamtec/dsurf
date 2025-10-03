@@ -23,14 +23,16 @@
 
 using namespace std;
 
-Element *Builder::loadFile(const string &fn) {
+Element *Builder::loadFile(const string &fn, bool raw) {
 
   auto result = rfl::json::load<rfl::Generic>(fn);
   if (result) {
   
-    auto elem = Modules::load(*result);
-    if (elem) {
-      return elem;
+    if (!raw) {
+      auto elem = Modules::load(*result, fn);
+      if (elem) {
+        return elem;
+      }
     }
 
     return walk(0, *result);

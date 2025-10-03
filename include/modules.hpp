@@ -17,14 +17,17 @@
 #include <rfl.hpp>
 
 class Element;
+class HUD;
 
 class Modules {
 
 public:
   
-  static Element *load(const rfl::Generic &obj);
+  static Element *load(const rfl::Generic &obj, const std::string &filename);
     // Determine and load the module.
     
+  static void registerHUDModes(HUD *hud);
+
 };
 
 #endif // H_modules

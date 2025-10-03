@@ -16,7 +16,8 @@
 
 using namespace std;
 
-ProjectObj::ProjectObj(const std::string &name, const std::string &filename): _parent(0), _filename(filename) {
+ProjectObj::ProjectObj(const std::string &name, const std::string &filename): 
+  _parent(0), _filename(filename), _hudobj(-1) {
 
   _name.set(Unicode::convert(name), Colours::black);
   
@@ -40,5 +41,27 @@ void ProjectObj::render(Renderer &renderer, const Point &origin) {
   _name.render(renderer, origin);
 
 //  renderer.renderRect(_r);
+
+}
+
+void ProjectObj::initHUD(HUD *hud) {
+
+  _hudobj = hud->findMode("projectobj");
+  
+}
+
+void ProjectObj::setMode(Renderer &renderer, HUD *hud) {
+
+  hud->setMode(_hudobj);
+  
+}
+
+void ProjectObj::processKey(Renderer &renderer, SDL_Keycode code) {
+
+  switch (code) {      
+    case SDLK_L:
+      renderer.addFile(_filename, false);
+      break;
+  }
 
 }

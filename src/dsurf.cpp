@@ -69,14 +69,9 @@ int main(int argc, char *argv[])
   // read in a JSON file if one is specified.
   if (vm.count("input-files")) {
     vector<string> files = vm["input-files"].as<vector<string> >();
-    for (auto f: files) {
-      auto obj = Builder::loadFile(f);
-      if (!obj) {
-        cerr << "file '" << f << "' not found." << endl;
-        return 1;
-      }
-      renderer.addRoot(obj, f);
-    }
+    for_each(files.begin(), files.end(), [&renderer](auto f) { 
+      renderer.addFile(f, false);
+    });
   }
   else {
     // always just a new dictiionary.

@@ -5,14 +5,8 @@
 #include "renderer.hpp"
 
 // dummy these up so we don't recompile all code
-Text::~Text() {
-}
-void Text::build(Renderer &renderer) {
-}
-void Text::render(Renderer &renderer, const Point &origin, bool offs) {
-}
-void Corner::render(Renderer &renderer, const Point &origin) {
-}
+
+// Renderer
 void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
 }
 bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
@@ -66,6 +60,10 @@ Element *Renderer::getClipboard() {
 }
 void Renderer::setError(const std::string &str) {
 }
+void Renderer::addFile(const std::string &filename, bool raw) {
+}
+
+// HUD
 int HUD::registerMode(const std::string &name, HUDMode *mode) {
   return -1;
 }
@@ -80,3 +78,14 @@ void HUD::setMode(int mode) {
 } 
 Shortcut::Shortcut(const std::wstring &key, const std::wstring &text, std::optional<HUDFlags> flags) {
 }
+
+// Other
+Text::~Text() {
+}
+void Text::build(Renderer &renderer) {
+}
+void Text::render(Renderer &renderer, const Point &origin, bool offs) {
+}
+void Corner::render(Renderer &renderer, const Point &origin) {
+}
+
