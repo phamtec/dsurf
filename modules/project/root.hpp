@@ -19,6 +19,7 @@
 #include "commandable.hpp"
 
 #include <vector>
+#include <memory>
 
 class Element;
 
