@@ -17,6 +17,7 @@
 #include <rfl.hpp>
 
 class Element;
+class Renderer;
 class HUD;
 
 class Modules {
@@ -26,7 +27,7 @@ public:
   static Element *load(const rfl::Generic &obj, const std::string &filename);
     // Determine and load the module.
     
-  static void registerHUDModes(HUD *hud);
+  static void registerHUDModes(Renderer &renderer, HUD *hud);
 
 };
 

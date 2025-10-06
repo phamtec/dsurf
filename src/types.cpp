@@ -22,6 +22,6 @@ void Renderer::initTypes() {
   List::registerHUDModes(_hud.get());
   ListElem::registerHUDModes(_hud.get());
   Dict::registerHUDModes(_hud.get());
-  Modules::registerHUDModes(_hud.get());
+  Modules::registerHUDModes(*this, _hud.get());
 
 }

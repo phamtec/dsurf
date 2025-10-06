@@ -143,6 +143,13 @@ bool Renderer::init(const char *path) {
   // add all the register HUD modes.
   _editor->registerHUD(_hud.get());
   
+  {
+    auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"Esc", L"(finish)"));
+    mode->add(new Shortcut(L"D", L"(rop)"));
+    _hudmoving = _hud->registerMode("moving", mode);
+  }
+  
   // initialisation for types after everything has been created.
   initTypes();
   
@@ -255,7 +262,12 @@ void Renderer::loop(int rep) {
     // space out all the roots.
     auto x = 0.0;
     for (auto& i: _roots) {
-      i->render(*this, Point(x, 0));
+      if (i.get() == _moving) {
+        i->render(*this, (_mouse - _movoffs) / _scale);
+      }
+      else {
+        i->render(*this, Point(x, 0));
+      }
       x += i->size().w+Sizes::group_indent;
     }
     _editor->render(*this, Point(0.0, 0.0));
@@ -375,6 +387,11 @@ optional<Renderer::getHitReturnType> Renderer::getHit() {
 
 void Renderer::setHUD() {
 
+  if (_moving) {
+    _hud->setMode(_hudmoving);
+    return;
+  }
+  
   auto hit = getHit();
   if (hit) {
   
@@ -414,6 +431,7 @@ void Renderer::registerGlobalHUDMode(HUDMode *mode) {
 void Renderer::registerRootHUDMode(HUDMode *mode) {
 
   registerGlobalHUDMode(mode);
+  mode->add(new Shortcut(L"M", L"ove"));
   mode->add(new Shortcut(L"W", L"rite", canWrite));
   mode->add(new Shortcut(L"C", L"opy"));
   mode->add(new Shortcut(L"P", L"aste"));
@@ -496,6 +514,11 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
 
     case SDLK_W:
       write(element);
+      return true;
+
+    case SDLK_M:
+      _moving = element->root();
+      _movoffs = _mouse;
       return true;
   }
   
@@ -638,7 +661,18 @@ bool Renderer::processEvents() {
                
       case SDL_EVENT_KEY_DOWN:
         _error.reset();
-        if (!_editor->capture()) {
+        if (_moving) {
+          if (event.key.key == SDLK_ESCAPE) {
+            _moving = nullptr;
+            break;
+          }
+          if (event.key.key == SDLK_D) {
+            // it's dropped.
+            _moving = nullptr;
+            break;
+          }
+        }
+        else if (!_editor->capture()) {
           auto hit = getHit();
           if (hit) {
             get<0>(*hit)->processKey(*this, event.key.key);

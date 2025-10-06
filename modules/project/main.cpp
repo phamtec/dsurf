@@ -16,6 +16,7 @@
 #include "hud.hpp"
 #include "hudmode.hpp"
 #include "shortcut.hpp"
+#include "renderer.hpp"
 
 #include <iostream>
 #include <filesystem>
@@ -80,16 +81,19 @@ Element *Project::load(const rfl::Generic &obj, const string &filename) {
   
 }
 
-void Project::registerHUDModes(HUD *hud) {
+void Project::registerHUDModes(Renderer &renderer, HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
+    renderer.registerGlobalHUDMode(mode);
+    mode->add(new Shortcut(L"M", L"ove"));
     mode->add(new Shortcut(L"E", L"dit"));
     hud->registerMode("projectroot", mode);
   }
 
   {
     auto mode = new HUDMode(false);
+    renderer.registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"L", L"oad"));
     hud->registerMode("projectobj", mode);
   }

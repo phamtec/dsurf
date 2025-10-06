@@ -114,6 +114,10 @@ void ProjectRoot::setMode(Renderer &renderer, HUD *hud) {
 
 void ProjectRoot::processKey(Renderer &renderer, SDL_Keycode code) {
 
+  if (renderer.processRootKey(this, code)) {
+    return;
+  }
+
   switch (code) {      
     case SDLK_E:
       renderer.addFile(_filename, true);

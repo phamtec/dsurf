@@ -42,7 +42,7 @@ class Renderer {
 public:
   Renderer(const Size &wsize, float scalemult, float scale, const Size &offset, bool editing): 
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
-    _mousedown(false), _lastclick(0),
+    _mousedown(false), _lastclick(0), _moving(0), _hudmoving(-1),
     _window(0), _renderer(0), _engine(0), _startedit(editing)/*,
     _pointercursor(0), _editcursor(0)*/
       {};
@@ -164,6 +164,9 @@ private:
 //   SDL_Cursor *_editcursor;
   Point _renderorigin;
   Changes _changes;
+  Element *_moving;
+  int _hudmoving;
+  Point _movoffs;
   
   bool processEvents();
   bool isDoubleClick();

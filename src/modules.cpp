@@ -28,8 +28,8 @@ Element *Modules::load(const rfl::Generic &obj, const string &filename) {
   
 }
 
-void Modules::registerHUDModes(HUD *hud) {
+void Modules::registerHUDModes(Renderer &renderer, HUD *hud) {
 
-  Project::registerHUDModes(hud);
+  Project::registerHUDModes(renderer, hud);
   
 }

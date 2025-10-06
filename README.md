@@ -402,6 +402,9 @@ Walk a JSON file building a simple layout.
 - Projects can load files.
 - Add YAML support.
 
+### 6-Oct-2025
+
+- Start in on allowing roots and modules to be rearranged (moved).
 
 
 
