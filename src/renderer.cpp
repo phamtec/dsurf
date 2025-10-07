@@ -22,6 +22,7 @@
 #include "unicode.hpp"
 #include "sizes.hpp"
 #include "root.hpp"
+#include "list.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -148,6 +149,21 @@ bool Renderer::init(const char *path) {
     mode->add(new Shortcut(L"Esc", L"(finish)"));
     mode->add(new Shortcut(L"D", L"(rop)"));
     _hudmoving = _hud->registerMode("moving", mode);
+  }
+  
+  {
+    auto mode = new HUDMode(false);    
+    mode->add(new Shortcut(L"N", L"ew"));
+    mode->add(new Shortcut(L"P", L"aste"));
+    _hudnone = _hud->registerMode("moving", mode);
+  }
+  
+  {
+    auto mode = new HUDMode(false);
+    mode->add(new Shortcut(L"Esc", L"(finish)"));
+    mode->add(new Shortcut(L"D", L"ict"));
+    mode->add(new Shortcut(L"L", L"ist"));
+    _hudadding = _hud->registerMode("adding", mode);
   }
   
   // initialisation for types after everything has been created.
@@ -425,6 +441,11 @@ void Renderer::setHUD() {
     return;
   }
   
+  if (_adding) {
+    _hud->setMode(_hudadding);
+    return;
+  }
+
   auto hit = getHit();
   if (hit) {
   
@@ -441,7 +462,7 @@ void Renderer::setHUD() {
     return;
   }
   
-  _hud->setMode(0);
+  _hud->setMode(_hudnone);
 }
 
 void Renderer::endEdit() {
@@ -456,14 +477,15 @@ void Renderer::copy(Element *element) {
 
 void Renderer::registerGlobalHUDMode(HUDMode *mode) {
 
-  mode->add(new Shortcut(L"U", L"ndo", canUndo));
-  mode->add(new Shortcut(L"R", L"edo", canRedo));
+  mode->add(new Shortcut(L"[1-9]", L"Zoom"));
   
 }
 
 void Renderer::registerRootHUDMode(HUDMode *mode) {
 
   registerGlobalHUDMode(mode);
+  mode->add(new Shortcut(L"U", L"ndo", canUndo));
+  mode->add(new Shortcut(L"R", L"edo", canRedo));
   mode->add(new Shortcut(L"M", L"ove"));
   mode->add(new Shortcut(L"K", L"ill"));
   mode->add(new Shortcut(L"W", L"rite", canWrite));
@@ -509,6 +531,11 @@ void Renderer::write(Element *element) {
   
 }
 
+void Renderer::exec(Element *element, Change *change) {
+  _changes.exec(*this, _hud.get(), element, change);
+  setDirty(element); 
+}
+
 void Renderer::undo(Element *element) {
   _changes.undo(*this, _hud.get(), element);
   setDirty(element, true);  
@@ -519,19 +546,25 @@ void Renderer::redo(Element *element) {
   setDirty(element, true);  
 }
 
+bool Renderer::processGlobalKey(SDL_Keycode code) {
+
+  if (code >= SDLK_1 && code <= SDLK_9) {
+    zoom((SDLK_9 - code) + 1);
+    return true;
+  }
+  
+  return false;
+}
+
 bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
 
+  if (processGlobalKey(code)) {
+    return true;
+  }
+  
   switch (code) {
     case SDLK_P:
-      {
-        auto elem = getClipboard();
-        if (elem) {
-          addRoot(new Root("<clipboard>", elem));
-        }
-        else {
-          setError("Invalid JSON");
-        }
-      }
+      paste();
       return true;
       
     case SDLK_C:
@@ -601,6 +634,10 @@ Point Renderer::addRootOrigin(Element *element, const Point &origin) {
 
 void Renderer::processTextKey(Element *element, const Point &origin, const Size &size, SDL_Keycode code) {
 
+  if (processGlobalKey(code)) {
+    return;
+  }
+  
   Point o = addRootOrigin(element, origin);
 
   switch (code) {
@@ -631,6 +668,18 @@ Point Renderer::localToGlobal(const Point &p) {
 Point Renderer::noOffset(const Point &p) {
 
   return p - _offs;
+  
+}
+
+void Renderer::paste() {
+
+  auto elem = getClipboard();
+  if (elem) {
+    addRoot(new Root("<clipboard>", elem));
+  }
+  else {
+    setError("Invalid JSON");
+  }
   
 }
 
@@ -708,6 +757,37 @@ bool Renderer::processEvents() {
           if (hit) {
             get<0>(*hit)->processKey(*this, event.key.key);
           }
+          else {
+            switch (event.key.key) {
+              case SDLK_P:
+                paste();
+                break;
+                
+              case SDLK_ESCAPE:
+                _adding = false;
+                break;
+                
+              case SDLK_N:
+                _adding = true;
+                break;
+                
+              case SDLK_D:
+                if (!_adding) {
+                  break;
+                }
+                addRoot(new Root("<new>", new Dict()));
+                _adding = false;
+                break;
+          
+              case SDLK_L:
+                if (!_adding) {
+                  break;
+                }
+                addRoot(new Root("<new>", new List()));
+                _adding = false;
+                break;
+            }
+          }
           setHUD();
         }
         break;
@@ -725,6 +805,15 @@ bool Renderer::processEvents() {
 
   return false;
   
+}
+
+void Renderer::zoom(int key) {
+
+  float newscale = Spatial::calcScale(key);
+  if (newscale != 0) {
+    Spatial::scaleAndCenter(_size, _osize, _mouse, newscale - _scale, 1.0, &_scale, &_offs);
+  }
+
 }
 
 void Renderer::clearScale() {
@@ -837,15 +926,6 @@ void Renderer::renderFilledPie(const Point &origin, int radius, int start, int e
 		start, end, 0, 
 		color.r, color.g, color.b, color.a);
 
-}
-
-void Renderer::exec(Element *element, Change *change) {
-
-  _changes.exec(*this, _hud.get(), element, change);
-  
-  // amy change makes it dirty for now.
-  setDirty(element);
-  
 }
 
 void Renderer::setError(const string &str) {

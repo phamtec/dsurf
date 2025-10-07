@@ -35,6 +35,9 @@ public:
     // scale and recenter an object.
     // We take pains to keep the view centered at the part of the object at the cursor.
     
+  static float calcScale(int key);
+    // calculate a new scale number based on the key 1 - 9
+    
 };
 
 #endif // H_spatial

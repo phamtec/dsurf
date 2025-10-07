@@ -69,3 +69,9 @@ void Spatial::scaleAndCenter(const Size &wsize, const Size &objsize, const Size 
   *offset = objcenter + ((moffset + (halfobj - (oldmouse - *offset))));
   
 }
+
+float Spatial::calcScale(int key) {
+
+  return ((((9-key) + 1) * 4.0) / 10.0)  - 0.3;
+  
+}

@@ -64,15 +64,17 @@ void HUD::render(Renderer &renderer, const Point &mouse) {
   }
   
   if (_mode == -1) {
-    double scale = 0.3;
-    renderer.setScale(scale, scale);
-    
-    double kiscale = 1 / scale;
-    Point p = (mouse + Size(10, -10)) * kiscale;
-    
-    _hint->render(renderer, p, false);
-
-    renderer.setScale(1.0, 1.0);
+    if (_hint) {
+      double scale = 0.3;
+      renderer.setScale(scale, scale);
+      
+      double kiscale = 1 / scale;
+      Point p = (mouse + Size(10, -10)) * kiscale;
+      
+      _hint->render(renderer, p, false);
+  
+      renderer.setScale(1.0, 1.0);
+    }
     return;
   }
   

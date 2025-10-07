@@ -140,3 +140,7 @@ add_executable(TestChanges test/testchanges.cpp src/changes.cpp)
 
 add_test(TestChanges TestChanges)
 
+add_executable(TestKeys test/testkeys.cpp)
+  target_link_libraries(TestKeys ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+add_test(TestKeys TestKeys)

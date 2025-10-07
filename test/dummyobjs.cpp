@@ -62,6 +62,9 @@ void Renderer::setError(const std::string &str) {
 }
 void Renderer::addFile(const std::string &filename, bool raw) {
 }
+bool Renderer::processGlobalKey(SDL_Keycode code) {
+  return false;
+}
 
 // HUD
 int HUD::registerMode(const std::string &name, HUDMode *mode) {

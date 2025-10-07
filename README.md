@@ -410,9 +410,9 @@ Walk a JSON file building a simple layout.
 
 - Version 0.9
 - You can move roots around, and remove them (kill)
-
-
-
+- You can add a list of dict as a root.
+- You can paste a new dict.
+- You can use the 1-9 keys to zoom in and out.
 
 
 

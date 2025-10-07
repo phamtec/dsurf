@@ -58,6 +58,10 @@ void ProjectObj::setMode(Renderer &renderer, HUD *hud) {
 
 void ProjectObj::processKey(Renderer &renderer, SDL_Keycode code) {
 
+  if (renderer.processGlobalKey(code)) {
+    return;
+  }
+  
   switch (code) {      
     case SDLK_L:
       renderer.addFile(_filename, false);

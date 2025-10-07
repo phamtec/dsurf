@@ -42,7 +42,8 @@ class Renderer {
 public:
   Renderer(const Size &wsize, float scalemult, float scale, const Size &offset, bool editing): 
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
-    _mousedown(false), _lastclick(0), _moving(0), _hudmoving(-1),
+    _mousedown(false), _lastclick(0), _moving(0), _hudmoving(-1), _hudnone(-1), 
+    _adding(false), _hudadding(-1),
     _window(0), _renderer(0), _engine(0), _startedit(editing)/*,
     _pointercursor(0), _editcursor(0)*/
       {};
@@ -68,6 +69,9 @@ public:
     
   void loop(int rep);
     // the main render loop.
+    
+  bool processGlobalKey(SDL_Keycode code);
+    // all objects should do this.
     
   bool processRootKey(Element *element, SDL_Keycode code);
   static void registerRootHUDMode(HUDMode *mode);
@@ -166,7 +170,10 @@ private:
   Changes _changes;
   Element *_moving;
   int _hudmoving;
+  int _hudnone;
   Point _movoffs;
+  bool _adding;
+  int _hudadding;
   
   bool processEvents();
   bool isDoubleClick();
@@ -176,6 +183,8 @@ private:
   Point addRootOrigin(Element *element, const Point &origin);
   void removeRoot(Element *element);
   void recenter();
+  void paste();
+  void zoom(int scale);
   
   typedef std::tuple<Commandable *, Element *, bool, Text *> getHitReturnType;
     // the commandable interface and the raw element
