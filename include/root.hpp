@@ -18,12 +18,13 @@
 #include "commandable.hpp"
 #include "writeable.hpp"
 #include "editable.hpp"
+#include "locatable.hpp"
 #include "text.hpp"
 
 #include <memory>
 #include <vector>
 
-class Root: public Element,  public Writeable, public Editable, public Commandable  {
+class Root: public Element,  public Writeable, public Editable, public Commandable, public Locatable  {
 
   typedef Element super;
 
@@ -34,9 +35,6 @@ public:
   std::string getFilename();
   Text *getFilenameObj() { return &_filename; }
   void setDirty(Renderer &renderer, bool state);
-  
-  void setLocation(const Point &loc) { _location = loc; }
-  Point getLocation() { return _location; }
   
   // Element
   virtual void setParent(Element *parent) { _parent = parent; }
@@ -62,6 +60,10 @@ public:
   virtual void setMode(Renderer &renderer, HUD *hud);
   static void registerHUDModes(HUD *hud);
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
+
+  // Locatable
+  virtual Point getLocation() { return _location; }
+  virtual void setLocation(const Point &loc) { _location = loc; }
 
 private:
 

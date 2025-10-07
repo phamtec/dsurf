@@ -406,6 +406,10 @@ Walk a JSON file building a simple layout.
 
 - Start in on allowing roots and modules to be rearranged (moved).
 
+### 7-Oct-2025
+
+- Version 0.9
+- You can move roots around, and remove them (kill)
 
 
 

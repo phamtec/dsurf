@@ -19,6 +19,7 @@
 #include "list.hpp"
 #include "objable.hpp"
 #include "renderer.hpp"
+#include "locatable.hpp"
 
 #define BOOST_AUTO_TEST_MAIN
 #include <boost/test/unit_test.hpp>
@@ -128,6 +129,30 @@ BOOST_AUTO_TEST_CASE( writeable )
 
   X x;
   Writeable::cast(&x)->getName();
+  
+}
+
+BOOST_AUTO_TEST_CASE( nullLocatable )
+{
+  cout << "=== nullLocatable ===" << endl;
+
+  try {
+    Locatable::cast(0)->getLocation();
+    BOOST_FAIL("Didn't catch");
+  }
+  catch (string &ex) {
+    // all good.
+    cout << ex << endl;
+  }
+  
+}
+
+BOOST_AUTO_TEST_CASE( locatable )
+{
+  cout << "=== locatable ===" << endl;
+
+  X x;
+  Locatable::cast(&x)->getLocation();
   
 }
 

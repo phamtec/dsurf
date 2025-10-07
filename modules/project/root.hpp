@@ -17,13 +17,14 @@
 #include "element.hpp"
 #include "text.hpp"
 #include "commandable.hpp"
+#include "locatable.hpp"
 
 #include <vector>
 #include <memory>
 
 class Element;
 
-class ProjectRoot: public Element, public Commandable {
+class ProjectRoot: public Element, public Commandable, public Locatable {
 
   typedef Element super;
 
@@ -45,6 +46,10 @@ public:
   virtual void setMode(Renderer &renderer, HUD *hud);
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
+  // Locatable
+  virtual Point getLocation() { return _location; }
+  virtual void setLocation(const Point &loc) { _location = loc; }
+
 protected:
 
   Element *_parent;
@@ -53,6 +58,7 @@ protected:
   std::vector<std::unique_ptr<Element> > _objs;
   std::string _filename;
   int _hudroot;
+  Point _location;
   
 };
 

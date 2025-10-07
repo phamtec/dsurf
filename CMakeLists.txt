@@ -88,6 +88,7 @@ set(OBJSRC
   src/objable.cpp
   src/setobj.cpp
   src/root.cpp
+  src/locatable.cpp
 )
 
 set(MODSRC

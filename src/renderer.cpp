@@ -210,8 +210,21 @@ void Renderer::addRoot(Element *element) {
   // lay it out.
   element->layout();
   
+  // find the right most object.
+  Point rightmost;
+  for_each(_roots.begin(), _roots.end(), [&rightmost](auto& e) {
+    auto l = Locatable::cast(e.get())->getLocation() + e->size();
+    if (l.x > rightmost.x) {
+      rightmost.x = l.x;
+    }
+  });
+  
+  // and put this to the right of that.
+  Locatable::cast(element)->setLocation(rightmost + Size(Sizes::group_indent, 0));
+
   // remember it.
   _roots.push_back(unique_ptr<Element>(element));
+  
   
   // calculate the total size of all the objects.
   recenter();
@@ -220,17 +233,18 @@ void Renderer::addRoot(Element *element) {
 
 void Renderer::recenter() {
 
+  // find the widest and tallest.
   _osize = Size();
-  for (auto& i: _roots) {
-    Size s = i->size();
-    _osize.w += s.w;
-    if (_osize.w > 0) {
-      _osize.w += Sizes::group_indent;
+  for_each(_roots.begin(), _roots.end(), [this](auto& e) {
+    Point o = Locatable::cast(e.get())->getLocation() + e->size();
+    if (o.x > _osize.w) {
+      _osize.w = o.x;
     }
-    if (s.h > _osize.h) {
-      _osize.h = s.h;
+    if (o.y > _osize.h) {
+      _osize.h = o.y;
     }
-  }
+  });
+
   _offs = Spatial::center(_size, _osize, _scale);
 //  cout << _offs << endl;
 
@@ -282,16 +296,14 @@ void Renderer::loop(int rep) {
     SDL_SetRenderScale(_renderer, _scale, _scale);
 
     // space out all the roots.
-    auto x = 0.0;
-    for (auto& i: _roots) {
-      if (i.get() == _moving) {
-        i->render(*this, ((_mouse - _movoffs) / _scale) + Size(x, 0));
+    for_each(_roots.begin(), _roots.end(), [this](auto& e) {
+      auto loc = Locatable::cast(e.get())->getLocation();
+      if (e.get() == _moving) {
+        loc = loc + ((_mouse - _movoffs) / _scale);
       }
-      else {
-        i->render(*this, Point(x, 0));
-      }
-      x += i->size().w+Sizes::group_indent;
-    }
+      e->render(*this, loc);
+    });
+
     _editor->render(*this, Point(0.0, 0.0));
 
     if (_error) {
@@ -387,10 +399,11 @@ bool Renderer::isDoubleClick() {
 
 optional<Renderer::getHitReturnType> Renderer::getHit() {
 
-  auto x = 0.0;
   for (auto& i: _roots) {
 
-    Element *hit = i->hitTest(Point(_offs) + Point(x, 0), _mouse * (1 / _scale));
+    auto loc = Locatable::cast(i.get())->getLocation();
+    
+    Element *hit = i->hitTest(Point(_offs) + loc, _mouse * (1 / _scale));
     if (hit) {
       Commandable *cx = dynamic_cast<Commandable *>(hit);
       if (cx) {
@@ -401,8 +414,6 @@ optional<Renderer::getHitReturnType> Renderer::getHit() {
         return getHitReturnType(cx, hit, i.get() == hit, nullptr);
       }
     }
-
-    x += i->size().w+Sizes::group_indent;
   }
   return nullopt;
 }
@@ -584,17 +595,8 @@ void Renderer::processDeleteKey(Element *element) {
 
 Point Renderer::addRootOrigin(Element *element, const Point &origin) {
 
-  Point o = origin;
-  auto root = element->root();
-  auto x = 0.0;
-  for (auto& i: _roots) {
-    if (i.get() == root) {
-      break;
-    }
-    o.x += i->size().w+Sizes::group_indent;
-  }
-  
-  return o;
+  return origin + Locatable::cast(element->root())->getLocation();
+
 }
 
 void Renderer::processTextKey(Element *element, const Point &origin, const Size &size, SDL_Keycode code) {
@@ -695,6 +697,8 @@ bool Renderer::processEvents() {
           }
           if (event.key.key == SDLK_D) {
             // it's dropped.
+            auto loc = Locatable::cast(_moving)->getLocation();
+            Locatable::cast(_moving)->setLocation(((_mouse - _movoffs) / _scale) + loc);
             _moving = nullptr;
             break;
           }
