@@ -19,7 +19,7 @@ using namespace std;
 
 ProjectRoot::ProjectRoot(const string &name, const string &filename, vector<Element *> &objs): _parent(0), _filename(filename) {
 
-  _name.set(Unicode::convert(name), Colours::black);
+  _name.set(Unicode::convert(name), Colours::white);
   
   transform(objs.begin(), objs.end(), back_inserter(_objs), [this](auto e) {
     e->setParent(this);
@@ -30,9 +30,11 @@ ProjectRoot::ProjectRoot(const string &name, const string &filename, vector<Elem
 Size ProjectRoot::layout() {
 
   _size = _name.size();
+  _size.w += Sizes::text_padding;
   for_each(_objs.begin(), _objs.end(), [this](auto& e) {
   
     Size s = e->layout();
+    s.w += Sizes::group_indent;
     _size.h += s.h + Sizes::text_padding;
     if (_size.w < s.w) {
       _size.w = s.w;
@@ -53,12 +55,14 @@ void ProjectRoot::build(Renderer &renderer) {
 
 void ProjectRoot::render(Renderer &renderer, const Point &origin) {
 
+  renderer.renderFilledRect(Rect(origin, _size), Colours::racingGreen);
+
   _name.render(renderer, origin);
 
-  float y = origin.y + _name.size().h + Sizes::text_padding;
+  Point o = origin + Size(Sizes::group_indent, _name.size().h + Sizes::text_padding);
   for (auto& i: _objs) {
-    i->render(renderer, origin + Size(Sizes::group_indent, y));
-    y += i->size().h + Sizes::text_padding;
+    i->render(renderer, o);
+    o.y += i->size().h + Sizes::text_padding;
   }
   
 //  renderer.renderRect(_r);
@@ -67,7 +71,7 @@ void ProjectRoot::render(Renderer &renderer, const Point &origin) {
 
 Element *ProjectRoot::hitTest(const Point &origin, const Point &p) { 
 
-  Point o = origin + Size(Sizes::group_indent, _name.size().h);
+  Point o = origin + Size(Sizes::group_indent, _name.size().h + Sizes::text_padding);
   for (auto& i: _objs) {
     Element *hit = i->hitTest(o, p);
     if (hit) {
@@ -82,14 +86,12 @@ Element *ProjectRoot::hitTest(const Point &origin, const Point &p) {
 
 Point ProjectRoot::localOrigin(Element *elem) {
 
-  int j=0;
-  int y=0;
+  Point o = Size(Sizes::group_indent, _name.size().h + Sizes::text_padding);
   for (auto& i: _objs) {
     if (i.get() == elem) {
-      return Point(Sizes::group_indent, y);
+      return o;
     }
-    y += i->size().h + Sizes::text_padding;
-    j++;
+    o.y += i->size().h + Sizes::text_padding;
   }
 
   return Point(0, 0);

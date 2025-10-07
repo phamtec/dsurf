@@ -40,6 +40,10 @@ void Root::setDirty(Renderer &renderer, bool state) {
 Size Root::layout() {
 
   _size = _obj->layout();
+  auto w = _filename.size().h+Sizes::listgap;
+  if (w > _size.w) {
+    _size.w += w;
+  }
   return _size;
   
 }

@@ -31,6 +31,7 @@ public:
   static SDL_Color lightGrey;
   static SDL_Color lime;
   static SDL_Color turquoise;
+  static SDL_Color racingGreen;
   
   // specific colours for elements
   static SDL_Color dictE;

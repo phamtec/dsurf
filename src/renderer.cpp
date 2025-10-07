@@ -181,7 +181,6 @@ void Renderer::addFile(const string &filename, bool raw) {
   
 }
 
-//void Renderer::addRoot(Element *element, const string &name) {
 void Renderer::addRoot(Element *element) {
 
   // if there is only 1 element and it is <new> with an empty dict
@@ -215,6 +214,12 @@ void Renderer::addRoot(Element *element) {
   _roots.push_back(unique_ptr<Element>(element));
   
   // calculate the total size of all the objects.
+  recenter();
+
+}
+
+void Renderer::recenter() {
+
   _osize = Size();
   for (auto& i: _roots) {
     Size s = i->size();
@@ -230,6 +235,23 @@ void Renderer::addRoot(Element *element) {
 //  cout << _offs << endl;
 
 }
+
+void Renderer::removeRoot(Element *element) {
+
+  auto r = find_if(_roots.begin(), _roots.end(), [element](auto& e) {
+    return e.get() == element;
+  });
+  if (r == _roots.end()) {
+    cerr << "couldnt find root." << endl;
+    return;
+  }
+
+  (*r)->destroy(*this);
+  _roots.erase(r);
+  recenter();
+  
+}
+
 
 void Renderer::initElement(Element *parent, Element *element) {
 
@@ -263,7 +285,7 @@ void Renderer::loop(int rep) {
     auto x = 0.0;
     for (auto& i: _roots) {
       if (i.get() == _moving) {
-        i->render(*this, (_mouse - _movoffs) / _scale);
+        i->render(*this, ((_mouse - _movoffs) / _scale) + Size(x, 0));
       }
       else {
         i->render(*this, Point(x, 0));
@@ -432,6 +454,7 @@ void Renderer::registerRootHUDMode(HUDMode *mode) {
 
   registerGlobalHUDMode(mode);
   mode->add(new Shortcut(L"M", L"ove"));
+  mode->add(new Shortcut(L"K", L"ill"));
   mode->add(new Shortcut(L"W", L"rite", canWrite));
   mode->add(new Shortcut(L"C", L"opy"));
   mode->add(new Shortcut(L"P", L"aste"));
@@ -519,6 +542,10 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
     case SDLK_M:
       _moving = element->root();
       _movoffs = _mouse;
+      return true;
+
+    case SDLK_K:
+      removeRoot(element->root());
       return true;
   }
   
@@ -783,11 +810,11 @@ bool Renderer::textTooSmall() {
   
 }
 
-SDL_Surface *Renderer::renderText(const std::wstring &str, const SDL_Color &color) {
+SDL_Surface *Renderer::renderText(const std::wstring &str, const SDL_Color &fgcolor, const SDL_Color &bgcolor) {
 
 //  wcout << "w " << str << endl;
   char* u8str = SDL_iconv_wchar_utf8(str.c_str());
-  SDL_Surface *surface = TTF_RenderText_Shaded(_font->_font, u8str, 0, color, Colours::white);
+  SDL_Surface *surface = TTF_RenderText_Shaded(_font->_font, u8str, 0, fgcolor, bgcolor);
   SDL_free(u8str);
   if (!surface) {
     SDL_Log("could not create surface");

@@ -50,7 +50,7 @@ string Dict::describe() {
 
 Size Dict::layout() {
 
-  _size = List::layoutVector(Size(0, Sizes::listgap), _elements);
+  _size = List::layoutVector(_elements);
   _size.h += _elements.size() == 0 ? Sizes::listgap: 0;
   _size.w += _elements.size() == 0 ? Sizes::bottomlinelength : 0;
   
@@ -74,7 +74,7 @@ void Dict::render(Renderer &renderer, const Point &origin) {
 
   drawBorder(renderer, origin, _size, false);
 
-  List::renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _elements);
+  List::renderVector(renderer, origin, _elements);
 
 //  renderer.renderRect(Rect(origin, _size));
 
@@ -88,7 +88,7 @@ rfl::Generic Dict::getGeneric() {
 
 Element *Dict::hitTest(const Point &origin, const Point &p) { 
 
-  Element *hit = List::hitTestVector(origin + Point(Sizes::group_indent, Sizes::listgap), p, _elements);
+  Element *hit = List::hitTestVector(origin, p, _elements);
   if (hit) {
     return hit;
   }

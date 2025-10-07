@@ -61,7 +61,7 @@ string List::describe() {
 
 Size List::layout() {
 
-  _size = List::layoutVector(Size(0, Sizes::listgap), _elements);
+  _size = List::layoutVector(_elements);
   _size.h += _elements.size() == 0 ? Sizes::listgap: 0;
   _size.w += _elements.size() == 0 ? Sizes::bottomlinelength : 0;
 
@@ -136,7 +136,7 @@ void List::render(Renderer &renderer, const Point &origin) {
   }
   else {
     // just render like normal.
-    renderVector(renderer, origin + Point(Sizes::group_indent, Sizes::listgap), _elements);
+    renderVector(renderer, origin, _elements);
  }
   
 //  renderer.renderRect(_r);
@@ -188,7 +188,7 @@ Element *List::hitTest(const Point &origin, const Point &p) {
     }
   }
 
-  Element *hit = hitTestVector(origin + Size(Sizes::group_indent, Sizes::listgap), p, _elements);
+  Element *hit = hitTestVector(origin, p, _elements);
   if (hit) {
     return hit;
   }
@@ -459,7 +459,7 @@ rfl::Generic List::getGenericVector(std::vector<std::unique_ptr<Element> > &list
 
 Element* List::hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Element> > &list) {
 
-  Point o = origin;
+  Point o = origin + Point(Sizes::group_indent, Sizes::listgap);
   for (auto& i: list) {
     Element *hit = i->hitTest(o, p);
     if (hit) {
@@ -471,14 +471,14 @@ Element* List::hitTestVector(const Point &origin, const Point &p, std::vector<st
   
 }
 
-Size List::layoutVector(const Size &size, std::vector<std::unique_ptr<Element> > &list) {
+Size List::layoutVector(std::vector<std::unique_ptr<Element> > &list) {
 
-  Size newsize = size;
+  Size newsize = Size(Sizes::group_indent, Sizes::listgap);
   for (auto& i: list) {
     Size s = i->layout();
     newsize.h += s.h + Sizes::listgap;
-    if ((Sizes::group_indent + s.w) > newsize.w) {
-      newsize.w = Sizes::group_indent + s.w;
+    if (s.w > newsize.w) {
+      newsize.w = s.w;
     }
   }
   return newsize;
@@ -497,7 +497,7 @@ void List::buildVector(Renderer &renderer, std::vector<std::unique_ptr<Element> 
 void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Element> > &list) {
 
   // And render, We use a for loop because... side effect :-)
-  Point o = origin;
+  Point o = origin + Point(Sizes::group_indent, Sizes::listgap);
   for (auto& i: list) {
     i->render(renderer, o);
     o.y += i->size().h + Sizes::listgap;
@@ -507,14 +507,12 @@ void List::renderVector(Renderer &renderer, const Point &origin, std::vector<std
 
 Point List::localOriginVector(std::vector<std::unique_ptr<Element> > &list, Element *elem, bool prop) {
 
-  int j=0;
-  int y=Sizes::listgap + (prop ? 40 : 0);
+  Point o = Point(Sizes::group_indent, Sizes::listgap + (prop ? 40 : 0));
   for (auto& i: list) {
     if (i.get() == elem) {
-      return Point(Sizes::group_indent, y);
+      return o;
     }
-    y += i->size().h + Sizes::listgap;
-    j++;
+    o.y += i->size().h + Sizes::listgap;
   }
 
   return Point(0, 0);

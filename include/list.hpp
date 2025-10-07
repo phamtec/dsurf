@@ -66,7 +66,7 @@ public:
 
   // helpers for things that look like a list.
   static void buildVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > &list);
-  static Size layoutVector(const Size &size, std::vector<std::unique_ptr<Element> > &list);
+  static Size layoutVector(std::vector<std::unique_ptr<Element> > &list);
   static void renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Element> > &list);
   static Element* hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Element> > &list);
   static Point localOriginVector(std::vector<std::unique_ptr<Element> > &list, Element *elem, bool prop);

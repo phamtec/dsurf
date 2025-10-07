@@ -51,7 +51,7 @@ public:
   static Size displaySize();
   
   void addRoot(Element *element);
-    // switch out the root we will use to render.
+    // add a root.
     
   void addFile(const std::string &filename, bool raw);
     // add the file
@@ -103,7 +103,7 @@ public:
   
   // functions used to create and render.  
   // these all take into account the offset and scqle.
-  SDL_Surface *renderText(const std::wstring &str, const SDL_Color &color);
+  SDL_Surface *renderText(const std::wstring &str, const SDL_Color &color, const SDL_Color &bgcolor=Colours::white);
   void renderTexture(SDL_Texture *texture, const Rect &rect, bool offs=true);
   void renderRect(const Rect &rect);
   void renderFilledRect(const Rect &rect, const SDL_Color &color);
@@ -174,6 +174,8 @@ private:
   void setHUD();
   void destroyRoots();
   Point addRootOrigin(Element *element, const Point &origin);
+  void removeRoot(Element *element);
+  void recenter();
   
   typedef std::tuple<Commandable *, Element *, bool, Text *> getHitReturnType;
     // the commandable interface and the raw element

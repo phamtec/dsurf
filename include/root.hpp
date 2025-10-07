@@ -35,6 +35,9 @@ public:
   Text *getFilenameObj() { return &_filename; }
   void setDirty(Renderer &renderer, bool state);
   
+  void setLocation(const Point &loc) { _location = loc; }
+  Point getLocation() { return _location; }
+  
   // Element
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
@@ -66,6 +69,7 @@ private:
   Size _size;
   std::unique_ptr<Element> _obj;
   Text _filename;
+  Point _location;
   
 };
 

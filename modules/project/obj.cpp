@@ -19,7 +19,7 @@ using namespace std;
 ProjectObj::ProjectObj(const std::string &name, const std::string &filename): 
   _parent(0), _filename(filename), _hudobj(-1) {
 
-  _name.set(Unicode::convert(name), Colours::black);
+  _name.set(Unicode::convert(name), Colours::white);
   
 }
 
