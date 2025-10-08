@@ -8,6 +8,10 @@ Dictionary types supported:
 - JSON
 - YAML
 
+You can read a bit about it here:
+
+[Substack article](https://phamtec.substack.com/p/og-gui-programmer-doesnt-know-what)
+
 ## Prerequsists
 
 #### Linux
