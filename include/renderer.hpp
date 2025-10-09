@@ -58,7 +58,7 @@ public:
     // add the file
     // if raw is specified, modules are bypassed.
 
-  bool init(const char *fontpath);
+  bool init(const std::string &fontpath);
     // initialise with th epath to the font file.
     
   void initElement(Element *parent, Element *element);

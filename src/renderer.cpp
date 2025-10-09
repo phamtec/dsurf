@@ -95,7 +95,7 @@ Size Renderer::displaySize() {
 
 }
 
-bool Renderer::init(const char *path) {
+bool Renderer::init(const string &path) {
 
    /* Initialize the TTF library */
   if (!TTF_Init()) {
@@ -125,7 +125,7 @@ bool Renderer::init(const char *path) {
   }
 
   _font = unique_ptr<Font>(new Font());
-  if (!_font->init(path)) {
+  if (!_font->init(path.c_str())) {
     SDL_Log("Couldn't iniitalise font");
     return false;
   }

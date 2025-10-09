@@ -17,7 +17,7 @@
 #include "filledbox.hpp"
 #include "dict.hpp"
 #include "root.hpp"
-
+#include "macutil.hpp"
 #include <iostream>
 #include <boost/program_options.hpp> 
 
@@ -62,7 +62,11 @@ int main(int argc, char *argv[])
   Renderer renderer(wsize, 0.01, scale, Size(0.0, 0.0), edit);
 
   // build all of the internal renderer state.
+#ifdef MAC_APP
+  if (!renderer.init(MacUtil::getFontPath())) {
+#else
   if (!renderer.init("../fonts/Monaco.ttf")) {
+#endif
 //  if (!renderer.init("../fonts/Geneva.ttf")) {
     return 1;
   }

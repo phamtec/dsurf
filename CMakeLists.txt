@@ -68,6 +68,7 @@ set(UTILSRC
   src/unicode.cpp
   src/err.cpp
   src/move.cpp
+  src/macutil.cpp
 )
 
 set(OBJSRC
@@ -104,7 +105,75 @@ add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC})
 add_executable(Send test/send.cpp)
   target_link_libraries(Send ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp ${LIBS})
 
+if (APPLE)
+  set(SDL_XCFRAMEWORK_PATH /Users/paul/Dev/SDL/Xcode/SDL/build/SDL3.xcframework)
+  set(SDL_TTF_XCFRAMEWORK_PATH /Users/paul/Dev/SDL_ttf/Xcode/build/SDL3_ttf.xcframework)
+  add_executable(DSurfer MACOSX_BUNDLE src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC} fonts/Monaco.ttf)
+  target_link_libraries(DSurfer
+      "-framework Cocoa"
+      "-framework Foundation"
+      "-framework OpenGL"
+      ${SDL_XCFRAMEWORK_PATH}
+      ${SDL_TTF_XCFRAMEWORK_PATH}
+      ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp yaml-cpp::yaml-cpp ${LIBS}
+  )
+  target_compile_definitions(DSurfer PRIVATE MAC_APP)
+  set_target_properties(DSurfer PROPERTIES
+    BUNDLE TRUE
+    RESOURCE "../fonts/Monaco.ttf"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "com.visualops.dsurfer"
+    MACOSX_BUNDLE_BUNDLE_NAME "DSurfer"
+    MACOSX_BUNDLE_BUNDLE_VERSION "0.9.0"
+    MACOSX_BUNDLE_SHORT_VERSION_STRING "0.9"
+  )
+  set_source_files_properties(fonts/Monaco.ttf
+    PROPERTIES
+    MACOSX_PACKAGE_LOCATION "Resources"
+  )
+  add_custom_command(
+    TARGET DSurfer
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL_XCFRAMEWORK_PATH}/macos-arm64_x86_64/SDL3.framework DSurfer.app/Contents/Frameworks/SDL3.framework
+  )
+  add_custom_command(
+    TARGET DSurfer
+    POST_BUILD
+    COMMAND install_name_tool -change @rpath/SDL3.framework/Versions/A/SDL3 @executable_path/../Frameworks/SDL3.framework/Versions/A/SDL3 DSurfer.app/Contents/MacOS/DSurfer
+  )
+  add_custom_command(
+    TARGET DSurfer
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL_TTF_XCFRAMEWORK_PATH}/macos-arm64_x86_64/SDL3_ttf.framework DSurfer.app/Contents/Frameworks/SDL3_ttf.framework
+  )
+  add_custom_command(
+    TARGET DSurfer
+    POST_BUILD
+    COMMAND install_name_tool -change @rpath/SDL3_ttf.framework/Versions/A/SDL3_ttf @executable_path/../Frameworks/SDL3_ttf.framework/Versions/A/SDL3_ttf DSurfer.app/Contents/MacOS/DSurfer
+  )
+  add_custom_command(
+    TARGET DSurfer
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy /usr/local/lib/libboost_program_options.dylib DSurfer.app/Contents/Frameworks/
+  )
+  add_custom_command(
+    TARGET DSurfer
+    POST_BUILD
+    COMMAND install_name_tool -change @rpath/libboost_program_options.dylib @executable_path/../Frameworks/libboost_program_options.dylib DSurfer.app/Contents/MacOS/DSurfer
+  )
+  add_custom_command(
+    TARGET DSurfer
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy /opt/homebrew/opt/zeromq/lib/libzmq.5.dylib DSurfer.app/Contents/Frameworks/
+  )
+  add_custom_command(
+    TARGET DSurfer
+    POST_BUILD
+    COMMAND install_name_tool -change /opt/homebrew/opt/zeromq/lib/libzmq.5.dylib @executable_path/../Frameworks/libzmq.5.dylib DSurfer.app/Contents/MacOS/DSurfer
+  )
+endif ()
+
 # Tests
+
 add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp src/size.cpp)
   target_link_libraries(TestSpatial ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
