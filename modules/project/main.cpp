@@ -12,11 +12,13 @@
 #include "main.hpp"
 #include "builder.hpp"
 #include "root.hpp"
-#include "obj.hpp"
+#include "fileobj.hpp"
 #include "hud.hpp"
 #include "hudmode.hpp"
 #include "shortcut.hpp"
 #include "renderer.hpp"
+#include "unkobj.hpp"
+#include "zmqobj.hpp"
 
 #include <iostream>
 #include <filesystem>
@@ -67,14 +69,22 @@ Element *Project::load(const rfl::Generic &obj, const string &filename) {
       return nullptr;
     }
     auto file = Builder::getString(*obj, "file");    
-    if (!file) {
-      cerr << "no file in obj!" << endl;
-      return nullptr;
+    if (file) {
+      fs::path p = filename;
+      p = p.parent_path();
+      p /= *file;
+      return new ProjectFileObj(*name, p);
     }
-    fs::path p = filename;
-    p = p.parent_path();
-    p /= *file;
-    return new ProjectObj(*name, p);
+    else {
+      auto zmq = Builder::getObject(*obj, "zmq");    
+      if (zmq) {
+        return new ProjectZMQObj(*name, *zmq);
+      }
+      else {
+        cerr << "unkown type of object" << endl;
+        return new ProjectUnknownObj(*name);
+      }
+    }
   });
   
   return new ProjectRoot(*name, filename, objs);
@@ -96,7 +106,21 @@ void Project::registerHUDModes(Renderer &renderer, HUD *hud) {
     auto mode = new HUDMode(false);
     renderer.registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"L", L"oad"));
-    hud->registerMode("projectobj", mode);
+    hud->registerMode("projectfileobj", mode);
+  }
+
+  {
+    auto mode = new HUDMode(false);
+    renderer.registerGlobalHUDMode(mode);
+    mode->add(new Shortcut(L"L", L"oad"));
+    hud->registerMode("projectzmqobj", mode);
+  }
+
+  {
+    auto mode = new HUDMode(false);
+    renderer.registerGlobalHUDMode(mode);
+    mode->add(new Shortcut(L"", L"???"));
+    hud->registerMode("projectunkobj", mode);
   }
 
 }

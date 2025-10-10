@@ -23,6 +23,10 @@ using namespace std;
 
 void Renderer::setupTest(int rep) {
 
+  if (!_context) {
+    cout << "new ZMQ context" << endl;
+    _context.reset(new zmq::context_t(1));
+  }
   _context.reset(new zmq::context_t(1));
   _rep.reset(new zmq::socket_t(*_context, ZMQ_REP));
   _rep->bind("tcp://127.0.0.1:" + to_string(rep));
@@ -30,46 +34,36 @@ void Renderer::setupTest(int rep) {
 
 }
 
-void Renderer::processTestMsg() {
+void Renderer::handleTestMsg() {
 
-  zmq::pollitem_t items [] = {
-      { *_rep, 0, ZMQ_POLLIN, 0 }
-  };
-  const std::chrono::milliseconds timeout{20};
-
-  zmq::message_t message;
-  zmq::poll(&items[0], 1, timeout);
-  if (items[0].revents & ZMQ_POLLIN) {
-  
-    // get the message.
-    zmq::message_t req;
+  // get the message.
+  zmq::message_t req;
 #if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)
-    auto res = _rep->recv(&req);
+  auto res = _rep->recv(&req);
 #else
-    auto res = _rep->recv(req, zmq::recv_flags::none);
+  auto res = _rep->recv(req, zmq::recv_flags::none);
 #endif
-    string m((const char *)req.data(), req.size());
-    
-    auto result = rfl::json::read<TestMsg>(m);
-    if (!result) {
-      testErr("unknown msg " + m);
-      return;
-    }
-    if (result->type == "key") {
-    
-      handleTestKey(*result);
-      return;
-      
-    }
-    if (result->type == "count") {
-    
-      handleTestCount(*result);
-      return;
-      
-    }
-    testErr("unknown type " + result->type);
+  string m((const char *)req.data(), req.size());
+  
+  auto result = rfl::json::read<TestMsg>(m);
+  if (!result) {
+    testErr("unknown msg " + m);
+    return;
   }
-
+  if (result->type == "key") {
+  
+    handleTestKey(*result);
+    return;
+    
+  }
+  if (result->type == "count") {
+  
+    handleTestCount(*result);
+    return;
+    
+  }
+  testErr("unknown type " + result->type);
+  
 }
 
 void Renderer::handleTestCount(const TestMsg &msg) {
@@ -188,7 +182,7 @@ void Renderer::testSend(const TestMsg &reply) {
   zmq::message_t rep(r.length());
   memcpy(rep.data(), r.c_str(), r.length());
 #if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)
- _rep->send(rep);
+  _rep->send(rep);
 #else
   _rep->send(rep, zmq::send_flags::none);
 #endif

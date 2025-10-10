@@ -48,6 +48,9 @@ public:
   static std::optional<std::string> getString(const rfl::Generic &obj);
     // given a generic object, get a string out of it.
     
+  static std::optional<long> getNum(const rfl::Generic &obj);
+    // given a generic object, get an int out of it.
+    
   static std::optional<std::vector<rfl::Generic> > getVector(const rfl::Generic &obj);
     // given a generic object, get a vector out of it.
 
@@ -57,6 +60,10 @@ public:
     
   static std::optional<std::string> getString(std::optional<rfl::Object<rfl::Generic> > dict, const std::string &name);
     // get a string out of the dictionary with the property name.
+    // This is chainable.
+    
+  static std::optional<long> getNum(std::optional<rfl::Object<rfl::Generic> > dict, const std::string &name);
+    // get an int out of the dictionary with the property name.
     // This is chainable.
     
   static std::optional<std::vector<rfl::Generic> > getVector(std::optional<rfl::Object<rfl::Generic> > dict, const std::string &name);

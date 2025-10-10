@@ -298,7 +298,8 @@ void Renderer::loop(int rep) {
   bool done = false;
   while (!done) {
   
-    processTestMsg();
+    // handle ZMQ stuff.
+    processMsg();
 
     // handle all the events.
     if (processEvents()) {
@@ -959,5 +960,4 @@ void Renderer::setDirty(Element *elem, bool state) {
   _hud->setFlag(*this, canWrite, state);
 
 }
-
 

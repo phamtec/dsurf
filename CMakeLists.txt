@@ -57,6 +57,7 @@ set(SRC
   src/types.cpp
   src/test.cpp
   src/changes.cpp
+  src/zmq.cpp
 )
 
 set(UTILSRC
@@ -96,7 +97,9 @@ set(MODSRC
   src/modules.cpp
   modules/project/main.cpp
   modules/project/root.cpp
-  modules/project/obj.cpp
+  modules/project/fileobj.cpp
+  modules/project/zmqobj.cpp
+  modules/project/unkobj.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC})
@@ -104,6 +107,9 @@ add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC})
 
 add_executable(Send test/send.cpp)
   target_link_libraries(Send ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp ${LIBS})
+
+add_executable(GenKeys src/genkeys.cpp)
+  target_link_libraries(GenKeys ${Boost_PROGRAM_OPTIONS_LIBRARY} ${LIBS})
 
 if (APPLE)
   set(SDL_XCFRAMEWORK_PATH /Users/paul/Dev/SDL/Xcode/SDL/build/SDL3.xcframework)

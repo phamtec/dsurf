@@ -4,6 +4,8 @@
 #include "corner.hpp"
 #include "renderer.hpp"
 
+using namespace std;
+
 // dummy these up so we don't recompile all code
 
 // Renderer
@@ -58,19 +60,24 @@ bool Renderer::textTooSmall() {
 Element *Renderer::getClipboard() {
   return nullptr;
 }
-void Renderer::setError(const std::string &str) {
+void Renderer::setError(const string &str) {
 }
-void Renderer::addFile(const std::string &filename, bool raw) {
+void Renderer::addFile(const string &filename, bool raw) {
 }
 bool Renderer::processGlobalKey(SDL_Keycode code) {
   return false;
 }
+void Renderer::setupRemote(const string &server, int req, 
+  const string &remotePubKey, const string &privateKey, const string &pubKey) {
+}
+void Renderer::onlineSend(const OnlineMsg &msg) {
+}
 
 // HUD
-int HUD::registerMode(const std::string &name, HUDMode *mode) {
+int HUD::registerMode(const string &name, HUDMode *mode) {
   return -1;
 }
-int HUD::findMode(const std::string &name) {
+int HUD::findMode(const string &name) {
   return -1;
 }
 void HUDMode::add(Shortcut *shortcut) {
@@ -79,7 +86,7 @@ void HUD::setHint(Renderer &renderer, Text *hint) {
 }
 void HUD::setMode(int mode) {
 } 
-Shortcut::Shortcut(const std::wstring &key, const std::wstring &text, std::optional<HUDFlags> flags) {
+Shortcut::Shortcut(const wstring &key, const wstring &text, optional<HUDFlags> flags) {
 }
 
 // Other

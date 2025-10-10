@@ -262,6 +262,20 @@ optional<string> Builder::getString(const rfl::Generic &obj) {
   
 }
 
+optional<long> Builder::getNum(const rfl::Generic &obj) {
+
+  optional<int> i;
+  std::visit([&obj, &i](const auto &field) {
+  
+    if constexpr (is_same<decay_t<decltype(field)>, long>() || is_same<decay_t<decltype(field)>, long long>()) {
+      i = field;
+    }
+  }, obj.variant());
+
+  return i;
+  
+}
+
 optional<vector<rfl::Generic> > Builder::getVector(const rfl::Generic &obj) {
 
   optional<vector<rfl::Generic> > v;
@@ -309,6 +323,21 @@ optional<string> Builder::getString(std::optional<rfl::Object<rfl::Generic> > di
   }
   
   return getString(*prop);
+  
+}
+
+optional<long> Builder::getNum(std::optional<rfl::Object<rfl::Generic> > dict, const std::string &name) {
+
+  if (!dict) {
+    return nullopt;
+  }
+  
+  auto prop = dict->get(name);
+  if (!prop) {
+    return nullopt;
+  }
+  
+  return getNum(*prop);
   
 }
 

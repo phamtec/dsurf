@@ -418,5 +418,11 @@ Walk a JSON file building a simple layout.
 - You can paste a new dict.
 - You can use the 1-9 keys to zoom in and out.
 
+### 10-Oct-2025
+
+- Start work on being able to access remote encrypted servers with ZMQ.
+
+
+
 
 

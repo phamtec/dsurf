@@ -1,8 +1,8 @@
 /*
-  obj.hpp
+  unkobj.hpp
   
   Author: Paul Hamilton (phamtec@mac.com)
-  Date: 2-Oct-2025
+  Date: 10-Oct-2025
     
   The object element for a Project
   
@@ -11,8 +11,8 @@
   https://github.com/phamtec/dsurf
 */
 
-#ifndef H_project_obj
-#define H_project_obj
+#ifndef H_project_unkobj
+#define H_project_unkobj
 
 #include "element.hpp"
 #include "text.hpp"
@@ -20,10 +20,10 @@
 
 class Element;
 
-class ProjectObj: public Element, public Commandable {
+class ProjectUnknownObj: public Element, public Commandable {
 
 public:
-  ProjectObj(const std::string &name, const std::string &filename);
+  ProjectUnknownObj(const std::string &name);
 
   // Element
   virtual void setParent(Element *parent) { _parent = parent; }
@@ -43,9 +43,8 @@ protected:
   Element *_parent;
   Size _size;
   Text _name;
-  std::string _filename;
   int _hudobj;
   
 };
 
-#endif // H_project_obj
+#endif // H_project_unkobj

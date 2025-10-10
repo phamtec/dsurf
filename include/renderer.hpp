@@ -44,8 +44,8 @@ public:
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
     _mousedown(false), _lastclick(0), _moving(0), _hudmoving(-1), _hudnone(-1), 
     _adding(false), _hudadding(-1),
-    _window(0), _renderer(0), _engine(0), _startedit(editing)/*,
-    _pointercursor(0), _editcursor(0)*/
+    _window(0), _renderer(0), _engine(0), _startedit(editing),
+    _waitingonline(false), _online(false)
       {};
   ~Renderer();
   
@@ -139,6 +139,32 @@ public:
     
   Resources resources;
   
+  // remove server.
+  void setupRemote(const std::string &server, int req, 
+    const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey);
+
+  struct OnlineMsg {
+    std::string type;
+    std::string src;
+    std::string build;
+    std::string headerTitle;
+    std::string pubKey;
+    bool synced;
+    bool mirror;
+  };
+  struct ReplyMsg {
+    std::optional<std::string> type;
+    std::optional<std::string> msg;
+    std::optional<std::string> date;
+  };
+  void onlineSend(const OnlineMsg &msg);
+
+  struct HeartbeatMsg {
+    std::string type;
+    std::string src;
+  };
+  void heartbeatSend(const HeartbeatMsg &msg);
+
 private:
   friend class TextEditor;
 
@@ -174,6 +200,10 @@ private:
   Point _movoffs;
   bool _adding;
   int _hudadding;
+  bool _online;
+  bool _waitingonline;
+  std::string _src;
+  std::chrono::time_point<std::chrono::system_clock> _lastWatchdog;
   
   bool processEvents();
   bool isDoubleClick();
@@ -209,14 +239,18 @@ private:
   };
 
   void setupTest(int rep);
-  void processTestMsg();
+  void processMsg();
   Element *getTestTarget(const std::optional<std::string> &name, bool silent=false);
   void testAck();
   void testErr(const std::string &msg);
   void testSend(const TestMsg &reply);
+  void handleTestMsg();
   void handleTestKey(const TestMsg &msg);
   void handleTestCount(const TestMsg &msg);
 
+  // handling remove ZMQ requests to encrypted servers.
+  std::unique_ptr<zmq::socket_t> _remotereq;
+  
 };
 
 #endif // H_renderer

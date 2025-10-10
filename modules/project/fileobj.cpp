@@ -1,5 +1,5 @@
 /*
-  obj.cpp
+  fileobj.cpp
   
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 2-Oct-2025
@@ -9,34 +9,34 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "obj.hpp"
+#include "fileobj.hpp"
 
 #include "renderer.hpp"
 #include "unicode.hpp"
 
 using namespace std;
 
-ProjectObj::ProjectObj(const std::string &name, const std::string &filename): 
+ProjectFileObj::ProjectFileObj(const std::string &name, const std::string &filename): 
   _parent(0), _filename(filename), _hudobj(-1) {
 
   _name.set(Unicode::convert(name), Colours::white);
   
 }
 
-Size ProjectObj::layout() {
+Size ProjectFileObj::layout() {
 
   _size = _name.size();
   return _size;
   
 }
 
-void ProjectObj::build(Renderer &renderer) {
+void ProjectFileObj::build(Renderer &renderer) {
 
   _name.build(renderer);
 
 }
 
-void ProjectObj::render(Renderer &renderer, const Point &origin) {
+void ProjectFileObj::render(Renderer &renderer, const Point &origin) {
 
   _name.render(renderer, origin);
 
@@ -44,19 +44,19 @@ void ProjectObj::render(Renderer &renderer, const Point &origin) {
 
 }
 
-void ProjectObj::initHUD(HUD *hud) {
+void ProjectFileObj::initHUD(HUD *hud) {
 
-  _hudobj = hud->findMode("projectobj");
+  _hudobj = hud->findMode("projectfileobj");
   
 }
 
-void ProjectObj::setMode(Renderer &renderer, HUD *hud) {
+void ProjectFileObj::setMode(Renderer &renderer, HUD *hud) {
 
   hud->setMode(_hudobj);
   
 }
 
-void ProjectObj::processKey(Renderer &renderer, SDL_Keycode code) {
+void ProjectFileObj::processKey(Renderer &renderer, SDL_Keycode code) {
 
   if (renderer.processGlobalKey(code)) {
     return;
