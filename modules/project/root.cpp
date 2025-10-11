@@ -17,7 +17,7 @@
 
 using namespace std;
 
-ProjectRoot::ProjectRoot(const string &name, const string &filename, vector<Element *> &objs): _parent(0), _filename(filename) {
+ProjectRoot::ProjectRoot(const string &name, const string &filename, vector<Element *> &objs): _filename(filename) {
 
   _name.set(Unicode::convert(name), Colours::white);
   
@@ -25,6 +25,10 @@ ProjectRoot::ProjectRoot(const string &name, const string &filename, vector<Elem
     e->setParent(this);
     return unique_ptr<Element>(e);
   });
+}
+
+void ProjectRoot::setParent(Element *parent) {
+  cerr << "setParent on ProjectRoot!" << endl;
 }
 
 Size ProjectRoot::layout() {

@@ -24,6 +24,10 @@ Root::Root(const std::string &filename, Element *obj):
       
 }
 
+void Root::setParent(Element *parent) {
+  cerr << "setParent on Root!" << endl;
+}
+
 string Root::getFilename() { 
 
   return Unicode::convert(_filename.str()); 

@@ -32,8 +32,8 @@ public:
   ProjectRoot(const std::string &name, const std::string &filename, std::vector<Element *> &objs);
 
   // Element
-  virtual void setParent(Element *parent) { _parent = parent; }
-  virtual Element *getParent() { return _parent; }
+  virtual void setParent(Element *parent);
+  virtual Element *getParent() { return nullptr; }
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
@@ -52,7 +52,6 @@ public:
 
 protected:
 
-  Element *_parent;
   Size _size;
   Text _name;
   std::vector<std::unique_ptr<Element> > _objs;

@@ -37,8 +37,8 @@ public:
   void setDirty(Renderer &renderer, bool state);
   
   // Element
-  virtual void setParent(Element *parent) { _parent = parent; }
-  virtual Element *getParent() { return _parent; }
+  virtual void setParent(Element *parent);
+  virtual Element *getParent() { return nullptr; }
   virtual void build(Renderer &renderer);
   virtual Size layout();
   virtual void render(Renderer &renderer, const Point &origin);
@@ -67,7 +67,6 @@ public:
 
 private:
 
-  Element *_parent;
   Size _size;
   std::unique_ptr<Element> _obj;
   Text _filename;
