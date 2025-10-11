@@ -27,6 +27,7 @@
 #include <SDL3/SDL_events.h>
 #include <memory>
 #include <zmq.hpp>
+#include <rfl.hpp>
 
 class SDL_Window;
 class SDL_Renderer;
@@ -44,8 +45,8 @@ public:
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
     _mousedown(false), _lastclick(0), _moving(0), _hudmoving(-1), _hudnone(-1), 
     _adding(false), _hudadding(-1),
-    _window(0), _renderer(0), _engine(0), _startedit(editing),
-    _waitingonline(false), _online(false)
+    _window(0), _renderer(0), _engine(0), _startedit(editing)/*,
+    _waitingonline(false), _online(false)*/
       {};
   ~Renderer();
   
@@ -139,31 +140,11 @@ public:
     
   Resources resources;
   
-  // remove server.
+  // remote server.
   void setupRemote(const std::string &server, int req, 
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey);
-
-  struct OnlineMsg {
-    std::string type;
-    std::string src;
-    std::string build;
-    std::string headerTitle;
-    std::string pubKey;
-    bool synced;
-    bool mirror;
-  };
-  struct ReplyMsg {
-    std::optional<std::string> type;
-    std::optional<std::string> msg;
-    std::optional<std::string> date;
-  };
-  void onlineSend(const OnlineMsg &msg);
-
-  struct HeartbeatMsg {
-    std::string type;
-    std::string src;
-  };
-  void heartbeatSend(const HeartbeatMsg &msg);
+  void sendRemote(const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next);
+  void evalMsg(const rfl::Generic &msg);
 
 private:
   friend class TextEditor;
@@ -200,10 +181,7 @@ private:
   Point _movoffs;
   bool _adding;
   int _hudadding;
-  bool _online;
-  bool _waitingonline;
-  std::string _src;
-  std::chrono::time_point<std::chrono::system_clock> _lastWatchdog;
+  rfl::Object<rfl::Generic> _next;
   
   bool processEvents();
   bool isDoubleClick();

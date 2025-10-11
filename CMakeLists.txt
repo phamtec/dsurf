@@ -58,6 +58,7 @@ set(SRC
   src/test.cpp
   src/changes.cpp
   src/zmq.cpp
+  src/flo.cpp
 )
 
 set(UTILSRC
@@ -185,7 +186,7 @@ add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp sr
 
 add_test(TestSpatial TestSpatial)
 
-add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
+add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp src/flo.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
   target_link_libraries(TestBuilder reflectcpp yaml-cpp::yaml-cpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestBuilder TestBuilder)

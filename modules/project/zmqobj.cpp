@@ -14,6 +14,7 @@
 #include "renderer.hpp"
 #include "unicode.hpp"
 #include "builder.hpp"
+#include "flo.hpp"
 
 using namespace std;
 
@@ -22,37 +23,54 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
 
   _name.set(Unicode::convert(name), Colours::white);
   
+  auto library = Builder::getVector(obj, "library");    
+  if (library) {
+    _flo.reset(new Flo(*library));
+  }
+  else {
+    _flo.reset(new Flo());
+  }
   auto remote = Builder::getObject(obj, "remote");
   if (remote) {
-    auto s = Builder::getString(remote, "address");
+    auto s = _flo->evalStringMember(remote, "address");
     if (s) {
       _remoteAddress = *s;
     }
-    s = Builder::getString(remote, "public");
+    s = _flo->evalStringMember(remote, "public");
     if (s) {
       _remotePubKey = *s;
     }
-    auto i = Builder::getNum(remote, "port");
+    auto i = _flo->evalNumMember(remote, "port");
     if (i) {
       _remotePort = *i;
     }
   }
   auto local = Builder::getObject(obj, "local");    
   if (local) {
-    auto s = Builder::getString(local, "uuid");
+    auto s = _flo->evalStringMember(local, "uuid");
     if (s) {
       _uuid = *s;
     }
-    s = Builder::getString(local, "private");
+    s = _flo->evalStringMember(local, "private");
     if (s) {
       _privateKey = *s;
     }
-    s = Builder::getString(local, "public");
+    s = _flo->evalStringMember(local, "public");
     if (s) {
       _publicKey = *s;
     }
   }
-
+  auto connect = Builder::getObject(obj, "connect");    
+  if (connect) {
+    auto o = _flo->evalObjMember(connect, "send");
+    if (o) {
+      _send = *o;
+    }
+    o = _flo->evalObjMember(connect, "next");
+    if (o) {
+      _next = *o;
+    }
+  }
 }
 
 Size ProjectZMQObj::layout() {
@@ -95,7 +113,7 @@ void ProjectZMQObj::processKey(Renderer &renderer, SDL_Keycode code) {
   }
 
   switch (code) {      
-    case SDLK_L:
+    case SDLK_C:
       load(renderer);
       break;
   }
@@ -104,19 +122,15 @@ void ProjectZMQObj::processKey(Renderer &renderer, SDL_Keycode code) {
 
 void ProjectZMQObj::load(Renderer &renderer) {
 
+  if (_send.size() == 0 || _next.size() == 0) {
+    cerr << "no send or next" << endl;
+    return;
+  }
+
   cout << "connecting to " << _remoteAddress << ":" << _remotePort << endl;
   
   renderer.setupRemote(_remoteAddress, _remotePort, _remotePubKey, _privateKey, _publicKey);
-
-  // send it an online message.
-  Renderer::OnlineMsg msg;
-  msg.type = "online";
-  msg.src = _uuid;
-  msg.build = "32999";
-  msg.headerTitle = "DSurfer";
-  msg.pubKey = _publicKey;
-  msg.synced = true;
-  msg.mirror = false;
-  renderer.onlineSend(msg);
+  
+  renderer.sendRemote(_send, _next);
 
 }

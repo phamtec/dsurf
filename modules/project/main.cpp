@@ -112,7 +112,7 @@ void Project::registerHUDModes(Renderer &renderer, HUD *hud) {
   {
     auto mode = new HUDMode(false);
     renderer.registerGlobalHUDMode(mode);
-    mode->add(new Shortcut(L"L", L"oad"));
+    mode->add(new Shortcut(L"C", L"onnect"));
     hud->registerMode("projectzmqobj", mode);
   }
 

@@ -11,6 +11,8 @@
 
 #include "renderer.hpp"
 
+#include "builder.hpp"
+
 #include <rfl/json.hpp>
 #include <rfl.hpp>
 
@@ -42,57 +44,15 @@ void Renderer::processMsg() {
   #endif
 //      cout << "poll result " << res << endl;
       string m((const char *)req.data(), req.size());
-      auto result = rfl::json::read<ReplyMsg>(m);
+      auto result = rfl::json::read<rfl::Generic>(m);
       if (!result) {
-        cerr << "unknown msg " << m << endl;
+        cerr << "ZMQ error: "<< ("unknown result " + m) << endl;
+        _remotereq->close();
+        _remotereq.reset();
         return;
       }
-      if (_waitingonline) {
-        if (result->type) {
-          if (*(result->type) == "ack" || *(result->type) == "upstream") {
-            _waitingonline = false;
-            _online = true;
-            _lastWatchdog = std::chrono::system_clock::now();
-            cout << "online" << endl;
-          }
-          else {
-            cerr << "unknown type " << *(result->type) << endl;
-          }
-        }
-        else if (result->msg) {
-          cerr << *(result->msg) << endl;
-        }
-        else {
-          cerr << "unknown reply " << m << endl;
-        }
-      }
-      else {
-        if (result->type) {
-          if (*(result->type) == "ack") {
-            // all good.
-          }
-          else {
-            cerr << "unknown type " << *(result->type) << endl;
-          }
-        }
-        else if (result->msg) {
-          cerr << *(result->msg) << endl;
-        }
-        else {
-          cerr << "unknown reply " << m << endl;
-        }
-      }
-    }
-    
-    if (_online) {
-      auto now = std::chrono::system_clock::now();
-      if (std::chrono::duration_cast<std::chrono::seconds>(now - _lastWatchdog).count() >= 5) {
-        _lastWatchdog = now;
-        HeartbeatMsg msg;
-        msg.type = "heartbeat";
-        msg.src = _src;
-        heartbeatSend(msg);
-      }
+      evalMsg(result);
+      return;
     }
     return;
   }
@@ -109,6 +69,20 @@ void Renderer::processMsg() {
 
 }
 
+void Renderer::evalMsg(const rfl::Generic &msg) {
+
+  auto m = Builder::getString(msg);
+  if (m) {
+    cerr << "ZMQ error: "<< "unknown reply " << *m << endl;
+  }
+  else {
+    cerr << "ZMQ error: unknown" << endl;
+  }
+  _remotereq->close();
+  _remotereq.reset();
+
+}
+
 void Renderer::setupRemote(const string &server, int req, 
   const string &remotePubKey, const string &privateKey, const string &pubKey) {
 
@@ -116,19 +90,28 @@ void Renderer::setupRemote(const string &server, int req,
     cout << "new ZMQ context" << endl;
     _context.reset(new zmq::context_t(1));
   }
+  
+  if (_remotereq) {
+    cerr << "already online" << endl;
+    return;
+  }
+  
   _remotereq.reset(new zmq::socket_t(*_context, ZMQ_REQ));
   
   cout << "remotePubKey " << remotePubKey << endl;
   cout << "privateKey " << privateKey << endl;
   cout << "pubKey " << pubKey << endl;
   
+  int linger = 0;
   int curveServer = 0;
 #if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)
+  _remotereq->setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
   _remotereq->setsockopt(ZMQ_CURVE_SERVER, &curveServer, sizeof(curveServer));
   _remotereq->setsockopt(ZMQ_CURVE_SERVERKEY, remotePubKey.c_str(), remotePubKey.size());
   _remotereq->setsockopt(ZMQ_CURVE_SECRETKEY, privateKey.c_str(), privateKey.size());
   _remotereq->setsockopt(ZMQ_CURVE_PUBLICKEY, pubKey.c_str(), pubKey.size());
 #else
+  _remotereq->set(zmq::sockopt::linger, linger);
   _remotereq->set(zmq::sockopt::curve_server, curveServer);
   _remotereq->set(zmq::sockopt::curve_serverkey, remotePubKey);
   _remotereq->set(zmq::sockopt::curve_secretkey, privateKey);
@@ -142,10 +125,7 @@ void Renderer::setupRemote(const string &server, int req,
 
 }
 
-void Renderer::onlineSend(const OnlineMsg &msg) {
-
-  _waitingonline = true;
-  _src = msg.src;
+void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
   
   string r(rfl::json::write(msg)); 
   cout << "sending " << r << endl;
@@ -157,20 +137,8 @@ void Renderer::onlineSend(const OnlineMsg &msg) {
   _remotereq->send(req, zmq::send_flags::none);
 #endif
 
+  // what to do next!
+  _next = next;
+  
 }
-
-void Renderer::heartbeatSend(const HeartbeatMsg &msg) {
-
-  string r(rfl::json::write(msg)); 
-  cout << "sending " << r << endl;
-  zmq::message_t req(r.length());
-  memcpy(req.data(), r.c_str(), r.length());
-#if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)
-  _remotereq->send(req);
-#else
-  _remotereq->send(req, zmq::send_flags::none);
-#endif
-
-}
-
 

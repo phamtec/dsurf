@@ -422,6 +422,10 @@ Walk a JSON file building a simple layout.
 
 - Start work on being able to access remote encrypted servers with ZMQ.
 
+### 11-Oct-2025
+
+- We need F(lo)
+- Start in on that.
 
 
 

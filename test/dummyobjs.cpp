@@ -70,7 +70,7 @@ bool Renderer::processGlobalKey(SDL_Keycode code) {
 void Renderer::setupRemote(const string &server, int req, 
   const string &remotePubKey, const string &privateKey, const string &pubKey) {
 }
-void Renderer::onlineSend(const OnlineMsg &msg) {
+void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
 }
 
 // HUD

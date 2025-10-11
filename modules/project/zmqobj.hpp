@@ -17,6 +17,7 @@
 #include "element.hpp"
 #include "text.hpp"
 #include "commandable.hpp"
+#include "flo.hpp"
 
 #include <rfl.hpp>
 
@@ -53,6 +54,9 @@ protected:
   std::string _uuid;
   std::string _privateKey;
   std::string _publicKey;
+  rfl::Object<rfl::Generic> _send;
+  rfl::Object<rfl::Generic> _next;
+  std::unique_ptr<Flo> _flo;
 
   void load(Renderer &renderer);
   
