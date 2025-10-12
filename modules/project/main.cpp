@@ -19,6 +19,7 @@
 #include "renderer.hpp"
 #include "unkobj.hpp"
 #include "zmqobj.hpp"
+#include "generic.hpp"
 
 #include <iostream>
 #include <filesystem>
@@ -29,7 +30,7 @@ namespace fs = std::filesystem;
 bool Project::isA(const rfl::Generic &obj) {
 
   // we need a Mondoid here :-)
-  auto name = Builder::getString(Builder::getObject(Builder::getObject(obj), "project"), "name");
+  auto name = Generic::getString(Generic::getObject(Generic::getObject(obj), "project"), "name");
   if (name) {
     cout << "Project " << *name << endl;
     return true;
@@ -41,34 +42,34 @@ bool Project::isA(const rfl::Generic &obj) {
 
 Element *Project::load(const rfl::Generic &obj, const string &filename) {
 
-  auto project = Builder::getObject(Builder::getObject(obj), "project");
+  auto project = Generic::getObject(Generic::getObject(obj), "project");
   if (!project) {
     cerr << "no project!" << endl;
     return nullptr;
   }
-  auto name = Builder::getString(project, "name");
+  auto name = Generic::getString(project, "name");
   if (!name) {
     cerr << "no name!" << endl;
     return nullptr;
   }
-  auto objects = Builder::getVector(project, "objects");
+  auto objects = Generic::getVector(project, "objects");
   if (!objects) {
     cerr << "no objects!" << endl;
     return nullptr;
   }
   std::vector<Element *> objs;
   transform(objects->begin(), objects->end(), back_inserter(objs), [filename](auto e) -> Element * {
-    auto obj = Builder::getObject(e);
+    auto obj = Generic::getObject(e);
     if (!obj) {
       cerr << "obj is not an object!" << endl;
       return nullptr;
     }
-    auto name = Builder::getString(*obj, "name");
+    auto name = Generic::getString(*obj, "name");
     if (!name) {
       cerr << "no name in obj!" << endl;
       return nullptr;
     }
-    auto file = Builder::getString(*obj, "file");    
+    auto file = Generic::getString(*obj, "file");    
     if (file) {
       fs::path p = filename;
       p = p.parent_path();
@@ -76,7 +77,7 @@ Element *Project::load(const rfl::Generic &obj, const string &filename) {
       return new ProjectFileObj(*name, p);
     }
     else {
-      auto zmq = Builder::getObject(*obj, "zmq");    
+      auto zmq = Generic::getObject(*obj, "zmq");    
       if (zmq) {
         return new ProjectZMQObj(*name, *zmq);
       }

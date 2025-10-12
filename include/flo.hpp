@@ -6,6 +6,19 @@
     
   Simple Dictiomnary based evaluator.
   
+  For now we need to support:
+  
+  - libraries
+  - string
+  - apply
+  - dict
+  - if
+  - equal
+  - getmember
+  - cur
+  - send
+  - close
+  
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf

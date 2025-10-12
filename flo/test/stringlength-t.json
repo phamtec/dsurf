@@ -1,0 +1,26 @@
+{
+  "apply": [
+    { "getm"}
+  ]
+    "p": {
+      "equal": [
+        {
+          "getmember": {
+            "name": "message"
+          }
+        },
+        {
+          "string": "hello"
+        }
+      ]
+    },
+    "then": {
+      "setmember": {
+        "name": "message",
+        "value": { 
+          "string": "world"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "if": {
+    "p": {
+      "true": {}
+    },
+    "then": {
+      "dict": {
+        "message": "world"
+      }
+    }
+  }
+}

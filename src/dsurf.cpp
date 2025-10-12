@@ -20,6 +20,11 @@
 #include "macutil.hpp"
 #include <iostream>
 #include <boost/program_options.hpp> 
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/support/date_time.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
 
 using namespace std;
 namespace po = boost::program_options;
@@ -28,6 +33,7 @@ int main(int argc, char *argv[])
 {
   string version = "dsurf v0.9, 7-Oct-2025.";
     
+  string logLevel;
   int repPort;
 
   string usage = "Usage: " + string(argv[0]) + " input-file";
@@ -36,6 +42,7 @@ int main(int argc, char *argv[])
     ("repPort", po::value<int>(&repPort)->default_value(3013), "ZMQ Rep port.")
     ("help", "produce help message")
     ("input-files", po::value<vector<string> >(), "input files")
+    ("logLevel", po::value<string>(&logLevel)->default_value("info"), "Logging level [trace, debug, warn, info].")
     ;
   po::positional_options_description p;
   p.add("input-files", -1);
@@ -43,7 +50,36 @@ int main(int argc, char *argv[])
   po::variables_map vm;
   po::store(po::command_line_parser(argc, argv).
           options(desc).positional(p).run(), vm);
-  po::notify(vm);   
+          
+  try {
+    po::notify(vm);   
+  }
+  catch (boost::program_options::required_option &ex) {
+    cout << ex.what() << endl;
+    cout << desc << endl;
+    return 1;
+  }
+
+  if (logLevel == "trace") {
+    boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::trace);
+  }
+  else if (logLevel == "debug") {
+    boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::debug);
+  }
+  else if (logLevel == "warn") {
+    boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::warning);
+  }
+  else {
+    boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::info);
+  }
+
+  boost::log::formatter logFmt =
+         boost::log::expressions::format("%1%\tdsurf\t[%2%]\t%3%")
+        %  boost::log::expressions::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S.%f") 
+        %  boost::log::expressions::attr< boost::log::trivial::severity_level>("Severity")
+        %  boost::log::expressions::smessage;
+  boost::log::add_common_attributes();
+  boost::log::add_console_log(clog)->set_formatter(logFmt);
 
   if (vm.count("help")) {
     cout << desc << endl;

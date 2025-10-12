@@ -12,6 +12,7 @@
 #include "renderer.hpp"
 
 #include "builder.hpp"
+#include "generic.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl.hpp>
@@ -71,7 +72,7 @@ void Renderer::processMsg() {
 
 void Renderer::evalMsg(const rfl::Generic &msg) {
 
-  auto m = Builder::getString(msg);
+  auto m = Generic::getString(msg);
   if (m) {
     cerr << "ZMQ error: "<< "unknown reply " << *m << endl;
   }

@@ -15,6 +15,7 @@
 #include "unicode.hpp"
 #include "builder.hpp"
 #include "flo.hpp"
+#include "generic.hpp"
 
 using namespace std;
 
@@ -23,14 +24,14 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
 
   _name.set(Unicode::convert(name), Colours::white);
   
-  auto library = Builder::getVector(obj, "library");    
+  auto library = Generic::getVector(obj, "library");    
   if (library) {
     _flo.reset(new Flo(*library));
   }
   else {
     _flo.reset(new Flo());
   }
-  auto remote = Builder::getObject(obj, "remote");
+  auto remote = Generic::getObject(obj, "remote");
   if (remote) {
     auto s = _flo->evalStringMember(remote, "address");
     if (s) {
@@ -45,7 +46,7 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
       _remotePort = *i;
     }
   }
-  auto local = Builder::getObject(obj, "local");    
+  auto local = Generic::getObject(obj, "local");    
   if (local) {
     auto s = _flo->evalStringMember(local, "uuid");
     if (s) {
@@ -60,7 +61,7 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
       _publicKey = *s;
     }
   }
-  auto connect = Builder::getObject(obj, "connect");    
+  auto connect = Generic::getObject(obj, "connect");    
   if (connect) {
     auto o = _flo->evalObjMember(connect, "send");
     if (o) {

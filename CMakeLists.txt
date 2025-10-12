@@ -14,7 +14,7 @@ cmake_policy(SET CMP0167 NEW) # Boost
 cmake_policy(SET CMP0072 NEW) # OpenGL
 
 project (dsurf)
-  find_package(Boost 1.85.0 COMPONENTS program_options unit_test_framework REQUIRED)
+  find_package(Boost 1.85.0 COMPONENTS program_options unit_test_framework log_setup log REQUIRED)
   find_package(SDL3 REQUIRED)
   find_package(SDL3_ttf REQUIRED)
   find_package(OpenGL)
@@ -37,6 +37,9 @@ endif ()
 include_directories(include)
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
+include_directories(flo/include)
+
+set(BOOSTLIBS ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_LOG_SETUP_LIBRARY} ${Boost_LOG_LIBRARY})
 
 set(LIBS zmq)
 
@@ -59,6 +62,7 @@ set(SRC
   src/changes.cpp
   src/zmq.cpp
   src/flo.cpp
+  src/generic.cpp
 )
 
 set(UTILSRC
@@ -103,14 +107,31 @@ set(MODSRC
   modules/project/unkobj.cpp
 )
 
+set(FLOSRC
+  flo/src/functions.cpp
+  flo/src/processor.cpp
+  flo/src/state.cpp
+  flo/src/transform.cpp
+  flo/src/functions/dict.cpp
+  flo/src/functions/equal.cpp
+  flo/src/functions/getmember.cpp
+  flo/src/functions/if.cpp
+  flo/src/functions/null.cpp
+  flo/src/functions/select.cpp
+  flo/src/functions/setmember.cpp
+  flo/src/functions/string.cpp
+  flo/src/functions/true.cpp
+)
+
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC})
-  target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp yaml-cpp::yaml-cpp ${LIBS})
+  target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL 
+    ${BOOSTLIBS} reflectcpp yaml-cpp::yaml-cpp ${LIBS})
 
 add_executable(Send test/send.cpp)
-  target_link_libraries(Send ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp ${LIBS})
+  target_link_libraries(Send ${BOOSTLIBS} reflectcpp ${LIBS})
 
 add_executable(GenKeys src/genkeys.cpp)
-  target_link_libraries(GenKeys ${Boost_PROGRAM_OPTIONS_LIBRARY} ${LIBS})
+  target_link_libraries(GenKeys ${BOOSTLIBS} ${LIBS})
 
 if (APPLE)
   set(SDL_XCFRAMEWORK_PATH /Users/paul/Dev/SDL/Xcode/SDL/build/SDL3.xcframework)
@@ -122,7 +143,7 @@ if (APPLE)
       "-framework OpenGL"
       ${SDL_XCFRAMEWORK_PATH}
       ${SDL_TTF_XCFRAMEWORK_PATH}
-      ${Boost_PROGRAM_OPTIONS_LIBRARY} reflectcpp yaml-cpp::yaml-cpp ${LIBS}
+      ${BOOSTLIBS} reflectcpp yaml-cpp::yaml-cpp ${LIBS}
   )
   target_compile_definitions(DSurfer PRIVATE MAC_APP)
   set_target_properties(DSurfer PROPERTIES
@@ -186,7 +207,7 @@ add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp sr
 
 add_test(TestSpatial TestSpatial)
 
-add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp src/flo.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
+add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp src/generic.cpp src/flo.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
   target_link_libraries(TestBuilder reflectcpp yaml-cpp::yaml-cpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestBuilder TestBuilder)
@@ -220,3 +241,13 @@ add_executable(TestKeys test/testkeys.cpp)
   target_link_libraries(TestKeys ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestKeys TestKeys)
+
+add_executable(TestFloSimple flo/test/simpletest.cpp src/flo.cpp src/generic.cpp ${FLOSRC})
+  target_link_libraries(TestFloSimple reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_LOG_LIBRARY})
+
+add_test(TestFloSimple TestFloSimple)
+
+add_executable(TestFloHello flo/test/helloworldtest.cpp src/flo.cpp src/generic.cpp ${FLOSRC})
+  target_link_libraries(TestFloHello reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_LOG_LIBRARY})
+
+add_test(TestFloHello TestFloHello)
