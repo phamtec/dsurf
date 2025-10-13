@@ -16,6 +16,8 @@
 
 using namespace std;
 
+namespace flo {
+
 class State
 {
 public:
@@ -31,5 +33,7 @@ private:
   optional<rfl::Object<rfl::Generic>> _elem;
   
 };
+
+} // flo
 
 #endif // H_state

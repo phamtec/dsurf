@@ -14,6 +14,8 @@
 
 #include "../function.hpp"
 
+namespace flo {
+
 class Dict: public Function
 {
 public:
@@ -24,5 +26,7 @@ public:
   static fPtr create();
   
 };
+
+} // flo
 
 #endif // H_dict

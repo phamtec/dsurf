@@ -67,8 +67,9 @@ void Renderer::addFile(const string &filename, bool raw) {
 bool Renderer::processGlobalKey(SDL_Keycode code) {
   return false;
 }
-void Renderer::setupRemote(const string &server, int req, 
+bool Renderer::setupRemote(const string &server, int req, 
   const string &remotePubKey, const string &privateKey, const string &pubKey) {
+  return false;
 }
 void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
 }

@@ -15,26 +15,20 @@
 #include <boost/test/unit_test.hpp>
 
 #include "flo.hpp"
+#include "generic.hpp"
 
 #include <rfl/json.hpp>
 
 using namespace std;
 
-Generic::Object<Generic::Generic> parseSONObject(const string &json) {
+rfl::Generic loadJSON(const string &fn) {
 
-  auto g = Generic::json::read<Generic::Generic>(json);
-  BOOST_CHECK(g);
-  
-  auto dict = Flo::getObject(*g);
-  BOOST_CHECK(dict);
-
-  return *dict;
-  
-}
-
-string dumpJSONObject(const Generic::Generic &obj) {
-
-  return Generic::json::write(obj); 
+  auto g = rfl::json::load<rfl::Generic>(fn);
+  if (!g) {
+    cout << g.error().what() << endl;
+    return 0;
+  }
+  return *g;
 
 }
 
@@ -43,73 +37,40 @@ BOOST_AUTO_TEST_CASE( evalStringMember )
   cout << "=== evalStringMember ===" << endl;
 
   Flo flo;
-  
-  auto s = flo.evalStringMember(parseSONObject("{ \"test\": \"string\" }"), "test");
-  BOOST_CHECK_EQUAL(*s, "string");
+  auto json = loadJSON("../test/string-t.json");
+  auto obj = Generic::getObject(json);
+  auto s = flo.evalStringMember(obj, "test");
+  BOOST_CHECK(s);
+  BOOST_CHECK_EQUAL(*s, "hello");
 
 }
 
-// BOOST_AUTO_TEST_CASE( nullTest )
-// {
-//   cout << "=== nullTest ===" << endl;
-//   
-//   auto json = "{\"message\":\"hello\"}";
-//   auto hello = parseSONObject(json);
-//   Flo flo;
-// 
-//   auto result = flo.transform(hello, parseSONObject("{ \"null\": {} }"));
-//   
-//   BOOST_CHECK_EQUAL(dumpJSONObject(*result), json);
-//   
-// }
-// 
-// BOOST_AUTO_TEST_CASE( noFuncTest )
-// {
-//   cout << "=== noFuncTest ===" << endl;
-//   
-//   auto none = parseSONObject("{}");
-//   Flo flo;
-// 
-//   auto result = flo.transform(none, parseSONObject("{ \"xxxx\": {} }"));
-//   BOOST_CHECK(result);
-// 
-//   BOOST_CHECK_EQUAL(dumpJSONObject(result), "{\"error\":\"function xxxx not found\"}");
-//   
-// }
-
-/*
-BOOST_AUTO_TEST_CASE( ifTrueTest )
+BOOST_AUTO_TEST_CASE( evalNumMember )
 {
-  cout << "=== ifTrueTest ===" << endl;
-  
-  json hello = {
-    { "message", "hello ignored" }
-  };
-  Functions f;
-  Processor p(hello, f);
+  cout << "=== evalNumMember ===" << endl;
 
-  json transform = {
-    { "if", {
-        { "p", {
-            { "true", {} }
-          }
-        },
-        { "then", {
-            { "dict", {
-              { "message", "world" }
-              } 
-            }
-          }
-        }
-      } 
-    }
-  };
-  
-  auto result = p.transform(transform);
-  BOOST_CHECK(result);
-  BOOST_CHECK(result->is_object());
-  BOOST_CHECK(result->as_object().if_contains("message"));
-  BOOST_CHECK_EQUAL(boost::json::value_to<string>(result->at_pointer("/message")), "world");
-  
+  Flo flo;
+  auto json = loadJSON("../test/num-t.json");
+  auto obj = Generic::getObject(json);
+  auto s = flo.evalNumMember(obj, "test");
+  BOOST_CHECK(s);
+  BOOST_CHECK_EQUAL(*s, 42);
+
 }
-*/
+
+
+BOOST_AUTO_TEST_CASE( evalObjMember )
+{
+  cout << "=== evalObjMember ===" << endl;
+
+  Flo flo;
+  auto json = loadJSON("../test/obj-t.json");
+  auto obj = Generic::getObject(json);
+  auto o = flo.evalObjMember(obj, "test");
+  BOOST_CHECK(o);
+  auto xxx = Generic::getString(o, "xxx");
+  BOOST_CHECK(xxx);
+  BOOST_CHECK_EQUAL(*xxx, "yyy");
+
+}
+

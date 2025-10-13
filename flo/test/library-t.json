@@ -1,0 +1,13 @@
+{
+  "library": [
+    {
+      "name": "pubKey",
+      "result": {
+        "string": "a key"
+      }
+    }
+  ],
+  "public": {
+    "pubKey": {}
+  }
+}

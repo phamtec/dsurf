@@ -123,7 +123,7 @@ set(FLOSRC
   flo/src/functions/true.cpp
 )
 
-add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC})
+add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC} ${FLOSRC})
   target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL 
     ${BOOSTLIBS} reflectcpp yaml-cpp::yaml-cpp ${LIBS})
 
@@ -136,7 +136,7 @@ add_executable(GenKeys src/genkeys.cpp)
 if (APPLE)
   set(SDL_XCFRAMEWORK_PATH /Users/paul/Dev/SDL/Xcode/SDL/build/SDL3.xcframework)
   set(SDL_TTF_XCFRAMEWORK_PATH /Users/paul/Dev/SDL_ttf/Xcode/build/SDL3_ttf.xcframework)
-  add_executable(DSurfer MACOSX_BUNDLE src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC} fonts/Monaco.ttf)
+  add_executable(DSurfer MACOSX_BUNDLE src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC} ${FLOSRC} fonts/Monaco.ttf)
   target_link_libraries(DSurfer
       "-framework Cocoa"
       "-framework Foundation"
@@ -207,8 +207,8 @@ add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp sr
 
 add_test(TestSpatial TestSpatial)
 
-add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp src/generic.cpp src/flo.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
-  target_link_libraries(TestBuilder reflectcpp yaml-cpp::yaml-cpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp src/generic.cpp src/flo.cpp ${OBJSRC} ${UTILSRC} ${MODSRC} ${FLOSRC})
+  target_link_libraries(TestBuilder reflectcpp yaml-cpp::yaml-cpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${BOOSTLIBS})
 
 add_test(TestBuilder TestBuilder)
 
@@ -242,6 +242,11 @@ add_executable(TestKeys test/testkeys.cpp)
 
 add_test(TestKeys TestKeys)
 
+add_executable(TestFlo test/testflo.cpp src/flo.cpp src/generic.cpp ${FLOSRC})
+  target_link_libraries(TestFlo reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_LOG_LIBRARY})
+
+add_test(TestFlo TestFlo)
+
 add_executable(TestFloSimple flo/test/simpletest.cpp src/flo.cpp src/generic.cpp ${FLOSRC})
   target_link_libraries(TestFloSimple reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_LOG_LIBRARY})
 
@@ -251,3 +256,8 @@ add_executable(TestFloHello flo/test/helloworldtest.cpp src/flo.cpp src/generic.
   target_link_libraries(TestFloHello reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_LOG_LIBRARY})
 
 add_test(TestFloHello TestFloHello)
+
+add_executable(TestFloLib flo/test/libtest.cpp src/flo.cpp src/generic.cpp ${FLOSRC})
+  target_link_libraries(TestFloLib reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_LOG_LIBRARY})
+
+add_test(TestFloLib TestFloLib)

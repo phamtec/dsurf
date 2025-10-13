@@ -17,16 +17,19 @@
 
 using namespace std;
 
+namespace flo {
+
 class Functions;
 
 class Processor
 {
 public:
   Processor(istream &infile, Functions &functions);
-  Processor(rfl::Generic &json, Functions &functions);
+  Processor(const rfl::Generic &json, Functions &functions);
+  Processor(Functions &functions);
   
   optional<rfl::Generic> transform(istream &transform);
-  optional<rfl::Generic> transform(rfl::Generic &jt);
+  optional<rfl::Generic> transform(const rfl::Generic &jt);
  
   static void pretty_print( ostream& os, rfl::Generic const& jv);
  
@@ -35,5 +38,7 @@ private:
   rfl::Generic _json;
   
 };
+
+} // flo
 
 #endif // H_processor

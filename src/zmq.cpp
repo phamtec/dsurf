@@ -84,7 +84,7 @@ void Renderer::evalMsg(const rfl::Generic &msg) {
 
 }
 
-void Renderer::setupRemote(const string &server, int req, 
+bool Renderer::setupRemote(const string &server, int req, 
   const string &remotePubKey, const string &privateKey, const string &pubKey) {
 
   if (!_context) {
@@ -94,7 +94,7 @@ void Renderer::setupRemote(const string &server, int req,
   
   if (_remotereq) {
     cerr << "already online" << endl;
-    return;
+    return false;
   }
   
   _remotereq.reset(new zmq::socket_t(*_context, ZMQ_REQ));
@@ -105,6 +105,7 @@ void Renderer::setupRemote(const string &server, int req,
   
   int linger = 0;
   int curveServer = 0;
+  try {
 #if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)
   _remotereq->setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
   _remotereq->setsockopt(ZMQ_CURVE_SERVER, &curveServer, sizeof(curveServer));
@@ -118,12 +119,20 @@ void Renderer::setupRemote(const string &server, int req,
   _remotereq->set(zmq::sockopt::curve_secretkey, privateKey);
   _remotereq->set(zmq::sockopt::curve_publickey, pubKey);
 #endif
+  }
+  catch (zmq::error_t &ex) {
+    // something failed!
+    cout << ex.what() << endl;
+    return false;
+  }
 
   string addr = "tcp://" + server + ":" + to_string(req);
   cout << "connecting to rmemote " << addr << endl;
   _remotereq->connect(addr);
 	cout << "Bound to ZMQ on remote" << endl;
 
+  return true;
+  
 }
 
 void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {

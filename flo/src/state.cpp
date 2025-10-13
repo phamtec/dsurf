@@ -11,6 +11,8 @@
 
 #include "state.hpp"
 
+using namespace flo;
+
 State::State() {
 }
 

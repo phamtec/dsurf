@@ -56,6 +56,9 @@ public:
     // get a string out of the dictionary with the property name.
     // This is chainable.
 
+  static std::string toString(const rfl::Generic &g);
+    // dump the generic out as JSON.
+    
 };
 
 #endif // H_generic

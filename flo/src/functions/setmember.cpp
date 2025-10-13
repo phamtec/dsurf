@@ -17,6 +17,8 @@
 
 #include <boost/log/trivial.hpp>
 
+using namespace flo;
+
 optional<rfl::Generic> SetMember::exec(Transform &transform, State *state, rfl::Generic &closure) {
 
   BOOST_LOG_TRIVIAL(trace) << "setmember " << *Generic::getString(closure);

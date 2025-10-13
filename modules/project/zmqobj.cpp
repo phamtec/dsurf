@@ -63,11 +63,11 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
   }
   auto connect = Generic::getObject(obj, "connect");    
   if (connect) {
-    auto o = _flo->evalObjMember(connect, "send");
+    auto o =  Generic::getObject(connect, "send");
     if (o) {
       _send = *o;
     }
-    o = _flo->evalObjMember(connect, "next");
+    o =  Generic::getObject(connect, "next");
     if (o) {
       _next = *o;
     }
@@ -130,8 +130,8 @@ void ProjectZMQObj::load(Renderer &renderer) {
 
   cout << "connecting to " << _remoteAddress << ":" << _remotePort << endl;
   
-  renderer.setupRemote(_remoteAddress, _remotePort, _remotePubKey, _privateKey, _publicKey);
+  if (renderer.setupRemote(_remoteAddress, _remotePort, _remotePubKey, _privateKey, _publicKey)) {
+    renderer.sendRemote(_send, _next);
+  }
   
-  renderer.sendRemote(_send, _next);
-
 }

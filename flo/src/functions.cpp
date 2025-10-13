@@ -20,8 +20,31 @@
 #include "functions/setmember.hpp"
 #include "functions/string.hpp"
 #include "functions/select.hpp"
+#include "generic.hpp"
+
+using namespace flo;
 
 Functions::Functions() {
+
+  loadFunctions();
+  
+}
+
+Functions::Functions(const std::vector<rfl::Generic> &library) {
+
+  loadFunctions();
+
+  for (auto i: library) {
+    auto obj = Generic::getObject(i);
+    auto name = Generic::getString(obj, "name");
+    auto transform = Generic::getObject(obj, "result");
+    if (name && transform) {
+      _library[*name] = *transform;
+    }
+  }  
+}
+
+void Functions::loadFunctions() {
 
   _functions["null"] = bind(&Null::create);
   _functions["if"] = bind(&If::create);
@@ -32,13 +55,20 @@ Functions::Functions() {
   _functions["setmember"] = bind(&SetMember::create);
   _functions["string"] = bind(&String::create);
   _functions["select"] = bind(&Select::create);
-  
+
 }
 
-bool Functions::has(const string &name) {
+bool Functions::hasNative(const string &name) {
   return _functions.count(name) == 1;
 }
+bool Functions::hasLibrary(const string &name) {
+  return _library.count(name) == 1;
+}
 
-fPtr Functions::get(const string &name) {
+fPtr Functions::getNative(const string &name) {
   return _functions[name]();
+}
+
+rfl::Object<rfl::Generic> Functions::getLibrary(const string &name) {
+  return _library[name];
 }

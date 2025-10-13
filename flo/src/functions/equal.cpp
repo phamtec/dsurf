@@ -16,6 +16,8 @@
 
 #include <boost/log/trivial.hpp>
 
+using namespace flo;
+
 optional<rfl::Generic> Equal::exec(Transform &transform, State *state, rfl::Generic &closure) {
 
   BOOST_LOG_TRIVIAL(trace) << "exec " << *Generic::getString(closure);

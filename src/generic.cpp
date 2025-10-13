@@ -148,3 +148,9 @@ optional<bool> Generic::getBool(const rfl::Generic &obj) {
   return b;
   
 }
+
+string Generic::toString(const rfl::Generic &g) {
+
+  return rfl::json::write(g, rfl::json::pretty);
+  
+}

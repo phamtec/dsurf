@@ -11,6 +11,8 @@
 
 #include "functions/dict.hpp"
 
+using namespace flo;
+
 optional<rfl::Generic> Dict::exec(Transform &transform, State *state, rfl::Generic &closure) {
   
   // the closure is a dictionary.

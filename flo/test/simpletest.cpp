@@ -24,6 +24,7 @@
 
 using namespace std;
 namespace fs = std::filesystem;
+using namespace flo;
 
 rfl::Generic loadJSON(const string &fn) {
 
@@ -61,9 +62,8 @@ BOOST_AUTO_TEST_CASE( noFuncTest )
 {
   cout << "=== noFuncTest ===" << endl;
   
-  auto none = loadJSON("../flo/test/null.json");
   Functions f;
-  Processor p(none, f);
+  Processor p(f);
 
   auto transform = loadJSON("../flo/test/bad-t.json");
   

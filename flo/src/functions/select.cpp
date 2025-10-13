@@ -17,6 +17,8 @@
 
 #include <boost/log/trivial.hpp>
 
+using namespace flo;
+
 optional<rfl::Generic> Select::exec(Transform &transform, State *state, rfl::Generic &closure) {
   
   BOOST_LOG_TRIVIAL(trace) << "select " << *Generic::getString(closure);

@@ -141,7 +141,7 @@ public:
   Resources resources;
   
   // remote server.
-  void setupRemote(const std::string &server, int req, 
+  bool setupRemote(const std::string &server, int req, 
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey);
   void sendRemote(const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next);
   void evalMsg(const rfl::Generic &msg);
