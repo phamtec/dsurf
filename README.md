@@ -42,7 +42,7 @@ sudo ./b2 install boost.stacktrace.from_exception=off
 #### Mac
 
 ```
-brew install boost@1.85.0
+brew install boost@1.85
 ```
 
 ### SDL
