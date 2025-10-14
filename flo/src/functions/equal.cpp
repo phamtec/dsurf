@@ -20,7 +20,7 @@ using namespace flo;
 
 optional<rfl::Generic> Equal::exec(Transform &transform, State *state, rfl::Generic &closure) {
 
-  BOOST_LOG_TRIVIAL(trace) << "exec " << *Generic::getString(closure);
+//  BOOST_LOG_TRIVIAL(trace) << "exec " << Generic::toString(closure);
 
   auto a = Generic::getVector(closure);
   if (!a) {

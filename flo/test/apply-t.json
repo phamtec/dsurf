@@ -1,0 +1,37 @@
+{
+  "library": [
+    {
+      "name": "pubKey",
+      "result": {
+        "string": "a key"
+      }
+    }
+  ],
+  "dictionary": {
+    "apply": [
+      [
+        [ 
+          "type", 
+          "online" 
+        ],
+        [ 
+          "build", 
+          "32999"
+        ],
+        [ 
+          "headerTitle", 
+          "DSurfer"
+        ],
+        [ 
+          "pubKey", 
+          {
+            "pubKey": {}
+          }
+        ]
+      ],
+      {
+        "dict": {}
+      }
+    ]
+  }
+}

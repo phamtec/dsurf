@@ -24,10 +24,13 @@ Transform::Transform(Functions &functions) : _functions(functions) {
 
 optional<rfl::Generic> Transform::exec(const rfl::Generic &closure, State *state) {
 
-  BOOST_LOG_TRIVIAL(trace) << "exec " << *Generic::getString(closure);
+//  BOOST_LOG_TRIVIAL(trace) << "exec " << Generic::toString(closure);
 
   auto obj = Generic::getObject(closure);
   if (obj) {
+  
+    BOOST_LOG_TRIVIAL(trace) << "found obj";
+    
     if (obj->size() == 0) {
       BOOST_LOG_TRIVIAL(trace) << "empty closure is terminal";
       return nullopt; // treat like a terminal.
@@ -62,6 +65,24 @@ optional<rfl::Generic> Transform::exec(const rfl::Generic &closure, State *state
     }
     
   }
+  else {
+    auto v = Generic::getVector(closure);
+    if (v) {
+      BOOST_LOG_TRIVIAL(trace) << "found vector";
+      vector<rfl::Generic> newv;
+      transform(v->begin(), v->end(), back_inserter(newv), [this, state](auto e) {
+        auto val = exec(e, state);
+        if (val) {
+//          BOOST_LOG_TRIVIAL(trace) << "val " << Generic::toString(*val);
+          return *val;
+        }
+        return rfl::Generic();
+      });
+      return newv;
+    }
+    return closure;
+  }
+  
   return nullopt;
   
 }

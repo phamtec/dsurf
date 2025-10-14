@@ -37,7 +37,7 @@ std::optional<std::string> Flo::evalStringMember(std::optional<rfl::Object<rfl::
 
 //  cout << Generic::toString(*transform) << endl;
   
-  Functions f;
+  Functions f(_library);
   Processor p(f);
 
   auto result = p.transform(*transform);
@@ -61,7 +61,7 @@ std::optional<long> Flo::evalNumMember(std::optional<rfl::Object<rfl::Generic> >
 
 //  cout << Generic::toString(*transform) << endl;
   
-  Functions f;
+  Functions f(_library);
   Processor p(f);
 
   auto result = p.transform(*transform);
@@ -86,7 +86,7 @@ std::optional<rfl::Object<rfl::Generic> > Flo::evalObjMember(std::optional<rfl::
 
 //  cout << Generic::toString(*transform) << endl;
   
-  Functions f;
+  Functions f(_library);
   Processor p(f);
 
   auto result = p.transform(*transform);

@@ -21,7 +21,7 @@ using namespace flo;
 
 optional<rfl::Generic> Select::exec(Transform &transform, State *state, rfl::Generic &closure) {
   
-  BOOST_LOG_TRIVIAL(trace) << "select " << *Generic::getString(closure);
+//  BOOST_LOG_TRIVIAL(trace) << "select " << Generic::toString(closure);
 
   auto a = Generic::getVector(closure);
   if (!a) {

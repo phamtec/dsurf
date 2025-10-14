@@ -121,6 +121,7 @@ set(FLOSRC
   flo/src/functions/setmember.cpp
   flo/src/functions/string.cpp
   flo/src/functions/true.cpp
+  flo/src/functions/apply.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC} ${FLOSRC})
@@ -261,3 +262,8 @@ add_executable(TestFloLib flo/test/libtest.cpp src/flo.cpp src/generic.cpp ${FLO
   target_link_libraries(TestFloLib reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_LOG_LIBRARY})
 
 add_test(TestFloLib TestFloLib)
+
+add_executable(TestFloApply flo/test/applytest.cpp src/flo.cpp src/generic.cpp ${FLOSRC})
+  target_link_libraries(TestFloApply reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_LOG_LIBRARY})
+
+add_test(TestFloApply TestFloApply)

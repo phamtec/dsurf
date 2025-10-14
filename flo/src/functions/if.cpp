@@ -20,7 +20,7 @@ using namespace flo;
 
 optional<rfl::Generic> If::exec(Transform &transform, State *state, rfl::Generic &closure) {
   
-  BOOST_LOG_TRIVIAL(trace) << "if " << *Generic::getString(closure);
+//  BOOST_LOG_TRIVIAL(trace) << "if " << Generic::toString(closure);
 
   auto obj = Generic::getObject(closure);
   if (!obj) {

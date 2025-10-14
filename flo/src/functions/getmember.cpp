@@ -21,7 +21,7 @@ using namespace flo;
 
 optional<rfl::Generic> GetMember::exec(Transform &transform, State *state, rfl::Generic &closure) {
 
-  BOOST_LOG_TRIVIAL(trace) << "getmember " << *Generic::getString(closure);
+//  BOOST_LOG_TRIVIAL(trace) << "getmember " << Generic::toString(closure);
 
   auto obj = Generic::getObject(closure);
   if (!obj) {
@@ -39,7 +39,12 @@ optional<rfl::Generic> GetMember::exec(Transform &transform, State *state, rfl::
     return nullopt;
   }
 	auto elem = state->getElem();
-	return elem[*name];
+	auto elemobj = Generic::getObject(elem);
+	if (!elemobj) {
+    BOOST_LOG_TRIVIAL(error) << "element is not object";
+    return nullopt;
+	}
+	return (*elemobj)[*name];
     
 }
 

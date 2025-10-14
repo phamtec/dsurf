@@ -63,11 +63,11 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
   }
   auto connect = Generic::getObject(obj, "connect");    
   if (connect) {
-    auto o =  Generic::getObject(connect, "send");
+    auto o = _flo->evalObjMember(connect, "send");
     if (o) {
       _send = *o;
     }
-    o =  Generic::getObject(connect, "next");
+    o =  _flo->evalObjMember(connect, "next");
     if (o) {
       _next = *o;
     }

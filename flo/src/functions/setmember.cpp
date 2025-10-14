@@ -21,7 +21,7 @@ using namespace flo;
 
 optional<rfl::Generic> SetMember::exec(Transform &transform, State *state, rfl::Generic &closure) {
 
-  BOOST_LOG_TRIVIAL(trace) << "setmember " << *Generic::getString(closure);
+//  BOOST_LOG_TRIVIAL(trace) << "setmember " << Generic::toString(closure);
 
   auto obj = Generic::getObject(closure);
   if (!obj) {
@@ -44,15 +44,19 @@ optional<rfl::Generic> SetMember::exec(Transform &transform, State *state, rfl::
     return nullopt;
   }
 	auto elem = state->getElem();
+	auto elemobj = Generic::getObject(elem);
+	if (!elemobj) {
+    BOOST_LOG_TRIVIAL(error) << "element is not object";
+    return nullopt;
+	}
   auto value = transform.exec(*v, state);
   if (value) {
-    elem[*name] = *value;
+    (*elemobj)[*name] = *value;
+    return *elemobj;
   }
-  else {
-    cerr << "not sure how to erase an element in Object" << endl;
-  }
-	
-  return elem;
+
+  BOOST_LOG_TRIVIAL(error) << "not sure how to erase an element in Object";
+  return nullopt;
     
 }
 

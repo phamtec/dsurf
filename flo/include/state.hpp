@@ -24,13 +24,24 @@ public:
   State();
   State(const State &state);
   
-  void setElem(rfl::Object<rfl::Generic> &elem);
+  void setElem(const rfl::Generic &elem);
+  void clearElem();
   bool hasElem() const;
-  const rfl::Object<rfl::Generic> getElem() const;
+  const rfl::Generic getElem() const;
   
+  void setColl(const std::vector<rfl::Generic> &coll);
+  void setColl(const rfl::Object<rfl::Generic> &coll);
+  void clearColl();
+  bool hasColl() const;
+  bool hasObj() const;
+  const std::vector<rfl::Generic> getColl() const;
+  const rfl::Object<rfl::Generic> getObj() const;
+
 private:
   
-  optional<rfl::Object<rfl::Generic>> _elem;
+  optional<rfl::Generic> _elem;
+  optional<std::vector<rfl::Generic> > _coll;
+  optional<rfl::Object<rfl::Generic> > _obj;
   
 };
 

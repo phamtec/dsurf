@@ -20,10 +20,16 @@ using namespace flo;
 
 optional<rfl::Generic> String::exec(Transform &transform, State *state, rfl::Generic &closure) {
 
-  BOOST_LOG_TRIVIAL(trace) << "string " << *Generic::getString(closure);
+//  BOOST_LOG_TRIVIAL(trace) << "string " << Generic::toString(closure);
 
-  return closure;
-    
+  auto s = Generic::getString(closure);
+  if (!s) {
+    BOOST_LOG_TRIVIAL(error) << "closure is not string";
+    return nullopt;
+  }
+  
+  return *s;
+  
 }
 
 shared_ptr<Function> String::create() {
