@@ -42,7 +42,7 @@ sudo ./b2 install boost.stacktrace.from_exception=off
 #### Mac
 
 ```
-brew install boost@1.85.0
+brew install boost@1.85
 ```
 
 ### SDL
@@ -85,6 +85,26 @@ make
 sudo make install
 ```
 
+### CMake
+
+We need CMake 3.30.
+
+#### Mac
+```
+brew install cnake
+```
+#### Linux
+
+```
+sudo apt remove -y --purge --auto-remove cmake
+wget https://cmake.org/files/v3.30/cmake-3.30.5.tar.gz
+tar -xzvf cmake-3.30.5.tar.gz
+cd cmake-3.30.5
+./bootstrap
+make -j$(nproc)
+sudo make install
+```
+
 ### cpp-reflect
 
 #### from source
@@ -92,7 +112,7 @@ sudo make install
 ##### On the Mac
 
 ```
-brew install bison yaml-cpp
+brew install bison yaml-cpp pkg-config
 ```
 
 ##### on any platform
@@ -110,31 +130,15 @@ cd build
 sudo make install
 ```
 
-#### CMake
+### ZMQ
 
-We need CMake 3.30.
-
-### Linux
-
-```
-sudo apt remove -y --purge --auto-remove cmake
-wget https://cmake.org/files/v3.30/cmake-3.30.5.tar.gz
-tar -xzvf cmake-3.30.5.tar.gz
-cd cmake-3.30.5
-./bootstrap
-make -j$(nproc)
-sudo make install
-```
-
-#### ZMQ
-
-### Linux
+#### Linux
 
 ```
 sudo apt-get install cppzmq-dev
 ```
 
-### Mac
+#### Mac
 
 ```
 brew install zmq cppzmq
