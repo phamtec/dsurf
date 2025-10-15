@@ -22,6 +22,7 @@
 #include "texteditor.hpp"
 #include "hud.hpp"
 #include "changes.hpp"
+#include "flo.hpp"
 
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_events.h>
@@ -37,6 +38,7 @@ class SDL_Surface;
 class Rect;
 class SDL_Cursor;
 class Commandable;
+class Flo;
 
 class Renderer {
 
@@ -143,9 +145,11 @@ public:
   // remote server.
   bool setupRemote(const std::string &server, int req, 
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey);
-  void sendRemote(const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next);
+  void startRemote(std::unique_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next);
+  void sendRemote(const rfl::Object<rfl::Generic> &msg);
   void evalMsg(const rfl::Generic &msg);
-
+  void msgError(const std::string &err);
+  
 private:
   friend class TextEditor;
 
@@ -182,6 +186,7 @@ private:
   bool _adding;
   int _hudadding;
   rfl::Object<rfl::Generic> _next;
+  std::unique_ptr<Flo> _flo;
   
   bool processEvents();
   bool isDoubleClick();

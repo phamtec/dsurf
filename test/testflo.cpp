@@ -59,14 +59,16 @@ BOOST_AUTO_TEST_CASE( evalNumMember )
 }
 
 
-BOOST_AUTO_TEST_CASE( evalObjMember )
+BOOST_AUTO_TEST_CASE( evalObj )
 {
-  cout << "=== evalObjMember ===" << endl;
+  cout << "=== evalObj ===" << endl;
 
   Flo flo;
-  auto json = loadJSON("../test/obj-t.json");
-  auto obj = Generic::getObject(json);
-  auto o = flo.evalObjMember(obj, "test");
+  auto obj = loadJSON("../test/obj-t.json");
+  auto transform = Generic::getObject(obj);
+  BOOST_CHECK(transform);
+  rfl::Generic m;
+  auto o = flo.evalObj(m, *transform);
   BOOST_CHECK(o);
   auto xxx = Generic::getString(o, "xxx");
   BOOST_CHECK(xxx);

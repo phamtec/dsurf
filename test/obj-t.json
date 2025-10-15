@@ -1,7 +1,5 @@
 {
-    "test": {
-        "dict": {
-            "xxx": "yyy"
-        }
+    "dict": {
+        "xxx": "yyy"
     }
 }

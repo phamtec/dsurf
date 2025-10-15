@@ -40,7 +40,7 @@ optional<rfl::Generic> Transform::exec(const rfl::Generic &closure, State *state
     auto first = obj->begin();
     
     string name = get<0>(*first);
-    BOOST_LOG_TRIVIAL(trace) << "first " << name;
+    BOOST_LOG_TRIVIAL(trace) << name;
     
     if (_functions.hasNative(name)) {
     
@@ -90,6 +90,8 @@ optional<rfl::Generic> Transform::exec(const rfl::Generic &closure, State *state
 rfl::Generic Transform::error(const string &msg) const {
 
   BOOST_LOG_TRIVIAL(error) << msg;
-  return *rfl::json::read<rfl::Generic>("{\"error\":\"" + msg + "\"}");
+  rfl::Object<rfl::Generic> e;
+  e["error"] = msg;
+  return e;
   
 }

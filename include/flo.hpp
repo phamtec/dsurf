@@ -37,7 +37,7 @@ public:
   
   std::optional<std::string> evalStringMember(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name);
   std::optional<long> evalNumMember(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name);
-  std::optional<rfl::Object<rfl::Generic> > evalObjMember(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name);
+  std::optional<rfl::Object<rfl::Generic> > evalObj(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform);
 
 private:
   

@@ -21,6 +21,8 @@
 #include "functions/string.hpp"
 #include "functions/select.hpp"
 #include "functions/apply.hpp"
+#include "functions/cur.hpp"
+#include "functions/pass.hpp"
 #include "generic.hpp"
 
 using namespace flo;
@@ -57,6 +59,8 @@ void Functions::loadFunctions() {
   _functions["string"] = bind(&String::create);
   _functions["select"] = bind(&Select::create);
   _functions["apply"] = bind(&Apply::create);
+  _functions["cur"] = bind(&Cur::create);
+  _functions["pass"] = bind(&Pass::create);
 
 }
 

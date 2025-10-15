@@ -431,5 +431,11 @@ Walk a JSON file building a simple layout.
 - We need F(lo)
 - Start in on that.
 
+### 15-Oct-2025
+
+- Built a simple protocol handler that can be coded in F(lo). Documentatioj to come
+soon.
+
+
 
 

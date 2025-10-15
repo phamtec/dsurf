@@ -30,18 +30,14 @@ public:
   const rfl::Generic getElem() const;
   
   void setColl(const std::vector<rfl::Generic> &coll);
-  void setColl(const rfl::Object<rfl::Generic> &coll);
   void clearColl();
   bool hasColl() const;
-  bool hasObj() const;
   const std::vector<rfl::Generic> getColl() const;
-  const rfl::Object<rfl::Generic> getObj() const;
 
 private:
   
   optional<rfl::Generic> _elem;
   optional<std::vector<rfl::Generic> > _coll;
-  optional<rfl::Object<rfl::Generic> > _obj;
   
 };
 

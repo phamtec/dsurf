@@ -1,0 +1,12 @@
+{
+    "apply": [
+        {
+            "cur": {}
+        },
+        {
+            "getmember": {
+                "name": "message"
+            }
+        }
+    ]
+}

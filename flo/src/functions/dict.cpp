@@ -25,11 +25,7 @@ optional<rfl::Generic> Dict::exec(Transform &transform, State *state, rfl::Gener
   if (obj) {
     if (obj->size() == 0) {
       BOOST_LOG_TRIVIAL(trace) << "empty closure";
-      if (state->hasObj()) {
-        BOOST_LOG_TRIVIAL(trace) << "getting the states object";
-        return state->getObj();
-      }
-      else if (state->hasColl()) {
+      if (state->hasColl()) {
         BOOST_LOG_TRIVIAL(trace) << "state is a vector";
         // we convert name value pairs in the vector to dictionary entries.
         auto v = state->getColl();

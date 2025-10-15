@@ -122,6 +122,8 @@ set(FLOSRC
   flo/src/functions/string.cpp
   flo/src/functions/true.cpp
   flo/src/functions/apply.cpp
+  flo/src/functions/cur.cpp
+  flo/src/functions/pass.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC} ${FLOSRC})

@@ -22,7 +22,7 @@
 using namespace std;
 using namespace flo;
 
-std::optional<std::string> Flo::evalStringMember(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name) {
+optional<string> Flo::evalStringMember(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
 
   if (!obj) {
     return nullopt;
@@ -48,7 +48,7 @@ std::optional<std::string> Flo::evalStringMember(std::optional<rfl::Object<rfl::
   
 }
 
-std::optional<long> Flo::evalNumMember(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name) {
+optional<long> Flo::evalNumMember(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
 
   if (!obj) {
     return nullopt;
@@ -73,23 +73,12 @@ std::optional<long> Flo::evalNumMember(std::optional<rfl::Object<rfl::Generic> >
   
 }
 
-std::optional<rfl::Object<rfl::Generic> > Flo::evalObjMember(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name) {
+optional<rfl::Object<rfl::Generic> > Flo::evalObj(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform) {
 
-  if (!obj) {
-    return nullopt;
-  }
-  
-  auto transform = obj->get(name);
-  if (!transform) {
-    return nullopt;
-  }
-
-//  cout << Generic::toString(*transform) << endl;
-  
   Functions f(_library);
-  Processor p(f);
+  Processor p(obj, f);
 
-  auto result = p.transform(*transform);
+  auto result = p.transform(transform);
   if (!result) {
     return nullopt;
   }

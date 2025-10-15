@@ -11,6 +11,10 @@
 
 #include "state.hpp"
 
+#include "generic.hpp"
+
+#include <boost/log/trivial.hpp>
+
 using namespace flo;
 
 State::State() {
@@ -22,10 +26,16 @@ State::State(const State &state) {
 }
 
 void State::setElem(const rfl::Generic &elem) {
+
+//  BOOST_LOG_TRIVIAL(trace) << "setElem " << Generic::toString(elem);
+
   _elem = elem;
 }
 
 void State::clearElem() {
+
+//  BOOST_LOG_TRIVIAL(trace) << "clearElem";
+  
   _elem = nullopt;
 }
 
@@ -38,12 +48,10 @@ const rfl::Generic State::getElem() const {
 }
 
 void State::setColl(const std::vector<rfl::Generic> &coll) {
-  _obj = nullopt;
   _coll = coll;
 }
 
 void State::clearColl() {
-  _obj = nullopt;
   _coll = nullopt;
 }
 
@@ -53,17 +61,4 @@ bool State::hasColl() const {
 
 const vector<rfl::Generic> State::getColl() const {
   return *_coll;
-}
-
-void State::setColl(const rfl::Object<rfl::Generic> &obj) {
-  _obj = obj;
-  _coll = nullopt;
-}
-
-bool State::hasObj() const {
-  return _obj != nullopt;
-}
-
-const rfl::Object<rfl::Generic> State::getObj() const {
-  return *_obj;
 }

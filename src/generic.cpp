@@ -16,7 +16,7 @@
 
 using namespace std;
 
-std::optional<std::string> Generic::getString(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name) {
+optional<string> Generic::getString(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
 
   if (!obj) {
     return nullopt;
@@ -31,7 +31,22 @@ std::optional<std::string> Generic::getString(std::optional<rfl::Object<rfl::Gen
   
 }
 
-std::optional<rfl::Object<rfl::Generic> > Generic::getObject(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name) {
+optional<bool> Generic::getBool(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
+
+  if (!obj) {
+    return nullopt;
+  }
+  
+  auto prop = obj->get(name);
+  if (!prop) {
+    return nullopt;
+  }
+  
+  return getBool(*prop);
+  
+}
+
+optional<rfl::Object<rfl::Generic> > Generic::getObject(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
 
   if (!obj) {
     return nullopt;
@@ -46,7 +61,7 @@ std::optional<rfl::Object<rfl::Generic> > Generic::getObject(std::optional<rfl::
   
 }
 
-std::optional<rfl::Generic> Generic::getGeneric(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name) {
+optional<rfl::Generic> Generic::getGeneric(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
 
   if (!obj) {
     return nullopt;
@@ -61,7 +76,7 @@ std::optional<rfl::Generic> Generic::getGeneric(std::optional<rfl::Object<rfl::G
   
 }
 
-std::optional<vector<rfl::Generic> > Generic::getVector(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name) {
+optional<vector<rfl::Generic> > Generic::getVector(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
 
   if (!obj) {
     return nullopt;

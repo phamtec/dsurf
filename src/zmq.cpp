@@ -13,6 +13,7 @@
 
 #include "builder.hpp"
 #include "generic.hpp"
+#include "flo.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl.hpp>
@@ -47,12 +48,10 @@ void Renderer::processMsg() {
       string m((const char *)req.data(), req.size());
       auto result = rfl::json::read<rfl::Generic>(m);
       if (!result) {
-        cerr << "ZMQ error: "<< ("unknown result " + m) << endl;
-        _remotereq->close();
-        _remotereq.reset();
+        msgError("unknown result " + m);
         return;
       }
-      evalMsg(result);
+      evalMsg(*result);
       return;
     }
     return;
@@ -70,17 +69,50 @@ void Renderer::processMsg() {
 
 }
 
-void Renderer::evalMsg(const rfl::Generic &msg) {
-
-  auto m = Generic::getString(msg);
-  if (m) {
-    cerr << "ZMQ error: "<< "unknown reply " << *m << endl;
-  }
-  else {
-    cerr << "ZMQ error: unknown" << endl;
-  }
+void Renderer::msgError(const string &err) {
+  cerr << "ZMQ error: "<< err << endl;
   _remotereq->close();
   _remotereq.reset();
+}
+
+void Renderer::evalMsg(const rfl::Generic &msg) {
+  
+  auto close = Generic::getBool(_next, "close");
+  if (close && *close) {
+    cout << "closing" << endl;
+    _remotereq->close();
+    _remotereq.reset();
+    return;
+  }
+  
+  auto cmsg = _flo->evalObj(msg, _next);
+  if (!cmsg) {
+    msgError("unknown reply " + Generic::toString(msg));
+    return;
+  }
+
+  auto ignore = Generic::getBool(cmsg, "ignore");
+  if (ignore && *ignore) {
+    cout << "ignoring" << endl;
+    return;
+  }
+  
+  auto err = Generic::getString(cmsg, "error");
+  if (err) {
+    msgError(*err);
+    return;
+  }
+  
+  auto send = Generic::getObject(cmsg, "send");
+  auto next = Generic::getObject(cmsg, "next");
+  if (!send || !next) {
+    msgError("missing send or next");
+    return;
+  }
+  
+  sendRemote(*send);
+  
+  _next = *next;
 
 }
 
@@ -135,8 +167,8 @@ bool Renderer::setupRemote(const string &server, int req,
   
 }
 
-void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
-  
+void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg) {
+
   string r(rfl::json::write(msg)); 
   cout << "sending " << r << endl;
   zmq::message_t req(r.length());
@@ -146,6 +178,20 @@ void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg, const rfl::Objec
 #else
   _remotereq->send(req, zmq::send_flags::none);
 #endif
+
+}
+
+void Renderer::startRemote(std::unique_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
+  
+  _flo = std::move(flo);
+  
+  // no message has come in yet.
+  rfl::Generic m;
+  auto cmsg = _flo->evalObj(m, msg);
+  if (!cmsg) {
+    return;
+  }
+  sendRemote(*cmsg);
 
   // what to do next!
   _next = next;

@@ -48,6 +48,10 @@ public:
     // get a string out of the dictionary with the property name.
     // This is chainable.
     
+  static std::optional<bool> getBool(std::optional<rfl::Object<rfl::Generic> > dict, const std::string &name);
+    // get a bool out of the dictionary with the property name.
+    // This is chainable.
+    
   static std::optional<long> getNum(std::optional<rfl::Object<rfl::Generic> > dict, const std::string &name);
     // get a long out of the dictionary with the property name.
     // This is chainable.

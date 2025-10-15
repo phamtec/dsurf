@@ -71,7 +71,9 @@ bool Renderer::setupRemote(const string &server, int req,
   const string &remotePubKey, const string &privateKey, const string &pubKey) {
   return false;
 }
-void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
+void Renderer::startRemote(std::unique_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
+}
+void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg) {
 }
 
 // HUD

@@ -21,6 +21,14 @@ using namespace flo;
 
 optional<rfl::Generic> Apply::exec(Transform &transform, State *state, rfl::Generic &closure) {
   
+  State localState(*state);
+  
+  return apply(transform, &localState, closure);
+   
+}
+
+optional<rfl::Generic> Apply::apply(Transform &transform, State *state, rfl::Generic &closure) {
+
   auto v = Generic::getVector(closure);
   if (!v) {
     BOOST_LOG_TRIVIAL(error) << "closure not vector";
@@ -33,27 +41,18 @@ optional<rfl::Generic> Apply::exec(Transform &transform, State *state, rfl::Gene
     auto val = transform.exec(b, state);
     if (val) {
 //      BOOST_LOG_TRIVIAL(trace) << Generic::toString(*val);
-      auto obj = Generic::getObject(*val);
-      if (obj) {
-        BOOST_LOG_TRIVIAL(trace) << "found obj (2)";
-        state->setColl(*obj);
+      auto v2 = Generic::getVector(*val);
+      if (v2) {
+        BOOST_LOG_TRIVIAL(trace) << "found vector (2)";
+        state->setColl(*v2);
         state->clearElem();
         arity = 2;
       }
       else {
-        auto v2 = Generic::getVector(*val);
-        if (v2) {
-          BOOST_LOG_TRIVIAL(trace) << "found vector (2)";
-          state->setColl(*v2);
-          state->clearElem();
-          arity = 2;
-        }
-        else {
-          BOOST_LOG_TRIVIAL(trace) << "found elem (1)";
-          state->setElem(*val);
-          state->clearColl();
-          arity = 1;
-        }
+        BOOST_LOG_TRIVIAL(trace) << "found elem (1)";
+        state->setElem(*val);
+        state->clearColl();
+        arity = 1;
       }
     }
   }
@@ -61,18 +60,13 @@ optional<rfl::Generic> Apply::exec(Transform &transform, State *state, rfl::Gene
   
   switch (arity) {
     case 2:
-      if (state->hasColl()) {
-        return state->getColl();
-      }
-      else {
-        return state->getObj();
-      }
+      return state->getColl();
     case 1:
       return state->getElem();
   }
   
   return nullopt;
-  
+
 }
 
 shared_ptr<Function> Apply::create() {
