@@ -20,6 +20,20 @@
 
 using namespace std;
 
+Text::Text(const std::wstring &str, const SDL_Color &fgcolor, std::optional<SDL_Color> bgcolor) {
+  
+  set(str, fgcolor, bgcolor);
+
+}
+
+void Text::set(const std::wstring &str, const SDL_Color &fgcolor, std::optional<SDL_Color> bgcolor) {
+  _str = str;
+  _fgcolor = fgcolor;
+  if (bgcolor) {
+    _bgcolor = *bgcolor;
+  }
+}
+
 Text::~Text() {
   if (_texture) {
     SDL_DestroyTexture(_texture);

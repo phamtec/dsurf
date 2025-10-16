@@ -9,6 +9,73 @@
       {
         "name": "Dictionary JSON",
         "file": "dict.json"
+      },
+      {
+        "name": "ZMQ Access",
+        "zmq": {
+          "library": [
+            {
+              "name": "msgType",
+              "result": {
+                "apply": [
+                  {
+                    "cur": {}
+                  },
+                  {
+                    "getmember": {
+                      "name": "type"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "remote": {
+            "address": "localhost",
+            "port": 1234
+          },
+          "local": {
+          },
+          "send": {
+            "dict": {
+              "type": "online"
+            }
+          },
+          "next": {
+            "select": [
+              {
+                "if": {
+                  "p": {
+                    "equal": [
+                      {
+                        "msgType": {}
+                      },
+                      {
+                        "string": "upstream"
+                      }
+                    ]
+                  },
+                  "then": {
+                    "send": {
+                      "dict": {
+                        "type": "heartbeat"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "scenarios": [
+            {
+              "name": "Simple",
+              "context": {
+                "type": "upstream"
+              },
+              "path": "/connect/next"
+            }
+          ]
+        }
       }
     ]
   }

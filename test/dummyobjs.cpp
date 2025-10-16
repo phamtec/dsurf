@@ -71,7 +71,7 @@ bool Renderer::setupRemote(const string &server, int req,
   const string &remotePubKey, const string &privateKey, const string &pubKey) {
   return false;
 }
-void Renderer::startRemote(std::unique_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
+void Renderer::startRemote(std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
 }
 void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg) {
 }
@@ -92,13 +92,7 @@ void HUD::setMode(int mode) {
 Shortcut::Shortcut(const wstring &key, const wstring &text, optional<HUDFlags> flags) {
 }
 
-// Other
-Text::~Text() {
-}
-void Text::build(Renderer &renderer) {
-}
-void Text::render(Renderer &renderer, const Point &origin, bool offs) {
-}
+// Corner
 void Corner::render(Renderer &renderer, const Point &origin) {
 }
 

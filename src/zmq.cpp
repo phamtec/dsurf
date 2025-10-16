@@ -155,6 +155,7 @@ bool Renderer::setupRemote(const string &server, int req,
   catch (zmq::error_t &ex) {
     // something failed!
     cout << ex.what() << endl;
+    _remotereq.reset();
     return false;
   }
 
@@ -164,6 +165,23 @@ bool Renderer::setupRemote(const string &server, int req,
 	cout << "Bound to ZMQ on remote" << endl;
 
   return true;
+  
+}
+
+void Renderer::startRemote(std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
+  
+  _flo = flo;
+  
+  // no message has come in yet.
+  rfl::Generic m;
+  auto cmsg = _flo->evalObj(m, msg);
+  if (!cmsg) {
+    return;
+  }
+  sendRemote(*cmsg);
+
+  // what to do next!
+  _next = next;
   
 }
 
@@ -181,20 +199,4 @@ void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg) {
 
 }
 
-void Renderer::startRemote(std::unique_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
-  
-  _flo = std::move(flo);
-  
-  // no message has come in yet.
-  rfl::Generic m;
-  auto cmsg = _flo->evalObj(m, msg);
-  if (!cmsg) {
-    return;
-  }
-  sendRemote(*cmsg);
-
-  // what to do next!
-  _next = next;
-  
-}
 

@@ -16,6 +16,7 @@
 #include "builder.hpp"
 #include "flo.hpp"
 #include "generic.hpp"
+#include "sizes.hpp"
 
 using namespace std;
 
@@ -23,7 +24,18 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
   _parent(0), _hudobj(-1) {
 
   _name.set(Unicode::convert(name), Colours::white);
-  
+
+  rfl::Object<rfl::Generic> empty;
+
+  _subheadings.push_back(make_unique<Text>(L"Scenarios", Colours::white));
+  auto v =  Generic::getVector(obj, "scenarios");
+  if (v) {
+    _source.push_back(*v);
+  }
+  else {
+    _source.push_back(empty);
+  }
+
   auto library = Generic::getVector(obj, "library");    
   if (library) {
     _flo.reset(new Flo(*library));
@@ -31,8 +43,11 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
   else {
     _flo.reset(new Flo());
   }
+  
+  _subheadings.push_back(make_unique<Text>(L"Remote", Colours::white));
   auto remote = Generic::getObject(obj, "remote");
   if (remote) {
+    _source.push_back(*remote);
     auto s = _flo->evalStringMember(remote, "address");
     if (s) {
       _remoteAddress = *s;
@@ -46,8 +61,14 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
       _remotePort = *i;
     }
   }
+  else {
+    _source.push_back(empty);
+  }
+  
+  _subheadings.push_back(make_unique<Text>(L"Local", Colours::white));
   auto local = Generic::getObject(obj, "local");    
   if (local) {
+    _source.push_back(*local);
     auto s = _flo->evalStringMember(local, "uuid");
     if (s) {
       _uuid = *s;
@@ -61,22 +82,56 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
       _publicKey = *s;
     }
   }
-  auto connect = Generic::getObject(obj, "connect");    
-  if (connect) {
-    auto o = Generic::getObject(connect, "send");
-    if (o) {
-      _send = *o;
-    }
-    o =  Generic::getObject(connect, "next");
-    if (o) {
-      _next = *o;
-    }
+  else {
+    _source.push_back(empty);
   }
+  
+  _subheadings.push_back(make_unique<Text>(L"Send", Colours::white));
+  auto o = Generic::getObject(obj, "send");
+  if (o) {
+    _source.push_back(*o);
+    _send = *o;
+  }
+  else {
+    _source.push_back(empty);
+  }
+  
+  _subheadings.push_back(make_unique<Text>(L"Next", Colours::white));
+  o =  Generic::getObject(obj, "next");
+  if (o) {
+    _source.push_back(*o);
+    _next = *o;
+  }
+  else {
+    _source.push_back(empty);
+  }
+
+  _subheadings.push_back(make_unique<Text>(L"Library", Colours::white));
+  if (library) {
+    _source.push_back(*library);
+  }
+  else {
+    _source.push_back(empty);
+  }
+  
 }
 
 Size ProjectZMQObj::layout() {
 
   _size = _name.size();
+  if (_editing) {
+    _size.h += _size.h * _subheadings.size();
+    for_each(_code.begin(), _code.end(), [this](auto& e) {
+      auto s = e->layout();
+      _size.h += s.h + (Sizes::text_padding * 2);
+      if (s.w > _size.w) {
+        _size.w = s.w;
+      }
+    });
+//    _size.w ;
+    _size.h += 50;
+  }
+  
   return _size;
   
 }
@@ -84,6 +139,17 @@ Size ProjectZMQObj::layout() {
 void ProjectZMQObj::build(Renderer &renderer) {
 
   _name.build(renderer);
+  for_each(_subheadings.begin(), _subheadings.end(), [&renderer](auto& e) {
+    e->build(renderer);
+  });
+
+}
+
+void ProjectZMQObj::destroy(Renderer &renderer) {
+
+  for_each(_code.begin(), _code.end(), [&renderer](auto& e) {
+    e->destroy(renderer);
+  });
 
 }
 
@@ -91,7 +157,21 @@ void ProjectZMQObj::render(Renderer &renderer, const Point &origin) {
 
   _name.render(renderer, origin);
 
-//  renderer.renderRect(_r);
+  if (_editing) {
+    float h = _name.size().h;
+    Point loc = origin + Size(Sizes::group_indent, h);
+    for (int i=0; i<_subheadings.size(); i++) {
+      _subheadings[i]->render(renderer, loc);
+      loc.y += h;
+      Size s = _code[i]->size();
+      s.w = _size.w - Sizes::group_indent;
+      s.h += Sizes::text_padding * 2;
+      renderer.renderFilledRect(Rect(loc, s), Colours::white);
+      loc.y += Sizes::text_padding;
+      _code[i]->render(renderer, loc + Size(Sizes::text_padding, 0));
+      loc.y += _code[i]->size().h + Sizes::text_padding;
+    }
+  }
 
 }
 
@@ -107,6 +187,23 @@ void ProjectZMQObj::setMode(Renderer &renderer, HUD *hud) {
   
 }
 
+void ProjectZMQObj::createObjects(Renderer &renderer) {
+
+  // build all the source into elements.
+  transform(_source.begin(), _source.end(), back_inserter(_code), [this](auto e) {
+    return unique_ptr<Element>(Builder::walk(this, e));
+  });
+  
+  // build all the code we just made.
+  for_each(_code.begin(), _code.end(), [&renderer](auto& e) {
+    e->build(renderer);
+  });
+  
+  // layout the screen.
+  root()->layout();
+
+}
+
 void ProjectZMQObj::processKey(Renderer &renderer, SDL_Keycode code) {
 
   if (renderer.processGlobalKey(code)) {
@@ -116,6 +213,11 @@ void ProjectZMQObj::processKey(Renderer &renderer, SDL_Keycode code) {
   switch (code) {      
     case SDLK_C:
       load(renderer);
+      break;
+
+    case SDLK_E:
+      _editing = true;
+      createObjects(renderer);
       break;
   }
 

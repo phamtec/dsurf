@@ -30,14 +30,10 @@ class Text {
 
 public:
   Text(): _str(L"??"), _fgcolor(Colours::black), _texture(0) {}
-  Text(const std::wstring &str, const SDL_Color &fgcolor, const SDL_Color &bgcolor=Colours::white): 
-    _str(str), _fgcolor(fgcolor), _bgcolor(bgcolor), _texture(0) {}
+  Text(const std::wstring &str, const SDL_Color &fgcolor, std::optional<SDL_Color> bgcolor=std::nullopt);
   ~Text();
 
-  void set(const std::wstring &str, const SDL_Color &fgcolor) {
-    _str = str;
-    _fgcolor = fgcolor;
-  }
+  void set(const std::wstring &str, const SDL_Color &fgcolor, std::optional<SDL_Color> bgcolor=std::nullopt);
   
   void build(Renderer &renderer);
     // build the texture ready to render.

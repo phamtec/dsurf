@@ -436,6 +436,11 @@ Walk a JSON file building a simple layout.
 - Built a simple protocol handler that can be coded in F(lo). Documentatioj to come
 soon.
 
+### 16-Oct-2025
+
+- Add testability (scenarios) to projects for F(lo) development.
+
+
 
 
 

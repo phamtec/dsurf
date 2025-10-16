@@ -145,7 +145,7 @@ public:
   // remote server.
   bool setupRemote(const std::string &server, int req, 
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey);
-  void startRemote(std::unique_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next);
+  void startRemote(std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next);
   void sendRemote(const rfl::Object<rfl::Generic> &msg);
   void evalMsg(const rfl::Generic &msg);
   void msgError(const std::string &err);
@@ -186,7 +186,7 @@ private:
   bool _adding;
   int _hudadding;
   rfl::Object<rfl::Generic> _next;
-  std::unique_ptr<Flo> _flo;
+  std::shared_ptr<Flo> _flo;
   
   bool processEvents();
   bool isDoubleClick();
