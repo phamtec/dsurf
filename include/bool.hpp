@@ -34,7 +34,7 @@ public:
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
   virtual void build(Renderer &renderer);
-  virtual Size layout();
+  virtual void layout();
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Size size() { return _size; }
 

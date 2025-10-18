@@ -40,7 +40,7 @@ public:
   virtual void setParent(Element *parent);
   virtual Element *getParent() { return nullptr; }
   virtual void build(Renderer &renderer);
-  virtual Size layout();
+  virtual void layout();
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(Element *elem);

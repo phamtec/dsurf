@@ -31,21 +31,24 @@ void ProjectRoot::setParent(Element *parent) {
   cerr << "setParent on ProjectRoot!" << endl;
 }
 
-Size ProjectRoot::layout() {
+void ProjectRoot::layout() {
 
+  for_each(_objs.begin(), _objs.end(), [](auto& e) {
+    e->layout();
+  });
+  
+  // TBD: Use layout objects.
   _size = _name.size();
   _size.w += Sizes::text_padding;
   for_each(_objs.begin(), _objs.end(), [this](auto& e) {
   
-    Size s = e->layout();
+    Size s = e->size();
     s.w += Sizes::group_indent;
     _size.h += s.h + Sizes::text_padding;
     if (_size.w < s.w) {
       _size.w = s.w;
     }
   });
-  
-  return _size;
   
 }
 

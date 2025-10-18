@@ -35,16 +35,29 @@ string Property::describe() {
   
 }
 
-Size Property::layout() {
+RectList Property::calcLayout() {
 
-  _size = _obj->layout();
-  
+  RectList layout;
   Size nsize = _name.size();
-  _size.w += nsize.w + Sizes::name_var_padding;
+  layout.push_back(Rect(Point(), nsize));
+  auto osize = _obj->size();
   if (_container) {
-    _size.h += nsize.h + Sizes::thickness;
+    // containers draw UNDER the name
+    layout.push_back(Rect(Point(0, nsize.h + Sizes::thickness), osize));
   }
-  return _size;
+  else {
+    layout.push_back(Rect(Point(nsize.w + Sizes::name_var_padding, 0), osize));
+  }
+  
+  return layout;
+  
+}
+
+void Property::layout() {
+
+  _obj->layout();
+  _layout = calcLayout();
+  _size = Layout::size(_layout);
 
 }
 
@@ -63,14 +76,10 @@ void Property::destroy(Renderer &renderer) {
 
 void Property::render(Renderer &renderer, const Point &origin) {
 
-  if (_container) {
-    _name.render(renderer, origin + Point(0, -Sizes::thickness));
-    _obj->render(renderer, origin + Point(0, _name.size().h));
-  }
-  else {
-    _name.render(renderer, origin);
-    _obj->render(renderer, origin + Size(_name.size().w + Sizes::name_var_padding, 0));
-  }
+  auto i = _layout.begin();
+  _name.render(renderer, origin + i->origin);
+  i++;
+  _obj->render(renderer, origin + i->origin);
   
 //  renderer.renderRect(_r);
 
@@ -95,10 +104,11 @@ rfl::Generic Property::getGeneric() {
 
 Element *Property::hitTest(const Point &origin, const Point &p) { 
 
-  Size nsize = _name.size();
-  Point o = origin + (_container ? Size(0, nsize.h) : Size(nsize.w + Sizes::name_var_padding, 0));
+  auto i = _layout.begin();
+  // skip the name.
+  i++;
 
-  Element *hit = _obj->hitTest(o, p);
+  Element *hit = _obj->hitTest(origin + i->origin, p);
   if (hit) {
     return hit;
   }
@@ -109,18 +119,22 @@ Element *Property::hitTest(const Point &origin, const Point &p) {
 
 Point Property::localOrigin(Element *elem) {
 
-  Size nsize = _name.size();
-  if (_container) {
-    return Point(0, nsize.h);
+  if (elem != _obj.get()) {
+    cerr << "obj not this property!" << endl;
+    return Point();
   }
-  
-  return Point(nsize.w + Sizes::name_var_padding, 0);
+
+  auto i = _layout.begin();
+  // skip the name.
+  i++;
+
+  return Point(i->origin);  
   
 }
 
 void Property::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  renderer.processTextKey(this, origin() + Size(0, _container ? -Sizes::thickness : 0), _name.size(), code);
+  renderer.processTextKey(this, origin(), _name.size(), code);
   
 }
 

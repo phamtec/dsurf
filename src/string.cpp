@@ -34,10 +34,9 @@ std::string String::describe() {
   
 }
 
-Size String::layout() {
+void String::layout() {
 
   _size = _value.size();
-  return _size;
   
 }
 

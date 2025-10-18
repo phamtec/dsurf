@@ -28,7 +28,7 @@ public:
   
   // Element
   virtual string describe() { return _name; }
-  virtual Size layout() { return Size(); }
+  virtual void layout() {}
   virtual void build(Renderer &renderer) {}
   virtual void render(Renderer &renderer, const Point &origin) {}
   virtual Size size() { return Size(); }

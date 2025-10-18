@@ -33,9 +33,10 @@ public:
   virtual Element *getParent() override { return _parent; }
   virtual void build(Renderer &renderer) override;
   virtual void destroy(Renderer &renderer) override;
-  virtual Size layout() override;
+  virtual void layout() override;
   virtual void render(Renderer &renderer, const Point &origin) override;
   virtual Size size() override { return _size; }
+  virtual RectList calcLayout() override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
@@ -52,6 +53,7 @@ protected:
   std::vector<std::unique_ptr<Text> > _subheadings;
   std::vector<std::unique_ptr<Element> > _code;
   std::vector<rfl::Generic > _source;
+  RectList _layout;
   
   std::string _remoteAddress;
   int _remotePort;

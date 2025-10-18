@@ -13,7 +13,6 @@
 
 #include "list.hpp"
 #include "listelem.hpp"
-#include "dict.hpp"
 #include "modules.hpp"
 
 void Renderer::initTypes() {
@@ -21,7 +20,6 @@ void Renderer::initTypes() {
   // register for types that deal with their own HUD
   List::registerHUDModes(_hud.get());
   ListElem::registerHUDModes(_hud.get());
-  Dict::registerHUDModes(_hud.get());
   Modules::registerHUDModes(*this, _hud.get());
 
 }

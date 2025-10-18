@@ -23,10 +23,9 @@ ProjectFileObj::ProjectFileObj(const std::string &name, const std::string &filen
   
 }
 
-Size ProjectFileObj::layout() {
+void ProjectFileObj::layout() {
 
   _size = _name.size();
-  return _size;
   
 }
 

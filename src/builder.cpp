@@ -11,7 +11,6 @@
 
 #include "builder.hpp"
 
-#include "dict.hpp"
 #include "list.hpp"
 #include "listelem.hpp"
 #include "string.hpp"
@@ -101,12 +100,13 @@ Element *Builder::castGeneric(const rfl::Generic &g)  {
   
     using Type = std::decay_t<decltype(field)>;
     if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
-      auto *l = new List();
+      auto *l = new List(false);
       walk(l, field, l);
       obj = l;
     }
     else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
-      auto *d = new Dict();
+      auto *d = new List(true);
+//      auto *d = new Dict();
       walk(d, field, d);
       obj = d;
     }

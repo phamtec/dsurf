@@ -39,7 +39,7 @@ public:
   
   // Element
   virtual void build(Renderer &renderer);
-  virtual Size layout() { return _size; };
+  virtual void layout() {};
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Size size() { return Size(); }
   

@@ -440,6 +440,13 @@ soon.
 
 - Add testability (scenarios) to projects for F(lo) development.
 
+### 18-Oct-2025
+
+- redo the way layout is done to make common code
+- merge List and Dict to just have List. They were practically identical.
+
+
+
 
 
 

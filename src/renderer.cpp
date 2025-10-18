@@ -14,7 +14,6 @@
 #include "spatial.hpp"
 #include "builder.hpp"
 #include "colours.hpp"
-#include "dict.hpp"
 #include "gfx.hpp"
 #include "editable.hpp"
 #include "property.hpp"
@@ -205,8 +204,8 @@ void Renderer::addRoot(Element *element) {
     auto root = dynamic_cast<Root *>(_roots[0].get());
     if (root) {
       if (root->getFilename() == "<new>") {
-        auto dict = dynamic_cast<Dict *>(root->getObj());
-        if (dict && Listable::cast(dict)->count() == 0) {
+        auto list = dynamic_cast<List *>(root->getObj());
+        if (list && list->isDict() && Listable::cast(list)->count() == 0) {
           destroyRoots();
           _roots.clear();
         }
@@ -776,7 +775,7 @@ bool Renderer::processEvents() {
                 if (!_adding) {
                   break;
                 }
-                addRoot(new Root("<new>", new Dict()));
+                addRoot(new Root("<new>", new List(true)));
                 _adding = false;
                 break;
           
@@ -784,7 +783,7 @@ bool Renderer::processEvents() {
                 if (!_adding) {
                   break;
                 }
-                addRoot(new Root("<new>", new List()));
+                addRoot(new Root("<new>", new List(false)));
                 _adding = false;
                 break;
             }
@@ -961,3 +960,18 @@ void Renderer::setDirty(Element *elem, bool state) {
 
 }
 
+void Renderer::renderLayout(const Point &origin, const RectList &layout) {
+
+  if (layout.size() == 0) {
+    return;
+  }
+  
+  auto last = layout.back();
+  Rect r(Point(), last.origin + last.size);
+  renderFilledRect(r + origin, Colours::lightGrey);
+  
+  for (auto i: layout) {
+    renderFilledRect(i + origin, Colours::blue);
+  }
+  
+}

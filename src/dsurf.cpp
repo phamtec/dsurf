@@ -15,7 +15,7 @@
 #include "builder.hpp"
 #include "element.hpp"
 #include "filledbox.hpp"
-#include "dict.hpp"
+#include "list.hpp"
 #include "root.hpp"
 #include "macutil.hpp"
 #include <iostream>
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
   }
   else {
     // always just a new dictiionary.
-    renderer.addRoot(new Root("<new>", new Dict()));
+    renderer.addRoot(new Root("<new>", new List(true)));
   }
 
 //  alternate startup which just draws a blue box right in the middle of a small

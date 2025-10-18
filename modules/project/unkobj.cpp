@@ -23,10 +23,9 @@ ProjectUnknownObj::ProjectUnknownObj(const std::string &name):
   
 }
 
-Size ProjectUnknownObj::layout() {
+void ProjectUnknownObj::layout() {
 
   _size = _name.size();
-  return _size;
   
 }
 

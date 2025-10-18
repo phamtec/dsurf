@@ -26,10 +26,9 @@ Long::Long(long value): _parent(0) {
   
 }
 
-Size Long::layout() {
+void Long::layout() {
 
   _size = _value.size();
-  return _size;
   
 }
 

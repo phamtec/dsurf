@@ -18,6 +18,9 @@
 #include "generic.hpp"
 #include "sizes.hpp"
 
+#include <ranges>
+#include <string_view>
+
 using namespace std;
 
 ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Generic> &obj): 
@@ -116,23 +119,53 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
   
 }
 
-Size ProjectZMQObj::layout() {
+RectList ProjectZMQObj::calcLayout() {
 
-  _size = _name.size();
+  // at least just the name.
+  auto s = _name.size();
+  RectList layout;
+  layout.push_back(Rect(Point(), s));
+  
   if (_editing) {
-    _size.h += _size.h * _subheadings.size();
-    for_each(_code.begin(), _code.end(), [this](auto& e) {
-      auto s = e->layout();
-      _size.h += s.h + (Sizes::text_padding * 2);
-      if (s.w > _size.w) {
-        _size.w = s.w;
+  
+    // when editing, all the headings and subobjects.
+    auto o = Point(Sizes::group_indent, s.h + Sizes::text_padding);
+    auto z = std::ranges::views::zip(_subheadings, _code);
+    float w = s.w;
+    for_each(z.begin(), z.end(), [&layout, &o, &w](auto e) {
+      auto s = get<0>(e)->size();
+      layout.push_back(Rect(o, s));
+      o.y += s.h + Sizes::text_padding;
+      s = get<1>(e)->size();
+      layout.push_back(Rect(o, s));
+      o.y += s.h + Sizes::text_padding;
+      if ((o.x + s.w) > w) {
+        w = o.x + s.w;
       }
     });
-//    _size.w ;
-    _size.h += 50;
+    Layout::addSize(&layout, Size(w, o.y));
+    
+  }
+  else {
+    Layout::addSize(&layout, s);
+  }
+
+  return layout;
+  
+}
+
+void ProjectZMQObj::layout() {
+
+  // make sure the objects are layed out.
+  if (_editing) {
+    for_each(_code.begin(), _code.end(), [](auto& e) {
+      e->layout();
+    });
   }
   
-  return _size;
+  // calculate the layout.
+  _layout = calcLayout();
+  _size = Layout::size(_layout);
   
 }
 
@@ -155,21 +188,21 @@ void ProjectZMQObj::destroy(Renderer &renderer) {
 
 void ProjectZMQObj::render(Renderer &renderer, const Point &origin) {
 
-  _name.render(renderer, origin);
+//  renderer.renderLayout(origin, _layout);
 
+  auto i = _layout.begin();
+  _name.render(renderer, origin + (*i).origin);
+  i++;
+  
   if (_editing) {
-    float h = _name.size().h;
-    Point loc = origin + Size(Sizes::group_indent, h);
-    for (int i=0; i<_subheadings.size(); i++) {
-      _subheadings[i]->render(renderer, loc);
-      loc.y += h;
-      Size s = _code[i]->size();
-      s.w = _size.w - Sizes::group_indent;
-      s.h += Sizes::text_padding * 2;
-      renderer.renderFilledRect(Rect(loc, s), Colours::white);
-      loc.y += Sizes::text_padding;
-      _code[i]->render(renderer, loc + Size(Sizes::text_padding, 0));
-      loc.y += _code[i]->size().h + Sizes::text_padding;
+    for (auto elem: std::ranges::views::zip(_subheadings, _code)) {
+      // render subheading.
+      get<0>(elem)->render(renderer, origin + i->origin);
+      i++;
+      // render code.
+      renderer.renderFilledRect(*i + origin, Colours::white);
+      get<1>(elem)->render(renderer, origin + i->origin);
+      i++;
     }
   }
 

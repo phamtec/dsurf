@@ -75,6 +75,8 @@ void Renderer::startRemote(std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Gen
 }
 void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg) {
 }
+void Renderer::renderLayout(const Point &origin, const RectList &layout) {
+}
 
 // HUD
 int HUD::registerMode(const string &name, HUDMode *mode) {

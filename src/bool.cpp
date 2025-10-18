@@ -24,10 +24,9 @@ Bool::Bool(bool value): _parent(0) {
   
 }
 
-Size Bool::layout() {
+void Bool::layout() {
 
   _size = _value.size();
-  return _size;
   
 }
 

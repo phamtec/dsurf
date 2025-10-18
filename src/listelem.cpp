@@ -58,17 +58,16 @@ void ListElem::setEdit(Renderer &renderer, bool state) {
   
 }
 
-Size ListElem::layout() {
+void ListElem::layout() {
 
   if (_editing) {
     _size.h = Sizes::listgap + FIXED_HEIGHT;
     _size.w = FIXED_WIDTH;
   }
   else  {
-    _size = _obj->layout();
+    _obj->layout();
+    _size = _obj->size();
   }
-  
-  return _size;
   
 }
 

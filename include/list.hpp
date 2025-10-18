@@ -12,6 +12,12 @@
     }
   ]
   
+  When a Dict:
+  
+  {
+    ... props
+  }
+  
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
@@ -33,10 +39,13 @@ class List: public Element, public Listable,  public Writeable, public Commandab
   typedef Element super;
 
 public:
-  List(): _parent(0), _editing(false), _moving(0), _moveover(0), _adding(false) {}
+  List(bool dict): _dict(dict), _parent(0), _editing(false), _moving(0), _moveover(0), _adding(false) {}
   
   void setMoving(Element *elem);
     // this object is currently moving.
+    
+  bool isDict() { return _dict; }
+    // is this really a dictionary?
     
   // Element
   virtual void setParent(Element *parent) { _parent = parent; }
@@ -44,11 +53,12 @@ public:
   virtual std::string describe();
   virtual void build(Renderer &renderer);
   virtual void destroy(Renderer &renderer);
-  virtual Size layout();
+  virtual void layout();
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(Element *elem);
   virtual Size size() { return _size; }
+  virtual RectList calcLayout();
   
   // Writeable
   virtual rfl::Generic getGeneric();
@@ -64,22 +74,15 @@ public:
   static void registerHUDModes(HUD *hud);
   virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
-  // helpers for things that look like a list.
-  static void buildVector(Renderer &renderer, std::vector<std::unique_ptr<Element> > &list);
-  static Size layoutVector(std::vector<std::unique_ptr<Element> > &list);
-  static void renderVector(Renderer &renderer, const Point &origin, std::vector<std::unique_ptr<Element> > &list);
-  static Element* hitTestVector(const Point &origin, const Point &p, std::vector<std::unique_ptr<Element> > &list);
-  static Point localOriginVector(std::vector<std::unique_ptr<Element> > &list, Element *elem, bool prop);
-  static void initHUDVector(std::vector<std::unique_ptr<Element> > &list, HUD *hud);
-  static void destroyVector(std::vector<std::unique_ptr<Element> > &list, Renderer &renderer);
- 
   static List *cast(Element *obj);
 
 private:
   
+  bool _dict;
   Element *_parent;
   Size _size;
   std::vector<std::unique_ptr<Element> > _elements;
+  RectList _layout;
   int _hudrootlist;
   int _hudlist;
   int _hudlistedit;
@@ -92,13 +95,14 @@ private:
   Element *_moveover;
   Point _moveoffs;
   
-  static void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
-  static rfl::Generic getGenericVector(std::vector<std::unique_ptr<Element> > &list);
+  void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
+  rfl::Generic getGenericVector();
+  rfl::Generic getGenericObject();
   void startEdit(Renderer &renderer);
   void endEdit(Renderer &renderer);
   Element *otherElementHit(const Point &origin, const Point &p);
   void reorder();
-  void add(Renderer &renderer, Element *element);
+  void add(Renderer &renderer, const std::wstring &name, Element *element, bool container);
   bool isParentRoot();
     
 };

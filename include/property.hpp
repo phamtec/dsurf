@@ -38,12 +38,13 @@ public:
   virtual Element *getParent() { return _parent; }
   virtual std::string describe();
   virtual void build(Renderer &renderer);
-  virtual Size layout();
+  virtual void layout();
   virtual void render(Renderer &renderer, const Point &origin);
   virtual Element *hitTest(const Point &origin, const Point &p);
   virtual Point localOrigin(Element *elem);
   virtual void destroy(Renderer &renderer);
   virtual Size size() { return _size; }
+  virtual RectList calcLayout();
 
   // Writeable
   virtual std::string getName();
@@ -69,6 +70,7 @@ private:
   Text _name;
   bool _container;
   std::unique_ptr<Element> _obj;
+  RectList _layout;
   
 };
 

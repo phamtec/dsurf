@@ -24,7 +24,8 @@ project (dsurf)
   enable_testing()
   
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (UNIX AND NOT APPLE)
   add_definitions(-funwind-tables) 
@@ -62,7 +63,6 @@ set(SRC
   src/changes.cpp
   src/zmq.cpp
   src/flo.cpp
-  src/generic.cpp
 )
 
 set(UTILSRC
@@ -75,6 +75,8 @@ set(UTILSRC
   src/err.cpp
   src/move.cpp
   src/macutil.cpp
+  src/layout.cpp
+  src/generic.cpp
 )
 
 set(OBJSRC
@@ -82,7 +84,6 @@ set(OBJSRC
   src/string.cpp
   src/list.cpp
   src/listelem.cpp
-  src/dict.cpp
   src/long.cpp
   src/bool.cpp
   src/property.cpp

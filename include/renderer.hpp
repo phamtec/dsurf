@@ -140,6 +140,9 @@ public:
   void setDirty(Element *elem, bool state=true);
     // set the dirty flag for that element.
     
+  void renderLayout(const Point &origin, const RectList &layout);
+    // render the layout to the device.
+    
   Resources resources;
   
   // remote server.

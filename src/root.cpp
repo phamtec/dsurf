@@ -41,14 +41,15 @@ void Root::setDirty(Renderer &renderer, bool state) {
 
 }
 
-Size Root::layout() {
+void Root::layout() {
 
-  _size = _obj->layout();
+  // TBD: Use layout objects!
+  _obj->layout();
+  _size = _obj->size();
   auto w = _filename.size().h+Sizes::listgap;
   if (w > _size.w) {
     _size.w += w;
   }
-  return _size;
   
 }
 
