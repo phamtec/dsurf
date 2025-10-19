@@ -445,8 +445,9 @@ soon.
 - redo the way layout is done to make common code
 - merge List and Dict to just have List. They were practically identical.
 
+### 19-Oct-2025
 
-
+- introduce a discreet code object to simplify drawing and running code.
 
 
 

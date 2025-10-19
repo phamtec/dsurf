@@ -17,6 +17,7 @@
 #include "flo.hpp"
 #include "generic.hpp"
 #include "sizes.hpp"
+#include "code.hpp"
 
 #include <ranges>
 #include <string_view>
@@ -30,7 +31,7 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
 
   rfl::Object<rfl::Generic> empty;
 
-  _subheadings.push_back(make_unique<Text>(L"Scenarios", Colours::white));
+  _codenames.push_back("Scenarios");
   auto v =  Generic::getVector(obj, "scenarios");
   if (v) {
     _source.push_back(*v);
@@ -47,7 +48,7 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
     _flo.reset(new Flo());
   }
   
-  _subheadings.push_back(make_unique<Text>(L"Remote", Colours::white));
+  _codenames.push_back("Remote");
   auto remote = Generic::getObject(obj, "remote");
   if (remote) {
     _source.push_back(*remote);
@@ -68,7 +69,7 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
     _source.push_back(empty);
   }
   
-  _subheadings.push_back(make_unique<Text>(L"Local", Colours::white));
+  _codenames.push_back("Local");
   auto local = Generic::getObject(obj, "local");    
   if (local) {
     _source.push_back(*local);
@@ -89,7 +90,7 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
     _source.push_back(empty);
   }
   
-  _subheadings.push_back(make_unique<Text>(L"Send", Colours::white));
+  _codenames.push_back("Send");
   auto o = Generic::getObject(obj, "send");
   if (o) {
     _source.push_back(*o);
@@ -99,7 +100,7 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
     _source.push_back(empty);
   }
   
-  _subheadings.push_back(make_unique<Text>(L"Next", Colours::white));
+  _codenames.push_back("Next");
   o =  Generic::getObject(obj, "next");
   if (o) {
     _source.push_back(*o);
@@ -109,7 +110,7 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
     _source.push_back(empty);
   }
 
-  _subheadings.push_back(make_unique<Text>(L"Library", Colours::white));
+  _codenames.push_back("Library");
   if (library) {
     _source.push_back(*library);
   }
@@ -130,13 +131,9 @@ RectList ProjectZMQObj::calcLayout() {
   
     // when editing, all the headings and subobjects.
     auto o = Point(Sizes::group_indent, s.h + Sizes::text_padding);
-    auto z = std::ranges::views::zip(_subheadings, _code);
     float w = s.w;
-    for_each(z.begin(), z.end(), [&layout, &o, &w](auto e) {
-      auto s = get<0>(e)->size();
-      layout.push_back(Rect(o, s));
-      o.y += s.h + Sizes::text_padding;
-      s = get<1>(e)->size();
+    for_each(_code.begin(), _code.end(), [&layout, &o, &w](auto& e) {
+      auto s = e->size();
       layout.push_back(Rect(o, s));
       o.y += s.h + Sizes::text_padding;
       if ((o.x + s.w) > w) {
@@ -172,10 +169,7 @@ void ProjectZMQObj::layout() {
 void ProjectZMQObj::build(Renderer &renderer) {
 
   _name.build(renderer);
-  for_each(_subheadings.begin(), _subheadings.end(), [&renderer](auto& e) {
-    e->build(renderer);
-  });
-
+  // no code to build yet!
 }
 
 void ProjectZMQObj::destroy(Renderer &renderer) {
@@ -195,15 +189,10 @@ void ProjectZMQObj::render(Renderer &renderer, const Point &origin) {
   i++;
   
   if (_editing) {
-    for (auto elem: std::ranges::views::zip(_subheadings, _code)) {
-      // render subheading.
-      get<0>(elem)->render(renderer, origin + i->origin);
+    for_each(_code.begin(), _code.end(), [&renderer, &i, origin](auto& e) {
+      e->render(renderer, origin + i->origin);
       i++;
-      // render code.
-      renderer.renderFilledRect(*i + origin, Colours::white);
-      get<1>(elem)->render(renderer, origin + i->origin);
-      i++;
-    }
+    });
   }
 
 }
@@ -222,10 +211,10 @@ void ProjectZMQObj::setMode(Renderer &renderer, HUD *hud) {
 
 void ProjectZMQObj::createObjects(Renderer &renderer) {
 
-  // build all the source into elements.
-  transform(_source.begin(), _source.end(), back_inserter(_code), [this](auto e) {
-    return unique_ptr<Element>(Builder::walk(this, e));
-  });
+  // build all the source into code elements.
+  for (auto elem: std::ranges::views::zip(_codenames, _source)) {
+    _code.push_back(unique_ptr<Element>(new ProjectCode(std::get<0>(elem), std::get<1>(elem))));
+  }
   
   // build all the code we just made.
   for_each(_code.begin(), _code.end(), [&renderer](auto& e) {

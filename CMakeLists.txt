@@ -106,6 +106,7 @@ set(MODSRC
   modules/project/fileobj.cpp
   modules/project/zmqobj.cpp
   modules/project/unkobj.cpp
+  modules/project/code.cpp
 )
 
 set(FLOSRC

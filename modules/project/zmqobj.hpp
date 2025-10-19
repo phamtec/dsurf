@@ -50,9 +50,9 @@ protected:
   Text _name;
   int _hudobj;
   bool _editing;
-  std::vector<std::unique_ptr<Text> > _subheadings;
+  std::vector<std::string> _codenames;
+  std::vector<rfl::Generic> _source;
   std::vector<std::unique_ptr<Element> > _code;
-  std::vector<rfl::Generic > _source;
   RectList _layout;
   
   std::string _remoteAddress;
