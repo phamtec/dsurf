@@ -41,15 +41,30 @@ void Root::setDirty(Renderer &renderer, bool state) {
 
 }
 
+RectList Root::calcLayout() {
+
+  RectList layout;
+  
+  auto s = _filename.size();
+  auto o = Point();
+  layout.push_back(Rect(o, s));
+  o.y += s.h + Sizes::listgap;
+  s = _obj->size();
+  layout.push_back(Rect(o, s));
+  o.y += s.h;
+  Layout::addSize(&layout, Size(s.w, o.y));
+  
+  return layout;
+  
+}
+
 void Root::layout() {
 
-  // TBD: Use layout objects!
   _obj->layout();
-  _size = _obj->size();
-  auto w = _filename.size().h+Sizes::listgap;
-  if (w > _size.w) {
-    _size.w += w;
-  }
+
+  // calculate the layout.
+  _layout = calcLayout();
+  _size = Layout::size(_layout);
   
 }
 
@@ -68,9 +83,13 @@ void Root::destroy(Renderer &renderer) {
 
 void Root::render(Renderer &renderer, const Point &origin) {
 
-  _filename.render(renderer, origin);
-  _obj->render(renderer, origin + Size(0, _filename.size().h+Sizes::listgap));
-
+//  renderer.renderLayout(origin, _layout);
+  
+  auto i = _layout.begin();
+  _filename.render(renderer, origin + (*i).origin);
+  i++;
+  _obj->render(renderer, origin + (*i).origin);
+  
 }
 
 std::string Root::getName() {
@@ -87,7 +106,11 @@ rfl::Generic Root::getGeneric() {
 
 Element *Root::hitTest(const Point &origin, const Point &p) { 
 
-  auto hit = _obj->hitTest(origin + Size(0, _filename.size().h+Sizes::listgap), p);
+  auto i = _layout.begin();
+  // skip name
+  i++;
+  
+  auto hit = _obj->hitTest(origin + i->origin, p);
   if (hit) {
     return hit;
   }
@@ -98,7 +121,11 @@ Element *Root::hitTest(const Point &origin, const Point &p) {
 
 Point Root::localOrigin(Element *elem) {
 
-  return _obj->localOrigin(elem) + Size(0,  _filename.size().h+Sizes::listgap);
+  auto i = _layout.begin();
+  // skip name
+  i++;
+  
+  return _obj->localOrigin(elem) + i->origin;
   
 }
 

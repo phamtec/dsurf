@@ -31,24 +31,39 @@ void ProjectRoot::setParent(Element *parent) {
   cerr << "setParent on ProjectRoot!" << endl;
 }
 
+RectList ProjectRoot::calcLayout() {
+
+  RectList layout;
+  
+  auto s = _name.size();
+  auto o = Point();
+  layout.push_back(Rect(o, s));
+  o.y += s.h + Sizes::text_padding;
+  o.x += Sizes::group_indent;
+  float w = s.w;
+  for_each(_objs.begin(), _objs.end(), [&o, &layout, &w](auto& e) {
+    auto s = e->size();
+    layout.push_back(Rect(o, s));
+    o.y += s.h + Sizes::text_padding;
+    if ((o.x + s.w) > w) {
+      w = o.x + s.w;
+    }
+  });
+  Layout::addSize(&layout, Size(w, o.y));
+  
+  return layout;
+  
+}
+
 void ProjectRoot::layout() {
 
   for_each(_objs.begin(), _objs.end(), [](auto& e) {
     e->layout();
   });
   
-  // TBD: Use layout objects.
-  _size = _name.size();
-  _size.w += Sizes::text_padding;
-  for_each(_objs.begin(), _objs.end(), [this](auto& e) {
-  
-    Size s = e->size();
-    s.w += Sizes::group_indent;
-    _size.h += s.h + Sizes::text_padding;
-    if (_size.w < s.w) {
-      _size.w = s.w;
-    }
-  });
+  // calculate the layout.
+  _layout = calcLayout();
+  _size = Layout::size(_layout);
   
 }
 
@@ -62,43 +77,50 @@ void ProjectRoot::build(Renderer &renderer) {
 
 void ProjectRoot::render(Renderer &renderer, const Point &origin) {
 
+//  renderer.renderLayout(origin, _layout);
+
   renderer.renderFilledRect(Rect(origin, _size), Colours::racingGreen);
 
-  _name.render(renderer, origin);
-
-  Point o = origin + Size(Sizes::group_indent, _name.size().h + Sizes::text_padding);
-  for (auto& i: _objs) {
-    i->render(renderer, o);
-    o.y += i->size().h + Sizes::text_padding;
-  }
+  auto i = _layout.begin();
+  _name.render(renderer, origin + (*i).origin);
+  i++;
   
-//  renderer.renderRect(_r);
+  for_each(_objs.begin(), _objs.end(), [&renderer, origin, &i](auto& e) {
+    e->render(renderer, origin + i->origin);
+    i++;
+  });
 
 }
 
 Element *ProjectRoot::hitTest(const Point &origin, const Point &p) { 
 
-  Point o = origin + Size(Sizes::group_indent, _name.size().h + Sizes::text_padding);
-  for (auto& i: _objs) {
-    Element *hit = i->hitTest(o, p);
+  auto i = _layout.begin();
+  // skip name
+  i++;
+  
+  for (auto& j: _objs) {
+    Element *hit = j->hitTest(origin + i->origin, p);
     if (hit) {
       return hit;
     }
-    o.y += i->size().h + Sizes::text_padding;
+    i++;
   }
-
+  
   return super::hitTest(origin, p);
   
 }
 
 Point ProjectRoot::localOrigin(Element *elem) {
 
-  Point o = Size(Sizes::group_indent, _name.size().h + Sizes::text_padding);
-  for (auto& i: _objs) {
-    if (i.get() == elem) {
-      return o;
+  auto i = _layout.begin();
+  // skip name
+  i++;
+  
+  for (auto& j: _objs) {
+    if (j.get() == elem) {
+      return i->origin;
     }
-    o.y += i->size().h + Sizes::text_padding;
+    i++;
   }
 
   return Point(0, 0);

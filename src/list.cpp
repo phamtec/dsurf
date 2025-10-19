@@ -178,26 +178,30 @@ void List::render(Renderer &renderer, const Point &origin) {
 
 void List::endEdit(Renderer &renderer) {
 
-  for_each(_elements.begin(), _elements.end(), [&renderer](auto& e) {
-    ListElem *le = dynamic_cast<ListElem *>(e.get());
-    if (!le) {
-      cerr << typeid(e.get()).name() << " not a list element" << endl;
-    }
-    le->setEdit(renderer, false);
-  });
+  if (!_dict) {
+    for_each(_elements.begin(), _elements.end(), [&renderer](auto& e) {
+      ListElem *le = dynamic_cast<ListElem *>(e.get());
+      if (!le) {
+        cerr << typeid(e.get()).name() << " not a list element" << endl;
+      }
+      le->setEdit(renderer, false);
+    });
+  }
 
 }
 
 void List::startEdit(Renderer &renderer) {
 
-  for_each(_elements.begin(), _elements.end(), [&renderer](auto& e) {
-    ListElem *le = dynamic_cast<ListElem *>(e.get());
-    if (!le) {
-      cerr << typeid(e.get()).name() << " not a list element" << endl;
-    }
-    le->setEdit(renderer, true);
-  });
-
+  if (!_dict) {
+    for_each(_elements.begin(), _elements.end(), [&renderer](auto& e) {
+      ListElem *le = dynamic_cast<ListElem *>(e.get());
+      if (!le) {
+        cerr << typeid(e.get()).name() << " not a list element" << endl;
+      }
+      le->setEdit(renderer, true);
+    });
+  }
+  
 }
 
 rfl::Generic List::getGeneric() { 
@@ -234,21 +238,18 @@ Element *List::hitTest(const Point &origin, const Point &p) {
 
 Element *List::otherElementHit(const Point &origin, const Point &p) {
 
-  Point o = origin;
-  for (auto& i: _elements) {
-    auto obj = i.get();
-    Size s = obj->size();
+  for (auto&& i: std::ranges::views::zip(_elements, _layout)) {
+    auto obj = get<0>(i).get();
     if (obj == _moving) {
 //      cout << "ignoreing " << index << endl;
     }
     else {
 //      cout << "trying " << index<< endl;
-      if (Rect(o, s).contains(p)) {
+      if ((get<1>(i) + origin).contains(p)) {
 //        cout << "hit" << endl;
         return obj; 
       }
     }
-    o.y += s.h + Sizes::listgap;
   }
 
   return nullptr;

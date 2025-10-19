@@ -134,7 +134,7 @@ Element *ListElem::hitTest(const Point &origin, const Point &p) {
     return _obj->hitTest(origin, p);
   }
   
-    return super::hitTest(origin, p);
+  return super::hitTest(origin, p);
 
 }
 

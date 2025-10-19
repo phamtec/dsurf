@@ -32,29 +32,31 @@ public:
   ProjectRoot(const std::string &name, const std::string &filename, std::vector<Element *> &objs);
 
   // Element
-  virtual void setParent(Element *parent);
-  virtual Element *getParent() { return nullptr; }
-  virtual void build(Renderer &renderer);
-  virtual void layout();
-  virtual void render(Renderer &renderer, const Point &origin);
-  virtual Element *hitTest(const Point &origin, const Point &p);
-  virtual Point localOrigin(Element *elem);
-  virtual Size size() { return _size; }
+  virtual void setParent(Element *parent) override;
+  virtual Element *getParent() override { return nullptr; }
+  virtual void build(Renderer &renderer) override;
+  virtual void layout() override;
+  virtual void render(Renderer &renderer, const Point &origin) override;
+  virtual Element *hitTest(const Point &origin, const Point &p) override;
+  virtual Point localOrigin(Element *elem) override;
+  virtual Size size() override { return _size; }
+  virtual RectList calcLayout() override;
 
   // Commandable
-  virtual void initHUD(HUD *hud);
-  virtual void setMode(Renderer &renderer, HUD *hud);
-  virtual void processKey(Renderer &renderer, SDL_Keycode code);
+  virtual void initHUD(HUD *hud) override;
+  virtual void setMode(Renderer &renderer, HUD *hud) override;
+  virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
 
   // Locatable
-  virtual Point getLocation() { return _location; }
-  virtual void setLocation(const Point &loc) { _location = loc; }
+  virtual Point getLocation() override { return _location; }
+  virtual void setLocation(const Point &loc) override { _location = loc; }
 
 protected:
 
   Size _size;
   Text _name;
   std::vector<std::unique_ptr<Element> > _objs;
+  RectList _layout;
   std::string _filename;
   int _hudroot;
   Point _location;
