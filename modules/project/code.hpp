@@ -15,14 +15,15 @@
 #define H_project_code
 
 #include "element.hpp"
+#include "commandable.hpp"
 #include "text.hpp"
 
 #include <rfl.hpp>
 
-class ProjectCode: public Element {
+class ProjectCode: public Element, public Commandable {
 
 public:
-  ProjectCode(const std::string &name, rfl::Generic source);
+  ProjectCode(const std::string &name, rfl::Generic source, std::optional<rfl::Object<rfl::Generic> > scenario);
 
   // Element
   virtual void setParent(Element *parent) override { _parent = parent; }
@@ -33,6 +34,12 @@ public:
   virtual void render(Renderer &renderer, const Point &origin) override;
   virtual Size size() override { return _size; }
   virtual RectList calcLayout() override;
+  virtual Point localOrigin(Element *elem) override;
+
+  // Commandable
+  virtual void initHUD(HUD *hud) override;
+  virtual void setMode(Renderer &renderer, HUD *hud) override;
+  virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
 
 protected:
 
@@ -42,6 +49,8 @@ protected:
   std::unique_ptr<Element> _obj;
   RectList _layout;
   rfl::Generic _source;
+  std::optional<rfl::Generic> _context;
+  int _hudobj;
   
 };
 

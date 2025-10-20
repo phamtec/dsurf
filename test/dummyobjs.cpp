@@ -77,6 +77,8 @@ void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg) {
 }
 void Renderer::renderLayout(const Point &origin, const RectList &layout) {
 }
+void Renderer::addRoot(const std::string &name, Element *element, std::optional<Point> loc) {
+}
 
 // HUD
 int HUD::registerMode(const string &name, HUDMode *mode) {
@@ -91,6 +93,8 @@ void HUD::setHint(Renderer &renderer, Text *hint) {
 }
 void HUD::setMode(int mode) {
 } 
+void HUD::setFlag(Renderer &renderer, HUDFlags flag, bool state) {
+}
 Shortcut::Shortcut(const wstring &key, const wstring &text, optional<HUDFlags> flags) {
 }
 

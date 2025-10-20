@@ -54,8 +54,9 @@ public:
   
   static Size displaySize();
   
-  void addRoot(Element *element);
-    // add a root.
+  void addRoot(Element *element, bool useloc=false);
+  void addRoot(const std::string &name, Element *element, std::optional<Point> loc=std::nullopt);
+    // add a root, either we know the element, or add some generic object
     
   void addFile(const std::string &filename, bool raw);
     // add the file

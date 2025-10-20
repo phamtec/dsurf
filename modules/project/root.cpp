@@ -43,6 +43,7 @@ RectList ProjectRoot::calcLayout() {
   float w = s.w;
   for_each(_objs.begin(), _objs.end(), [&o, &layout, &w](auto& e) {
     auto s = e->size();
+    s.w += Sizes::text_padding;
     layout.push_back(Rect(o, s));
     o.y += s.h + Sizes::text_padding;
     if ((o.x + s.w) > w) {
@@ -118,6 +119,7 @@ Point ProjectRoot::localOrigin(Element *elem) {
   
   for (auto& j: _objs) {
     if (j.get() == elem) {
+//      cout << "ProjectRoot " << i->origin << endl;
       return i->origin;
     }
     i++;

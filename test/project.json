@@ -31,8 +31,10 @@
             }
           ],
           "remote": {
-            "address": "localhost",
-            "port": 1234
+            "dict": {
+              "address": "localhost",
+              "port": 1234
+            }
           },
           "local": {
           },
@@ -72,7 +74,7 @@
               "context": {
                 "type": "upstream"
               },
-              "path": "/connect/next"
+              "path": "/next"
             }
           ]
         }

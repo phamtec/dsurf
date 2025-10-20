@@ -114,7 +114,7 @@ void Project::registerHUDModes(Renderer &renderer, HUD *hud) {
     auto mode = new HUDMode(false);
     renderer.registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"C", L"onnect"));
-    mode->add(new Shortcut(L"E", L"edit"));
+    mode->add(new Shortcut(L"E", L"edit", canEdit));
     hud->registerMode("projectzmqobj", mode);
   }
 
@@ -123,6 +123,13 @@ void Project::registerHUDModes(Renderer &renderer, HUD *hud) {
     renderer.registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"", L"???"));
     hud->registerMode("projectunkobj", mode);
+  }
+
+  {
+    auto mode = new HUDMode(false);
+    renderer.registerGlobalHUDMode(mode);
+    mode->add(new Shortcut(L"R", L"un", canRun));
+    hud->registerMode("projectcode", mode);
   }
 
 }

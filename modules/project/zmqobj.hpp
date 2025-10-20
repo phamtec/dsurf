@@ -25,6 +25,8 @@ class Element;
 
 class ProjectZMQObj: public Element, public Commandable {
 
+  typedef Element super;
+
 public:
   ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Generic> &obj);
 
@@ -35,8 +37,10 @@ public:
   virtual void destroy(Renderer &renderer) override;
   virtual void layout() override;
   virtual void render(Renderer &renderer, const Point &origin) override;
+  virtual Element *hitTest(const Point &origin, const Point &p) override;
   virtual Size size() override { return _size; }
   virtual RectList calcLayout() override;
+  virtual Point localOrigin(Element *elem) override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
@@ -50,8 +54,6 @@ protected:
   Text _name;
   int _hudobj;
   bool _editing;
-  std::vector<std::string> _codenames;
-  std::vector<rfl::Generic> _source;
   std::vector<std::unique_ptr<Element> > _code;
   RectList _layout;
   
@@ -66,7 +68,7 @@ protected:
   std::shared_ptr<Flo> _flo;
 
   void load(Renderer &renderer);
-  void createObjects(Renderer &renderer);
+  std::optional<rfl::Object<rfl::Generic> > findScenario(std::optional<std::vector<rfl::Generic> > scenarios, const std::string &path);
   
 };
 

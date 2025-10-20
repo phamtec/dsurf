@@ -176,6 +176,8 @@ bool Renderer::init(const string &path) {
   
   // other flags we have.
   _hud->setFlag(*this, canWrite, false);
+  _hud->setFlag(*this, canRun, false);
+  _hud->setFlag(*this, canEdit, false);
   
 //   _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
 //   _editcursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_TEXT);
@@ -196,7 +198,17 @@ void Renderer::addFile(const string &filename, bool raw) {
   
 }
 
-void Renderer::addRoot(Element *element) {
+void Renderer::addRoot(const string &name, Element *element, optional<Point> loc) {
+
+  auto root = new Root(name, element);
+  if (loc) {
+    root->setLocation(*loc);
+  }
+  addRoot(root, true);
+  
+}
+
+void Renderer::addRoot(Element *element, bool useloc) {
 
   // if there is only 1 element and it is <new> with an empty dict
   // then we replace it.
@@ -225,21 +237,22 @@ void Renderer::addRoot(Element *element) {
   // lay it out.
   element->layout();
   
-  // find the right most object.
-  Point rightmost;
-  for_each(_roots.begin(), _roots.end(), [&rightmost](auto& e) {
-    auto l = Locatable::cast(e.get())->getLocation() + e->size();
-    if (l.x > rightmost.x) {
-      rightmost.x = l.x;
-    }
-  });
-  
-  // and put this to the right of that.
-  Locatable::cast(element)->setLocation(rightmost + Size(Sizes::group_indent, 0));
+  if (!useloc) {
+    // find the right most object.
+    Point rightmost;
+    for_each(_roots.begin(), _roots.end(), [&rightmost](auto& e) {
+      auto l = Locatable::cast(e.get())->getLocation() + e->size();
+      if (l.x > rightmost.x) {
+        rightmost.x = l.x;
+      }
+    });
+    
+    // and put this to the right of that.
+    Locatable::cast(element)->setLocation(rightmost + Size(Sizes::group_indent, 0));
+  }
 
   // remember it.
   _roots.push_back(unique_ptr<Element>(element));
-  
   
   // calculate the total size of all the objects.
   recenter();
@@ -415,6 +428,8 @@ bool Renderer::isDoubleClick() {
 
 optional<Renderer::getHitReturnType> Renderer::getHit() {
 
+//  cout << "getHit" << endl;
+  
   for (auto& i: _roots) {
 
     auto loc = Locatable::cast(i.get())->getLocation();
@@ -628,7 +643,12 @@ void Renderer::processDeleteKey(Element *element) {
 
 Point Renderer::addRootOrigin(Element *element, const Point &origin) {
 
-  return origin + Locatable::cast(element->root())->getLocation();
+//  cout << "addRootOrigin" << element->describe() << endl;
+  
+  auto root = element->root();
+//  cout << "root" << root->describe() << endl;
+  
+  return origin + Locatable::cast(root)->getLocation();
 
 }
 

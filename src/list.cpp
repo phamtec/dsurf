@@ -78,6 +78,7 @@ RectList List::calcLayout() {
   if (_elements.size() == 0) {
     o.y += (Sizes::leftlinelength * 2) - (Sizes::listgap * 2);
   }
+  w += Sizes::listgap;
   Layout::addSize(&layout, Size(w, o.y));
   
   return layout;

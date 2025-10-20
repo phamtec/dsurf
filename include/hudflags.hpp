@@ -19,7 +19,9 @@ typedef enum {
   none = 0,
   canUndo = (1 << 1),
   canRedo = (1 << 2),
-  canWrite = (1 << 3)
+  canWrite = (1 << 3),
+  canRun = (1 << 4),
+  canEdit = (1 << 5)
 
 } HUDFlags;
 

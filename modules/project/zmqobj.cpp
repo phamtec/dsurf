@@ -18,27 +18,19 @@
 #include "generic.hpp"
 #include "sizes.hpp"
 #include "code.hpp"
+#include "list.hpp"
 
 #include <ranges>
 #include <string_view>
 
 using namespace std;
 
-ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Generic> &obj): 
+ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic> &obj): 
   _parent(0), _hudobj(-1) {
 
   _name.set(Unicode::convert(name), Colours::white);
 
   rfl::Object<rfl::Generic> empty;
-
-  _codenames.push_back("Scenarios");
-  auto v =  Generic::getVector(obj, "scenarios");
-  if (v) {
-    _source.push_back(*v);
-  }
-  else {
-    _source.push_back(empty);
-  }
 
   auto library = Generic::getVector(obj, "library");    
   if (library) {
@@ -48,75 +40,98 @@ ProjectZMQObj::ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Gen
     _flo.reset(new Flo());
   }
   
-  _codenames.push_back("Remote");
-  auto remote = Generic::getObject(obj, "remote");
-  if (remote) {
-    _source.push_back(*remote);
-    auto s = _flo->evalStringMember(remote, "address");
-    if (s) {
-      _remoteAddress = *s;
-    }
-    s = _flo->evalStringMember(remote, "public");
-    if (s) {
-      _remotePubKey = *s;
-    }
-    auto i = _flo->evalNumMember(remote, "port");
-    if (i) {
-      _remotePort = *i;
-    }
-  }
-  else {
-    _source.push_back(empty);
-  }
+  auto scenarios =  Generic::getVector(obj, "scenarios");
+
+//   auto remote = Generic::getObject(obj, "remote");
+//   if (remote) {
+//     _code.push_back(unique_ptr<Element>(new ProjectCode("Remote", *remote, findScenario(scenarios, "/remote"))));
+//     auto s = _flo->evalStringMember(remote, "address");
+//     if (s) {
+//       _remoteAddress = *s;
+//     }
+//     s = _flo->evalStringMember(remote, "public");
+//     if (s) {
+//       _remotePubKey = *s;
+//     }
+//     auto i = _flo->evalNumMember(remote, "port");
+//     if (i) {
+//       _remotePort = *i;
+//     }
+//   }
+//   else {
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Remote", empty, empty)));
+//  }
   
-  _codenames.push_back("Local");
-  auto local = Generic::getObject(obj, "local");    
-  if (local) {
-    _source.push_back(*local);
-    auto s = _flo->evalStringMember(local, "uuid");
-    if (s) {
-      _uuid = *s;
-    }
-    s = _flo->evalStringMember(local, "private");
-    if (s) {
-      _privateKey = *s;
-    }
-    s = _flo->evalStringMember(local, "public");
-    if (s) {
-      _publicKey = *s;
-    }
-  }
-  else {
-    _source.push_back(empty);
-  }
+//   auto local = Generic::getObject(obj, "local");    
+//   if (local) {
+//     _code.push_back(unique_ptr<Element>(new ProjectCode("Local", *local, findScenario(scenarios, "/local"))));
+//     auto s = _flo->evalStringMember(local, "uuid");
+//     if (s) {
+//       _uuid = *s;
+//     }
+//     s = _flo->evalStringMember(local, "private");
+//     if (s) {
+//       _privateKey = *s;
+//     }
+//     s = _flo->evalStringMember(local, "public");
+//     if (s) {
+//       _publicKey = *s;
+//     }
+//   }
+//   else {
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Local", empty, empty)));
+//  }
   
-  _codenames.push_back("Send");
-  auto o = Generic::getObject(obj, "send");
-  if (o) {
-    _source.push_back(*o);
-    _send = *o;
-  }
-  else {
-    _source.push_back(empty);
-  }
+//   auto o = Generic::getObject(obj, "send");
+//   if (o) {
+//     _code.push_back(unique_ptr<Element>(new ProjectCode("Send", *o, findScenario(scenarios, "/send"))));
+//     _send = *o;
+//   }
+//   else {
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Send", empty, empty)));
+//  }
   
-  _codenames.push_back("Next");
-  o =  Generic::getObject(obj, "next");
-  if (o) {
-    _source.push_back(*o);
-    _next = *o;
+  auto next =  Generic::getObject(obj, "next");
+  if (next) {
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Next", *next, findScenario(scenarios, "/next"))));
+    _next = *next;
   }
   else {
-    _source.push_back(empty);
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Next", empty, empty)));
   }
 
-  _codenames.push_back("Library");
-  if (library) {
-    _source.push_back(*library);
+//   if (library) {
+//     _code.push_back(unique_ptr<Element>(Builder::walk(this, *library)));
+//   }
+//   else {
+    _code.push_back(unique_ptr<Element>(new List(false)));
+//  }
+  
+//   if (scenarios) {
+//     _code.push_back(unique_ptr<Element>(Builder::walk(this, *scenarios)));
+//   }
+//   else {
+    _code.push_back(unique_ptr<Element>(new List(false)));
+//  }
+
+  // make sure all the codes have their parent set.
+  for_each(_code.begin(), _code.end(), [this](auto& e) {
+    e->setParent(this);
+  });
+}
+
+optional<rfl::Object<rfl::Generic> > ProjectZMQObj::findScenario(optional<vector<rfl::Generic> > scenarios, const string &path) {
+
+  if (scenarios) {
+    for (auto i: *scenarios) {
+      auto obj = Generic::getObject(i);
+      auto p = Generic::getString(obj, "path");
+      if (p && *p == path) {
+        return obj;
+      }
+    }
   }
-  else {
-    _source.push_back(empty);
-  }
+  return nullopt;
   
 }
 
@@ -129,7 +144,7 @@ RectList ProjectZMQObj::calcLayout() {
   
   if (_editing) {
   
-    // when editing, all the headings and subobjects.
+    // when editing, add in the size of the code.
     auto o = Point(Sizes::group_indent, s.h + Sizes::text_padding);
     float w = s.w;
     for_each(_code.begin(), _code.end(), [&layout, &o, &w](auto& e) {
@@ -140,11 +155,12 @@ RectList ProjectZMQObj::calcLayout() {
         w = o.x + s.w;
       }
     });
+    w += Sizes::listgap;
     Layout::addSize(&layout, Size(w, o.y));
     
   }
   else {
-    Layout::addSize(&layout, s);
+    Layout::addSize(&layout, s + Size(Sizes::listgap, 0));
   }
 
   return layout;
@@ -153,12 +169,10 @@ RectList ProjectZMQObj::calcLayout() {
 
 void ProjectZMQObj::layout() {
 
-  // make sure the objects are layed out.
-  if (_editing) {
-    for_each(_code.begin(), _code.end(), [](auto& e) {
-      e->layout();
-    });
-  }
+  // make sure the code is layed out.
+  for_each(_code.begin(), _code.end(), [](auto& e) {
+    e->layout();
+  });
   
   // calculate the layout.
   _layout = calcLayout();
@@ -169,7 +183,9 @@ void ProjectZMQObj::layout() {
 void ProjectZMQObj::build(Renderer &renderer) {
 
   _name.build(renderer);
-  // no code to build yet!
+  for_each(_code.begin(), _code.end(), [&renderer](auto& e) {
+    e->build(renderer);
+  });
 }
 
 void ProjectZMQObj::destroy(Renderer &renderer) {
@@ -190,6 +206,7 @@ void ProjectZMQObj::render(Renderer &renderer, const Point &origin) {
   
   if (_editing) {
     for_each(_code.begin(), _code.end(), [&renderer, &i, origin](auto& e) {
+      renderer.renderFilledRect(*i + origin, Colours::white);
       e->render(renderer, origin + i->origin);
       i++;
     });
@@ -197,33 +214,63 @@ void ProjectZMQObj::render(Renderer &renderer, const Point &origin) {
 
 }
 
+Element *ProjectZMQObj::hitTest(const Point &origin, const Point &p) { 
+
+  auto i = _layout.begin();
+  // skip name
+  i++;
+  
+  if (_editing) {
+    for (auto& j: _code) {
+      Element *hit = j->hitTest(origin + i->origin, p);
+      if (hit) {
+        return hit;
+      }
+      i++;
+    }
+  }
+  
+  return super::hitTest(origin, p);
+  
+}
+
+Point ProjectZMQObj::localOrigin(Element *elem) {
+
+  auto i = _layout.begin();
+  // skip name
+  i++;
+  
+  if (_editing) {
+    for (auto& j: _code) {
+      if (j.get() == elem) {
+//        cout << "ProjectZMQObj " << i->origin << endl;
+        return i->origin;
+      }
+      i++;
+    }
+  }
+  
+  return Point(0, 0);
+  
+}
+
 void ProjectZMQObj::initHUD(HUD *hud) {
 
   _hudobj = hud->findMode("projectzmqobj");
   
+  // and walk the list. order isn't important.
+  for_each(_code.begin(), _code.end(), [hud](auto& e) { 
+    Commandable::cast(e.get())->initHUD(hud);
+  });
+
 }
 
 void ProjectZMQObj::setMode(Renderer &renderer, HUD *hud) {
 
+  hud->setFlag(renderer, canEdit, !_editing);
+  
   hud->setMode(_hudobj);
   
-}
-
-void ProjectZMQObj::createObjects(Renderer &renderer) {
-
-  // build all the source into code elements.
-  for (auto elem: std::ranges::views::zip(_codenames, _source)) {
-    _code.push_back(unique_ptr<Element>(new ProjectCode(std::get<0>(elem), std::get<1>(elem))));
-  }
-  
-  // build all the code we just made.
-  for_each(_code.begin(), _code.end(), [&renderer](auto& e) {
-    e->build(renderer);
-  });
-  
-  // layout the screen.
-  root()->layout();
-
 }
 
 void ProjectZMQObj::processKey(Renderer &renderer, SDL_Keycode code) {
@@ -239,7 +286,7 @@ void ProjectZMQObj::processKey(Renderer &renderer, SDL_Keycode code) {
 
     case SDLK_E:
       _editing = true;
-      createObjects(renderer);
+      root()->layout();
       break;
   }
 
