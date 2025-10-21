@@ -17,7 +17,7 @@
 
 using namespace std;
 
-std::string Element::describe() {
+string Element::describe() {
 
   return Err::demangle(typeid(*this));
   
@@ -68,3 +68,10 @@ Element *Element::root() {
   return root;
   
 }
+
+bool Element::visit(function<bool (Element *)> f) {
+
+  return f(this);
+  
+}
+

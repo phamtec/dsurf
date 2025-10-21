@@ -55,7 +55,6 @@ public:
   static Size displaySize();
   
   void addRoot(Element *element, bool useloc=false);
-  void addRoot(const std::string &name, Element *element, std::optional<Point> loc=std::nullopt);
     // add a root, either we know the element, or add some generic object
     
   void addFile(const std::string &filename, bool raw);
@@ -194,7 +193,7 @@ private:
   
   bool processEvents();
   bool isDoubleClick();
-  void endEdit();
+  void endEdit(Editable *obj);
   void setHUD();
   void destroyRoots();
   Point addRootOrigin(Element *element, const Point &origin);

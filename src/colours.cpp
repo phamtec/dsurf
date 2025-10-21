@@ -24,6 +24,8 @@ SDL_Color Colours::lime = { 0x8B, 0xB0, 0x6F, SDL_ALPHA_OPAQUE };
 SDL_Color Colours::turquoise = { 0x53, 0xB6, 0xAC, SDL_ALPHA_OPAQUE };
 SDL_Color Colours::racingGreen = { 0x22, 0x55, 0x22, SDL_ALPHA_OPAQUE };
 SDL_Color Colours::straw = { 0xF4, 0xEF, 0xC5, SDL_ALPHA_OPAQUE };
+SDL_Color Colours::lightPlum = { 0xD8, 0xBC, 0xCD, SDL_ALPHA_OPAQUE };
+SDL_Color Colours::teaGreen = { 0xd0, 0xf0, 0xc0, SDL_ALPHA_OPAQUE };
 
 SDL_Color Colours::dictE = plum;
 SDL_Color Colours::listE = orange;

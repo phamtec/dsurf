@@ -26,7 +26,7 @@
 using namespace std;
 
 ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic> &obj): 
-  _parent(0), _hudobj(-1) {
+  _parent(0), _hudobj(-1), _editing(true) {
 
   _name.set(Unicode::convert(name), Colours::white);
 
@@ -42,77 +42,78 @@ ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic>
   
   auto scenarios =  Generic::getVector(obj, "scenarios");
 
-//   auto remote = Generic::getObject(obj, "remote");
-//   if (remote) {
-//     _code.push_back(unique_ptr<Element>(new ProjectCode("Remote", *remote, findScenario(scenarios, "/remote"))));
-//     auto s = _flo->evalStringMember(remote, "address");
-//     if (s) {
-//       _remoteAddress = *s;
-//     }
-//     s = _flo->evalStringMember(remote, "public");
-//     if (s) {
-//       _remotePubKey = *s;
-//     }
-//     auto i = _flo->evalNumMember(remote, "port");
-//     if (i) {
-//       _remotePort = *i;
-//     }
-//   }
-//   else {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Remote", empty, empty)));
-//  }
+  auto remote = Generic::getObject(obj, "remote");
+  if (remote) {
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Remote", *remote, library, findScenario(scenarios, "/remote"))));
+    auto s = _flo->evalStringMember(remote, "address");
+    if (s) {
+      _remoteAddress = *s;
+    }
+    s = _flo->evalStringMember(remote, "public");
+    if (s) {
+      _remotePubKey = *s;
+    }
+    auto i = _flo->evalNumMember(remote, "port");
+    if (i) {
+      _remotePort = *i;
+    }
+  }
+  else {
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Remote", empty, library, empty)));
+ }
   
-//   auto local = Generic::getObject(obj, "local");    
-//   if (local) {
-//     _code.push_back(unique_ptr<Element>(new ProjectCode("Local", *local, findScenario(scenarios, "/local"))));
-//     auto s = _flo->evalStringMember(local, "uuid");
-//     if (s) {
-//       _uuid = *s;
-//     }
-//     s = _flo->evalStringMember(local, "private");
-//     if (s) {
-//       _privateKey = *s;
-//     }
-//     s = _flo->evalStringMember(local, "public");
-//     if (s) {
-//       _publicKey = *s;
-//     }
-//   }
-//   else {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Local", empty, empty)));
-//  }
+  auto local = Generic::getObject(obj, "local");    
+  if (local) {
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Local", *local, library, findScenario(scenarios, "/local"))));
+    auto s = _flo->evalStringMember(local, "uuid");
+    if (s) {
+      _uuid = *s;
+    }
+    s = _flo->evalStringMember(local, "private");
+    if (s) {
+      _privateKey = *s;
+    }
+    s = _flo->evalStringMember(local, "public");
+    if (s) {
+      _publicKey = *s;
+    }
+  }
+  else {
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Local", empty, library, empty)));
+ }
   
-//   auto o = Generic::getObject(obj, "send");
-//   if (o) {
-//     _code.push_back(unique_ptr<Element>(new ProjectCode("Send", *o, findScenario(scenarios, "/send"))));
-//     _send = *o;
-//   }
-//   else {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Send", empty, empty)));
-//  }
+  auto o = Generic::getObject(obj, "send");
+  if (o) {
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Send", *o, library, findScenario(scenarios, "/send"))));
+    _send = *o;
+  }
+  else {
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Send", empty, library, empty)));
+ }
   
   auto next =  Generic::getObject(obj, "next");
   if (next) {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Next", *next, findScenario(scenarios, "/next"))));
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Next", *next, library, findScenario(scenarios, "/next"))));
     _next = *next;
   }
   else {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Next", empty, empty)));
+    _code.push_back(unique_ptr<Element>(new ProjectCode("Next", empty, library, empty)));
   }
 
-//   if (library) {
-//     _code.push_back(unique_ptr<Element>(Builder::walk(this, *library)));
-//   }
-//   else {
+  _libindex = _code.size();
+  if (library) {
+    _code.push_back(unique_ptr<Element>(Builder::walk(this, *library)));
+  }
+  else {
     _code.push_back(unique_ptr<Element>(new List(false)));
-//  }
+ }
   
-//   if (scenarios) {
-//     _code.push_back(unique_ptr<Element>(Builder::walk(this, *scenarios)));
-//   }
-//   else {
+  if (scenarios) {
+    _code.push_back(unique_ptr<Element>(Builder::walk(this, *scenarios)));
+  }
+  else {
     _code.push_back(unique_ptr<Element>(new List(false)));
-//  }
+ }
 
   // make sure all the codes have their parent set.
   for_each(_code.begin(), _code.end(), [this](auto& e) {
@@ -309,3 +310,47 @@ void ProjectZMQObj::load(Renderer &renderer) {
   }
   
 }
+
+bool ProjectZMQObj::visit(function<bool (Element *)> f) {
+
+  if (!f(this)) {
+    return false;
+  }
+  if (_editing) {
+    for (auto& e: _code) {
+      if (!e->visit(f)) {
+        return false;
+      }
+    }
+  }
+  return true;
+  
+}
+
+void ProjectZMQObj::changed(Renderer &renderer, Element *obj) {
+
+  // test the library.
+  auto lib = _code[_libindex].get();
+  if (!lib->visit([this, &renderer, obj, lib](auto e) {
+    if (e == obj) {
+      auto v = Generic::getVector(Writeable::cast(lib)->getGeneric());
+      if (!v) {
+        cerr << "lib is not a vector!" << endl;
+        return false;
+      }
+      for_each(_code.begin(), _code.end(), [&renderer, v](auto& e) {
+        auto code = dynamic_cast<ProjectCode *>(e.get());
+        if (code) {
+          code->libChanged(renderer, *v);
+//          code->run(renderer);
+        }
+      });
+      return false;
+    }
+    return true;
+  })) {
+    return;
+  }
+  
+}
+

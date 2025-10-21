@@ -273,6 +273,20 @@ Point List::localOrigin(Element *elem) {
   
 }
 
+bool List::visit(std::function<bool (Element *)> f) {
+
+  if (!f(this)) {
+    return false;
+  }
+  for (auto& e: _elements) {
+    if (!e->visit(f)) {
+      return false;
+    }
+  }
+  return true;
+  
+}
+
 void List::registerHUDModes(HUD *hud) {
 
   {
@@ -387,6 +401,7 @@ void List::setMode(Renderer &renderer, HUD *hud) {
     hud->setMode(_hudrootlist);
     return;
   }
+  
   hud->setMode(_hudlist);
   
 }

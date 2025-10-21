@@ -238,7 +238,7 @@ add_executable(TestMem test/testmem.cpp)
 add_test(TestMem TestMem)
 
 add_executable(TestChanges test/testchanges.cpp src/changes.cpp)
-  target_link_libraries(TestChanges ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  target_link_libraries(TestChanges reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestChanges TestChanges)
 

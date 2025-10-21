@@ -198,16 +198,6 @@ void Renderer::addFile(const string &filename, bool raw) {
   
 }
 
-void Renderer::addRoot(const string &name, Element *element, optional<Point> loc) {
-
-  auto root = new Root(name, element);
-  if (loc) {
-    root->setLocation(*loc);
-  }
-  addRoot(root, true);
-  
-}
-
 void Renderer::addRoot(Element *element, bool useloc) {
 
   // if there is only 1 element and it is <new> with an empty dict
@@ -480,10 +470,27 @@ void Renderer::setHUD() {
   _hud->setMode(_hudnone);
 }
 
-void Renderer::endEdit() {
+void Renderer::endEdit(Editable *obj) {
 
   setHUD();
 
+  Element *el = dynamic_cast<Element *>(obj);
+  if (!el) {
+    cerr << "thing that changed wasn't an element" << endl;
+    return;
+  }
+  
+  // tell all the objects about this change!
+  for (auto& r: _roots) {
+    bool result = r->visit([this, el](auto e) {
+      e->changed(*this, el);
+      return true;
+    });
+    if (!result) {
+      break;
+    }
+  }
+    
 }
 
 void Renderer::copy(Element *element) {
@@ -961,9 +968,14 @@ void Renderer::setError(const string &str) {
 
 void Renderer::setDirty(Element *elem, bool state) {
 
-  auto root = dynamic_cast<Root *>(elem->root());
+  auto elemroot = elem->root();
+  if (!elemroot) {
+    cerr << "element " << elem->describe() << " has no root" << endl;
+    return;
+  }
+  auto root = dynamic_cast<Root *>(elemroot);
   if (!root)  {
-    cerr << "element has no root or not a Root" << endl;
+    cerr << "root " << elemroot->describe() << " not a Root" << endl;
     return;
   }
   auto r = find_if(_roots.begin(), _roots.end(), [root](auto& e) {

@@ -48,31 +48,32 @@ public:
     // is this really a dictionary?
     
   // Element
-  virtual void setParent(Element *parent) { _parent = parent; }
-  virtual Element *getParent() { return _parent; }
-  virtual std::string describe();
-  virtual void build(Renderer &renderer);
-  virtual void destroy(Renderer &renderer);
-  virtual void layout();
-  virtual void render(Renderer &renderer, const Point &origin);
-  virtual Element *hitTest(const Point &origin, const Point &p);
-  virtual Point localOrigin(Element *elem);
-  virtual Size size() { return _size; }
-  virtual RectList calcLayout();
+  virtual void setParent(Element *parent) override { _parent = parent; }
+  virtual Element *getParent() override { return _parent; }
+  virtual std::string describe() override;
+  virtual void build(Renderer &renderer) override;
+  virtual void destroy(Renderer &renderer) override;
+  virtual void layout() override;
+  virtual void render(Renderer &renderer, const Point &origin) override;
+  virtual Element *hitTest(const Point &origin, const Point &p) override;
+  virtual Point localOrigin(Element *elem) override;
+  virtual Size size() override { return _size; }
+  virtual RectList calcLayout() override;
+  virtual bool visit(std::function<bool (Element *)> f) override;
   
   // Writeable
-  virtual rfl::Generic getGeneric();
+  virtual rfl::Generic getGeneric() override;
 
   // Listable
-  virtual int count() { return _elements.size(); }
-  virtual Element *at(int index) { return _elements[index].get(); }
-  virtual std::vector<std::unique_ptr<Element> > *getElements() { return &_elements; }
+  virtual int count() override { return _elements.size(); }
+  virtual Element *at(int index) override { return _elements[index].get(); }
+  virtual std::vector<std::unique_ptr<Element> > *getElements() override { return &_elements; }
   
   // Commandable
-  virtual void initHUD(HUD *hud);
-  virtual void setMode(Renderer &renderer, HUD *hud);
+  virtual void initHUD(HUD *hud) override;
+  virtual void setMode(Renderer &renderer, HUD *hud) override;
+  virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
   static void registerHUDModes(HUD *hud);
-  virtual void processKey(Renderer &renderer, SDL_Keycode code);
 
   static List *cast(Element *obj);
 

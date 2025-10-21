@@ -41,13 +41,24 @@ RectList Property::calcLayout() {
   Size nsize = _name.size();
   layout.push_back(Rect(Point(), nsize));
   auto osize = _obj->size();
+  Size s;
   if (_container) {
     // containers draw UNDER the name
     layout.push_back(Rect(Point(0, nsize.h + Sizes::thickness), osize));
+    s = Size(0, osize.h + nsize.h);
+    if (nsize.w > osize.w) {
+      s.w = nsize.w;
+    }
+    else {
+      s.w = osize.w;
+    }
   }
   else {
     layout.push_back(Rect(Point(nsize.w + Sizes::name_var_padding, 0), osize));
+    s = Size(nsize.w + Sizes::name_var_padding + osize.w, nsize.h);
   }
+  s.h += Sizes::thickness;
+  Layout::addSize(&layout, s);
   
   return layout;
   
@@ -76,6 +87,8 @@ void Property::destroy(Renderer &renderer) {
 
 void Property::render(Renderer &renderer, const Point &origin) {
 
+//  renderer.renderLayout(origin, _layout);
+  
   auto i = _layout.begin();
   _name.render(renderer, origin + i->origin);
   i++;
@@ -83,6 +96,16 @@ void Property::render(Renderer &renderer, const Point &origin) {
   
 //  renderer.renderRect(_r);
 
+}
+
+bool Property::visit(std::function<bool (Element *)> f) {
+
+  if (!f(this)) {
+    return false;
+  }
+  
+  return _obj->visit(f);
+  
 }
 
 std::string Property::getName() {

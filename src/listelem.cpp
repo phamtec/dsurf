@@ -144,6 +144,16 @@ Point ListElem::localOrigin(Element *elem) {
   
 }
 
+bool ListElem::visit(std::function<bool (Element *)> f) {
+
+  if (!f(this)) {
+    return false;
+  }
+  
+  return _obj->visit(f);
+  
+}
+
 void ListElem::processKey(Renderer &renderer, SDL_Keycode code) {
 
   if (_editing) {

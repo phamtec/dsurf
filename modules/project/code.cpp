@@ -16,48 +16,78 @@
 #include "unicode.hpp"
 #include "renderer.hpp"
 #include "generic.hpp"
+#include "list.hpp"
 
 using namespace std;
 
-ProjectCode::ProjectCode(const string &name, rfl::Generic source, optional<rfl::Object<rfl::Generic> > scenario): 
-  _source(source), _hudobj(-1) {
+ProjectCode::ProjectCode(const string &name, rfl::Generic transform, optional<vector<rfl::Generic> > library, optional<rfl::Object<rfl::Generic> > scenario): 
+  _hudobj(-1), _running(false) {
 
-  if (scenario) {
-    _context = Generic::getGeneric(*scenario, "context");
+  if (library) {
+    _flo.reset(new Flo(*library));
   }
-  _obj = unique_ptr<Element>(Builder::walk(this, _source));
-  _name.set(Unicode::convert(name), Colours::black);
+  else {
+    _flo.reset(new Flo());
+  }
   
+  _name.set(Unicode::convert(name), Colours::black);
+  _transform = unique_ptr<Element>(Builder::walk(this, transform));
+  if (scenario) {
+    auto input = Generic::getGeneric(*scenario, "context");
+    if (input) {
+      _input = unique_ptr<Element>(Builder::walk(this, *input));
+    }
+  }
+  
+  if (!_input) {
+    _input = unique_ptr<Element>(new List(false));
+    _input->setParent(this);
+  }
+
+  _output = unique_ptr<Element>(new List(false));
+  _output->setParent(this);
+ 
 }
 
 void ProjectCode::build(Renderer &renderer) {
 
   _name.build(renderer);
-  _obj->build(renderer);
-  
+  _transform->build(renderer);
+  _input->build(renderer);
+  _output->build(renderer);
+
 }
 
 void ProjectCode::destroy(Renderer &renderer) {
 
-  _obj->destroy(renderer);
+  _transform->destroy(renderer);
+  _input->destroy(renderer);
+  _output->destroy(renderer);
   
 }
 
 RectList ProjectCode::calcLayout() {
 
   // at least just the name.
-  auto s = _name.size();
+  auto names = _name.size();
   RectList layout;
   auto o = Point();
-  layout.push_back(Rect(o, s));
+  layout.push_back(Rect(o, names));
   
-  o.y += s.h + Sizes::text_padding;
-  s = _obj->size();
-  s.h += Sizes::text_padding * 2;
-  s.w += Sizes::text_padding * 2;
-  layout.push_back(Rect(o, s));
-  o.y += s.h;
-  Layout::addSize(&layout, Size(s.w, o.y));
+  o.y += names.h + Sizes::text_padding;
+  auto ts = _transform->size();
+  ts.h += Sizes::text_padding * 2;
+  ts.w += Sizes::text_padding * 2;
+  layout.push_back(Rect(o, ts));
+  o.y += ts.h;
+  
+  if (_running) {
+    auto ins = _input->size();
+    layout.push_back(Rect(Point(-ins.w - Sizes::group_indent, 0), ins + (Sizes::text_padding * 2)));
+    auto outs = _output->size();
+    layout.push_back(Rect(Point(ts.w + Sizes::group_indent, 0), outs + (Sizes::text_padding * 2)));
+  }
+  Layout::addSize(&layout, Size(ts.w, o.y));
 
   return layout;
   
@@ -65,7 +95,9 @@ RectList ProjectCode::calcLayout() {
 
 void ProjectCode::layout() {
 
-  _obj->layout();
+  _transform->layout();
+  _input->layout();
+  _output->layout();
   
   // calculate the layout.
   _layout = calcLayout();
@@ -81,9 +113,42 @@ void ProjectCode::render(Renderer &renderer, const Point &origin) {
   _name.render(renderer, origin + (*i).origin);
   i++;
   renderer.renderFilledRect(*i + origin, Colours::straw);
-  _obj->render(renderer, origin + (*i).origin + Size(Sizes::text_padding, Sizes::text_padding));
+  _transform->render(renderer, origin + (*i).origin + Size(Sizes::text_padding, Sizes::text_padding));
+  i++;
+  
+  if (_running) {
+    renderer.renderFilledRect(*i + origin, Colours::lightPlum);
+    _input->render(renderer, origin + (*i).origin + Sizes::text_padding);
+    i++;
+    renderer.renderFilledRect(*i + origin, Colours::teaGreen);
+    _output->render(renderer, origin + (*i).origin + Sizes::text_padding);
+  }
+}
+
+Element *ProjectCode::hitTest(const Point &origin, const Point &p) { 
+
+  auto i = _layout.begin();
+  // skip name and transform
+  i++;
+  auto hit = _transform->hitTest(origin + i->origin, p);
+  if (hit) {
+//    cout << "hit " << hit->describe() << endl;
+    return hit;
+  }
+  i++;
+  
+  if (_running) {
+    hit = _input->hitTest(origin + i->origin, p);
+    if (hit) {
+      return hit;
+    }
+    i++;
+  }
+  
+  return super::hitTest(origin, p);
   
 }
+
 
 Point ProjectCode::localOrigin(Element *elem) {
 
@@ -91,9 +156,20 @@ Point ProjectCode::localOrigin(Element *elem) {
   // skip name
   i++;
   
-  if (elem == _obj.get()) {
+  if (elem == _transform.get()) {
 //    cout << "ProjectCode " << i->origin << endl;
-    return i->origin;
+    return i->origin + Sizes::text_padding;
+  }
+  i++;
+  
+  if (_running) {
+    if (elem == _input.get()) {
+      return i->origin + Sizes::text_padding;
+    }
+    i++;
+    if (elem == _output.get()) {
+      return i->origin + Sizes::text_padding;
+    }
   }
   
   return Point(0, 0);
@@ -104,12 +180,16 @@ void ProjectCode::initHUD(HUD *hud) {
 
   _hudobj = hud->findMode("projectcode");
   
+  Commandable::cast(_transform.get())->initHUD(hud);
+  Commandable::cast(_input.get())->initHUD(hud);
+  Commandable::cast(_output.get())->initHUD(hud);
+  
 }
 
 void ProjectCode::setMode(Renderer &renderer, HUD *hud) {
 
   // we can run if we have an input context.
-  hud->setFlag(renderer, canRun, _context.has_value());
+  hud->setFlag(renderer, canRun, !_running);
   
   hud->setMode(_hudobj);
   
@@ -123,16 +203,64 @@ void ProjectCode::processKey(Renderer &renderer, SDL_Keycode code) {
 
   switch (code) {      
     case SDLK_R:
-      {
-        auto obj = Builder::walk(0, *_context);
-        obj->layout();
-//        cout << "R " << origin() << endl;
-        renderer.addRoot("<context>", obj, origin() - Size(500, 0));
-      }
+      _running = true;
+      run(renderer);
+      root()->layout();
       break;
 
   }
 
 }
 
+void ProjectCode::run(Renderer &renderer) {
 
+  auto in = Writeable::cast(_input.get())->getGeneric();
+  auto t = Writeable::cast(_transform.get())->getGeneric();
+  auto to = Generic::getObject(t);
+  auto out = _flo->evalObj(in, *to);
+  
+  // clear out the output
+  _output->destroy(renderer);
+  
+  // rebuild it.
+  if (out) {
+    _output = unique_ptr<Element>(Builder::walk(this, *out));
+  }
+  else {
+    _output = unique_ptr<Element>(new List(false));
+    _output->setParent(this);
+  }
+  _output->build(renderer);
+  layout();
+  
+}
+
+void ProjectCode::libChanged(Renderer &renderer, const std::vector<rfl::Generic> &library) {
+
+  _flo.reset(new Flo(library));
+  run(renderer);
+}
+
+void ProjectCode::changed(Renderer &renderer, Element *obj) {
+
+  // test the transform.
+  if (!_transform->visit([this, &renderer, obj](auto e) {
+    if (e == obj) {
+      run(renderer);
+      return false;
+    }
+    return true;
+  })) {
+    return;
+  }
+
+  // test the input.
+  _input->visit([this, &renderer, obj](auto e) {
+    if (e == obj) {
+      run(renderer);
+      return false;
+    }
+    return true;
+  });
+  
+}

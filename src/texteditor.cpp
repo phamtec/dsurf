@@ -298,7 +298,7 @@ void TextEditor::endFocus(bool changed) {
     _obj->setString(*_renderer, wstring(s.begin(), s.end()));
   }
   _editing = false;
-  _renderer->endEdit();
+  _renderer->endEdit(_obj);
   
 }
 

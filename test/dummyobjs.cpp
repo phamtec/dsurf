@@ -77,8 +77,6 @@ void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg) {
 }
 void Renderer::renderLayout(const Point &origin, const RectList &layout) {
 }
-void Renderer::addRoot(const std::string &name, Element *element, std::optional<Point> loc) {
-}
 
 // HUD
 int HUD::registerMode(const string &name, HUDMode *mode) {

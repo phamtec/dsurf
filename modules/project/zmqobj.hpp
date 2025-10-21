@@ -41,6 +41,8 @@ public:
   virtual Size size() override { return _size; }
   virtual RectList calcLayout() override;
   virtual Point localOrigin(Element *elem) override;
+  virtual bool visit(std::function<bool (Element *)> f) override;
+  virtual void changed(Renderer &renderer, Element *obj) override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
@@ -56,6 +58,7 @@ protected:
   bool _editing;
   std::vector<std::unique_ptr<Element> > _code;
   RectList _layout;
+  int _libindex;
   
   std::string _remoteAddress;
   int _remotePort;

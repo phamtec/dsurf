@@ -449,6 +449,12 @@ soon.
 
 - introduce a discreet code object to simplify drawing and running code.
 
+### 21-Oct-2025
+
+- Version 0.10
+- We can run code, change on the fly and see the result.
+
+
 
 
 

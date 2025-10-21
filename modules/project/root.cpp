@@ -159,3 +159,16 @@ void ProjectRoot::processKey(Renderer &renderer, SDL_Keycode code) {
 
 }
 
+bool ProjectRoot::visit(function<bool (Element *)> f) {
+
+  if (!f(this)) {
+    return false;
+  }
+  for (auto& e: _objs) {
+    if (!e->visit(f)) {
+      return false;
+    }
+  };
+  return true;
+  
+}

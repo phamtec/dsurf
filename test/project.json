@@ -58,8 +58,8 @@
                     ]
                   },
                   "then": {
-                    "send": {
-                      "dict": {
+                    "dict": {
+                      "send": {
                         "type": "heartbeat"
                       }
                     }
@@ -70,11 +70,10 @@
           },
           "scenarios": [
             {
-              "name": "Simple",
+              "path": "/next",
               "context": {
                 "type": "upstream"
-              },
-              "path": "/next"
+              }
             }
           ]
         }

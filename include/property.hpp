@@ -34,34 +34,35 @@ public:
   Property(const std::wstring &name, Element *obj, bool container);
   
   // Element
-  virtual void setParent(Element *parent) { _parent = parent; }
-  virtual Element *getParent() { return _parent; }
-  virtual std::string describe();
-  virtual void build(Renderer &renderer);
-  virtual void layout();
-  virtual void render(Renderer &renderer, const Point &origin);
-  virtual Element *hitTest(const Point &origin, const Point &p);
-  virtual Point localOrigin(Element *elem);
-  virtual void destroy(Renderer &renderer);
-  virtual Size size() { return _size; }
-  virtual RectList calcLayout();
+  virtual void setParent(Element *parent) override { _parent = parent; }
+  virtual Element *getParent() override { return _parent; }
+  virtual std::string describe() override;
+  virtual void build(Renderer &renderer) override;
+  virtual void layout() override;
+  virtual void render(Renderer &renderer, const Point &origin) override;
+  virtual Element *hitTest(const Point &origin, const Point &p) override;
+  virtual Point localOrigin(Element *elem) override;
+  virtual void destroy(Renderer &renderer) override;
+  virtual Size size() override { return _size; }
+  virtual RectList calcLayout() override;
+  virtual bool visit(std::function<bool (Element *)> f) override;
 
   // Writeable
-  virtual std::string getName();
-  virtual rfl::Generic getGeneric();
+  virtual std::string getName() override;
+  virtual rfl::Generic getGeneric() override;
 
   // Editable
-  virtual std::wstring getString() { return _name.str(); }
-  virtual void setString(Renderer &renderer, const std::wstring &s);
+  virtual std::wstring getString() override { return _name.str(); }
+  virtual void setString(Renderer &renderer, const std::wstring &s) override;
 
   // Commandable
-  virtual void initHUD(HUD *hud);
-  virtual void setMode(Renderer &renderer, HUD *hud);
-  virtual void processKey(Renderer &renderer, SDL_Keycode code);
+  virtual void initHUD(HUD *hud) override;
+  virtual void setMode(Renderer &renderer, HUD *hud) override;
+  virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
 
   // Objable
-  virtual void setObj(Renderer &renderer, Element *obj);
-  virtual Element *getObj() { return _obj.get(); }
+  virtual void setObj(Renderer &renderer, Element *obj) override;
+  virtual Element *getObj() override { return _obj.get(); }
     
 private:
 

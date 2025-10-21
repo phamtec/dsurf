@@ -41,6 +41,7 @@ public:
   virtual Point localOrigin(Element *elem) override;
   virtual Size size() override { return _size; }
   virtual RectList calcLayout() override;
+  virtual bool visit(std::function<bool (Element *)> f) override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;

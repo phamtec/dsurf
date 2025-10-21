@@ -90,6 +90,9 @@ Element *Element::root() {
 Element *Element::hitTest(const Point &origin, const Point &p) {
   return nullptr;
 }
+bool Element::visit(function<bool (Element *)> f) {
+  return true;
+}
 
 BOOST_AUTO_TEST_CASE( change )
 {

@@ -28,6 +28,7 @@
 #include "layout.hpp"
 
 #include <vector>
+#include <functional>
 
 class Renderer;
 class Point;
@@ -88,6 +89,12 @@ public:
     
   Element *root();
     // return the root object by walking the parent.
+    
+  virtual bool visit(std::function<bool (Element *)> f);
+    // visit all the sub elements of this element.
+    
+  virtual void changed(Renderer &renderer, Element *) {}
+    // an element has changed.
     
 };
 
