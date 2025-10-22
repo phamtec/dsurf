@@ -22,6 +22,28 @@
 using namespace std;
 using namespace flo;
 
+optional<rfl::Generic> Flo::eval(const rfl::Generic &transform) {
+
+  Functions f(_library);
+  Processor p(f);
+
+  rfl::Object<rfl::Generic> t;
+  t["transform"] = transform;
+  return p.transform(t);
+
+}
+
+optional<rfl::Generic> Flo::eval(const rfl::Generic &obj, const rfl::Generic &transform) {
+
+  Functions f(_library);
+  Processor p(obj, f);
+
+  rfl::Object<rfl::Generic> t;
+  t["transform"] = transform;
+  return p.transform(t);
+
+}
+
 optional<string> Flo::evalStringMember(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
 
   if (!obj) {
@@ -37,10 +59,7 @@ optional<string> Flo::evalStringMember(optional<rfl::Object<rfl::Generic> > obj,
 
 //  cout << Generic::toString(*transform) << endl;
   
-  Functions f(_library);
-  Processor p(f);
-
-  auto result = p.transform(*transform);
+  auto result = eval(*transform);
   if (!result) {
     return nullopt;
   }
@@ -61,10 +80,7 @@ optional<long> Flo::evalNumMember(optional<rfl::Object<rfl::Generic> > obj, cons
 
 //  cout << Generic::toString(*transform) << endl;
   
-  Functions f(_library);
-  Processor p(f);
-
-  auto result = p.transform(*transform);
+  auto result = eval(*transform);
   if (!result) {
     return nullopt;
   }
@@ -75,10 +91,7 @@ optional<long> Flo::evalNumMember(optional<rfl::Object<rfl::Generic> > obj, cons
 
 optional<rfl::Object<rfl::Generic> > Flo::evalObj(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform) {
 
-  Functions f(_library);
-  Processor p(obj, f);
-
-  auto result = p.transform(transform);
+  auto result = eval(obj, transform);
   if (!result) {
     return nullopt;
   }

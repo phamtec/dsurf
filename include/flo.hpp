@@ -43,6 +43,9 @@ private:
   
   std::vector<rfl::Generic> _library;
 
+  std::optional<rfl::Generic> eval(const rfl::Generic &transform);
+  std::optional<rfl::Generic> eval(const rfl::Generic &obj, const rfl::Generic &transform);
+  
 };
 
 #endif // H_flo
