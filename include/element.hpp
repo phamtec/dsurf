@@ -65,9 +65,8 @@ public:
     // implement this to return a list of rectangles that parralell that,
     // save that away and then use it when your hit testing etc.
     
-  virtual void build(Renderer &renderer) = 0;
+  virtual void build(Renderer &renderer)  {};
     // build the texture and surface ready to render.
-    // objects, build yourself and then call super::build(renderer)
     
   virtual void destroy(Renderer &renderer) {};
     // opposite of build, but called with the renderer.

@@ -51,7 +51,6 @@ public:
   virtual void setParent(Element *parent) override { _parent = parent; }
   virtual Element *getParent() override { return _parent; }
   virtual std::string describe() override;
-  virtual void build(Renderer &renderer) override;
   virtual void destroy(Renderer &renderer) override;
   virtual void layout() override;
   virtual void render(Renderer &renderer, const Point &origin) override;

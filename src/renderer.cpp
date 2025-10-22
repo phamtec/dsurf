@@ -66,7 +66,9 @@ Renderer::~Renderer() {
 
 void Renderer::destroyRoots() {
 
-  for_each(_roots.begin(), _roots.end(), [this](auto& e) { e->destroy(*this); });
+  for_each(_roots.begin(), _roots.end(), [this](auto& e) { 
+    destroy(e.get()); 
+  });
 
 }
 
@@ -222,7 +224,7 @@ void Renderer::addRoot(Element *element, bool useloc) {
   }
 
   // build all objects with this renderer.
-  element->build(*this);
+  build(element);
   
   // lay it out.
   element->layout();
@@ -246,6 +248,26 @@ void Renderer::addRoot(Element *element, bool useloc) {
   
   // calculate the total size of all the objects.
   recenter();
+
+}
+
+void Renderer::build(Element *elem) {
+
+  elem->visit([this](auto e) {
+//    cout << "building " << e->describe() << endl;
+    e->build(*this);
+    return true;
+  });
+
+}
+
+void Renderer::destroy(Element *elem) {
+
+  elem->visit([this](auto e) {
+//    cout << "destroying " << e->describe() << endl;
+    e->destroy(*this);
+    return true;
+  });
 
 }
 
@@ -278,7 +300,7 @@ void Renderer::removeRoot(Element *element) {
     return;
   }
 
-  (*r)->destroy(*this);
+  destroy(r->get());
   _roots.erase(r);
   recenter();
   
@@ -288,7 +310,7 @@ void Renderer::removeRoot(Element *element) {
 void Renderer::initElement(Element *parent, Element *element) {
 
   element->setParent(parent);
-  element->build(*this);
+  build(element);
   Commandable::cast(element)->initHUD(_hud.get());
   
 }

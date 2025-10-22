@@ -42,7 +42,6 @@ public:
   virtual void render(Renderer &renderer, const Point &origin) override;
   virtual Element *hitTest(const Point &origin, const Point &p) override;
   virtual Point localOrigin(Element *elem) override;
-  virtual void destroy(Renderer &renderer) override;
   virtual Size size() override { return _size; }
   virtual RectList calcLayout() override;
   virtual bool visit(std::function<bool (Element *)> f) override;

@@ -184,16 +184,6 @@ void ProjectZMQObj::layout() {
 void ProjectZMQObj::build(Renderer &renderer) {
 
   _name.build(renderer);
-  for_each(_code.begin(), _code.end(), [&renderer](auto& e) {
-    e->build(renderer);
-  });
-}
-
-void ProjectZMQObj::destroy(Renderer &renderer) {
-
-  for_each(_code.begin(), _code.end(), [&renderer](auto& e) {
-    e->destroy(renderer);
-  });
 
 }
 

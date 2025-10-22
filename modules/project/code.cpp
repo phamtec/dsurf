@@ -52,19 +52,28 @@ ProjectCode::ProjectCode(const string &name, rfl::Generic transform, optional<ve
 void ProjectCode::build(Renderer &renderer) {
 
   _name.build(renderer);
-  _transform->build(renderer);
-  _input->build(renderer);
-  _output->build(renderer);
 
 }
 
-void ProjectCode::destroy(Renderer &renderer) {
+bool ProjectCode::visit(std::function<bool (Element *)> f) {
 
-  _transform->destroy(renderer);
-  _input->destroy(renderer);
-  _output->destroy(renderer);
+  if (!f(this)) {
+    return false;
+  }
+  if (!_transform->visit(f)) {
+    return false;
+  }
+  if (!_input->visit(f)) {
+    return false;
+  }
+  if (!_output->visit(f)) {
+    return false;
+  }
+
+  return true;
   
 }
+
 
 RectList ProjectCode::calcLayout() {
 
@@ -230,7 +239,7 @@ void ProjectCode::run(Renderer &renderer) {
     _output = unique_ptr<Element>(new List(false));
     _output->setParent(this);
   }
-  _output->build(renderer);
+  renderer.build(_output.get());
   layout();
   
 }

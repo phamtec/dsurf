@@ -34,7 +34,6 @@ public:
   virtual void setParent(Element *parent) override { _parent = parent; }
   virtual Element *getParent() override { return _parent; }
   virtual void build(Renderer &renderer) override;
-  virtual void destroy(Renderer &renderer) override;
   virtual void layout() override;
   virtual void render(Renderer &renderer, const Point &origin) override;
   virtual Size size() override { return _size; }
@@ -42,6 +41,7 @@ public:
   virtual Point localOrigin(Element *elem) override;
   virtual Element *hitTest(const Point &origin, const Point &p) override;
   virtual void changed(Renderer &renderer, Element *obj) override;
+  virtual bool visit(std::function<bool (Element *)> f) override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;

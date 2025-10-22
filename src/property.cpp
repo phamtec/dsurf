@@ -75,14 +75,7 @@ void Property::layout() {
 void Property::build(Renderer &renderer) {
 
   _name.build(renderer);
-  _obj->build(renderer);
 
-}
-
-void Property::destroy(Renderer &renderer) {
-
-  _obj->destroy(renderer);
-  
 }
 
 void Property::render(Renderer &renderer, const Point &origin) {

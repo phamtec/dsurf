@@ -95,23 +95,9 @@ void List::layout() {
   
 }
 
-void List::build(Renderer &renderer) {
-
-  // order doesn't matter.
-  for_each(_elements.begin(), _elements.end(), [&renderer](auto& e) { 
-    e->build(renderer);
-  });
-  
-}
-
 void List::destroy(Renderer &renderer) {
 
   endEdit(renderer);
-
-  // and walk the list.
-  for_each(_elements.begin(), _elements.end(), [&renderer](auto& e) { 
-    e->destroy(renderer);
-  });
 
 }
 

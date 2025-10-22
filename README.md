@@ -454,6 +454,11 @@ soon.
 - Version 0.10
 - We can run code, change on the fly and see the result.
 
+### 22-Oct-2025
+
+- Use visitor to build and destroy.
+
+
 
 
 

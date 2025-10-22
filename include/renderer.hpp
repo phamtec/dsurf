@@ -67,6 +67,10 @@ public:
   void initElement(Element *parent, Element *element);
     // do all the work that would initialise an element.
     
+  void build(Element *elem);
+  void destroy(Element *elem);
+    // visit all the subobjects to buld and destroy.
+    
   void initTypes();
     // specifically initialise types.
     

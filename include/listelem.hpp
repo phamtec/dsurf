@@ -40,7 +40,6 @@ public:
   // Element
   virtual void setParent(Element *parent) override  { _parent = parent; }
   virtual Element *getParent() override  { return _parent; }
-  virtual void build(Renderer &renderer) override ;
   virtual void layout() override ;
   virtual void render(Renderer &renderer, const Point &origin) override ;
   virtual Element *hitTest(const Point &origin, const Point &p) override ;

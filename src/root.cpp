@@ -71,14 +71,7 @@ void Root::layout() {
 void Root::build(Renderer &renderer) {
 
   _filename.build(renderer);
-  _obj->build(renderer);
 
-}
-
-void Root::destroy(Renderer &renderer) {
-
-  _obj->destroy(renderer);
-  
 }
 
 void Root::render(Renderer &renderer, const Point &origin) {
@@ -126,6 +119,15 @@ Point Root::localOrigin(Element *elem) {
   i++;
   
   return _obj->localOrigin(elem) + i->origin;
+  
+}
+
+bool Root::visit(std::function<bool (Element *)> f) {
+
+  if (!f(this)) {
+    return false;
+  }
+  return _obj->visit(f);
   
 }
 

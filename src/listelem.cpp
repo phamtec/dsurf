@@ -71,20 +71,12 @@ void ListElem::layout() {
   
 }
 
-void ListElem::build(Renderer &renderer) {
-
-  _obj->build(renderer);
-
-}
-
 void ListElem::destroy(Renderer &renderer) {
 
   if (_texture) {
     renderer.destroyTexture(_texture);
     _texture = 0;
   }
-  
-  _obj->destroy(renderer);
   
 }
 

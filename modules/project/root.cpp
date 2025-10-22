@@ -71,9 +71,7 @@ void ProjectRoot::layout() {
 void ProjectRoot::build(Renderer &renderer) {
 
   _name.build(renderer);
-  for_each(_objs.begin(), _objs.end(), [&renderer](auto& e) {
-    e->build(renderer);
-  });
+
 }
 
 void ProjectRoot::render(Renderer &renderer, const Point &origin) {
