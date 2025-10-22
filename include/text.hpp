@@ -18,6 +18,7 @@
 #include "size.hpp"
 
 #include <string>
+#include <optional>
 #include <SDL3/SDL_pixels.h>
 
 class SDL_Texture;
