@@ -35,7 +35,7 @@ sudo apt-get install -y git g++ gcc build-essential git make \
 wget https://github.com/boostorg/boost/releases/download/boost-1.85.0/boost-1.85.0-b2-nodocs.tar.gz
 tar xzf boost-1.85.0-b2-nodocs.tar.gz 
 cd boost-1.85.0
-./bootstrap.sh --prefix=/usr
+./bootstrap.sh --prefix=/usr/local
 sudo ./b2 install boost.stacktrace.from_exception=off
 ```
 
