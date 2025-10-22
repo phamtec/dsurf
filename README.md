@@ -27,6 +27,26 @@ sudo apt-get install -y git g++ gcc build-essential git make \
   libssl-dev ruby-bundler xclip xsel libyaml-cpp-dev
 ```
 
+### CMake
+
+We need CMake 3.30.
+
+#### Linux
+
+```
+sudo apt remove -y --purge --auto-remove cmake
+```
+
+#### From source
+```
+wget https://cmake.org/files/v3.30/cmake-3.30.5.tar.gz
+tar -xzvf cmake-3.30.5.tar.gz
+cd cmake-3.30.5
+./bootstrap
+make -j$(nproc)
+sudo make install
+```
+
 ### Boost
 
 #### from source
@@ -76,26 +96,6 @@ mkdir build
 cd build
 cmake ..
 make
-sudo make install
-```
-
-### CMake
-
-We need CMake 3.30.
-
-#### Mac
-```
-brew install cnake
-```
-#### Linux
-
-```
-sudo apt remove -y --purge --auto-remove cmake
-wget https://cmake.org/files/v3.30/cmake-3.30.5.tar.gz
-tar -xzvf cmake-3.30.5.tar.gz
-cd cmake-3.30.5
-./bootstrap
-make -j$(nproc)
 sudo make install
 ```
 
