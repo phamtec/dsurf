@@ -13,8 +13,8 @@
 
 #include "generic.hpp"
 
-#include "../flo/include/processor.hpp"
-#include "../flo/include/functions.hpp"
+#include "processor.hpp"
+#include "functions.hpp"
 
 #include <rfl.hpp>
 #include <rfl/json.hpp>

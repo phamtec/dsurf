@@ -457,8 +457,7 @@ soon.
 ### 22-Oct-2025
 
 - Use visitor to build and destroy.
-
-
+- FLo is now Open Source so use that.
 
 
 

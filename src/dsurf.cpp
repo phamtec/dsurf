@@ -1,7 +1,7 @@
 /*
   dsurf.cpp
   
-  Author: Paul Hamilton (phamtec@mac.com)
+  Author: Paul Hamilton (paul@visualops.com)
   Date: 25-Jul-2025
     
   Command line driver for dsurf.
