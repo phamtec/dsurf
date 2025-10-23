@@ -20,6 +20,7 @@
 #include "unicode.hpp"
 #include "modules.hpp"
 #include "root.hpp"
+#include "generic.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl/yaml.hpp>
@@ -30,38 +31,20 @@ namespace fs = std::filesystem;
 
 Element *Builder::loadFile(const string &fn, bool raw) {
 
-  fs::path p = fn;
-  rfl::Generic obj;
-  if (p.extension() == ".json") {
-    auto result = rfl::json::load<rfl::Generic>(fn);
-    if (!result) {
-      cerr << "couldn't load json " << fn << endl;
-      return nullptr;
-    }
-    obj = *result;
-  }
-  else  if (p.extension() == ".yaml") {
-    auto result = rfl::yaml::load<rfl::Generic>(fn);
-    if (!result) {
-      cerr << "couldn't load yaml " << fn << endl;
-      return nullptr;
-    }
-    obj = *result;
-  }
-  else {
-    cerr << "unknown file type " << fn << endl;
+  auto obj = Generic::parseFile(fn);
+  if (!obj) {
     return nullptr;
   }
-  
+
   if (!raw) {
-    auto elem = Modules::load(obj, fn);
+    auto elem = Modules::load(*obj, fn);
     if (elem) {
       return elem;
     }
   }
 
   // parse out the object.
-  auto elem = walk(0, obj);
+  auto elem = walk(0, *obj);
   
   // interdict the root element.
   return new Root(fn, elem);
@@ -75,6 +58,11 @@ Element *Builder::loadText(const char *text) {
     return nullptr;
   }
   
+  auto elem = Modules::load(*result, "x.json");
+  if (elem) {
+    return elem;
+  }
+
   return walk(0, *result);
 
 }

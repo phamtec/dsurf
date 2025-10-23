@@ -64,6 +64,7 @@ public:
     // dump the generic out as JSON or YML.
 
   static std::optional<rfl::Generic> parseStream(std::istream &s, const std::string &format=".json");
+  static std::optional<rfl::Generic> parseFile(const std::string &fn);
     // given a stream, and a format the stream is in (.json, .yml) parse it.
 
 };
