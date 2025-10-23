@@ -76,7 +76,6 @@ bool ProjectCode::visit(std::function<bool (Element *)> f) {
   
 }
 
-
 RectList ProjectCode::calcLayout() {
 
   // at least just the name.
@@ -139,8 +138,9 @@ void ProjectCode::render(Renderer &renderer, const Point &origin) {
 Element *ProjectCode::hitTest(const Point &origin, const Point &p) { 
 
   auto i = _layout.begin();
-  // skip name and transform
+  // skip name
   i++;
+  
   auto hit = _transform->hitTest(origin + i->origin, p);
   if (hit) {
 //    cout << "hit " << hit->describe() << endl;
@@ -248,7 +248,9 @@ void ProjectCode::run(Renderer &renderer) {
 
 void ProjectCode::libChanged(Renderer &renderer, const std::vector<rfl::Generic> &library) {
 
-  _flo.reset(new Flo(library));
+  rfl::Object<rfl::Generic> lib;
+  lib["library"] = library;
+  _flo.reset(new Flo(lib));
   run(renderer);
 }
 

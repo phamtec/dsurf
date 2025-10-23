@@ -13,6 +13,7 @@
 #include "font.hpp"
 #include "renderer.hpp"
 #include "spatial.hpp"
+#include "unicode.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -63,7 +64,7 @@ void Text::build(Renderer &renderer) {
 void Text::render(Renderer &renderer, const Point &origin, bool offs) {
 
   if (!_texture) {
-    SDL_Log("need to build first!");
+    SDL_Log("need to build %s first!", Unicode::convert(_str).c_str());
     return;
   }
   

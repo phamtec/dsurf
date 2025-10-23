@@ -12,6 +12,7 @@
 #include "modules.hpp"
 
 #include "../modules/project/main.hpp"
+#include "../modules/code/main.hpp"
 
 using namespace std;
 
@@ -23,6 +24,11 @@ Element *Modules::load(const rfl::Generic &obj, const string &filename) {
     cout << "found a project module" << endl;
     return p.load(obj, filename);
   }
+  Code c;
+  if (c.isA(obj)) {
+    cout << "found a code module" << endl;
+    return c.load(obj, filename);
+  }
     
   return nullptr;
   
@@ -31,5 +37,6 @@ Element *Modules::load(const rfl::Generic &obj, const string &filename) {
 void Modules::registerHUDModes(Renderer &renderer, HUD *hud) {
 
   Project::registerHUDModes(renderer, hud);
+  Code::registerHUDModes(renderer, hud);
   
 }

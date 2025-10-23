@@ -123,6 +123,9 @@ set(MODSRC
   modules/project/zmqobj.cpp
   modules/project/unkobj.cpp
   modules/project/code.cpp
+  modules/code/main.cpp
+  modules/code/root.cpp
+  modules/code/scenario.cpp
 )
 
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC})
