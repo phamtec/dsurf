@@ -60,9 +60,12 @@ public:
     // get a string out of the dictionary with the property name.
     // This is chainable.
 
-  static std::string toString(const rfl::Generic &g);
-    // dump the generic out as JSON.
-    
+  static std::string toString(const rfl::Generic &g, const std::string &format=".json");
+    // dump the generic out as JSON or YML.
+
+  static std::optional<rfl::Generic> parseStream(std::istream &s, const std::string &format=".json");
+    // given a stream, and a format the stream is in (.json, .yml) parse it.
+
 };
 
 #endif // H_generic

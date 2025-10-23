@@ -36,11 +36,11 @@ optional<rfl::Generic> Flo::eval(const rfl::Generic &transform) {
 optional<rfl::Generic> Flo::eval(const rfl::Generic &obj, const rfl::Generic &transform) {
 
   Functions f(_library);
-  Processor p(obj, f);
+  Processor p(f);
 
   rfl::Object<rfl::Generic> t;
   t["transform"] = transform;
-  return p.transform(t);
+  return p.transform(t, obj);
 
 }
 

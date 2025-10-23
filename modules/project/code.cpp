@@ -24,7 +24,9 @@ ProjectCode::ProjectCode(const string &name, rfl::Generic transform, optional<ve
   _hudobj(-1), _running(false) {
 
   if (library) {
-    _flo.reset(new Flo(*library));
+    rfl::Object<rfl::Generic> lib;
+    lib["library"] = *library;
+    _flo.reset(new Flo(lib));
   }
   else {
     _flo.reset(new Flo());
@@ -33,7 +35,7 @@ ProjectCode::ProjectCode(const string &name, rfl::Generic transform, optional<ve
   _name.set(Unicode::convert(name), Colours::black);
   _transform = unique_ptr<Element>(Builder::walk(this, transform));
   if (scenario) {
-    auto input = Generic::getGeneric(*scenario, "context");
+    auto input = Generic::getGeneric(*scenario, "input");
     if (input) {
       _input = unique_ptr<Element>(Builder::walk(this, *input));
     }

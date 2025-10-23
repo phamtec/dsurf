@@ -71,7 +71,7 @@
           "scenarios": [
             {
               "path": "/next",
-              "context": {
+              "input": {
                 "type": "upstream"
               }
             }

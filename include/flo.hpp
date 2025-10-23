@@ -32,7 +32,7 @@
 class Flo {
 
 public:
-  Flo(const std::vector<rfl::Generic> &library): _library(library) {}
+  Flo(const rfl::Generic &library): _library(library) {}
   Flo() {}
   
   std::optional<std::string> evalStringMember(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name);
@@ -41,7 +41,7 @@ public:
 
 private:
   
-  std::vector<rfl::Generic> _library;
+  rfl::Generic _library;
 
   std::optional<rfl::Generic> eval(const rfl::Generic &transform);
   std::optional<rfl::Generic> eval(const rfl::Generic &obj, const rfl::Generic &transform);

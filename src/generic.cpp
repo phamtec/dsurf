@@ -13,6 +13,7 @@
 
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <rfl/yaml.hpp>
 
 using namespace std;
 
@@ -164,8 +165,41 @@ optional<bool> Generic::getBool(const rfl::Generic &obj) {
   
 }
 
-string Generic::toString(const rfl::Generic &g) {
+string Generic::toString(const rfl::Generic &g, const std::string &format) {
 
-  return rfl::json::write(g, rfl::json::pretty);
+  if (format == ".json") {
+    return rfl::json::write(g, rfl::json::pretty);
+  }
+  else if (format == ".yml") {
+    return rfl::yaml::write(g);
+  }
+  else {
+    cerr << "invalid format " << format << endl;
+    return "???";
+  }
+
+}
+
+optional<rfl::Generic> Generic::parseStream(istream &s, const string &format) {
+
+  if (format == ".json") {
+    auto g = rfl::json::read<rfl::Generic>(s);
+    if (g) {
+      return *g;
+    }
+  }
+  else if (format == ".yml") {
+    auto g = rfl::yaml::read<rfl::Generic>(s);
+    if (g) {
+      return *g;
+    }
+  }
+  else {
+    cerr << "invalid format " << format << endl;
+    return nullopt;
+  }
+  
+  cerr << "could not parse stream to " << format << endl;
+  return nullopt;
   
 }

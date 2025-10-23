@@ -143,22 +143,22 @@ add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp sr
 add_test(TestSpatial TestSpatial)
 
 add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp test/dummytext.cpp src/generic.cpp src/flo.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
-  target_link_libraries(TestBuilder yaml-cpp::yaml-cpp FloLib ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${BOOSTLIBS})
+  target_link_libraries(TestBuilder FloLib yaml-cpp::yaml-cpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${BOOSTLIBS})
 
 add_test(TestBuilder TestBuilder)
 
 add_executable(TestErrable test/testerrable.cpp test/dummyobjs.cpp test/dummytext.cpp ${OBJSRC} ${UTILSRC})
-  target_link_libraries(TestErrable reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  target_link_libraries(TestErrable yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestErrable TestErrable)
 
 add_executable(TestMove test/testmove.cpp test/dummyobjs.cpp test/dummytext.cpp ${OBJSRC} ${UTILSRC})
-  target_link_libraries(TestMove reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  target_link_libraries(TestMove yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestMove TestMove)
 
 add_executable(TestList test/testlist.cpp test/dummyobjs.cpp test/dummytext.cpp ${OBJSRC} ${UTILSRC})
-  target_link_libraries(TestList reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  target_link_libraries(TestList yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestList TestList)
 
