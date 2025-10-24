@@ -24,7 +24,13 @@ sudo apt-get install -y git g++ gcc build-essential git make \
   libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
   libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libpipewire-0.3-dev \
   libwayland-dev libdecor-0-dev liburing-dev libfreetype-dev \
-  libssl-dev ruby-bundler xclip xsel libyaml-cpp-dev
+  libssl-dev ruby-bundler xclip xsel libyaml-cpp-dev cppzmq-dev
+```
+
+#### Mac
+
+```
+brew install sdl3 sdl3_ttf bison yaml-cpp pkg-config zmq cppzmq
 ```
 
 ### CMake
@@ -37,7 +43,7 @@ We need CMake 3.30.
 sudo apt remove -y --purge --auto-remove cmake
 ```
 
-#### From source
+#### From source (Mac and linux)
 ```
 wget https://cmake.org/files/v3.30/cmake-3.30.5.tar.gz
 tar -xzvf cmake-3.30.5.tar.gz
@@ -49,7 +55,7 @@ sudo make install
 
 ### Boost
 
-#### from source
+#### from source (Mac and linux)
 
 ```
 wget https://github.com/boostorg/boost/releases/download/boost-1.85.0/boost-1.85.0-b2-nodocs.tar.gz
@@ -61,13 +67,7 @@ sudo ./b2 install boost.stacktrace.from_exception=off
 
 ### SDL
 
-#### Mac
-
-```
-brew install sdl3
-```
-
-#### from source
+#### from source (Linux)
 
 ```
 git clone https://github.com/libsdl-org/SDL
@@ -81,13 +81,7 @@ sudo make install
 
 ### SDL TTF support
 
-#### Mac
-
-```
-brew install sdl3_ttf
-```
-
-#### from source
+#### from source (Linux)
 
 ```
 git clone https://github.com/libsdl-org/SDL_ttf
@@ -101,15 +95,7 @@ sudo make install
 
 ### cpp-reflect
 
-#### from source
-
-##### On the Mac
-
-```
-brew install bison yaml-cpp pkg-config
-```
-
-##### on any platform
+#### from source (Mac and linux)
 
 ```
 git clone https://github.com/getml/reflect-cpp.git
@@ -122,20 +108,6 @@ cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 cd build
 sudo make install
-```
-
-### ZMQ
-
-#### Linux
-
-```
-sudo apt-get install cppzmq-dev
-```
-
-#### Mac
-
-```
-brew install zmq cppzmq
 ```
 
 ## Building this project
