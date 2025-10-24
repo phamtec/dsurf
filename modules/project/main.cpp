@@ -96,9 +96,7 @@ void Project::registerHUDModes(Renderer &renderer, HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
-    renderer.registerGlobalHUDMode(mode);
-    mode->add(new Shortcut(L"M", L"ove"));
-    mode->add(new Shortcut(L"K", L"ill"));
+    Renderer::registerRootHUDMode(mode);
     mode->add(new Shortcut(L"E", L"dit"));
     hud->registerMode("projectroot", mode);
   }

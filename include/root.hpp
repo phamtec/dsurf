@@ -24,7 +24,7 @@
 #include <memory>
 #include <vector>
 
-class Root: public Element,  public Writeable, public Editable, public Commandable, public Locatable  {
+class Root: public Element, public Writeable, public Editable, public Commandable, public Locatable  {
 
   typedef Element super;
 
@@ -32,9 +32,7 @@ public:
   Root(const std::string &filename, Element *obj);
   
   Element *getObj() { return _obj.get(); }
-  std::string getFilename();
   Text *getFilenameObj() { return &_filename; }
-  void setDirty(Renderer &renderer, bool state);
   
   // Element
   virtual void setParent(Element *parent) override;
@@ -51,6 +49,8 @@ public:
   // Writeable
   virtual std::string getName() override;
   virtual rfl::Generic getGeneric() override;
+  virtual void setDirty(Renderer &renderer, bool state) override;
+  virtual std::optional<std::string> getFilename() override;
 
   // Editable
   virtual std::wstring getString() override;

@@ -39,7 +39,7 @@ public:
   static std::string getYaml(Element *element);
     // get the YAML representing the element.
 
-  static void write(Element *element, const std::string &file);
+  static void write(const rfl::Generic &g, const std::string &file);
     // write out the generic object.
     
 private:

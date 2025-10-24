@@ -18,18 +18,19 @@
 #include "text.hpp"
 #include "commandable.hpp"
 #include "locatable.hpp"
+#include "writeable.hpp"
 #include "flo.hpp"
 
 #include <rfl.hpp>
 
 class Element;
 
-class CodeRoot: public Element, public Commandable, public Locatable {
+class CodeRoot: public Element, public Writeable, public Commandable, public Locatable {
 
   typedef Element super;
 
 public:
-  CodeRoot(const rfl::Generic &obj);
+  CodeRoot(const std::string &filename, const rfl::Generic &obj);
 
   void setScenario(Renderer &renderer, const rfl::Generic &scenario);
   void run(Renderer &renderer);
@@ -46,6 +47,12 @@ public:
   virtual Point localOrigin(Element *elem) override;
   virtual Element *hitTest(const Point &origin, const Point &p) override;
   virtual void changed(Renderer &renderer, Element *obj) override;
+
+  // Writeable
+  virtual std::string getName() override;
+  virtual rfl::Generic getGeneric() override;
+  virtual void setDirty(Renderer &renderer, bool state) override;
+  virtual std::optional<std::string> getFilename() override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
@@ -68,6 +75,7 @@ protected:
   std::unique_ptr<Element> _scenario;
   std::unique_ptr<Element> _output;
   RectList _layout;
+  Text _filename;
   Point _location;
   bool _running;
   int _hudobj;

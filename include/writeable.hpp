@@ -17,6 +17,7 @@
 #include <rfl.hpp>
 
 class Element;
+class Renderer;
 
 class Writeable {
 
@@ -27,6 +28,12 @@ public:
   virtual rfl::Generic getGeneric() = 0;
     // return the name and the object for serialization.
         
+  virtual void setDirty(Renderer &renderer, bool state) {}
+    // this is dirty all ready  to write!
+    
+  virtual std::optional<std::string> getFilename() { return std::nullopt; }
+    // if the object is file based, return the filename.
+    
   static Writeable *cast(Element *obj);
   static Writeable *_err;
   

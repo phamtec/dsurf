@@ -462,7 +462,10 @@ soon.
 
 ### 24-Oct-2025
 
+- Version 0.11
 - layout uses visitor.
 - code shows whole scenario on left.
+- code shows filename and is writeable.
+
 
 

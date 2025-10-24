@@ -17,12 +17,13 @@
 #include "element.hpp"
 #include "text.hpp"
 #include "commandable.hpp"
+#include "writeable.hpp"
 
 #include <rfl.hpp>
 
 class Element;
 
-class CodeScenario: public Element, public Commandable {
+class CodeScenario: public Element, public Writeable, public Commandable {
 
 public:
   CodeScenario(const rfl::Generic &scenario);
@@ -35,6 +36,9 @@ public:
   virtual void render(Renderer &renderer, const Point &origin) override;
   virtual Size size() override { return _size; }
   virtual RectList calcLayout() override;
+
+  // Writeable
+  virtual rfl::Generic getGeneric() override { return _scenario; }
 
   // Commandable
   virtual void initHUD(HUD *hud) override;

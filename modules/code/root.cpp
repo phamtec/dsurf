@@ -21,9 +21,10 @@
 
 using namespace std;
 
-CodeRoot::CodeRoot(const rfl::Generic &obj): 
+CodeRoot::CodeRoot(const std::string &filename, const rfl::Generic &obj): 
   _parent(0), _hudobj(-1), _running(false) {
   
+  _filename.set(Unicode::convert(filename), Colours::black);
   _scenarioslabel.set(L"Scenarios", Colours::black);
   _librarylabel.set(L"Library", Colours::black);
 
@@ -64,8 +65,22 @@ CodeRoot::CodeRoot(const rfl::Generic &obj):
 
 }
 
+optional<string> CodeRoot::getFilename() { 
+
+  return Unicode::convert(_filename.str()); 
+  
+}
+
+void CodeRoot::setDirty(Renderer &renderer, bool state) {
+
+  _filename.set(_filename.str(), state ? Colours::red : Colours::black);
+  _filename.build(renderer);
+
+}
+
 void CodeRoot::build(Renderer &renderer) {
 
+  _filename.build(renderer);
   _scenarioslabel.build(renderer);
   _librarylabel.build(renderer);
 
@@ -99,6 +114,11 @@ RectList CodeRoot::calcLayout() {
 
   RectList layout;
   auto o = Point();
+
+  auto fs = _filename.size();
+  layout.push_back(Rect(o, fs));
+
+  o.y += fs.h + Sizes::text_padding;
 
   auto sls = _scenarioslabel.size();
   layout.push_back(Rect(o, sls));
@@ -152,6 +172,9 @@ void CodeRoot::render(Renderer &renderer, const Point &origin) {
 
   auto i = _layout.begin();
   
+  _filename.render(renderer, origin + (*i).origin);
+  i++;
+
   _scenarioslabel.render(renderer, origin + (*i).origin);
   i++;
 
@@ -183,6 +206,9 @@ void CodeRoot::render(Renderer &renderer, const Point &origin) {
 Element *CodeRoot::hitTest(const Point &origin, const Point &p) { 
 
   auto i = _layout.begin();
+  // skip filename
+  i++;
+
   // skip scenarios label
   i++;
 
@@ -225,6 +251,9 @@ Element *CodeRoot::hitTest(const Point &origin, const Point &p) {
 Point CodeRoot::localOrigin(Element *elem) {
 
   auto i = _layout.begin();
+  // skip filename
+  i++;
+
   // skip scenarios label
   i++;
 
@@ -287,7 +316,7 @@ void CodeRoot::setMode(Renderer &renderer, HUD *hud) {
 
 void CodeRoot::processKey(Renderer &renderer, SDL_Keycode code) {
 
-  if (renderer.processGlobalKey(code)) {
+  if (renderer.processRootKey(this, code)) {
     return;
   }
 
@@ -299,12 +328,16 @@ void CodeRoot::setScenario(Renderer &renderer, const rfl::Generic &scenario) {
   _scenario = unique_ptr<Element>(Builder::walk(this, scenario));
   renderer.build(_scenario.get());
   layout();
+  _running = true;
+
   
 }
 
 void CodeRoot::run(Renderer &renderer) {
 
-  _running = true;
+  if (!_running) {
+    return;
+  }
 
   auto sobj = Generic::getObject(Writeable::cast(_scenario.get())->getGeneric());
   if (!sobj) {
@@ -395,4 +428,27 @@ void CodeRoot::changed(Renderer &renderer, Element *obj) {
     return;
   }
 
+}
+
+std::string CodeRoot::getName() {
+
+  return "code";
+  
+}
+
+rfl::Generic CodeRoot::getGeneric() { 
+
+  rfl::Object<rfl::Generic> obj;
+  
+  // build a code object from the parts
+  obj["library"] = Writeable::cast(_library.get())->getGeneric();
+  obj["transform"] = Writeable::cast(_transform.get())->getGeneric();
+  vector<rfl::Generic> scenarios;
+  transform(_scenarios.begin(), _scenarios.end(), back_inserter(scenarios), [](auto& e) {
+    return Writeable::cast(e.get())->getGeneric();
+  });
+  obj["scenarios"] = scenarios;
+
+  return obj;
+  
 }

@@ -39,7 +39,7 @@ bool Code::isA(const rfl::Generic &obj) {
 
 Element *Code::load(const rfl::Generic &obj, const string &filename) {
 
-  return new CodeRoot(obj);
+  return new CodeRoot(filename, obj);
   
 }
 
@@ -47,7 +47,7 @@ void Code::registerHUDModes(Renderer &renderer, HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
-    renderer.registerGlobalHUDMode(mode);
+    Renderer::registerRootHUDMode(mode);
     hud->registerMode("code", mode);
   }
 

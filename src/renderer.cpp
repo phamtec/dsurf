@@ -566,21 +566,20 @@ Element *Renderer::getClipboard() {
 
 void Renderer::write(Element *element) {
 
-  auto root = dynamic_cast<Root *>(element->root());
-  if (!root) {
-    cerr << "no root or root isn't a Root!" << endl;
+  auto root = element->root();
+  
+  auto writeable = dynamic_cast<Writeable *>(root);
+  if (!writeable) {
+    cerr << "no root or root isn't Writeable!" << endl;
+    return;
+  }
+  auto filename = writeable->getFilename();
+  if (!filename) {
+    cerr << "Not a file based object" << endl;
     return;
   }
   
-  auto r = find_if(_roots.begin(), _roots.end(), [root](auto& e) {
-    return e.get() == root;
-  });
-  if (r == _roots.end()) {
-    cerr << "couldnt find elements root." << endl;
-    return;
-  }
-
-  Builder::write(root->getObj(), root->getFilename());
+  Builder::write(writeable->getGeneric(), *filename);
   
   setDirty(root, false);
   
@@ -1011,20 +1010,16 @@ void Renderer::setDirty(Element *elem, bool state) {
     cerr << "element " << elem->describe() << " has no root" << endl;
     return;
   }
-  auto root = dynamic_cast<Root *>(elemroot);
-  if (!root)  {
-    cerr << "root " << elemroot->describe() << " not a Root" << endl;
-    return;
-  }
-  auto r = find_if(_roots.begin(), _roots.end(), [root](auto& e) {
-    return e.get() == root;
+
+  auto r = find_if(_roots.begin(), _roots.end(), [elemroot](auto& e) {
+    return e.get() == elemroot;
   });
   if (r == _roots.end()) {
     cerr << "couldnt find elements root." << endl;
     return;
   }
     
-  root->setDirty(*this, state);
+  Writeable::cast(elemroot)->setDirty(*this, state);
   
   _hud->setFlag(*this, canWrite, state);
 

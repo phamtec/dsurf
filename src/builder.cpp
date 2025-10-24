@@ -67,14 +67,14 @@ Element *Builder::loadText(const char *text) {
 
 }
 
-void Builder::write(Element *element, const string &fn) {
+void Builder::write(const rfl::Generic &g, const string &fn) {
 
   fs::path p = fn;
   if (p.extension() == ".json") {
-    rfl::json::save(fn, Writeable::cast(element)->getGeneric(), rfl::json::pretty);
+    rfl::json::save(fn, g, rfl::json::pretty);
   }
   else  if (p.extension() == ".yaml") {
-    rfl::yaml::save(fn, Writeable::cast(element)->getGeneric());
+    rfl::yaml::save(fn, g);
   }
   else {
     cerr << "unknown file type " << fn << endl;
