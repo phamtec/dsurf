@@ -79,6 +79,8 @@ void Renderer::renderLayout(const Point &origin, const RectList &layout) {
 }
 void Renderer::build(Element *elem) {
 }
+void Renderer::destroy(Element *elem) {
+}
 void Renderer::layout(Element *elem) {
 }
 

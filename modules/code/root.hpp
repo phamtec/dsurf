@@ -32,7 +32,7 @@ class CodeRoot: public Element, public Writeable, public Commandable, public Loc
 public:
   CodeRoot(const std::string &filename, const rfl::Generic &obj);
 
-  void setScenario(Renderer &renderer, const rfl::Generic &scenario);
+  void setScenario(Renderer &renderer, const rfl::Generic &scenario, int index);
   void run(Renderer &renderer);
 
   // Element
@@ -72,8 +72,9 @@ protected:
   Text _scenarioslabel;
   std::vector<std::unique_ptr<Element> > _scenarios;
   std::unique_ptr<Element> _transform;
-  std::unique_ptr<Element> _scenario;
   std::unique_ptr<Element> _output;
+  std::unique_ptr<Element> _scenario;
+  int _scindex; // where the scenario came from in _scenarios
   RectList _layout;
   Text _filename;
   Point _location;
@@ -81,6 +82,7 @@ protected:
   int _hudobj;
   std::unique_ptr<Flo> _flo;
   
+  void rebuildScenarios(Renderer &renderer);
 
 };
 

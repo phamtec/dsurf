@@ -19,8 +19,8 @@
 
 using namespace std;
 
-CodeScenario::CodeScenario(const rfl::Generic &scenario): 
-  _parent(0), _hudobj(-1), _loaded(false) {
+CodeScenario::CodeScenario(const rfl::Generic &scenario, int index): 
+  _parent(0), _hudobj(-1), _loaded(false), _index(index) {
 
   _scenario = scenario;
   auto obj = Generic::getObject(scenario);
@@ -35,6 +35,8 @@ CodeScenario::CodeScenario(const rfl::Generic &scenario):
     return;
   }
 
+  cout << *name << endl;
+  
   _name.set(Unicode::convert(*name), Colours::black);
   
 }
@@ -100,7 +102,7 @@ void CodeScenario::processKey(Renderer &renderer, SDL_Keycode code) {
       {
         _loaded = true;
         auto root = dynamic_cast<CodeRoot *>(getParent());
-        root->setScenario(renderer, _scenario);
+        root->setScenario(renderer, _scenario, _index);
         root->run(renderer);
       }
       break;

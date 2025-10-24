@@ -26,7 +26,7 @@ class Element;
 class CodeScenario: public Element, public Writeable, public Commandable {
 
 public:
-  CodeScenario(const rfl::Generic &scenario);
+  CodeScenario(const rfl::Generic &scenario, int index);
 
   // Element
   virtual void setParent(Element *parent) override { _parent = parent; }
@@ -54,6 +54,7 @@ protected:
   rfl::Generic _scenario;
   RectList _layout;
   bool _loaded;
+  int _index;
   
 };
 

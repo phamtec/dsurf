@@ -41,11 +41,12 @@ CodeRoot::CodeRoot(const std::string &filename, const rfl::Generic &obj):
     }
     auto scenarios = Generic::getVector(*code, "scenarios");
     if (scenarios) {
-      std::transform((*scenarios).begin(), (*scenarios).end(), back_inserter(_scenarios), [this](auto e) {
-        auto scenario = new CodeScenario(e);
+      for (int i=0; i<(*scenarios).size(); i++) {
+        auto s = (*scenarios)[i];
+        auto scenario = new CodeScenario(s, i);
         scenario->setParent(this);
-        return unique_ptr<Element>(scenario);
-      });
+        _scenarios.push_back(unique_ptr<Element>(scenario));
+      }
     }
   }
   
@@ -322,14 +323,14 @@ void CodeRoot::processKey(Renderer &renderer, SDL_Keycode code) {
 
 }
 
-void CodeRoot::setScenario(Renderer &renderer, const rfl::Generic &scenario) {
+void CodeRoot::setScenario(Renderer &renderer, const rfl::Generic &scenario, int index) {
 
   _scenario->destroy(renderer);
   _scenario = unique_ptr<Element>(Builder::walk(this, scenario));
   renderer.build(_scenario.get());
-  layout();
+  renderer.layout(this);
   _running = true;
-
+  _scindex = index;
   
 }
 
@@ -369,7 +370,33 @@ void CodeRoot::run(Renderer &renderer) {
   
   renderer.build(_output.get());
   
-  layout();
+  renderer.layout(this);
+  
+}
+
+void CodeRoot::rebuildScenarios(Renderer &renderer) {
+
+  vector<Element *> scenarios;
+  for (int i=0; i<_scenarios.size(); i++) {
+    auto s = std::move(_scenarios[i]).get();
+    if (i == _scindex) {
+      // create a new scenario out of the one we are editing so it will be written out.
+      auto scenario = new CodeScenario(Writeable::cast(_scenario.get())->getGeneric(), i);
+      scenario->setParent(this);
+      renderer.destroy(s);
+      scenarios.push_back(scenario);
+      renderer.build(scenario);
+    }
+    else {
+      scenarios.push_back(s);
+    }
+  }
+  _scenarios.clear();
+  transform(scenarios.begin(), scenarios.end(), back_inserter(_scenarios), [](auto e) {
+    return unique_ptr<Element>(e);
+  });
+  
+  renderer.layout(root());
   
 }
 
@@ -386,16 +413,7 @@ void CodeRoot::changed(Renderer &renderer, Element *obj) {
     return;
   }
 
-  // test the input.
-  _scenario->visit([this, &renderer, obj](auto e) {
-    if (e == obj) {
-      run(renderer);
-      return false;
-    }
-    return true;
-  });
-  
-  // test the sceenarios.
+  // test the scenarios.
   for (auto& e: _scenarios) {
     e->visit([this, &renderer, obj](auto e2) {
       if (e2 == obj) {
@@ -406,9 +424,11 @@ void CodeRoot::changed(Renderer &renderer, Element *obj) {
     });
   }
 
+  // test the scenario we are actually in.
   _scenario->visit([this, &renderer, obj](auto e) {
     if (e == obj) {
       run(renderer);
+      rebuildScenarios(renderer);
       return false;
     }
     return true;
