@@ -25,7 +25,12 @@
 using namespace std;
 
 class Renderer {
+public:
+  void layout(Element *elem);
 };
+
+void Renderer::layout(Element *elem) {
+}
 
 vector<tuple<HUDFlags, bool> > flags;
 

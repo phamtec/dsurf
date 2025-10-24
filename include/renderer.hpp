@@ -71,6 +71,9 @@ public:
   void destroy(Element *elem);
     // visit all the subobjects to buld and destroy.
     
+  void layout(Element *elem);
+    // visit all the subobjects to layout and destroy.
+
   void initTypes();
     // specifically initialise types.
     

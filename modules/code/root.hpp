@@ -31,7 +31,7 @@ class CodeRoot: public Element, public Commandable, public Locatable {
 public:
   CodeRoot(const rfl::Generic &obj);
 
-  void setInput(Renderer &renderer, const rfl::Generic &input);
+  void setScenario(Renderer &renderer, const rfl::Generic &scenario);
   void run(Renderer &renderer);
 
   // Element
@@ -65,7 +65,7 @@ protected:
   Text _scenarioslabel;
   std::vector<std::unique_ptr<Element> > _scenarios;
   std::unique_ptr<Element> _transform;
-  std::unique_ptr<Element> _input;
+  std::unique_ptr<Element> _scenario;
   std::unique_ptr<Element> _output;
   RectList _layout;
   Point _location;

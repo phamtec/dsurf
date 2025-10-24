@@ -60,9 +60,6 @@ RectList Root::calcLayout() {
 
 void Root::layout() {
 
-  _obj->layout();
-
-  // calculate the layout.
   _layout = calcLayout();
   _size = Layout::size(_layout);
   
@@ -124,10 +121,11 @@ Point Root::localOrigin(Element *elem) {
 
 bool Root::visit(std::function<bool (Element *)> f) {
 
-  if (!f(this)) {
+  if (!_obj->visit(f)) {
     return false;
   }
-  return _obj->visit(f);
+  
+  return f(this);
   
 }
 

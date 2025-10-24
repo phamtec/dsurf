@@ -170,12 +170,6 @@ RectList ProjectZMQObj::calcLayout() {
 
 void ProjectZMQObj::layout() {
 
-  // make sure the code is layed out.
-  for_each(_code.begin(), _code.end(), [](auto& e) {
-    e->layout();
-  });
-  
-  // calculate the layout.
   _layout = calcLayout();
   _size = Layout::size(_layout);
   
@@ -277,7 +271,7 @@ void ProjectZMQObj::processKey(Renderer &renderer, SDL_Keycode code) {
 
     case SDLK_E:
       _editing = true;
-      root()->layout();
+      renderer.layout(root());
       break;
   }
 
@@ -303,9 +297,6 @@ void ProjectZMQObj::load(Renderer &renderer) {
 
 bool ProjectZMQObj::visit(function<bool (Element *)> f) {
 
-  if (!f(this)) {
-    return false;
-  }
   if (_editing) {
     for (auto& e: _code) {
       if (!e->visit(f)) {
@@ -313,7 +304,7 @@ bool ProjectZMQObj::visit(function<bool (Element *)> f) {
       }
     }
   }
-  return true;
+  return f(this);
   
 }
 

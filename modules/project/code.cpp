@@ -59,9 +59,6 @@ void ProjectCode::build(Renderer &renderer) {
 
 bool ProjectCode::visit(std::function<bool (Element *)> f) {
 
-  if (!f(this)) {
-    return false;
-  }
   if (!_transform->visit(f)) {
     return false;
   }
@@ -72,7 +69,7 @@ bool ProjectCode::visit(std::function<bool (Element *)> f) {
     return false;
   }
 
-  return true;
+  return f(this);
   
 }
 
@@ -105,11 +102,6 @@ RectList ProjectCode::calcLayout() {
 
 void ProjectCode::layout() {
 
-  _transform->layout();
-  _input->layout();
-  _output->layout();
-  
-  // calculate the layout.
   _layout = calcLayout();
   _size = Layout::size(_layout);
   
@@ -216,7 +208,7 @@ void ProjectCode::processKey(Renderer &renderer, SDL_Keycode code) {
     case SDLK_R:
       _running = true;
       run(renderer);
-      root()->layout();
+      renderer.layout(root());
       break;
 
   }

@@ -54,16 +54,8 @@ void Code::registerHUDModes(Renderer &renderer, HUD *hud) {
   {
     auto mode = new HUDMode(false);
     renderer.registerGlobalHUDMode(mode);
-    mode->add(new Shortcut(L"R", L"un", canRun));
-    mode->add(new Shortcut(L"E", L"dit"));
+    mode->add(new Shortcut(L"L", L"oad", canLoad));
     hud->registerMode("scenario", mode);
-  }
-
-  {
-    auto mode = new HUDMode(false);
-    renderer.registerGlobalHUDMode(mode);
-    mode->add(new Shortcut(L"Esc", L"(finish)"));
-    hud->registerMode("scenarioedit", mode);
   }
 
 }

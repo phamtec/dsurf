@@ -58,11 +58,6 @@ RectList ProjectRoot::calcLayout() {
 
 void ProjectRoot::layout() {
 
-  for_each(_objs.begin(), _objs.end(), [](auto& e) {
-    e->layout();
-  });
-  
-  // calculate the layout.
   _layout = calcLayout();
   _size = Layout::size(_layout);
   
@@ -159,14 +154,11 @@ void ProjectRoot::processKey(Renderer &renderer, SDL_Keycode code) {
 
 bool ProjectRoot::visit(function<bool (Element *)> f) {
 
-  if (!f(this)) {
-    return false;
-  }
   for (auto& e: _objs) {
     if (!e->visit(f)) {
       return false;
     }
   };
-  return true;
+  return f(this);
   
 }

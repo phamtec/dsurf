@@ -65,7 +65,6 @@ void ListElem::layout() {
     _size.w = FIXED_WIDTH;
   }
   else  {
-    _obj->layout();
     _size = _obj->size();
   }
   
@@ -138,11 +137,11 @@ Point ListElem::localOrigin(Element *elem) {
 
 bool ListElem::visit(std::function<bool (Element *)> f) {
 
-  if (!f(this)) {
+  if (!_obj->visit(f)) {
     return false;
   }
   
-  return _obj->visit(f);
+  return f(this);
   
 }
 

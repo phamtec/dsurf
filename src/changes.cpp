@@ -13,6 +13,7 @@
 
 #include "hud.hpp"
 #include "element.hpp"
+#include "renderer.hpp"
 
 #include <algorithm>
 
@@ -70,7 +71,7 @@ void Changes::exec(Renderer &renderer, HUD *hud, Element *element, Change *chang
   // layout the root.
   auto root = element->root();
   if (root) {
-    root->layout();
+    renderer.layout(root);
   }
   
   // remember it.
@@ -100,7 +101,7 @@ void Changes::undo(Renderer &renderer, HUD *hud, Element *element) {
   // layout the root.
   auto root = element->root();
   if (root) {
-    root->layout();
+    renderer.layout(root);
   }
   
   if (_undoptr == _changes.begin()) {
@@ -140,7 +141,7 @@ void Changes::redo(Renderer &renderer, HUD *hud, Element *element) {
   // layout the root.
   auto root = element->root();
   if (root) {
-    root->layout();
+    renderer.layout(root);
   }
   
   setUndoFlags(renderer, hud);

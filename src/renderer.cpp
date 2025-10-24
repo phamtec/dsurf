@@ -180,6 +180,7 @@ bool Renderer::init(const string &path) {
   _hud->setFlag(*this, canWrite, false);
   _hud->setFlag(*this, canRun, false);
   _hud->setFlag(*this, canEdit, false);
+  _hud->setFlag(*this, canLoad, false);
   
 //   _pointercursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
 //   _editcursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_TEXT);
@@ -227,7 +228,7 @@ void Renderer::addRoot(Element *element, bool useloc) {
   build(element);
   
   // lay it out.
-  element->layout();
+  layout(element);
   
   if (!useloc) {
     // find the right most object.
@@ -269,6 +270,16 @@ void Renderer::destroy(Element *elem) {
     return true;
   });
 
+}
+
+void Renderer::layout(Element *elem) {
+
+  elem->visit([this](auto e) {
+//    cout << "layout " << e->describe() << endl;
+    e->layout();
+    return true;
+  });
+  
 }
 
 void Renderer::recenter() {
@@ -954,11 +965,16 @@ bool Renderer::textTooSmall() {
 
 SDL_Surface *Renderer::renderText(const std::wstring &str, const SDL_Color &fgcolor, const SDL_Color &bgcolor) {
 
+  if (str.size() == 0) {
+    return nullptr;
+  }
+  
 //  wcout << "w " << str << endl;
   char* u8str = SDL_iconv_wchar_utf8(str.c_str());
   SDL_Surface *surface = TTF_RenderText_Shaded(_font->_font, u8str, 0, fgcolor, bgcolor);
   SDL_free(u8str);
   if (!surface) {
+    wcerr << str << endl;
     SDL_Log("could not create surface");
     return 0;
   }

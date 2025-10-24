@@ -57,8 +57,8 @@ CodeRoot::CodeRoot(const rfl::Generic &obj):
     _library->setParent(this);
   }
   
-  _input = unique_ptr<Element>(new List(false));
-  _input->setParent(this);
+  _scenario = unique_ptr<Element>(new List(false));
+  _scenario->setParent(this);
   _output = unique_ptr<Element>(new List(false));
   _output->setParent(this);
 
@@ -73,9 +73,6 @@ void CodeRoot::build(Renderer &renderer) {
 
 bool CodeRoot::visit(std::function<bool (Element *)> f) {
 
-  if (!f(this)) {
-    return false;
-  }
   if (!_transform->visit(f)) {
     return false;
   }
@@ -87,14 +84,14 @@ bool CodeRoot::visit(std::function<bool (Element *)> f) {
       return false;
     }
   }
-  if (!_input->visit(f)) {
+  if (!_scenario->visit(f)) {
     return false;
   }
   if (!_output->visit(f)) {
     return false;
   }
 
-  return true;
+  return f(this);
   
 }
 
@@ -133,7 +130,7 @@ RectList CodeRoot::calcLayout() {
   o.y += ls.h;
 
   if (_running) {
-    auto ins = _input->size();
+    auto ins = _scenario->size();
     layout.push_back(Rect(Point(-ins.w - Sizes::group_indent, tsy), ins + (Sizes::text_padding * 2)));
     auto outs = _output->size();
     layout.push_back(Rect(Point(ts.w + Sizes::group_indent, tsy), outs + (Sizes::text_padding * 2)));
@@ -146,15 +143,6 @@ RectList CodeRoot::calcLayout() {
 
 void CodeRoot::layout() {
 
-  _transform->layout();
-  _input->layout();
-  _output->layout();
-  _library->layout();
-  for (auto& e: _scenarios) {
-    e->layout();
-  }
-  
-  // calculate the layout.
   _layout = calcLayout();
   _size = Layout::size(_layout);
 
@@ -184,7 +172,7 @@ void CodeRoot::render(Renderer &renderer, const Point &origin) {
 
   if (_running) {
     renderer.renderFilledRect(*i + origin, Colours::lightPlum);
-    _input->render(renderer, origin + (*i).origin + Sizes::text_padding);
+    _scenario->render(renderer, origin + (*i).origin + Sizes::text_padding);
     i++;
     renderer.renderFilledRect(*i + origin, Colours::teaGreen);
     _output->render(renderer, origin + (*i).origin + Sizes::text_padding);
@@ -222,7 +210,7 @@ Element *CodeRoot::hitTest(const Point &origin, const Point &p) {
   i++;
   
   if (_running) {
-    hit = _input->hitTest(origin + i->origin, p);
+    hit = _scenario->hitTest(origin + i->origin, p);
     if (hit) {
       return hit;
     }
@@ -261,7 +249,7 @@ Point CodeRoot::localOrigin(Element *elem) {
   i++;
   
   if (_running) {
-    if (elem == _input.get()) {
+    if (elem == _scenario.get()) {
       return i->origin + Sizes::text_padding;
     }
     i++;
@@ -283,7 +271,7 @@ void CodeRoot::initHUD(HUD *hud) {
   for (auto& e: _scenarios) {
     Commandable::cast(e.get())->initHUD(hud);
   }
-  Commandable::cast(_input.get())->initHUD(hud);
+  Commandable::cast(_scenario.get())->initHUD(hud);
   Commandable::cast(_output.get())->initHUD(hud);
   
 }
@@ -305,12 +293,11 @@ void CodeRoot::processKey(Renderer &renderer, SDL_Keycode code) {
 
 }
 
-void CodeRoot::setInput(Renderer &renderer, const rfl::Generic &input) {
+void CodeRoot::setScenario(Renderer &renderer, const rfl::Generic &scenario) {
 
-  _input->destroy(renderer);
-  _input = unique_ptr<Element>(Builder::walk(this, input));
-  _input->setParent(this);
-  renderer.build(_input.get());
+  _scenario->destroy(renderer);
+  _scenario = unique_ptr<Element>(Builder::walk(this, scenario));
+  renderer.build(_scenario.get());
   layout();
   
 }
@@ -319,10 +306,20 @@ void CodeRoot::run(Renderer &renderer) {
 
   _running = true;
 
-  auto in = Writeable::cast(_input.get())->getGeneric();
+  auto sobj = Generic::getObject(Writeable::cast(_scenario.get())->getGeneric());
+  if (!sobj) {
+    cerr << "scenario is not an obj" << endl;
+    return;
+  }
+  auto in = Generic::getObject(sobj, "input");
+  if (!in) {
+    cerr << "scenario missing input" << endl;
+    return;
+  }
+
   auto t = Writeable::cast(_transform.get())->getGeneric();
   auto to = Generic::getObject(t);
-  auto out = _flo->evalObj(in, *to);
+  auto out = _flo->evalObj(*in, *to);
   
   // clear out the output
   _output->destroy(renderer);
@@ -357,7 +354,7 @@ void CodeRoot::changed(Renderer &renderer, Element *obj) {
   }
 
   // test the input.
-  _input->visit([this, &renderer, obj](auto e) {
+  _scenario->visit([this, &renderer, obj](auto e) {
     if (e == obj) {
       run(renderer);
       return false;
@@ -376,7 +373,7 @@ void CodeRoot::changed(Renderer &renderer, Element *obj) {
     });
   }
 
-  _input->visit([this, &renderer, obj](auto e) {
+  _scenario->visit([this, &renderer, obj](auto e) {
     if (e == obj) {
       run(renderer);
       return false;

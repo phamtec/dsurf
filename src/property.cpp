@@ -66,7 +66,6 @@ RectList Property::calcLayout() {
 
 void Property::layout() {
 
-  _obj->layout();
   _layout = calcLayout();
   _size = Layout::size(_layout);
 
@@ -93,11 +92,11 @@ void Property::render(Renderer &renderer, const Point &origin) {
 
 bool Property::visit(std::function<bool (Element *)> f) {
 
-  if (!f(this)) {
+  if (!_obj->visit(f)) {
     return false;
   }
   
-  return _obj->visit(f);
+  return f(this);
   
 }
 

@@ -32,7 +32,6 @@ public:
   virtual Element *getParent() override { return _parent; }
   virtual void build(Renderer &renderer) override;
   virtual void layout() override;
-  virtual bool visit(std::function<bool (Element *)> f) override;
   virtual void render(Renderer &renderer, const Point &origin) override;
   virtual Size size() override { return _size; }
   virtual RectList calcLayout() override;
@@ -48,11 +47,9 @@ protected:
   Size _size;
   Text _name;
   int _hudobj;
-  int _hudedit;
-  rfl::Generic _input;
-  std::unique_ptr<Element> _editor;
+  rfl::Generic _scenario;
   RectList _layout;
-  bool _editing;
+  bool _loaded;
   
 };
 

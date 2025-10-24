@@ -87,9 +87,6 @@ RectList List::calcLayout() {
 
 void List::layout() {
 
-  for (auto& i: _elements) {
-    i->layout();
-  }
   _layout = calcLayout();
   _size = Layout::size(_layout);
   
@@ -261,15 +258,12 @@ Point List::localOrigin(Element *elem) {
 
 bool List::visit(std::function<bool (Element *)> f) {
 
-  if (!f(this)) {
-    return false;
-  }
   for (auto& e: _elements) {
     if (!e->visit(f)) {
       return false;
     }
   }
-  return true;
+  return f(this);
   
 }
 
