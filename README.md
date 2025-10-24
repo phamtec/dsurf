@@ -199,6 +199,8 @@ The end to end tests use cucumber (Ruby), to get that going:
 sudo bundle install
 ```
 
+(If your having problems here, like on Intel macs, you might like to install "rvm" which is the ruby version manager to get something like ruby-3.0.3)
+
 You will only need to do that once to install the ruby stuff.
 
 ```
