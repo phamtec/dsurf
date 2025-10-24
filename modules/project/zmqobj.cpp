@@ -26,62 +26,69 @@
 using namespace std;
 
 ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic> &obj): 
-  _parent(0), _hudobj(-1), _editing(true) {
+  _parent(0), _hudobj(-1), _editing(false) {
 
   _name.set(Unicode::convert(name), Colours::white);
 
   rfl::Object<rfl::Generic> empty;
 
   auto library = Generic::getVector(obj, "library");    
-  if (library) {
-    _flo.reset(new Flo(*library));
-  }
-  else {
-    _flo.reset(new Flo());
-  }
+
+  _flo.reset(new Flo(obj));
   
   auto scenarios =  Generic::getVector(obj, "scenarios");
 
+  ProjectCode *code = nullptr;
   auto remote = Generic::getObject(obj, "remote");
   if (remote) {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Remote", *remote, library, findScenario(scenarios, "/remote"))));
-    auto s = _flo->evalStringMember(remote, "address");
-    if (s) {
-      _remoteAddress = *s;
-    }
-    s = _flo->evalStringMember(remote, "public");
-    if (s) {
-      _remotePubKey = *s;
-    }
-    auto i = _flo->evalNumMember(remote, "port");
-    if (i) {
-      _remotePort = *i;
+    auto obj = _flo->evalObj(empty, *remote);
+    if (obj) {
+      code = new ProjectCode("Remote", *remote, library, findScenario(scenarios, "/remote"));
+      auto s = Generic::getString(obj, "address");
+      if (s) {
+        _remoteAddress = *s;
+      }
+      s = Generic::getString(obj, "public");
+      if (s) {
+        _remotePubKey = *s;
+      }
+      auto i = Generic::getNum(obj, "port");
+      if (i) {
+        _remotePort = *i;
+      }
     }
   }
-  else {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Remote", empty, library, empty)));
- }
+  if (!code) {
+    code = new ProjectCode("Remote", empty, library, empty);
+  }
+  _code.push_back(unique_ptr<Element>(code));
   
+  code = nullptr;
   auto local = Generic::getObject(obj, "local");    
   if (local) {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Local", *local, library, findScenario(scenarios, "/local"))));
-    auto s = _flo->evalStringMember(local, "uuid");
-    if (s) {
-      _uuid = *s;
-    }
-    s = _flo->evalStringMember(local, "private");
-    if (s) {
-      _privateKey = *s;
-    }
-    s = _flo->evalStringMember(local, "public");
-    if (s) {
-      _publicKey = *s;
+    auto obj = _flo->evalObj(empty, *local);
+    if (obj) {
+      code = new ProjectCode("Local", *local, library, findScenario(scenarios, "/local"));
+      auto s = Generic::getString(obj, "uuid");
+      if (s) {
+        _uuid = *s;
+      }
+      s = Generic::getString(obj, "private");
+      if (s) {
+        _privateKey = *s;
+      }
+      s = Generic::getString(obj, "public");
+      if (s) {
+        _publicKey = *s;
+      }
     }
   }
-  else {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Local", empty, library, empty)));
- }
+  if (!code) {
+    code = new ProjectCode("Local", empty, library, empty);
+  }
+  _code.push_back(unique_ptr<Element>(code));
   
+  // send and next are late binding so we just have the code for them.
   auto o = Generic::getObject(obj, "send");
   if (o) {
     _code.push_back(unique_ptr<Element>(new ProjectCode("Send", *o, library, findScenario(scenarios, "/send"))));
@@ -297,11 +304,9 @@ void ProjectZMQObj::load(Renderer &renderer) {
 
 bool ProjectZMQObj::visit(function<bool (Element *)> f) {
 
-  if (_editing) {
-    for (auto& e: _code) {
-      if (!e->visit(f)) {
-        return false;
-      }
+  for (auto& e: _code) {
+    if (!e->visit(f)) {
+      return false;
     }
   }
   return f(this);

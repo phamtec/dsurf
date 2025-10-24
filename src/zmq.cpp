@@ -46,6 +46,7 @@ void Renderer::processMsg() {
   #endif
 //      cout << "poll result " << res << endl;
       string m((const char *)req.data(), req.size());
+      cout << "<- " << m << endl;
       auto result = rfl::json::read<rfl::Generic>(m);
       if (!result) {
         msgError("unknown result " + m);
@@ -188,7 +189,7 @@ void Renderer::startRemote(std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Gen
 void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg) {
 
   string r(rfl::json::write(msg)); 
-  cout << "sending " << r << endl;
+  cout << "-> " << r << endl;
   zmq::message_t req(r.length());
   memcpy(req.data(), r.c_str(), r.length());
 #if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)

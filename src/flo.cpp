@@ -22,79 +22,22 @@
 using namespace std;
 using namespace flo;
 
-optional<rfl::Generic> Flo::eval(const rfl::Generic &transform) {
-
-  Functions f(_library);
-  Processor p(f);
-
-  rfl::Object<rfl::Generic> t;
-  t["transform"] = transform;
-  return p.transform(t);
-
-}
-
-optional<rfl::Generic> Flo::eval(const rfl::Generic &obj, const rfl::Generic &transform) {
-
-  Functions f(_library);
-  Processor p(f);
-
-  rfl::Object<rfl::Generic> t;
-  t["transform"] = transform;
-  return p.transform(t, obj);
-
-}
-
-optional<string> Flo::evalStringMember(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
-
-  if (!obj) {
-    return nullopt;
-  }
-  
-//  cout << Generic::toString(*obj) << endl;
-
-  auto transform = obj->get(name);
-  if (!transform) {
-    return nullopt;
-  }
-
-//  cout << Generic::toString(*transform) << endl;
-  
-  auto result = eval(*transform);
-  if (!result) {
-    return nullopt;
-  }
-  return Generic::getString(*result);
-  
-}
-
-optional<long> Flo::evalNumMember(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
-
-  if (!obj) {
-    return nullopt;
-  }
-  
-  auto transform = obj->get(name);
-  if (!transform) {
-    return nullopt;
-  }
-
-//  cout << Generic::toString(*transform) << endl;
-  
-  auto result = eval(*transform);
-  if (!result) {
-    return nullopt;
-  }
-
-  return Generic::getNum(*result);
-  
-}
-
 optional<rfl::Object<rfl::Generic> > Flo::evalObj(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform) {
 
-  auto result = eval(obj, transform);
+//   cout << "obj " << Generic::toString(obj) << endl;
+//   cout << "transform " << Generic::toString(transform) << endl;
+  
+  Functions f(_library);
+  Processor p(f);
+
+  rfl::Object<rfl::Generic> t;
+  t["transform"] = transform;
+  auto result = p.transform(t, obj);
   if (!result) {
     return nullopt;
   }
+
+//  cout << "result " << Generic::toString(*result) << endl;
 
   return Generic::getObject(*result);
   

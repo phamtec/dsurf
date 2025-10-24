@@ -35,16 +35,11 @@ public:
   Flo(const rfl::Generic &library): _library(library) {}
   Flo() {}
   
-  std::optional<std::string> evalStringMember(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name);
-  std::optional<long> evalNumMember(std::optional<rfl::Object<rfl::Generic> > obj, const std::string &name);
   std::optional<rfl::Object<rfl::Generic> > evalObj(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform);
 
 private:
   
   rfl::Generic _library;
-
-  std::optional<rfl::Generic> eval(const rfl::Generic &transform);
-  std::optional<rfl::Generic> eval(const rfl::Generic &obj, const rfl::Generic &transform);
   
 };
 

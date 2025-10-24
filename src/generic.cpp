@@ -33,6 +33,21 @@ optional<string> Generic::getString(optional<rfl::Object<rfl::Generic> > obj, co
   
 }
 
+optional<long> Generic::getNum(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
+
+  if (!obj) {
+    return nullopt;
+  }
+  
+  auto prop = obj->get(name);
+  if (!prop) {
+    return nullopt;
+  }
+  
+  return getNum(*prop);
+  
+}
+
 optional<bool> Generic::getBool(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
 
   if (!obj) {
