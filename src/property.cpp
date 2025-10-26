@@ -100,7 +100,7 @@ bool Property::visit(std::function<bool (Element *)> f) {
   
 }
 
-std::string Property::getName() {
+string Property::getName() {
 
   wstring s = _name.str();
   return string(s.begin(), s.end());
@@ -149,6 +149,14 @@ Point Property::localOrigin(Element *elem) {
 
 void Property::processKey(Renderer &renderer, SDL_Keycode code) {
 
+  // intercept the copy to correctly copy the prooerty
+  switch (code) {
+    case SDLK_C:
+      renderer.copy(this);
+      return;
+  }
+  
+  // let the text editor have it.
   renderer.processTextKey(this, origin(), _name.size(), code);
   
 }

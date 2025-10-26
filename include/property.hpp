@@ -48,6 +48,7 @@ public:
 
   // Writeable
   virtual std::string getName() override;
+  virtual std::optional<std::string> getPropName() override { return getName(); }
   virtual rfl::Generic getGeneric() override;
 
   // Editable

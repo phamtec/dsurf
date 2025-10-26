@@ -526,10 +526,6 @@ void Renderer::endEdit(Editable *obj) {
     
 }
 
-void Renderer::copy(Element *element) {
-  SDL_SetClipboardText(Builder::getJson(element).c_str());
-}
-
 void Renderer::registerGlobalHUDMode(HUDMode *mode) {
 
   mode->add(new Shortcut(L"[1-9]", L"Zoom"));
@@ -727,6 +723,13 @@ Point Renderer::localToGlobal(const Point &p) {
 Point Renderer::noOffset(const Point &p) {
 
   return p - _offs;
+  
+}
+
+void Renderer::copy(Element *element) {
+
+//  cout << "copying " << element->describe() << endl;
+  SDL_SetClipboardText(Builder::getJson(element).c_str());
   
 }
 

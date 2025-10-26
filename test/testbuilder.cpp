@@ -303,14 +303,3 @@ BOOST_AUTO_TEST_CASE( customReflection )
   BOOST_CHECK_EQUAL(rfl::json::write(TestObj()), "{\"a\":\"x\",\"b\":\"y\",\"c\":10}");
 
 }
-
-BOOST_AUTO_TEST_CASE( isAProject )
-{
-  cout << "=== isAProject ===" << endl;
-
-  auto result = rfl::json::load<rfl::Generic>("../test/project.json");
-  BOOST_CHECK(result);
-  Project p;
-  BOOST_CHECK(p.isA(*result));
-  
-}

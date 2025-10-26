@@ -98,6 +98,7 @@ void TextEditor::processTextKey(Renderer &renderer, Editable *editable, const Po
       
     case SDLK_C:
       {
+//        cout << "text editor copy" << endl;
         auto ws =  editable->getString();
         auto u8str = SDL_iconv_wchar_utf8(ws.c_str());
         SDL_SetClipboardText(u8str);
@@ -143,23 +144,6 @@ bool TextEditor::processEvent(Renderer &renderer, const SDL_Event &event) {
                 selectAll();
             }
             break;
-//         case SDLK_C:
-//             if (event.key.mod& SDL_KMOD_CTRL) {
-//                 copy();
-//             }
-//             break;
-// 
-//         case SDLK_V:
-//             if (event.key.mod& SDL_KMOD_CTRL) {
-//                 paste();
-//             }
-//             break;
-// 
-//         case SDLK_X:
-//             if (event.key.mod& SDL_KMOD_CTRL) {
-//                 cut();
-//             }
-//             break;
 
         case SDLK_LEFT:
           if (event.key.mod & SDL_KMOD_CTRL) {

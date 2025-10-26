@@ -386,6 +386,25 @@ void List::setMode(Renderer &renderer, HUD *hud) {
   
 }
 
+void List::mergeIntoUs(Renderer &renderer, List *other) {
+
+  if (other->isDict() != isDict()) {
+    cerr << "can't merge. We are not the same." << endl;
+    return;
+  }
+
+  // move the elements onto us.
+  transform(other->_elements.begin(), other->_elements.end(), back_inserter(_elements), [this, &renderer](auto &e) {
+    auto elem = std::move(e);
+    elem->setParent(this);
+    renderer.build(elem.get());
+    return elem;
+  });
+  
+  renderer.layout(root());
+  
+}
+
 void List::processKey(Renderer &renderer, SDL_Keycode code) {
 
   if (isParentRoot()) {  
@@ -408,9 +427,14 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
       {
         auto elem = renderer.getClipboard();
         if (elem) {
-          auto dict = dynamic_cast<List *>(elem);
-          if (dict && dict->isDict()) {
-            Objable::cast(getParent())->setObj(renderer, elem);
+          auto list = dynamic_cast<List *>(elem);
+          if (list) {
+            if (list->isDict() == isDict()) {
+              mergeIntoUs(renderer, list);
+            }
+            else {
+              Objable::cast(getParent())->setObj(renderer, elem);
+            }
           }
           else {
             renderer.setError("Not a dictionary");

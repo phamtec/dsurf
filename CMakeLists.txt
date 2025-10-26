@@ -178,3 +178,8 @@ add_executable(TestKeys test/testkeys.cpp)
   target_link_libraries(TestKeys ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestKeys TestKeys)
+
+add_executable(TestProject modules/project/test/testproject.cpp src/builder.cpp test/dummyobjs.cpp test/dummytext.cpp src/flo.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
+  target_link_libraries(TestProject FloLib yaml-cpp::yaml-cpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${BOOSTLIBS})
+
+add_test(TestProject TestProject)

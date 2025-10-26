@@ -25,8 +25,10 @@ public:
   virtual ~Writeable() {};
 
   virtual std::string getName() { return "????"; }
+  virtual std::optional<std::string> getPropName() { return std::nullopt; }
   virtual rfl::Generic getGeneric() = 0;
     // return the name and the object for serialization.
+    // if there is a name, then the object is a property.
         
   virtual void setDirty(Renderer &renderer, bool state) {}
     // this is dirty all ready  to write!

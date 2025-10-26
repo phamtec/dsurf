@@ -205,6 +205,13 @@ std::string Builder::getJson(Element *element) {
 
   auto *wx = dynamic_cast<Writeable *>(element);
   if (wx) {
+    auto name = wx->getPropName();
+    if (name) {
+      // create a dictionary with this property on it.
+      rfl::Object<rfl::Generic> dict;
+      dict[*name] = wx->getGeneric();
+      return rfl::json::write(dict, rfl::json::pretty); 
+    }
     return rfl::json::write(wx->getGeneric(), rfl::json::pretty); 
   }
   return "not Writeable";
