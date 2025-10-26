@@ -17,32 +17,37 @@
 #include "element.hpp"
 #include "text.hpp"
 #include "commandable.hpp"
+#include "writeable.hpp"
 
 class Element;
 
-class ProjectFileObj: public Element, public Commandable {
+class ProjectFileObj: public Element, public Writeable, public Commandable {
 
 public:
-  ProjectFileObj(const std::string &name, const std::string &filename);
+  ProjectFileObj(const std::string &name, const std::string &fullfilename, const std::string &filename);
 
   // Element
-  virtual void setParent(Element *parent) { _parent = parent; }
-  virtual Element *getParent() { return _parent; }
-  virtual void build(Renderer &renderer);
-  virtual void layout();
-  virtual void render(Renderer &renderer, const Point &origin);
-  virtual Size size() { return _size; }
+  virtual void setParent(Element *parent) override { _parent = parent; }
+  virtual Element *getParent() override { return _parent; }
+  virtual void build(Renderer &renderer) override;
+  virtual void layout() override;
+  virtual void render(Renderer &renderer, const Point &origin) override;
+  virtual Size size() override { return _size; }
+
+  // Writeable
+  virtual rfl::Generic getGeneric() override;
 
   // Commandable
-  virtual void initHUD(HUD *hud);
-  virtual void setMode(Renderer &renderer, HUD *hud);
-  virtual void processKey(Renderer &renderer, SDL_Keycode code);
+  virtual void initHUD(HUD *hud) override;
+  virtual void setMode(Renderer &renderer, HUD *hud) override;
+  virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
 
 protected:
 
   Element *_parent;
   Size _size;
   Text _name;
+  std::string _fullfilename;
   std::string _filename;
   int _hudobj;
   

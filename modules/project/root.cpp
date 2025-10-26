@@ -17,8 +17,9 @@
 
 using namespace std;
 
-ProjectRoot::ProjectRoot(const string &name, const string &filename, vector<Element *> &objs): _filename(filename) {
+ProjectRoot::ProjectRoot(const string &name, const string &filename, vector<Element *> &objs) {
 
+  _filename.set(Unicode::convert(filename), Colours::black);
   _name.set(Unicode::convert(name), Colours::white);
   
   transform(objs.begin(), objs.end(), back_inserter(_objs), [this](auto e) {
@@ -31,12 +32,29 @@ void ProjectRoot::setParent(Element *parent) {
   cerr << "setParent on ProjectRoot!" << endl;
 }
 
+optional<string> ProjectRoot::getFilename() { 
+
+  return Unicode::convert(_filename.str()); 
+  
+}
+
+void ProjectRoot::setDirty(Renderer &renderer, bool state) {
+
+  _filename.set(_filename.str(), state ? Colours::red : Colours::black);
+  _filename.build(renderer);
+
+}
+
 RectList ProjectRoot::calcLayout() {
 
   RectList layout;
   
-  auto s = _name.size();
   auto o = Point();
+  auto fs = _filename.size();
+  layout.push_back(Rect(o, fs));
+  o.y += fs.h + Sizes::text_padding;
+
+  auto s = _name.size();
   layout.push_back(Rect(o, s));
   o.y += s.h + Sizes::text_padding;
   o.x += Sizes::group_indent;
@@ -65,6 +83,7 @@ void ProjectRoot::layout() {
 
 void ProjectRoot::build(Renderer &renderer) {
 
+  _filename.build(renderer);
   _name.build(renderer);
 
 }
@@ -73,12 +92,15 @@ void ProjectRoot::render(Renderer &renderer, const Point &origin) {
 
 //  renderer.renderLayout(origin, _layout);
 
-  renderer.renderFilledRect(Rect(origin, _size), Colours::racingGreen);
-
   auto i = _layout.begin();
-  _name.render(renderer, origin + (*i).origin);
+  _filename.render(renderer, origin + (*i).origin);
   i++;
   
+  renderer.renderFilledRect(Rect(origin + (*i).origin, _size - Size(0, _filename.size().h)), Colours::racingGreen);
+
+  _name.render(renderer, origin + (*i).origin);
+  i++;
+
   for_each(_objs.begin(), _objs.end(), [&renderer, origin, &i](auto& e) {
     e->render(renderer, origin + i->origin);
     i++;
@@ -89,6 +111,9 @@ void ProjectRoot::render(Renderer &renderer, const Point &origin) {
 Element *ProjectRoot::hitTest(const Point &origin, const Point &p) { 
 
   auto i = _layout.begin();
+  // skip filename
+  i++;
+
   // skip name
   i++;
   
@@ -107,6 +132,9 @@ Element *ProjectRoot::hitTest(const Point &origin, const Point &p) {
 Point ProjectRoot::localOrigin(Element *elem) {
 
   auto i = _layout.begin();
+  // skip filename
+  i++;
+
   // skip name
   i++;
   
@@ -146,7 +174,7 @@ void ProjectRoot::processKey(Renderer &renderer, SDL_Keycode code) {
 
   switch (code) {      
     case SDLK_E:
-      renderer.addFile(_filename, true);
+      renderer.addFile(Unicode::convert(_filename.str()), true);
       break;
   }
 
@@ -160,5 +188,29 @@ bool ProjectRoot::visit(function<bool (Element *)> f) {
     }
   };
   return f(this);
+  
+}
+
+std::string ProjectRoot::getName() {
+
+  return Unicode::convert(_name.str());
+  
+}
+
+rfl::Generic ProjectRoot::getGeneric() { 
+
+  rfl::Object<rfl::Generic> obj;
+  
+  // build a code object from the parts
+  rfl::Object<rfl::Generic> project;
+  project["name"] = Unicode::convert(_name.str());
+  vector<rfl::Generic> objects;
+  transform(_objs.begin(), _objs.end(), back_inserter(objects), [](auto& e) {
+    return Writeable::cast(e.get())->getGeneric();
+  });
+  project["objects"] = objects;
+  obj["project"] = project;
+  
+  return obj;
   
 }

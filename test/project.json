@@ -1,83 +1,82 @@
 {
-  "project": {
-    "name": "Test Project",
-    "objects": [
-      {
-        "name": "Complex JSON",
-        "file": "complex.json"
-      },
-      {
-        "name": "Dictionary JSON",
-        "file": "dict.json"
-      },
-      {
-        "name": "ZMQ Access",
-        "zmq": {
-          "library": [
+    "project": {
+        "name": "Test Project",
+        "objects": [
             {
-              "name": "msgType",
-              "result": {
-                "apply": [
-                  {
-                    "cur": {}
-                  },
-                  {
-                    "getmember": {
-                      "name": "type"
-                    }
-                  }
-                ]
-              }
-            }
-          ],
-          "remote": {
-            "dict": {
-              "address": "localhost",
-              "port": 1234
-            }
-          },
-          "local": {
-          },
-          "send": {
-            "dict": {
-              "type": "online"
-            }
-          },
-          "next": {
-            "select": [
-              {
-                "if": {
-                  "p": {
-                    "equal": [
-                      {
-                        "msgType": {}
-                      },
-                      {
-                        "string": "upstream"
-                      }
+                "name": "Complex JSON",
+                "file": "complex.json"
+            },
+            {
+                "name": "Dictionary JSON",
+                "file": "dict.json"
+            },
+            {
+                "name": "ZMQ Access",
+                "zmq": {
+                    "library": [
+                        {
+                            "name": "msgType",
+                            "result": {
+                                "apply": [
+                                    {
+                                        "cur": {}
+                                    },
+                                    {
+                                        "getmember": {
+                                            "name": "type"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "remote": {
+                        "dict": {
+                            "address": "localhost",
+                            "port": 1234
+                        }
+                    },
+                    "local": {},
+                    "send": {
+                        "dict": {
+                            "type": "online"
+                        }
+                    },
+                    "next": {
+                        "select": [
+                            {
+                                "if": {
+                                    "p": {
+                                        "equal": [
+                                            {
+                                                "msgType": {}
+                                            },
+                                            {
+                                                "string": "upstream"
+                                            }
+                                        ]
+                                    },
+                                    "then": {
+                                        "dict": {
+                                            "send": {
+                                                "type": "heartbeat"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "scenarios": [
+                        {
+                            "path": "/next",
+                            "input": {
+                                "type": "upstream"
+                            }
+                        }
                     ]
-                  },
-                  "then": {
-                    "dict": {
-                      "send": {
-                        "type": "heartbeat"
-                      }
-                    }
-                  }
                 }
-              }
-            ]
-          },
-          "scenarios": [
-            {
-              "path": "/next",
-              "input": {
-                "type": "upstream"
-              }
             }
-          ]
-        }
-      }
-    ]
-  }
+        ]
+    }
 }

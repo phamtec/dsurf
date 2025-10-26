@@ -16,8 +16,8 @@
 
 using namespace std;
 
-ProjectFileObj::ProjectFileObj(const std::string &name, const std::string &filename): 
-  _parent(0), _filename(filename), _hudobj(-1) {
+ProjectFileObj::ProjectFileObj(const std::string &name, const std::string &fullfilename, const std::string &filename): 
+  _parent(0), _fullfilename(fullfilename), _filename(filename), _hudobj(-1) {
 
   _name.set(Unicode::convert(name), Colours::white);
   
@@ -63,8 +63,21 @@ void ProjectFileObj::processKey(Renderer &renderer, SDL_Keycode code) {
   
   switch (code) {      
     case SDLK_L:
-      renderer.addFile(_filename, false);
+      renderer.addFile(_fullfilename, false);
       break;
   }
 
 }
+
+rfl::Generic ProjectFileObj::getGeneric() {
+
+  rfl::Object<rfl::Generic> obj;
+
+  // build a code object from the parts
+  obj["name"] = Unicode::convert(_name.str());
+  obj["file"] = _filename;
+  
+  return obj;
+
+}
+

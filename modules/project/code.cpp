@@ -269,3 +269,18 @@ void ProjectCode::changed(Renderer &renderer, Element *obj) {
   });
   
 }
+
+std::string ProjectCode::getName() {
+
+  return Unicode::convert(_name.str());
+  
+}
+
+rfl::Generic ProjectCode::getGeneric() {
+
+  return Writeable::cast(_transform.get())->getGeneric();
+  
+}
+
+
+

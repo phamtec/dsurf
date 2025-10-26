@@ -33,6 +33,9 @@ public:
   static std::optional<bool> getBool(const rfl::Generic &obj);
     // given a generic object, get a boolean out of it.
     
+  static bool isVector(const rfl::Generic &obj);
+    // Return true IF this is a vector.
+
   static std::optional<std::vector<rfl::Generic> > getVector(const rfl::Generic &obj);
     // given a generic object, get a vector out of it.
 

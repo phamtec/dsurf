@@ -78,7 +78,13 @@ void Renderer::msgError(const string &err) {
 
 void Renderer::evalMsg(const rfl::Generic &msg) {
   
-  auto close = Generic::getBool(_next, "close");
+  auto cmsg = _flo->evalObj(msg, _next);
+  if (!cmsg) {
+    msgError("unknown reply " + Generic::toString(msg));
+    return;
+  }
+
+  auto close = Generic::getBool(cmsg, "close");
   if (close && *close) {
     cout << "closing" << endl;
     _remotereq->close();
@@ -86,12 +92,6 @@ void Renderer::evalMsg(const rfl::Generic &msg) {
     return;
   }
   
-  auto cmsg = _flo->evalObj(msg, _next);
-  if (!cmsg) {
-    msgError("unknown reply " + Generic::toString(msg));
-    return;
-  }
-
   auto ignore = Generic::getBool(cmsg, "ignore");
   if (ignore && *ignore) {
     cout << "ignoring" << endl;
@@ -174,8 +174,8 @@ void Renderer::startRemote(std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Gen
   _flo = flo;
   
   // no message has come in yet.
-  rfl::Generic m;
-  auto cmsg = _flo->evalObj(m, msg);
+  rfl::Generic empty;
+  auto cmsg = _flo->evalObj(empty, msg);
   if (!cmsg) {
     return;
   }

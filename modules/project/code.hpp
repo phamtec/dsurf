@@ -18,10 +18,11 @@
 #include "commandable.hpp"
 #include "text.hpp"
 #include "flo.hpp"
+#include "writeable.hpp"
 
 #include <rfl.hpp>
 
-class ProjectCode: public Element, public Commandable {
+class ProjectCode: public Element, public Writeable, public Commandable {
 
   typedef Element super;
 
@@ -42,6 +43,10 @@ public:
   virtual Element *hitTest(const Point &origin, const Point &p) override;
   virtual void changed(Renderer &renderer, Element *obj) override;
   virtual bool visit(std::function<bool (Element *)> f) override;
+
+  // Writeable
+  virtual std::string getName() override;
+  virtual rfl::Generic getGeneric() override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;

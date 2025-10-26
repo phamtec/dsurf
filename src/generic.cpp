@@ -93,6 +93,21 @@ optional<rfl::Generic> Generic::getGeneric(optional<rfl::Object<rfl::Generic> > 
   
 }
 
+bool Generic::isVector(const rfl::Generic &obj) {
+
+  bool found = false;
+  std::visit([&found](const auto &field) {
+  
+    if constexpr (is_same<decay_t<decltype(field)>, vector<rfl::Generic> >()) {
+      found = true;
+    }
+
+  }, obj.variant());
+
+  return found;
+  
+}
+
 optional<vector<rfl::Generic> > Generic::getVector(optional<rfl::Object<rfl::Generic> > obj, const string &name) {
 
   if (!obj) {
@@ -111,7 +126,7 @@ optional<vector<rfl::Generic> > Generic::getVector(optional<rfl::Object<rfl::Gen
 optional<rfl::Object<rfl::Generic> > Generic::getObject(const rfl::Generic &obj) {
 
   optional<rfl::Object<rfl::Generic> > dict;
-  std::visit([&obj, &dict](const auto &field) {
+  std::visit([&dict](const auto &field) {
   
     if constexpr (is_same<decay_t<decltype(field)>, rfl::Object<rfl::Generic> >()) {
       dict = field;
@@ -126,7 +141,7 @@ optional<rfl::Object<rfl::Generic> > Generic::getObject(const rfl::Generic &obj)
 optional<vector<rfl::Generic> > Generic::getVector(const rfl::Generic &obj) {
 
   optional<vector<rfl::Generic> > v;
-  std::visit([&obj, &v](const auto &field) {
+  std::visit([&v](const auto &field) {
   
     if constexpr (is_same<decay_t<decltype(field)>, vector<rfl::Generic> >()) {
       v = field;
@@ -141,7 +156,7 @@ optional<vector<rfl::Generic> > Generic::getVector(const rfl::Generic &obj) {
 optional<string> Generic::getString(const rfl::Generic &obj) {
 
   optional<string> str;
-  std::visit([&obj, &str](const auto &field) {
+  std::visit([&str](const auto &field) {
   
     if constexpr (is_same<decay_t<decltype(field)>, string>()) {
       str = field;
@@ -156,7 +171,7 @@ optional<string> Generic::getString(const rfl::Generic &obj) {
 optional<long> Generic::getNum(const rfl::Generic &obj) {
 
   optional<long> i;
-  std::visit([&obj, &i](const auto &field) {
+  std::visit([&i](const auto &field) {
   
     if constexpr (is_same<decay_t<decltype(field)>, long>() || is_same<decay_t<decltype(field)>, long long>()) {
       i = field;
@@ -170,7 +185,7 @@ optional<long> Generic::getNum(const rfl::Generic &obj) {
 optional<bool> Generic::getBool(const rfl::Generic &obj) {
 
   optional<bool> b;
-  std::visit([&obj, &b](const auto &field) {
+  std::visit([&b](const auto &field) {
   
     if constexpr (is_same<decay_t<decltype(field)>, bool>()) {
       b = field;

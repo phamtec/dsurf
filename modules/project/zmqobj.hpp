@@ -18,12 +18,13 @@
 #include "text.hpp"
 #include "commandable.hpp"
 #include "flo.hpp"
+#include "writeable.hpp"
 
 #include <rfl.hpp>
 
 class Element;
 
-class ProjectZMQObj: public Element, public Commandable {
+class ProjectZMQObj: public Element, public Writeable, public Commandable {
 
   typedef Element super;
 
@@ -42,6 +43,9 @@ public:
   virtual Point localOrigin(Element *elem) override;
   virtual bool visit(std::function<bool (Element *)> f) override;
   virtual void changed(Renderer &renderer, Element *obj) override;
+
+  // Writeable
+  virtual rfl::Generic getGeneric()  override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;

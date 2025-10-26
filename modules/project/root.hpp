@@ -18,13 +18,14 @@
 #include "text.hpp"
 #include "commandable.hpp"
 #include "locatable.hpp"
+#include "writeable.hpp"
 
 #include <vector>
 #include <memory>
 
 class Element;
 
-class ProjectRoot: public Element, public Commandable, public Locatable {
+class ProjectRoot: public Element, public Writeable, public Commandable, public Locatable {
 
   typedef Element super;
 
@@ -43,6 +44,12 @@ public:
   virtual RectList calcLayout() override;
   virtual bool visit(std::function<bool (Element *)> f) override;
 
+  // Writeable
+  virtual std::string getName() override;
+  virtual rfl::Generic getGeneric() override;
+  virtual void setDirty(Renderer &renderer, bool state) override;
+  virtual std::optional<std::string> getFilename() override;
+
   // Commandable
   virtual void initHUD(HUD *hud) override;
   virtual void setMode(Renderer &renderer, HUD *hud) override;
@@ -58,7 +65,7 @@ protected:
   Text _name;
   std::vector<std::unique_ptr<Element> > _objs;
   RectList _layout;
-  std::string _filename;
+  Text _filename;
   int _hudroot;
   Point _location;
   

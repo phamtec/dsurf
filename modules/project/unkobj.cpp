@@ -16,8 +16,8 @@
 
 using namespace std;
 
-ProjectUnknownObj::ProjectUnknownObj(const std::string &name): 
-  _parent(0), _hudobj(-1) {
+ProjectUnknownObj::ProjectUnknownObj(const std::string &name, rfl::Generic g): 
+  _parent(0), _hudobj(-1), _g(g) {
 
   _name.set(Unicode::convert(name), Colours::white);
   
@@ -58,3 +58,10 @@ void ProjectUnknownObj::setMode(Renderer &renderer, HUD *hud) {
 void ProjectUnknownObj::processKey(Renderer &renderer, SDL_Keycode code) {
 
 }
+
+rfl::Generic ProjectUnknownObj::getGeneric() {
+
+  return _g;
+
+}
+

@@ -43,7 +43,7 @@ ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic>
   if (remote) {
     auto obj = _flo->evalObj(empty, *remote);
     if (obj) {
-      code = new ProjectCode("Remote", *remote, library, findScenario(scenarios, "/remote"));
+      code = new ProjectCode("remote", *remote, library, findScenario(scenarios, "/remote"));
       auto s = Generic::getString(obj, "address");
       if (s) {
         _remoteAddress = *s;
@@ -59,7 +59,7 @@ ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic>
     }
   }
   if (!code) {
-    code = new ProjectCode("Remote", empty, library, empty);
+    code = new ProjectCode("remote", empty, library, empty);
   }
   _code.push_back(unique_ptr<Element>(code));
   
@@ -68,7 +68,7 @@ ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic>
   if (local) {
     auto obj = _flo->evalObj(empty, *local);
     if (obj) {
-      code = new ProjectCode("Local", *local, library, findScenario(scenarios, "/local"));
+      code = new ProjectCode("local", *local, library, findScenario(scenarios, "/local"));
       auto s = Generic::getString(obj, "uuid");
       if (s) {
         _uuid = *s;
@@ -84,27 +84,27 @@ ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic>
     }
   }
   if (!code) {
-    code = new ProjectCode("Local", empty, library, empty);
+    code = new ProjectCode("local", empty, library, empty);
   }
   _code.push_back(unique_ptr<Element>(code));
   
   // send and next are late binding so we just have the code for them.
   auto o = Generic::getObject(obj, "send");
   if (o) {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Send", *o, library, findScenario(scenarios, "/send"))));
+    _code.push_back(unique_ptr<Element>(new ProjectCode("send", *o, library, findScenario(scenarios, "/send"))));
     _send = *o;
   }
   else {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Send", empty, library, empty)));
+    _code.push_back(unique_ptr<Element>(new ProjectCode("send", empty, library, empty)));
  }
   
   auto next =  Generic::getObject(obj, "next");
   if (next) {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Next", *next, library, findScenario(scenarios, "/next"))));
+    _code.push_back(unique_ptr<Element>(new ProjectCode("next", *next, library, findScenario(scenarios, "/next"))));
     _next = *next;
   }
   else {
-    _code.push_back(unique_ptr<Element>(new ProjectCode("Next", empty, library, empty)));
+    _code.push_back(unique_ptr<Element>(new ProjectCode("next", empty, library, empty)));
   }
 
   _libindex = _code.size();
@@ -338,5 +338,45 @@ void ProjectZMQObj::changed(Renderer &renderer, Element *obj) {
     return;
   }
   
+}
+
+rfl::Generic ProjectZMQObj::getGeneric() {
+
+  rfl::Object<rfl::Generic> obj;
+
+  // build a code object from the parts
+  obj["name"] = Unicode::convert(_name.str());
+  
+  // collect all the writeables.
+  rfl::Generic library;
+  rfl::Generic scenarios;
+  vector<Writeable *> code;
+  for (int i=0; i<_code.size(); i++) {
+    auto e = _code[i].get();
+    auto writeable = dynamic_cast<Writeable *>(e);
+    if (!writeable) {
+      cerr << "something not writeable!" << endl;
+      continue;
+    }
+    if (i < _libindex) {
+      code.push_back(writeable);
+    }
+    else if (i == _libindex) {
+      library = writeable->getGeneric();  
+    }
+    else {
+      scenarios = writeable->getGeneric();  
+    }
+  }
+  
+  rfl::Object<rfl::Generic> zmq;
+  zmq["library"] = library;
+  for (auto i: code) {
+    zmq[i->getName()] = i->getGeneric();
+  }
+  zmq["scenarios"] = scenarios;  
+  obj["zmq"] = zmq;
+  
+  return obj;
 }
 

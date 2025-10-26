@@ -74,7 +74,7 @@ Element *Project::load(const rfl::Generic &obj, const string &filename) {
       fs::path p = filename;
       p = p.parent_path();
       p /= *file;
-      return new ProjectFileObj(*name, p);
+      return new ProjectFileObj(*name, p, *file);
     }
     else {
       auto zmq = Generic::getObject(*obj, "zmq");    
@@ -83,7 +83,7 @@ Element *Project::load(const rfl::Generic &obj, const string &filename) {
       }
       else {
         cerr << "unkown type of object" << endl;
-        return new ProjectUnknownObj(*name);
+        return new ProjectUnknownObj(*name, *obj);
       }
     }
   });
