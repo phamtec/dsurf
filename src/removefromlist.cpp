@@ -14,12 +14,13 @@
 #include "list.hpp"
 #include "move.hpp"
 #include "objable.hpp"
+#include "renderer.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-RemoveFromList::RemoveFromList(Listable *list, Element *elem) {
+RemoveFromList::RemoveFromList(List *list, Element *elem) {
 
   _list = list;
   _elem = elem;
@@ -40,7 +41,7 @@ void RemoveFromList::exec(Renderer &renderer) {
     return;
   }
   
-  //  cout << "removing " << ix << endl;
+//  cout << "removing " << _elem->describe() << endl;
   auto it = find_if(elements->begin(), elements->end(), [this](auto& e) {
     auto ox = dynamic_cast<Objable *>(e.get());
     if (ox && ox->getObj() == _elem) {
@@ -52,6 +53,9 @@ void RemoveFromList::exec(Renderer &renderer) {
     cerr << "elem " << _elem->describe() << " not found to remove!" << endl;
     return;
   }
+  
+  // tell the renderer the parent has changed.
+  renderer.changed(_list);
   
 //   cout << "found" << endl;
 

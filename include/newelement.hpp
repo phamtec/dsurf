@@ -19,19 +19,19 @@
 #include <memory>
 
 class Element;
-class Listable;
+class List;
 
 class NewElement: public Change {
 
 public:
-  NewElement(Listable *list, Element *elem);
+  NewElement(List *list, Element *elem);
   
   virtual void exec(Renderer &renderer);
   virtual void undo(Renderer &renderer);
   virtual void destroy(Renderer &renderer);
     
 private:
-  Listable *_list;
+  List *_list;
   Element *_elem;
   std::unique_ptr<Element> _newelem;
   

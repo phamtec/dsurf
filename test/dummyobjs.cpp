@@ -83,6 +83,8 @@ void Renderer::destroy(Element *elem) {
 }
 void Renderer::layout(Element *elem) {
 }
+void Renderer::changed(Element *elem) {
+}
 
 // HUD
 int HUD::registerMode(const string &name, HUDMode *mode) {

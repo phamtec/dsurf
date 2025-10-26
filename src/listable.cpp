@@ -13,73 +13,47 @@
 
 #include "listable.hpp"
 
-#include "element.hpp"
-#include "err.hpp"
+#include "list.hpp"
 
 #include <sstream>
 
 using namespace std;
 
-class ListableErr: public Listable {
+Element *Listable::getByIndex(List *list, const string &str) {
 
-public:
-  ListableErr(Element *elem): _elem(elem) {}
-
-  virtual void remove(Renderer &renderer, Element *element) {
-    Err::typeError(_elem, typeid(Listable));
-  }
-  virtual int count() {
-    Err::typeError(_elem, typeid(Listable));
-    return 0;
-  }
-  virtual Element *at(int index) {
-    Err::typeError(_elem, typeid(Listable));
-    return nullptr;
-  }
-
-private:
-  Element *_elem;
-  
-};
-
-Listable *Listable::_err = nullptr;
-
-Listable *Listable::cast(Element *obj) {
-
-  return Errable<Listable, ListableErr>::cast(obj);
-  
-}
-
-Element *Listable::getByIndex(Element *elem, const string &str) {
-
-//  cout << "getByIndex " << elem->describe() << " " << str << endl;
+//  cout << "getByIndex " << list->describe() << " " << str << endl;
   
   auto slash = str.find("/");
   if (slash != string::npos) {
     string i = str.substr(0, slash);
-    auto sub = getByIndex(elem, i);
+    auto sub = getByIndex(list, i);
     if (!sub) {
-      cerr << "element " << elem->describe() << " has nothing at " << i << endl;
+      cerr << "element " << list->describe() << " has nothing at " << i << endl;
       return nullptr;
     }    
-    return getByIndex(sub, str.substr(slash+1));
+    auto list = dynamic_cast<List *>(sub);
+    if (!list) {
+      cerr << "element " << list->describe() << " is not a list" << endl;
+      return nullptr;
+    }    
+    return getByIndex(list, str.substr(slash+1));
   }
   
 //  cout << "found " << str << endl;
   stringstream ss(str);
   int index;
   ss >> index;
-  if (cast(elem)->count() <= index) {
+  if (list->count() <= index) {
 //     cout << "element " << ss.str() << " doesn't exist" << endl;
 //     cout << "element " << elem->describe() << " has " << cast(elem)->count() << endl;
     return nullptr;
   }
   
-  return cast(elem)->at(index);
+  return list->at(index);
 
 }
 
-Element *Listable::getByPath(Element *root, const string &path) {
+Element *Listable::getByPath(List *root, const string &path) {
 
   if (path.size() > 1) {
     return getByIndex(root, path.substr(1));

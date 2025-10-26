@@ -27,14 +27,13 @@
 #define H_list
 
 #include "element.hpp"
-#include "listable.hpp"
 #include "writeable.hpp"
 #include "commandable.hpp"
 
 #include <memory>
 #include <vector>
 
-class List: public Element, public Listable,  public Writeable, public Commandable  {
+class List: public Element,  public Writeable, public Commandable  {
 
   typedef Element super;
 
@@ -47,6 +46,10 @@ public:
   bool isDict() { return _dict; }
     // is this really a dictionary?
     
+  int count() { return _elements.size(); }
+  Element *at(int index) { return _elements[index].get(); }
+  std::vector<std::unique_ptr<Element> > *getElements() { return &_elements; }
+  
   // Element
   virtual void setParent(Element *parent) override { _parent = parent; }
   virtual Element *getParent() override { return _parent; }
@@ -63,11 +66,6 @@ public:
   // Writeable
   virtual rfl::Generic getGeneric() override;
 
-  // Listable
-  virtual int count() override { return _elements.size(); }
-  virtual Element *at(int index) override { return _elements[index].get(); }
-  virtual std::vector<std::unique_ptr<Element> > *getElements() override { return &_elements; }
-  
   // Commandable
   virtual void initHUD(HUD *hud) override;
   virtual void setMode(Renderer &renderer, HUD *hud) override;
@@ -77,6 +75,7 @@ public:
   static List *cast(Element *obj);
 
 private:
+  friend class TestList;
   
   bool _dict;
   Element *_parent;

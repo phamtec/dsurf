@@ -4,7 +4,7 @@
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 6-Aug-2025
     
-  Listable interface class.
+  List utilities.
   
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
@@ -15,35 +15,20 @@
 #define H_listable
 
 #include <string>
-#include <vector>
-#include <memory>
 
 class Element;
-class Renderer;
+class List;
 
 class Listable {
 
 public:
-  virtual ~Listable() {};
 
-  virtual int count() = 0;
-      // the count of the elements
-      
-  virtual Element *at(int index) = 0;
-      // return the element at that index
-      
-  virtual std::vector<std::unique_ptr<Element> > *getElements() { return nullptr; }
-    // direct access to the elements is necesary for the undo (command) system.
-    // and modifying the data.
-
-  static Element *getByPath(Element *root, const std::string &path);
+  static Element *getByPath(List *root, const std::string &path);
     // given a root, get the element by the path given.
-    
-  static Listable *cast(Element *obj);
-  static Listable *_err;
-  
+
 private:
-  static Element *getByIndex(Element *elem, const std::string &str);
+
+  static Element *getByIndex(List *elem, const std::string &str);
 
 };
 

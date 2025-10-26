@@ -210,7 +210,7 @@ void Renderer::addRoot(Element *element, bool useloc) {
     if (root) {
       if (root->getFilename() == "<new>") {
         auto list = dynamic_cast<List *>(root->getObj());
-        if (list && list->isDict() && Listable::cast(list)->count() == 0) {
+        if (list && list->isDict() && list->count() == 0) {
           destroyRoots();
           _roots.clear();
         }
@@ -503,6 +503,23 @@ void Renderer::setHUD() {
   _hud->setMode(_hudnone);
 }
 
+void Renderer::changed(Element *elem) {
+
+  cout << "changed " << elem->describe() << endl;
+  
+  // tell all the objects about this change!
+  for (auto& r: _roots) {
+    bool result = r->visit([this, elem](auto e) {
+      e->changed(*this, elem);
+      return true;
+    });
+    if (!result) {
+      break;
+    }
+  }
+
+}
+
 void Renderer::endEdit(Editable *obj) {
 
   setHUD();
@@ -513,16 +530,7 @@ void Renderer::endEdit(Editable *obj) {
     return;
   }
   
-  // tell all the objects about this change!
-  for (auto& r: _roots) {
-    bool result = r->visit([this, el](auto e) {
-      e->changed(*this, el);
-      return true;
-    });
-    if (!result) {
-      break;
-    }
-  }
+  changed(el);
     
 }
 
@@ -656,7 +664,7 @@ void Renderer::setTextState() {
 void Renderer::processDeleteKey(Element *element) {
 
   auto p = element->getParent();
-  auto px = dynamic_cast<Listable *>(p);
+  auto px = dynamic_cast<List *>(p);
   if (px) {
     exec(element, new RemoveFromList(px, element));
   }
@@ -664,7 +672,7 @@ void Renderer::processDeleteKey(Element *element) {
     auto prop = dynamic_cast<Property *>(p);
     if (prop) {
       p = prop->getParent();
-      px = dynamic_cast<Listable *>(p);
+      px = dynamic_cast<List *>(p);
       if (px) {
         exec(element, new RemoveFromList(px, element));
       }

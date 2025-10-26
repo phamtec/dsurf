@@ -17,7 +17,7 @@
 
 using namespace std;
 
-NewElement::NewElement(Listable *list, Element *elem) {
+NewElement::NewElement(List *list, Element *elem) {
 
   _list = list;
   _elem = elem;

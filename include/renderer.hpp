@@ -150,6 +150,9 @@ public:
   void renderLayout(const Point &origin, const RectList &layout);
     // render the layout to the device.
     
+  void changed(Element *elem);
+    // an element has changed. Communicate this.
+    
   Resources resources;
   
   // remote server.

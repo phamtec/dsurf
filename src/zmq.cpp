@@ -156,7 +156,7 @@ bool Renderer::setupRemote(const string &server, int req,
   }
   catch (zmq::error_t &ex) {
     // something failed!
-    cout << ex.what() << endl;
+    cout << "ZMQ can't pmmect: " << ex.what() << endl;
     _remotereq.reset();
     return false;
   }

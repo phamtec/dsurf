@@ -11,8 +11,9 @@
   https://github.com/phamtec/dsurf
 */
 
+#include "list.hpp"
+
 #include "listable.hpp"
-#include "element.hpp"
 
 #define BOOST_AUTO_TEST_MAIN
 #include <boost/test/unit_test.hpp>
@@ -21,10 +22,10 @@
 
 using namespace std;
 
-class Obj: public Element, public Listable {
+class TestList: public List {
 
 public:
-  Obj(const string &name): _name(name) {}
+  TestList(const string &name): List(false), _name(name) {}
   
   // Element
   virtual string describe() { return _name; }
@@ -33,13 +34,9 @@ public:
   virtual void render(Renderer &renderer, const Point &origin) {}
   virtual Size size() { return Size(); }
 
-  // Listable
-  virtual void remove(Renderer &renderer, Element *element) {}
-  virtual int count() { return _elements.size(); }
-  virtual Element *at(int index) { return _elements[index]; }
+  void push(Element *element) { _elements.push_back(unique_ptr<Element>(element)); }
   
   string _name;
-  vector<Element *> _elements;
   
 };
 
@@ -47,14 +44,11 @@ BOOST_AUTO_TEST_CASE( getByPathSimple )
 {
   cout << "=== getByPathSimple ===" << endl;
    
-  Obj root("root");
-  Obj obj1("obj1");
-  Obj obj2("obj2");
-  Obj obj3("obj3");
-  root._elements.push_back(&obj1);
-  root._elements.push_back(&obj2);
-  root._elements.push_back(&obj3);
-  
+  TestList root("root");
+  root.push(new TestList("obj1"));
+  root.push(new TestList("obj2"));
+  root.push(new TestList("obj3"));
+
   auto elem = Listable::getByPath(&root, "/2");
   BOOST_CHECK(elem != nullptr);
   BOOST_CHECK_EQUAL(elem->describe(), "obj3");
@@ -65,19 +59,14 @@ BOOST_AUTO_TEST_CASE( getByPath )
 {
   cout << "=== getByPath ===" << endl;
    
-  Obj root("root");
-  Obj obj1("obj1");
-  Obj obj2("obj2");
-  Obj obj21("obj21");
-  Obj obj22("obj22");
-  Obj obj23("obj23");
-  Obj obj3("obj3");
-  root._elements.push_back(&obj1);
-  root._elements.push_back(&obj2);
-  root._elements.push_back(&obj3);
-  obj2._elements.push_back(&obj21);
-  obj2._elements.push_back(&obj22);
-  obj2._elements.push_back(&obj23);
+  TestList root("root");
+  auto obj2 = new TestList("obj2");
+  root.push(new TestList("obj1"));
+  root.push(obj2);
+  root.push(new TestList("obj3"));
+  obj2->push(new TestList("obj21"));
+  obj2->push(new TestList("obj22"));
+  obj2->push(new TestList("obj23"));
   
   auto elem = Listable::getByPath(&root, "/1/2");
   BOOST_CHECK(elem != nullptr);
@@ -89,23 +78,17 @@ BOOST_AUTO_TEST_CASE( getByPathDeeper )
 {
   cout << "=== getByPathDeeper ===" << endl;
    
-  Obj root("root");
-  Obj obj1("obj1");
-  Obj obj2("obj2");
-  Obj obj21("obj21");
-  Obj obj22("obj22");
-  Obj obj23("obj23");
-  Obj obj231("obj231");
-  Obj obj232("obj232");
-  Obj obj3("obj3");
-  root._elements.push_back(&obj1);
-  root._elements.push_back(&obj2);
-  root._elements.push_back(&obj3);
-  obj2._elements.push_back(&obj21);
-  obj2._elements.push_back(&obj22);
-  obj2._elements.push_back(&obj23);
-  obj23._elements.push_back(&obj231);
-  obj23._elements.push_back(&obj232);
+  TestList root("root");
+  auto obj2 = new TestList("obj2");
+  auto obj23 = new TestList("obj23");
+  root.push(new TestList("obj1"));
+  root.push(obj2);
+  root.push(new TestList("obj3"));
+  obj2->push(new TestList("obj21"));
+  obj2->push(new TestList("obj22"));
+  obj2->push(obj23);
+  obj23->push(new TestList("obj231"));
+  obj23->push(new TestList("obj232"));
   
   auto elem = Listable::getByPath(&root, "/1/2/1");
   BOOST_CHECK(elem != nullptr);

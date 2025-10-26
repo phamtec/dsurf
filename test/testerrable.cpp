@@ -14,7 +14,6 @@
 #include "element.hpp"
 #include "editable.hpp"
 #include "commandable.hpp"
-#include "listable.hpp"
 #include "writeable.hpp"
 #include "list.hpp"
 #include "objable.hpp"
@@ -81,30 +80,6 @@ BOOST_AUTO_TEST_CASE( commandable )
 
   X x;
   Commandable::cast(&x)->initHUD(0);
-  
-}
-
-BOOST_AUTO_TEST_CASE( nullListable )
-{
-  cout << "=== nullListable ===" << endl;
-
-  try {
-    Listable::cast(0)->count();
-    BOOST_FAIL("Didn't catch");
-  }
-  catch (string &ex) {
-    // all good.
-    cout << ex << endl;
-  }
-  
-}
-
-BOOST_AUTO_TEST_CASE( listable )
-{
-  cout << "=== listable ===" << endl;
-
-  X x;
-  Listable::cast(&x)->count();
   
 }
 

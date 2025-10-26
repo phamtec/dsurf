@@ -133,7 +133,7 @@ Element *Builder::walk(Element *parent, const rfl::Generic &g, const string &nam
   Element *obj = castGeneric(g);
 
   if (obj) {
-    obj = new Property(Unicode::convert(name), obj, dynamic_cast<Listable *>(obj) != 0);
+    obj = new Property(Unicode::convert(name), obj, dynamic_cast<List *>(obj) != 0);
   }
   
   obj->setParent(parent);
@@ -152,7 +152,7 @@ void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Elemen
     if (is_same<rfl::Generic, V>::value) {
       auto obj = walk(list, v, k);
       if (obj) {
-        auto elements = Listable::cast(list)->getElements();
+        auto elements = List::cast(list)->getElements();
         if (elements) {
           elements->push_back(unique_ptr<Element>(obj));
         }
@@ -182,7 +182,7 @@ void Builder::walk(Element *parent, const std::vector<rfl::Generic > &v, Element
         // interdict the list element.
         auto le = new ListElem(obj);
         le->setParent(parent);
-        auto elements = Listable::cast(list)->getElements();
+        auto elements = List::cast(list)->getElements();
         if (elements) {
           elements->push_back(unique_ptr<Element>(le));
         }

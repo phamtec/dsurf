@@ -11,10 +11,11 @@
 
 #include "renderer.hpp"
 
-#include "listable.hpp"
 #include "commandable.hpp"
 #include "objable.hpp"
 #include "root.hpp"
+#include "list.hpp"
+#include "listable.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl.hpp>
@@ -75,7 +76,7 @@ void Renderer::handleTestCount(const TestMsg &msg) {
 //  cout << "counting: " << target->describe() << endl;
   
   stringstream ss;
-  ss << Listable::cast(target)->count();
+  ss << List::cast(target)->count();
   TestMsg reply{ .type = "count", .payload = ss.str() };
   testSend(reply);
 
@@ -157,7 +158,7 @@ Element *Renderer::getTestTarget(const optional<string> &name, bool silent) {
     return nullptr;
   }
   
-  auto element = Listable::getByPath(root->getObj(), *name);
+  auto element = Listable::getByPath(List::cast(root->getObj()), *name);
   if (!element) {
     if (!silent) {
       testErr(*name + " invalid");
