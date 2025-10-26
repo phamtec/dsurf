@@ -26,6 +26,7 @@
 
 using namespace std;
 namespace fs = std::filesystem;
+using flo::Generic;
 
 bool Project::isA(const rfl::Generic &obj) {
 

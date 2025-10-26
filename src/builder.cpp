@@ -28,6 +28,7 @@
 
 using namespace std;
 namespace fs = std::filesystem;
+using flo::Generic;
 
 Element *Builder::loadFile(const string &fn, bool raw) {
 

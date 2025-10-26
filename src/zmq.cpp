@@ -19,6 +19,7 @@
 #include <rfl.hpp>
 
 using namespace std;
+using flo::Generic;
 
 void Renderer::processMsg() {
 

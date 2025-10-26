@@ -18,6 +18,7 @@
 #include "generic.hpp"
 
 using namespace std;
+using flo::Generic;
 
 CodeScenario::CodeScenario(const rfl::Generic &scenario, int index): 
   _parent(0), _hudobj(-1), _loaded(false), _index(index) {

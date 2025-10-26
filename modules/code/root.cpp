@@ -20,6 +20,7 @@
 #include "scenario.hpp"
 
 using namespace std;
+using flo::Generic;
 
 CodeRoot::CodeRoot(const std::string &filename, const rfl::Generic &obj): 
   _parent(0), _hudobj(-1), _running(false) {

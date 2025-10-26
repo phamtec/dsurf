@@ -24,6 +24,7 @@
 #include <string_view>
 
 using namespace std;
+using flo::Generic;
 
 ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic> &obj): 
   _parent(0), _hudobj(-1), _editing(false) {

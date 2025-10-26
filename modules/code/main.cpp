@@ -23,6 +23,7 @@
 
 using namespace std;
 namespace fs = std::filesystem;
+using flo::Generic;
 
 bool Code::isA(const rfl::Generic &obj) {
 

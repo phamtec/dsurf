@@ -19,6 +19,7 @@
 #include "list.hpp"
 
 using namespace std;
+using flo::Generic;
 
 ProjectCode::ProjectCode(const string &name, rfl::Generic transform, optional<vector<rfl::Generic> > library, optional<rfl::Object<rfl::Generic> > scenario): 
   _hudobj(-1), _running(false) {

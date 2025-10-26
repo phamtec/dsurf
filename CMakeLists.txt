@@ -92,7 +92,6 @@ set(UTILSRC
   src/move.cpp
   src/macutil.cpp
   src/layout.cpp
-  src/generic.cpp
 )
 
 set(OBJSRC
@@ -145,7 +144,7 @@ add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp sr
 
 add_test(TestSpatial TestSpatial)
 
-add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp test/dummytext.cpp src/generic.cpp src/flo.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
+add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp test/dummytext.cpp src/flo.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
   target_link_libraries(TestBuilder FloLib yaml-cpp::yaml-cpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${BOOSTLIBS})
 
 add_test(TestBuilder TestBuilder)
