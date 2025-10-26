@@ -442,8 +442,6 @@ soon.
 ### 26-Oct-2025
 
 - remove listable. Only used by List so just used that.
-- communicat changes to lists for rerunning code.
-- code shows whole scenario on left.
-- code shows filename and is writeable.
+- communicate changes to lists for rerunning code.
 
 

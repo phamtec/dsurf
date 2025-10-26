@@ -12,6 +12,7 @@
 #include "newelement.hpp"
 
 #include "list.hpp"
+#include "renderer.hpp"
 
 #include <iostream>
 
@@ -40,6 +41,9 @@ void NewElement::exec(Renderer &renderer) {
 
   elements->push_back(unique_ptr<Element>(_elem));
 
+  // tell the renderer the parent has changed.
+  renderer.changed(_list);
+  
 }
 
 void NewElement::undo(Renderer &renderer) {
@@ -57,5 +61,8 @@ void NewElement::undo(Renderer &renderer) {
   
   // remove it from the list.
   elements->erase(last);
+  
+  // tell the renderer the parent has changed.
+  renderer.changed(_list);
   
 }

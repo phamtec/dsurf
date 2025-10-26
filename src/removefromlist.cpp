@@ -54,9 +54,6 @@ void RemoveFromList::exec(Renderer &renderer) {
     return;
   }
   
-  // tell the renderer the parent has changed.
-  renderer.changed(_list);
-  
 //   cout << "found" << endl;
 
   // save away the old element in the list.
@@ -66,6 +63,9 @@ void RemoveFromList::exec(Renderer &renderer) {
   // remove the element from the list (we have it)
   elements->erase(it);
 
+  // tell the renderer the parent has changed.
+  renderer.changed(_list);
+  
 }
 
 void RemoveFromList::undo(Renderer &renderer) {
@@ -84,4 +84,7 @@ void RemoveFromList::undo(Renderer &renderer) {
   // give it back to the list.
   elements->push_back(std::move(_oldelem));
 
+  // tell the renderer the parent has changed.
+  renderer.changed(_list);
+  
 }

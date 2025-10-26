@@ -403,12 +403,13 @@ void CodeRoot::rebuildScenarios(Renderer &renderer) {
 
 void CodeRoot::changed(Renderer &renderer, Element *obj) {
 
-  cout << "CodeRoot::changed " << obj->describe() << endl;
+//  cout << "CodeRoot::changed " << obj->describe() << endl;
 
   // test the transform.
   if (!_transform->visit([this, &renderer, obj](auto e) {
-    cout << "testing " << e->describe() << endl;
+//    cout << "testing " << e->describe() << endl;
     if (e == obj) {
+//      cout << "running" << endl;
       run(renderer);
       return false;
     }
