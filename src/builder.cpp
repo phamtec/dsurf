@@ -134,10 +134,9 @@ Element *Builder::walk(Element *parent, const rfl::Generic &g, const string &nam
 
   if (obj) {
     obj = new Property(Unicode::convert(name), obj, dynamic_cast<List *>(obj) != 0);
+    obj->setParent(parent);
   }
   
-  obj->setParent(parent);
-    
   return obj;
     
 }

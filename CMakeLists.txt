@@ -150,17 +150,17 @@ add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.c
 add_test(TestBuilder TestBuilder)
 
 add_executable(TestErrable test/testerrable.cpp test/dummyobjs.cpp test/dummytext.cpp ${OBJSRC} ${UTILSRC})
-  target_link_libraries(TestErrable yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  target_link_libraries(TestErrable FloLib yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestErrable TestErrable)
 
 add_executable(TestMove test/testmove.cpp test/dummyobjs.cpp test/dummytext.cpp ${OBJSRC} ${UTILSRC})
-  target_link_libraries(TestMove yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  target_link_libraries(TestMove FloLib yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestMove TestMove)
 
 add_executable(TestList test/testlist.cpp test/dummyobjs.cpp test/dummytext.cpp ${OBJSRC} ${UTILSRC})
-  target_link_libraries(TestList yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  target_link_libraries(TestList FloLib yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestList TestList)
 

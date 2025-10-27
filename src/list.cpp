@@ -23,6 +23,7 @@
 #include "newelement.hpp"
 #include "root.hpp"
 #include "property.hpp"
+#include "generic.hpp"
 
 #include <iostream>
 #include <SDL3/SDL.h>
@@ -32,6 +33,7 @@
 #define FIXED_WIDTH   600
 
 using namespace std;
+using flo::Generic;
 
 bool List::isParentRoot() {
   
@@ -288,6 +290,7 @@ void List::registerHUDModes(HUD *hud) {
     auto mode = new HUDMode(false);
     Renderer::registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"C", L"opy"));
+    mode->add(new Shortcut(L"P", L"aste"));
     mode->add(new Shortcut(L"E", L"dit"));
     mode->add(new Shortcut(L"N", L"ew"));
     Renderer::registerTextHUDMode(mode);
@@ -394,14 +397,11 @@ void List::mergeIntoUs(Renderer &renderer, List *other) {
   }
 
   // move the elements onto us.
-  transform(other->_elements.begin(), other->_elements.end(), back_inserter(_elements), [this, &renderer](auto &e) {
-    auto elem = std::move(e);
-    elem->setParent(this);
-    renderer.build(elem.get());
-    return elem;
-  });
-  
-  renderer.layout(root());
+  for (auto& e: other->_elements) {
+    auto elem = std::move(e.get());
+    renderer.initElement(this, elem);
+    renderer.exec(this, new NewElement(this, elem));
+  }
   
 }
 
@@ -421,9 +421,6 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
       break;
 
     case SDLK_P:
-      if (!_dict) {
-        break;
-      }
       {
         auto elem = renderer.getClipboard();
         if (elem) {
@@ -433,11 +430,11 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
               mergeIntoUs(renderer, list);
             }
             else {
-              Objable::cast(getParent())->setObj(renderer, elem);
+              add(renderer, L"list", list, true);
             }
           }
           else {
-            renderer.setError("Not a dictionary");
+            add(renderer, L"elem", elem, false);
           }
         }
         else {

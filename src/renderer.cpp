@@ -17,6 +17,7 @@
 #include "gfx.hpp"
 #include "editable.hpp"
 #include "property.hpp"
+#include "listelem.hpp"
 #include "removefromlist.hpp"
 #include "unicode.hpp"
 #include "sizes.hpp"
@@ -154,9 +155,10 @@ bool Renderer::init(const string &path) {
   
   {
     auto mode = new HUDMode(false);    
+    registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"N", L"ew"));
     mode->add(new Shortcut(L"P", L"aste"));
-    _hudnone = _hud->registerMode("moving", mode);
+    _hudnone = _hud->registerMode("none", mode);
   }
   
   {
@@ -278,6 +280,14 @@ void Renderer::layout(Element *elem) {
 //    cout << "layout " << e->describe() << endl;
     e->layout();
     return true;
+  });
+  
+}
+
+void Renderer::layoutAll() {
+
+  for_each(_roots.begin(), _roots.end(), [this](auto& e) {
+    layout(e.get());
   });
   
 }
@@ -537,14 +547,14 @@ void Renderer::endEdit(Editable *obj) {
 void Renderer::registerGlobalHUDMode(HUDMode *mode) {
 
   mode->add(new Shortcut(L"[1-9]", L"Zoom"));
+  mode->add(new Shortcut(L"U", L"ndo", canUndo));
+  mode->add(new Shortcut(L"R", L"edo", canRedo));
   
 }
 
 void Renderer::registerRootHUDMode(HUDMode *mode) {
 
   registerGlobalHUDMode(mode);
-  mode->add(new Shortcut(L"U", L"ndo", canUndo));
-  mode->add(new Shortcut(L"R", L"edo", canRedo));
   mode->add(new Shortcut(L"M", L"ove"));
   mode->add(new Shortcut(L"K", L"ill"));
   mode->add(new Shortcut(L"W", L"rite", canWrite));
@@ -591,17 +601,32 @@ void Renderer::write(Element *element) {
 
 void Renderer::exec(Element *element, Change *change) {
   _changes.exec(*this, _hud.get(), element, change);
-  setDirty(element); 
+  if (element) {
+    setDirty(element);
+  }
+  else {
+    layoutAll();
+  }
 }
 
 void Renderer::undo(Element *element) {
   _changes.undo(*this, _hud.get(), element);
-  setDirty(element, true);  
+  if (element) {
+    setDirty(element);
+  }
+  else {
+    layoutAll();
+  }
 }
 
 void Renderer::redo(Element *element) {
   _changes.redo(*this, _hud.get(), element);
-  setDirty(element, true);  
+  if (element) {
+    setDirty(element);
+  }
+  else {
+    layoutAll();
+  }
 }
 
 bool Renderer::processGlobalKey(SDL_Keycode code) {
@@ -609,6 +634,16 @@ bool Renderer::processGlobalKey(SDL_Keycode code) {
   if (code >= SDLK_1 && code <= SDLK_9) {
     zoom((SDLK_9 - code) + 1);
     return true;
+  }
+  
+  switch (code) {
+    case SDLK_U:
+      undo(0);
+      return true;
+
+    case SDLK_R:
+      redo(0);
+      return true;
   }
   
   return false;
@@ -661,23 +696,38 @@ void Renderer::setTextState() {
 
 }
 
+bool Renderer::removeFromList(Element *p, Element *element) {
+
+  auto list = dynamic_cast<List *>(p);
+  if (list) {
+    exec(element, new RemoveFromList(list, element));
+    return true;
+  }
+  return false;
+  
+}
+
 void Renderer::processDeleteKey(Element *element) {
 
   auto p = element->getParent();
-  auto px = dynamic_cast<List *>(p);
-  if (px) {
-    exec(element, new RemoveFromList(px, element));
-  }
-  else {
+  if (!removeFromList(p, element)) {
     auto prop = dynamic_cast<Property *>(p);
     if (prop) {
       p = prop->getParent();
-      px = dynamic_cast<List *>(p);
-      if (px) {
-        exec(element, new RemoveFromList(px, element));
+      if (!removeFromList(p, element)) {
+        cerr << "Parent is not list" << endl;
+      }
+    }
+    else {
+      auto elem = dynamic_cast<ListElem *>(p);
+      if (elem) {
+        p = elem->getParent();
+        if (!removeFromList(p, element)) {
+          cerr << "Parent is not list" << endl;
+        }
       }
       else {
-        cerr << "Not listable and not in a property" << endl;
+        cerr << "parent is not list or listelem or property" << endl;
       }
     }
   }
@@ -828,34 +878,36 @@ bool Renderer::processEvents() {
             get<0>(*hit)->processKey(*this, event.key.key);
           }
           else {
-            switch (event.key.key) {
-              case SDLK_P:
-                paste();
-                break;
-                
-              case SDLK_ESCAPE:
-                _adding = false;
-                break;
-                
-              case SDLK_N:
-                _adding = true;
-                break;
-                
-              case SDLK_D:
-                if (!_adding) {
+            if (!processGlobalKey(event.key.key)) {
+              switch (event.key.key) {
+                case SDLK_P:
+                  paste();
                   break;
-                }
-                addRoot(new Root("<new>", new List(true)));
-                _adding = false;
-                break;
-          
-              case SDLK_L:
-                if (!_adding) {
+                  
+                case SDLK_ESCAPE:
+                  _adding = false;
                   break;
-                }
-                addRoot(new Root("<new>", new List(false)));
-                _adding = false;
-                break;
+                  
+                case SDLK_N:
+                  _adding = true;
+                  break;
+                  
+                case SDLK_D:
+                  if (!_adding) {
+                    break;
+                  }
+                  addRoot(new Root("<new>", new List(true)));
+                  _adding = false;
+                  break;
+            
+                case SDLK_L:
+                  if (!_adding) {
+                    break;
+                  }
+                  addRoot(new Root("<new>", new List(false)));
+                  _adding = false;
+                  break;
+              }
             }
           }
           setHUD();

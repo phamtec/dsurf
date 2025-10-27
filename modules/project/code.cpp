@@ -206,7 +206,7 @@ void ProjectCode::processKey(Renderer &renderer, SDL_Keycode code) {
   }
 
   switch (code) {      
-    case SDLK_R:
+    case SDLK_E:
       _running = true;
       run(renderer);
       renderer.layout(root());
@@ -221,6 +221,12 @@ void ProjectCode::run(Renderer &renderer) {
   auto in = Writeable::cast(_input.get())->getGeneric();
   auto t = Writeable::cast(_transform.get())->getGeneric();
   auto to = Generic::getObject(t);
+  if (!to) {
+    cerr << "transform is not object" << endl;
+    return;
+  }
+  
+  // run the evaluator.
   auto out = _flo->evalObj(in, *to);
   
   // clear out the output
@@ -235,7 +241,7 @@ void ProjectCode::run(Renderer &renderer) {
     _output->setParent(this);
   }
   renderer.build(_output.get());
-  layout();
+  renderer.layout(this);
   
 }
 
@@ -249,6 +255,10 @@ void ProjectCode::libChanged(Renderer &renderer, const std::vector<rfl::Generic>
 
 void ProjectCode::changed(Renderer &renderer, Element *obj) {
 
+  if (!_running) {
+    return;
+  }
+  
   // test the transform.
   if (!_transform->visit([this, &renderer, obj](auto e) {
     if (e == obj) {

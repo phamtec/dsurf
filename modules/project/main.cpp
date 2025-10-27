@@ -127,7 +127,7 @@ void Project::registerHUDModes(Renderer &renderer, HUD *hud) {
   {
     auto mode = new HUDMode(false);
     renderer.registerGlobalHUDMode(mode);
-    mode->add(new Shortcut(L"R", L"un", canRun));
+    mode->add(new Shortcut(L"E", L"xecute", canRun));
     hud->registerMode("projectcode", mode);
   }
 

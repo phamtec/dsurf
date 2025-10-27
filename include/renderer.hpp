@@ -211,6 +211,8 @@ private:
   void recenter();
   void paste();
   void zoom(int scale);
+  bool removeFromList(Element *p, Element *element);
+  void layoutAll();
   
   typedef std::tuple<Commandable *, Element *, bool, Text *> getHitReturnType;
     // the commandable interface and the raw element

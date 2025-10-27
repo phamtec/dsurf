@@ -71,11 +71,13 @@ void Changes::exec(Renderer &renderer, HUD *hud, Element *element, Change *chang
   change->exec(renderer);
   
   // layout the root.
-  auto root = element->root();
-  if (root) {
-    renderer.layout(root);
+  if (element) {
+    auto root = element->root();
+    if (root) {
+      renderer.layout(root);
+    }
   }
-  
+    
   // remember it.
   _changes.push_back(unique_ptr<Change>(change));
   
@@ -101,9 +103,11 @@ void Changes::undo(Renderer &renderer, HUD *hud, Element *element) {
   (*_undoptr)->undo(renderer);
   
   // layout the root.
-  auto root = element->root();
-  if (root) {
-    renderer.layout(root);
+  if (element) {
+    auto root = element->root();
+    if (root) {
+      renderer.layout(root);
+    }
   }
   
   if (_undoptr == _changes.begin()) {
@@ -141,10 +145,13 @@ void Changes::redo(Renderer &renderer, HUD *hud, Element *element) {
   }
 
   // layout the root.
-  auto root = element->root();
-  if (root) {
-    renderer.layout(root);
+  if (element) {
+    auto root = element->root();
+    if (root) {
+      renderer.layout(root);
+    }
   }
+  
   
   setUndoFlags(renderer, hud);
 
