@@ -91,7 +91,7 @@ void Renderer::evalMsg(const rfl::Generic &msg) {
   auto open = Generic::getBool(cmsg, "open");
   if (open && *open) {
     cout << "opening" << endl;
-    addRoot(new Root("<zme>", Builder::walk(0, msg)));
+    addRoot(new Root("<zmq-result>", Builder::walk(0, msg)));
     _remotereq->close();
     _remotereq.reset();
     return;
