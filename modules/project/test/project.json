@@ -11,70 +11,86 @@
                 "file": "dict.json"
             },
             {
-                "name": "ZMQ Access",
+                "name": "Streams",
                 "zmq": {
                     "library": [
                         {
-                            "name": "msgType",
+                            "name": "objectsMsg",
                             "result": {
                                 "apply": [
+                                    [
+                                        [
+                                            "type",
+                                            "objects"
+                                        ],
+                                        [
+                                            "objtype",
+                                            "streams"
+                                        ],
+                                        [
+                                            "user",
+                                            {
+                                                "userId": {}
+                                            }
+                                        ]
+                                    ],
                                     {
-                                        "cur": {}
-                                    },
-                                    {
-                                        "getmember": {
-                                            "name": "type"
-                                        }
+                                        "dict": {}
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "close",
+                            "result": {
+                                "apply": [
+                                    [
+                                        [
+                                            "dict",
+                                            {
+                                                "apply": [
+                                                    [
+                                                        [
+                                                            "close",
+                                                            true
+                                                        ]
+                                                    ],
+                                                    {
+                                                        "dict": {}
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    ],
+                                    {
+                                        "dict": {}
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "userId",
+                            "result": {
+                                "string": "5b5a709cb990eb4d298d805d"
                             }
                         }
                     ],
                     "remote": {
                         "dict": {
                             "address": "localhost",
-                            "port": 1234
+                            "port": 8094
                         }
                     },
                     "local": {},
                     "send": {
-                        "dict": {
-                            "type": "online"
-                        }
+                        "objectsMsg": {}
                     },
                     "next": {
-                        "select": [
-                            {
-                                "if": {
-                                    "p": {
-                                        "equal": [
-                                            {
-                                                "msgType": {}
-                                            },
-                                            {
-                                                "string": "upstream"
-                                            }
-                                        ]
-                                    },
-                                    "then": {
-                                        "dict": {
-                                            "send": {
-                                                "type": "heartbeat"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    "scenarios": [
-                        {
-                            "path": "/next",
-                            "input": {
-                                "type": "upstream"
-                            }
+                        "dict": {
+                            "open": true
                         }
-                    ]
+                    },
+                    "scenarios": []
                 }
             }
         ]

@@ -515,7 +515,7 @@ void Renderer::setHUD() {
 
 void Renderer::changed(Element *elem) {
 
-  cout << "changed " << elem->describe() << endl;
+//  cout << "changed " << elem->describe() << endl;
   
   // tell all the objects about this change!
   for (auto& r: _roots) {

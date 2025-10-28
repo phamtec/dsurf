@@ -14,6 +14,7 @@
 #include "builder.hpp"
 #include "generic.hpp"
 #include "flo.hpp"
+#include "root.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl.hpp>
@@ -79,12 +80,23 @@ void Renderer::msgError(const string &err) {
 
 void Renderer::evalMsg(const rfl::Generic &msg) {
   
+//  cout << "next " << Generic::toString(_next) << endl;
+  
   auto cmsg = _flo->evalObj(msg, _next);
   if (!cmsg) {
     msgError("unknown reply " + Generic::toString(msg));
     return;
   }
 
+  auto open = Generic::getBool(cmsg, "open");
+  if (open && *open) {
+    cout << "opening" << endl;
+    addRoot(new Root("<zme>", Builder::walk(0, msg)));
+    _remotereq->close();
+    _remotereq.reset();
+    return;
+  }
+  
   auto close = Generic::getBool(cmsg, "close");
   if (close && *close) {
     cout << "closing" << endl;
@@ -133,32 +145,38 @@ bool Renderer::setupRemote(const string &server, int req,
   
   _remotereq.reset(new zmq::socket_t(*_context, ZMQ_REQ));
   
-  cout << "remotePubKey " << remotePubKey << endl;
-  cout << "privateKey " << privateKey << endl;
-  cout << "pubKey " << pubKey << endl;
-  
   int linger = 0;
-  int curveServer = 0;
-  try {
 #if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)
   _remotereq->setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
-  _remotereq->setsockopt(ZMQ_CURVE_SERVER, &curveServer, sizeof(curveServer));
-  _remotereq->setsockopt(ZMQ_CURVE_SERVERKEY, remotePubKey.c_str(), remotePubKey.size());
-  _remotereq->setsockopt(ZMQ_CURVE_SECRETKEY, privateKey.c_str(), privateKey.size());
-  _remotereq->setsockopt(ZMQ_CURVE_PUBLICKEY, pubKey.c_str(), pubKey.size());
 #else
   _remotereq->set(zmq::sockopt::linger, linger);
-  _remotereq->set(zmq::sockopt::curve_server, curveServer);
-  _remotereq->set(zmq::sockopt::curve_serverkey, remotePubKey);
-  _remotereq->set(zmq::sockopt::curve_secretkey, privateKey);
-  _remotereq->set(zmq::sockopt::curve_publickey, pubKey);
 #endif
-  }
-  catch (zmq::error_t &ex) {
-    // something failed!
-    cout << "ZMQ can't pmmect: " << ex.what() << endl;
-    _remotereq.reset();
-    return false;
+  
+  if (remotePubKey.size() > 0) {
+    cout << "remotePubKey " << remotePubKey << endl;
+    cout << "privateKey " << privateKey << endl;
+    cout << "pubKey " << pubKey << endl;
+    
+    int curveServer = 0;
+    try {
+#if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)
+    _remotereq->setsockopt(ZMQ_CURVE_SERVER, &curveServer, sizeof(curveServer));
+    _remotereq->setsockopt(ZMQ_CURVE_SERVERKEY, remotePubKey.c_str(), remotePubKey.size());
+    _remotereq->setsockopt(ZMQ_CURVE_SECRETKEY, privateKey.c_str(), privateKey.size());
+    _remotereq->setsockopt(ZMQ_CURVE_PUBLICKEY, pubKey.c_str(), pubKey.size());
+#else
+    _remotereq->set(zmq::sockopt::curve_server, curveServer);
+    _remotereq->set(zmq::sockopt::curve_serverkey, remotePubKey);
+    _remotereq->set(zmq::sockopt::curve_secretkey, privateKey);
+    _remotereq->set(zmq::sockopt::curve_publickey, pubKey);
+#endif
+    }
+    catch (zmq::error_t &ex) {
+      // something failed!
+      cout << "ZMQ can't pmmect: " << ex.what() << endl;
+      _remotereq.reset();
+      return false;
+    }
   }
 
   string addr = "tcp://" + server + ":" + to_string(req);
