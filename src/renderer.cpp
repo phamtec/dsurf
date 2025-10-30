@@ -227,10 +227,7 @@ void Renderer::addRoot(Element *element, bool useloc) {
   }
 
   // setup the HUD in the object.
-  Commandable *cx = dynamic_cast<Commandable *>(element);
-  if (cx) {
-    cx->initHUD(_hud.get());
-  }
+  Commandable::cast(element)->initHUD(_hud.get());
 
   // build all objects with this renderer.
   build(element);
@@ -801,7 +798,12 @@ void Renderer::paste() {
 
   auto elem = getClipboard();
   if (elem) {
-    addRoot(new Root("<clipboard>", elem));
+    if (elem->isRoot()) {
+      addRoot(elem);
+    }
+    else {
+      addRoot(new Root("<clipboard>", elem));
+    }
   }
   else {
     setError("Invalid JSON");

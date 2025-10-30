@@ -47,6 +47,7 @@ public:
   virtual Point localOrigin(Element *elem) override;
   virtual Element *hitTest(const Point &origin, const Point &p) override;
   virtual void changed(Renderer &renderer, Element *obj) override;
+  virtual bool isRoot() override { return true; }
 
   // Writeable
   virtual std::string getName() override;

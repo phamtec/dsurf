@@ -51,6 +51,7 @@ public:
   virtual void initHUD(HUD *hud) override;
   virtual void setMode(Renderer &renderer, HUD *hud) override;
   virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
+  virtual std::string getVerb() override;
 
 protected:
 

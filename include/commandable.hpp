@@ -15,6 +15,7 @@
 #define H_commandable
 
 #include <SDL3/SDL_events.h>
+#include <string>
 
 class HUD;
 class Renderer;
@@ -33,6 +34,9 @@ public:
     
   virtual void processKey(Renderer &renderer, SDL_Keycode code) = 0;
     // process the keycode to for object.
+    
+  virtual std::string getVerb() { return "???"; }
+    // return a verb we might use to command this.
     
   static Commandable *cast(Element *obj);
   static Commandable *_err;

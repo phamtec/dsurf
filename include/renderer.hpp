@@ -244,6 +244,8 @@ private:
   void handleTestMsg();
   void handleTestKey(const TestMsg &msg);
   void handleTestCount(const TestMsg &msg);
+  Element *findRoot(const std::string &name);
+  Element *getRootPath(Element *elem, const std::string &name, bool silent);
 
   // handling remove ZMQ requests to encrypted servers.
   std::unique_ptr<zmq::socket_t> _remotereq;

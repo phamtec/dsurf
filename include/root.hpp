@@ -45,6 +45,7 @@ public:
   virtual Size size() override { return _size; }
   virtual RectList calcLayout() override;
   virtual bool visit(std::function<bool (Element *)> f) override;
+  virtual bool isRoot() override { return true; }
 
   // Writeable
   virtual std::string getName() override;

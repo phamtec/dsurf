@@ -150,31 +150,81 @@ Element *Renderer::getTestTarget(const optional<string> &name, bool silent) {
     return nullptr;
   }
   
-  auto root = dynamic_cast<Root *>(_roots[0].get());
-  if (!root) {
-    if (!silent) {
-      testErr("root obj is not a Root");
+  auto slash = name->find("/");
+  if (slash == 0) {
+    // use the first root and find the path.
+    return getRootPath(_roots[0].get(), *name, silent);
+  }
+  else if (slash != string::npos) {
+    // find the root, and then use the rest of the path to find where in the root.
+    return getRootPath(findRoot(name->substr(0, slash)), name->substr(slash+1), silent);
+  }
+
+  // find a target by command verb.
+  Element *target = 0;
+  _roots[0]->visit([this, name, &target](auto e) {
+    auto cx = dynamic_cast<Commandable *>(e);
+    if (cx) {
+      if (cx->getVerb() == *name) {
+        target = e;
+        return false;
+      }
     }
-    return nullptr;
+    return true;
+  });
+  if (target) {
+    return target;
   }
   
-  auto element = Listable::getByPath(List::cast(root->getObj()), *name);
-  if (!element) {
-    if (!silent) {
-      testErr(*name + " invalid");
+  if (!silent) {
+    testErr("root obj is not a Root");
+  }
+  return nullptr;
+  
+}
+
+Element *Renderer::getRootPath(Element *elem, const string &name, bool silent) {
+
+  auto root = dynamic_cast<Root *>(elem);
+  if (root) {
+  
+    auto element = Listable::getByPath(List::cast(root->getObj()), name);
+    if (!element) {
+      if (!silent) {
+        testErr(name + " invalid");
+      }
+      return nullptr;
     }
-    return nullptr;
+    
+    // the object we found is just a container for another.
+    auto obj = dynamic_cast<Objable *>(element);
+    if (obj) {
+  //    cout << "found objable." << endl;
+      return obj->getObj();
+    }
+    
+    return element;
+  
   }
+
+  return nullptr;
   
-  // the object we found is just a container for another.
-  auto obj = dynamic_cast<Objable *>(element);
-  if (obj) {
-//    cout << "found objable." << endl;
-    return obj->getObj();
+}
+
+Element *Renderer::findRoot(const string &name) {
+
+  for (auto& i: _roots) {
+    auto wx = dynamic_cast<Writeable *>(i.get());
+    if (wx) {
+      auto fn = wx->getFilename();
+      if (fn) {
+        if (name == *fn) {
+          return i.get();
+        }
+      }
+    }
   }
-  
-  return element;
-  
+  return nullptr;
 }
 
 void Renderer::testSend(const TestMsg &reply) {

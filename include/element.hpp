@@ -95,6 +95,9 @@ public:
   virtual void changed(Renderer &renderer, Element *) {}
     // an element has changed.
     
+  virtual bool isRoot() { return false; }
+    // return true if this is a root. Used by the testing.
+    
 };
 
 #endif // H_element

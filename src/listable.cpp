@@ -25,7 +25,7 @@ Element *Listable::getByIndex(List *list, const string &str) {
   
   auto slash = str.find("/");
   if (slash != string::npos) {
-    string i = str.substr(0, slash);
+    auto i = str.substr(0, slash);
     auto sub = getByIndex(list, i);
     if (!sub) {
       cerr << "element " << list->describe() << " has nothing at " << i << endl;

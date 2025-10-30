@@ -129,6 +129,13 @@ ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic>
   });
 }
 
+std::string ProjectZMQObj::getVerb() {
+
+  // the command verb is just the name of this object
+  return Unicode::convert(_name.str());
+  
+}
+
 optional<rfl::Object<rfl::Generic> > ProjectZMQObj::findScenario(optional<vector<rfl::Generic> > scenarios, const string &path) {
 
   if (scenarios) {
