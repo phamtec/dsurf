@@ -22,11 +22,17 @@
 using namespace std;
 using flo::Generic;
 
+void Renderer::closeRemote() {
+  _remotereq->close();
+  _remotereq.reset();
+}
+
 void Renderer::processMsg() {
 
   const std::chrono::milliseconds timeout{20};
 
   if (_remotereq) {
+    
     zmq::pollitem_t items [] = {
         { *_rep, 0, ZMQ_POLLIN, 0 },
         { *_remotereq, 0, ZMQ_POLLIN, 0 }
@@ -51,10 +57,10 @@ void Renderer::processMsg() {
       cout << "<- " << m << endl;
       auto result = rfl::json::read<rfl::Generic>(m);
       if (!result) {
-        msgError("unknown result " + m);
+        _remote->msgError(*this, "unknown result " + m);
         return;
       }
-      evalMsg(*result);
+      _remote->evalMsg(*this, *result);
       return;
     }
     return;
@@ -72,72 +78,9 @@ void Renderer::processMsg() {
 
 }
 
-void Renderer::msgError(const string &err) {
-  cerr << "ZMQ error: "<< err << endl;
-  _remotereq->close();
-  _remotereq.reset();
-}
-
-void Renderer::evalMsg(const rfl::Generic &msg) {
-  
-//  cout << "next " << Generic::toString(_next) << endl;
-  
-  auto cmsg = _flo->evalObj(msg, _next);
-  if (!cmsg) {
-    msgError("unknown reply " + Generic::toString(msg));
-    return;
-  }
-
-  auto open = Generic::getBool(cmsg, "open");
-  if (open && *open) {
-    cout << "opening" << endl;
-    addRoot(new Root("<zmq-result>", Builder::walk(0, msg)));
-    _remotereq->close();
-    _remotereq.reset();
-    return;
-  }
-  
-  auto close = Generic::getBool(cmsg, "close");
-  if (close && *close) {
-    cout << "closing" << endl;
-    _remotereq->close();
-    _remotereq.reset();
-    return;
-  }
-  
-  auto ignore = Generic::getBool(cmsg, "ignore");
-  if (ignore && *ignore) {
-    cout << "ignoring" << endl;
-    return;
-  }
-  
-  auto err = Generic::getString(cmsg, "error");
-  if (err) {
-    msgError(*err);
-    return;
-  }
-  
-  auto send = Generic::getObject(cmsg, "send");
-  auto next = Generic::getObject(cmsg, "next");
-  if (!send || !next) {
-    msgError("missing send or next");
-    return;
-  }
-  
-  sendRemote(*send);
-  
-  _next = *next;
-
-}
-
 bool Renderer::setupRemote(const string &server, int req, 
   const string &remotePubKey, const string &privateKey, const string &pubKey) {
 
-  if (!_context) {
-    cout << "new ZMQ context" << endl;
-    _context.reset(new zmq::context_t(1));
-  }
-  
   if (_remotereq) {
     cerr << "already online" << endl;
     return false;
@@ -188,20 +131,23 @@ bool Renderer::setupRemote(const string &server, int req,
   
 }
 
-void Renderer::startRemote(std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
-  
-  _flo = flo;
-  
-  // no message has come in yet.
-  rfl::Generic empty;
-  auto cmsg = _flo->evalObj(empty, msg);
-  if (!cmsg) {
-    return;
-  }
-  sendRemote(*cmsg);
+void Renderer::connectRemote(const std::string &server, int req, 
+    const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey,
+    std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next) {
 
-  // what to do next!
-  _next = next;
+  if (_remotereq) {
+    _remotereq->close();
+  }
+  if (!_context) {
+    cout << "new ZMQ context" << endl;
+    _context.reset(new zmq::context_t(1));
+  }
+  
+  _remote.reset(new RemoteZMQ());
+  
+  if (setupRemote(server, req, upstreamPubKey, privateKey, pubKey)) {
+     _remote->startRemote(*this, flo, msg, next);
+  }
   
 }
 
@@ -218,5 +164,4 @@ void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg) {
 #endif
 
 }
-
 

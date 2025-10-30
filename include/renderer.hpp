@@ -22,7 +22,7 @@
 #include "texteditor.hpp"
 #include "hud.hpp"
 #include "changes.hpp"
-#include "flo.hpp"
+#include "remotezmq.hpp"
 
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_events.h>
@@ -55,6 +55,7 @@ public:
   static Size displaySize();
   
   void addRoot(Element *element, bool useloc=false);
+  void addRoot(const std::string &name, const rfl::Generic &g);
     // add a root, either we know the element, or add some generic object
     
   void addFile(const std::string &filename, bool raw);
@@ -155,13 +156,12 @@ public:
     
   Resources resources;
   
-  // remote server.
-  bool setupRemote(const std::string &server, int req, 
-    const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey);
-  void startRemote(std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next);
+  // ZMQ remote server.
+  void connectRemote(const std::string &server, int req, 
+    const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey,
+    std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next);
+  void closeRemote();
   void sendRemote(const rfl::Object<rfl::Generic> &msg);
-  void evalMsg(const rfl::Generic &msg);
-  void msgError(const std::string &err);
   
 private:
   friend class TextEditor;
@@ -198,8 +198,7 @@ private:
   Point _movoffs;
   bool _adding;
   int _hudadding;
-  rfl::Object<rfl::Generic> _next;
-  std::shared_ptr<Flo> _flo;
+  std::unique_ptr<RemoteZMQ> _remote;
   
   bool processEvents();
   bool isDoubleClick();
@@ -249,6 +248,8 @@ private:
   // handling remove ZMQ requests to encrypted servers.
   std::unique_ptr<zmq::socket_t> _remotereq;
   
+  bool setupRemote(const std::string &server, int req, 
+    const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey);
 };
 
 #endif // H_renderer

@@ -203,6 +203,12 @@ void Renderer::addFile(const string &filename, bool raw) {
   
 }
 
+void Renderer::addRoot(const std::string &name, const rfl::Generic &g) {
+  
+  addRoot(new Root(name, Builder::walk(0, g)));
+  
+}
+
 void Renderer::addRoot(Element *element, bool useloc) {
 
   // if there is only 1 element and it is <new> with an empty dict

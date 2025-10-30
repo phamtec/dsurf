@@ -15,6 +15,12 @@
                 "zmq": {
                     "library": [
                         {
+                            "name": "userId",
+                            "result": {
+                                "string": "6121bdfaec9e5a059715739c"
+                            }
+                        },
+                        {
                             "name": "objectsMsg",
                             "result": {
                                 "apply": [
@@ -39,40 +45,6 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "close",
-                            "result": {
-                                "apply": [
-                                    [
-                                        [
-                                            "dict",
-                                            {
-                                                "apply": [
-                                                    [
-                                                        [
-                                                            "close",
-                                                            true
-                                                        ]
-                                                    ],
-                                                    {
-                                                        "dict": {}
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    ],
-                                    {
-                                        "dict": {}
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "userId",
-                            "result": {
-                                "string": "5b5a709cb990eb4d298d805d"
-                            }
                         }
                     ],
                     "remote": {
@@ -85,11 +57,7 @@
                     "send": {
                         "objectsMsg": {}
                     },
-                    "next": {
-                        "dict": {
-                            "open": true
-                        }
-                    },
+                    "next": {},
                     "scenarios": []
                 }
             }

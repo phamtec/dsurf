@@ -17,11 +17,11 @@ Feature: Copy and Paste
       And she sends key "p" to "/1"
       Then "/1" contains 3 elements
       And she sends key "u" to "/"
-      And "/1" contains 3 elements
+      And "/1" contains 2 elements
       And she sends key "r" to "/"
       And "/1" contains 3 elements
       And she sends key "u" to "/"
-      And "/1" contains 3 elements
+      And "/1" contains 2 elements
 
    Scenario: A dictionary can be pasted into an empty dictionary in a dict
       When she puts the file contents "test/dictofemptydicts.json" on the clipboard
@@ -31,8 +31,8 @@ Feature: Copy and Paste
       And she sends key "p" to "/1"
       Then "/1" contains 3 elements
       And she sends key "u" to "/"
-      And "/1" contains 3 elements
+      And "/1" contains 2 elements
       And she sends key "r" to "/"
       And "/1" contains 3 elements
       And she sends key "u" to "/"
-      And "/1" contains 3 elements
+      And "/1" contains 2 elements

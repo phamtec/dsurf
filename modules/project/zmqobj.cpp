@@ -287,19 +287,14 @@ void ProjectZMQObj::processKey(Renderer &renderer, SDL_Keycode code) {
 
 void ProjectZMQObj::load(Renderer &renderer) {
 
-  if (_send.size() == 0 || _next.size() == 0) {
-    cerr << "no send or next" << endl;
+  if (_send.size() == 0) {
+    cerr << "no send" << endl;
     return;
   }
 
   cout << "connecting to " << _remoteAddress << ":" << _remotePort << endl;
   
-  if (renderer.setupRemote(_remoteAddress, _remotePort, _remotePubKey, _privateKey, _publicKey)) {
-    
-    // we hand off our flo here.
-    renderer.startRemote(_flo, _send, _next);
-    
-  }
+  renderer.connectRemote(_remoteAddress, _remotePort, _remotePubKey, _privateKey, _publicKey, _flo, _send, _next);
   
 }
 

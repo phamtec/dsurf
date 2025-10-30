@@ -77,8 +77,9 @@ set(SRC
   src/types.cpp
   src/test.cpp
   src/changes.cpp
-  src/zmq.cpp
   src/flo.cpp
+  src/zmq.cpp
+  src/remotezmq.cpp
 )
 
 set(UTILSRC

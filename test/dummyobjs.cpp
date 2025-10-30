@@ -3,6 +3,7 @@
 #include "text.hpp"
 #include "corner.hpp"
 #include "renderer.hpp"
+#include "remotezmq.hpp"
 
 using namespace std;
 
@@ -67,14 +68,6 @@ void Renderer::addFile(const string &filename, bool raw) {
 bool Renderer::processGlobalKey(SDL_Keycode code) {
   return false;
 }
-bool Renderer::setupRemote(const string &server, int req, 
-  const string &remotePubKey, const string &privateKey, const string &pubKey) {
-  return false;
-}
-void Renderer::startRemote(std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, const rfl::Object<rfl::Generic> &next) {
-}
-void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg) {
-}
 void Renderer::renderLayout(const Point &origin, const RectList &layout) {
 }
 void Renderer::build(Element *elem) {
@@ -84,6 +77,10 @@ void Renderer::destroy(Element *elem) {
 void Renderer::layout(Element *elem) {
 }
 void Renderer::changed(Element *elem) {
+}
+void Renderer::connectRemote(const std::string &server, int req, 
+    const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey,
+    std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next) {
 }
 
 // HUD
