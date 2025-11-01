@@ -157,6 +157,9 @@ RectList CodeRoot::calcLayout() {
     auto outs = _output->size();
     layout.push_back(Rect(Point(ts.w + Sizes::group_indent, tsy), outs + (Sizes::text_padding * 2)));
   }
+  if (fs.w > ts.w) {
+    ts.w = fs.w;
+  }
   Layout::addSize(&layout, Size(ts.w, o.y));
 
   return layout;
@@ -354,14 +357,14 @@ void CodeRoot::run(Renderer &renderer) {
 
   auto t = Writeable::cast(_transform.get())->getGeneric();
   auto to = Generic::getObject(t);
-  auto out = _flo->evalObj(*in, *to);
+  auto out = _flo->eval(*in, *to);
   
   // clear out the output
   _output->destroy(renderer);
   
   // rebuild it.
   if (out) {
-    cout << Generic::toString(*out) << endl;
+//    cout << Generic::toString(*out) << endl;
     _output = unique_ptr<Element>(Builder::walk(this, *out));
   }
   else {

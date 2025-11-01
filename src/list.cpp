@@ -24,6 +24,7 @@
 #include "root.hpp"
 #include "property.hpp"
 #include "generic.hpp"
+#include "../modules/code/main.hpp"
 
 #include <iostream>
 #include <SDL3/SDL.h>
@@ -276,6 +277,7 @@ void List::registerHUDModes(HUD *hud) {
     Renderer::registerRootHUDMode(mode);
     mode->add(new Shortcut(L"E", L"dit"));
     mode->add(new Shortcut(L"N", L"ew"));
+    mode->add(new Shortcut(L"T", L"ransform"));
     hud->registerMode("rootlist", mode);
   }
 
@@ -283,6 +285,7 @@ void List::registerHUDModes(HUD *hud) {
     auto mode = new HUDMode(false);
     Renderer::registerRootHUDMode(mode);
     mode->add(new Shortcut(L"N", L"ew"));
+    mode->add(new Shortcut(L"T", L"ransform"));
     hud->registerMode("rootdict", mode);
   }
 
@@ -412,6 +415,11 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
       return;
     }
   }
+  else {
+    if (renderer.processGlobalKey(code)) {
+      return;
+    }
+  }
   switch (code) {      
     case SDLK_C:
       if (_editing) {
@@ -520,6 +528,11 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
       }
       add(renderer, L"bool", new Bool(false), false);
       break;
+      
+    case SDLK_T:
+      transformCode(renderer);
+      break;
+    
   }
   
 }
@@ -619,3 +632,17 @@ void List::drawBorder(Renderer &renderer, const Point &origin, const Size &size,
   }
 
 }
+
+void List::transformCode(Renderer &renderer) {
+
+  auto code = Code::build(getGeneric());
+  if (!code) {
+    cerr << "didn't create code correctly" << endl;
+    return;
+  }
+  
+  renderer.removeRoot(root());
+  renderer.addRoot(code);
+  
+}
+

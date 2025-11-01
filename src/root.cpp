@@ -49,9 +49,12 @@ RectList Root::calcLayout() {
   auto o = Point();
   layout.push_back(Rect(o, s));
   o.y += s.h + Sizes::listgap;
-  s = _obj->size();
-  layout.push_back(Rect(o, s));
-  o.y += s.h;
+  auto os = _obj->size();
+  layout.push_back(Rect(o, os));
+  o.y += os.h;
+  if (os.w > s.w) {
+    s.w = os.w;
+  }
   Layout::addSize(&layout, Size(s.w, o.y));
   
   return layout;

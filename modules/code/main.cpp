@@ -27,10 +27,9 @@ using flo::Generic;
 
 bool Code::isA(const rfl::Generic &obj) {
 
-  auto code = Generic::getObject(obj);
-  auto transform = Generic::getObject(code, "transform");
+  auto transform = Generic::getObject(Generic::getObject(obj), "transform");
   if (transform) {
-    cout << "Code"  << endl;
+//    cout << "Code"  << endl;
     return true;
   }
 
@@ -59,4 +58,36 @@ void Code::registerHUDModes(Renderer &renderer, HUD *hud) {
     hud->registerMode("scenario", mode);
   }
 
+}
+
+ Element *Code::build(const rfl::Generic &g) {
+
+  vector<rfl::Generic> scenarios;
+  rfl::Object<rfl::Generic> simple;
+  simple["name"] = "Simple";
+  simple["input"] = g;
+  scenarios.push_back(simple);
+  
+  vector<rfl::Generic> apply;
+  rfl::Object<rfl::Generic> cur;
+  rfl::Object<rfl::Generic> empty;
+  cur["cur"] = empty;
+  apply.push_back(cur);
+  rfl::Object<rfl::Generic> transform;
+  transform["apply"] = apply;
+  
+  vector<rfl::Generic> library;
+  
+  rfl::Object<rfl::Generic> code;
+  code["scenarios"] = scenarios;
+  code["transform"] = transform;
+  code["library"] = library;
+  
+  Code c;
+  if (!c.isA(code)) {
+    return nullptr;
+  }
+  
+  return c.load(code, "<code>");
+  
 }

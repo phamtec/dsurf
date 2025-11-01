@@ -24,6 +24,17 @@ using namespace flo;
 
 optional<rfl::Object<rfl::Generic> > Flo::evalObj(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform) {
 
+  auto result = eval(obj, transform);
+  if (!result) {
+    return nullopt;
+  }
+  
+  return Generic::getObject(*result);
+  
+}
+
+optional<rfl::Generic> Flo::eval(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform) {
+
 //   cout << "obj " << Generic::toString(obj) << endl;
 //   cout << "transform " << Generic::toString(transform) << endl;
   
@@ -36,9 +47,7 @@ optional<rfl::Object<rfl::Generic> > Flo::evalObj(const rfl::Generic &obj, const
   if (!result) {
     return nullopt;
   }
-
 //  cout << "result " << Generic::toString(*result) << endl;
-
-  return Generic::getObject(*result);
+  return *result;
   
 }

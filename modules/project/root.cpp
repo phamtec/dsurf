@@ -68,6 +68,9 @@ RectList ProjectRoot::calcLayout() {
       w = o.x + s.w;
     }
   });
+  if (fs.w > w) {
+    w = fs.w;
+  }
   Layout::addSize(&layout, Size(w, o.y));
   
   return layout;

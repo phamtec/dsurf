@@ -227,7 +227,7 @@ void ProjectCode::run(Renderer &renderer) {
   }
   
   // run the evaluator.
-  auto out = _flo->evalObj(in, *to);
+  auto out = _flo->eval(in, *to);
   
   // clear out the output
   _output->destroy(renderer);

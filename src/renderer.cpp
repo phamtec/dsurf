@@ -257,6 +257,22 @@ void Renderer::addRoot(Element *element, bool useloc) {
 
 }
 
+void Renderer::removeRoot(Element *element) {
+
+  auto r = find_if(_roots.begin(), _roots.end(), [element](auto& e) {
+    return e.get() == element;
+  });
+  if (r == _roots.end()) {
+    cerr << "couldnt find root." << endl;
+    return;
+  }
+
+  destroy(r->get());
+  _roots.erase(r);
+  recenter();
+  
+}
+
 void Renderer::build(Element *elem) {
 
   elem->visit([this](auto e) {
@@ -313,23 +329,6 @@ void Renderer::recenter() {
 //  cout << _offs << endl;
 
 }
-
-void Renderer::removeRoot(Element *element) {
-
-  auto r = find_if(_roots.begin(), _roots.end(), [element](auto& e) {
-    return e.get() == element;
-  });
-  if (r == _roots.end()) {
-    cerr << "couldnt find root." << endl;
-    return;
-  }
-
-  destroy(r->get());
-  _roots.erase(r);
-  recenter();
-  
-}
-
 
 void Renderer::initElement(Element *parent, Element *element) {
 

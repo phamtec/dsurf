@@ -58,6 +58,9 @@ public:
   void addRoot(const std::string &name, const rfl::Generic &g);
     // add a root, either we know the element, or add some generic object
     
+  void removeRoot(Element *element);
+    // rmeove this root.
+    
   void addFile(const std::string &filename, bool raw);
     // add the file
     // if raw is specified, modules are bypassed.
@@ -206,7 +209,6 @@ private:
   void setHUD();
   void destroyRoots();
   Point addRootOrigin(Element *element, const Point &origin);
-  void removeRoot(Element *element);
   void recenter();
   void paste();
   void zoom(int scale);

@@ -82,6 +82,10 @@ void Renderer::connectRemote(const std::string &server, int req,
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey,
     std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next) {
 }
+void Renderer::addRoot(Element *element, bool useloc) {
+}
+void Renderer::removeRoot(Element *element) {
+}
 
 // HUD
 int HUD::registerMode(const string &name, HUDMode *mode) {
@@ -104,4 +108,3 @@ Shortcut::Shortcut(const wstring &key, const wstring &text, optional<HUDFlags> f
 // Corner
 void Corner::render(Renderer &renderer, const Point &origin) {
 }
-

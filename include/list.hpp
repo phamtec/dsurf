@@ -104,6 +104,7 @@ private:
   void add(Renderer &renderer, const std::wstring &name, Element *element, bool container);
   bool isParentRoot();
   void mergeIntoUs(Renderer &renderer, List *other);
+  void transformCode(Renderer &renderer);
     
 };
 

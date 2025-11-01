@@ -28,6 +28,8 @@ public:
   
   static void registerHUDModes(Renderer &renderer, HUD *hud);
   
+  static Element *build(const rfl::Generic &g);
+
 private:
 
 };

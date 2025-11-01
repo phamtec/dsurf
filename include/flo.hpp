@@ -36,7 +36,11 @@ public:
   Flo() {}
   
   std::optional<rfl::Object<rfl::Generic> > evalObj(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform);
-
+    // evaulate, expecting an object to be returned.
+    
+  std::optional<rfl::Generic> eval(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform);
+    // evaluate getting anything back.
+    
 private:
   
   rfl::Generic _library;

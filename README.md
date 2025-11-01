@@ -444,4 +444,10 @@ soon.
 - remove listable. Only used by List so just used that.
 - communicate changes to lists for rerunning code.
 
+### 1-Nov-2025
+
+- Allow any dictionary or list to be turned into a transform.
+- Allow transforms to output something other than a dictionary.
+
+
 
