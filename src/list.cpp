@@ -521,9 +521,21 @@ void List::mergeIntoUs(Core &core, List *other) {
   
 }
 
+void List::handleKey(Core &core, SDL_Keycode code) {
+
+  auto handler = _listHandlers.find(code);
+  if (handler == _listHandlers.end()) {
+//    cout << "ignoring key" << code << endl;
+    return;
+  }
+  handler->second(core, *this);
+  return;
+}
+
 void List::processKey(Core &core, SDL_Keycode code) {
 
-  if (isParentRoot()) {  
+  if (isParentRoot() && !_adding) {
+    // root keys as "S" so we don't do it while we are adding.
     if (core.processRootKey(this, code)) {
       return;
     }
@@ -533,12 +545,7 @@ void List::processKey(Core &core, SDL_Keycode code) {
       return;
     }
   }
-  auto handler = _listHandlers.find(code);
-  if (handler == _listHandlers.end()) {
-//    cout << "ignoring key" << code << endl;
-    return;
-  }
-  handler->second(core, *this);
+  handleKey(core, code);
 
 }
 

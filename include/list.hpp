@@ -108,6 +108,7 @@ private:
   void mergeIntoUs(Core &core, List *other);
   void transformCode(Core &core);
   void registerListKeyHandlers();
+  void handleKey(Core &core, SDL_Keycode code);
     
 };
 
