@@ -14,6 +14,7 @@
 #include "core.hpp"
 #include "unicode.hpp"
 #include "sizes.hpp"
+#include "filenames.hpp"
 
 using namespace std;
 
@@ -140,13 +141,22 @@ void Root::processKey(Core &core, SDL_Keycode code) {
 
 std::wstring Root::getString() {
 
-  return Editable::cast(_obj.get())->getString();
+  return _filename.str();
   
 }
 
 void Root::setString(Core &core, const wstring &s) {
 
-  Editable::cast(_obj.get())->setString(core, s);
+  auto msg = Filenames::isInvalid(Unicode::convert(s));
+  if (msg) {
+    core.setError(*msg);
+  }
+  else {
+    auto fn = Filenames::addPath(Unicode::convert(s));
+    cout << "rename from " << Unicode::convert(_filename.str()) << " to " << fn << endl;
+    _filename.set(Unicode::convert(fn), Colours::black);
+    _filename.build(core);
+  }
   
 }
 
@@ -160,4 +170,13 @@ void Root::setMode(Core &core, HUD *hud) {
 
   Commandable::cast(_obj.get())->setMode(core, hud);
   
+  core.setTextState();
+
 }
+
+void Root::edit(Core &core) {
+
+  core.processTextKey(this, origin(), _filename.size(), SDLK_A);
+
+}
+

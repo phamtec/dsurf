@@ -573,7 +573,7 @@ void Core::registerRootHUDMode(HUDMode *mode) {
   mode->add(new Shortcut(L"M", L"ove"));
   mode->add(new Shortcut(L"K", L"ill"));
   mode->add(new Shortcut(L"W", L"rite", canWrite));
-//  mode->add(new Shortcut(L"N", L"ame"));
+  mode->add(new Shortcut(L"S", L"ave"));
   mode->add(new Shortcut(L"C", L"opy"));
   mode->add(new Shortcut(L"P", L"aste"));
   
@@ -590,6 +590,12 @@ void Core::registerRootKeyHandlers() {
     core.removeRoot(element->root());
   };
   _rootHandlers[SDLK_W] =  [&](Core &core, Element *element) { write(element); };
+  _rootHandlers[SDLK_S] =  [&](Core &core, Element *element) {
+    auto ex = dynamic_cast<Editable *>(element->root());
+    if (ex) {
+      ex->edit(core);
+    }
+  };
   _rootHandlers[SDLK_C] =  [&](Core &core, Element *element) { copy(element); };
   _rootHandlers[SDLK_P] =  [&](Core &core, Element *element) { paste(); };
 
@@ -611,7 +617,7 @@ void Core::registerTextKeyHandlers() {
     core.processDeleteKey(element);
   };
 
-  // and overide the root undor and redo to take an element.
+  // and overide the root undo and redo to take an element.
   _textHandlers[SDLK_U] =  [&](Core &core, Element *element) { undo(element); };
   _textHandlers[SDLK_R] =  [&](Core &core, Element *element) { redo(element); };
   
@@ -761,7 +767,9 @@ bool Core::processRootKey(Element *element, SDL_Keycode code) {
 
 void Core::setTextState() {
 
-  _editor->setHUD(_hud.get());
+  if (_editor->capture()) {
+    _editor->setHUD(_hud.get());
+  }
 
 }
 

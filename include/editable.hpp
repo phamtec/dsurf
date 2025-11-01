@@ -28,6 +28,9 @@ public:
   virtual void setString(Core &core, const std::wstring &s) = 0;
     // get and set the value as a string.
     
+  virtual void edit(Core &core) {};
+    // open up the editor gui on thing.
+
   static Editable *cast(Element *obj);
   static Editable *_err;
     

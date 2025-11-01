@@ -93,6 +93,7 @@ set(UTILSRC
   src/move.cpp
   src/macutil.cpp
   src/layout.cpp
+  src/filenames.cpp
 )
 
 set(OBJSRC
@@ -184,3 +185,8 @@ add_executable(TestProject modules/project/test/testproject.cpp src/builder.cpp 
   target_link_libraries(TestProject FloLib yaml-cpp::yaml-cpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${BOOSTLIBS})
 
 add_test(TestProject TestProject)
+
+add_executable(TestFilenames test/testfilenames.cpp src/filenames.cpp)
+  target_link_libraries(TestFilenames ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+add_test(TestFilenames TestFilenames)
