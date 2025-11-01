@@ -34,17 +34,17 @@ class ListElem: public Element,  public Writeable, public Editable, public Comma
 public:
   ListElem(Element *obj);
   
-  void setEdit(Renderer &renderer, bool state);
+  void setEdit(Core &core, bool state);
     // we are editing the list element.
       
   // Element
   virtual void setParent(Element *parent) override  { _parent = parent; }
   virtual Element *getParent() override  { return _parent; }
   virtual void layout() override ;
-  virtual void render(Renderer &renderer, const Point &origin) override ;
+  virtual void render(Core &core, const Point &origin) override ;
   virtual Element *hitTest(const Point &origin, const Point &p) override ;
   virtual Point localOrigin(Element *elem) override ;
-  virtual void destroy(Renderer &renderer) override ;
+  virtual void destroy(Core &core) override ;
   virtual Size size() override { return _size; }
   virtual bool visit(std::function<bool (Element *)> f) override;
 
@@ -54,16 +54,16 @@ public:
 
   // Editable
   virtual std::wstring getString() override ;
-  virtual void setString(Renderer &renderer, const std::wstring &s) override ;
+  virtual void setString(Core &core, const std::wstring &s) override ;
 
   // Commandable
   virtual void initHUD(HUD *hud) override ;
-  virtual void setMode(Renderer &renderer, HUD *hud) override ;
+  virtual void setMode(Core &core, HUD *hud) override ;
   static void registerHUDModes(HUD *hud);
-  virtual void processKey(Renderer &renderer, SDL_Keycode code) override ;
+  virtual void processKey(Core &core, SDL_Keycode code) override ;
 
   // Objable
-  virtual void setObj(Renderer &renderer, Element *obj) override ;
+  virtual void setObj(Core &core, Element *obj) override ;
   virtual Element *getObj() override  { return _obj.get(); }
     
 private:

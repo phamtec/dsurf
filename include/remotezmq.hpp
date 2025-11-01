@@ -21,7 +21,7 @@
 #include <zmq.hpp>
 #include <rfl.hpp>
 
-class Renderer;
+class Core;
 
 class RemoteZMQ {
 
@@ -29,9 +29,9 @@ public:
   RemoteZMQ() {};
   
   // remote server.
-  void startRemote(Renderer &renderer, std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next);
-  void evalMsg(Renderer &renderer, const rfl::Generic &msg);
-  void msgError(Renderer &renderer, const std::string &err);
+  void startRemote(Core &core, std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next);
+  void evalMsg(Core &core, const rfl::Generic &msg);
+  void msgError(Core &core, const std::string &err);
   
 private:
 

@@ -33,9 +33,9 @@ public:
   // Element
   virtual void setParent(Element *parent) { _parent = parent; }
   virtual Element *getParent() { return _parent; }
-  virtual void build(Renderer &renderer);
+  virtual void build(Core &core);
   virtual void layout();
-  virtual void render(Renderer &renderer, const Point &origin);
+  virtual void render(Core &core, const Point &origin);
   virtual Size size() { return _size; }
 
   // Writeable
@@ -43,12 +43,12 @@ public:
 
   // Editable
   virtual std::wstring getString() { return _value.str(); }
-  virtual void setString(Renderer &renderer, const std::wstring &s);
+  virtual void setString(Core &core, const std::wstring &s);
 
   // Commandable
   virtual void initHUD(HUD *hud) {}
-  virtual void setMode(Renderer &renderer, HUD *hud);
-  virtual void processKey(Renderer &renderer, SDL_Keycode code);
+  virtual void setMode(Core &core, HUD *hud);
+  virtual void processKey(Core &core, SDL_Keycode code);
 
 private:
 

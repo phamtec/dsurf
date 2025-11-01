@@ -34,23 +34,23 @@ public:
   // Element
   virtual void setParent(Element *parent) override { _parent = parent; }
   virtual Element *getParent() override { return _parent; }
-  virtual void build(Renderer &renderer) override;
+  virtual void build(Core &core) override;
   virtual void layout() override;
-  virtual void render(Renderer &renderer, const Point &origin) override;
+  virtual void render(Core &core, const Point &origin) override;
   virtual Element *hitTest(const Point &origin, const Point &p) override;
   virtual Size size() override { return _size; }
   virtual RectList calcLayout() override;
   virtual Point localOrigin(Element *elem) override;
   virtual bool visit(std::function<bool (Element *)> f) override;
-  virtual void changed(Renderer &renderer, Element *obj) override;
+  virtual void changed(Core &core, Element *obj) override;
 
   // Writeable
   virtual rfl::Generic getGeneric()  override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
-  virtual void setMode(Renderer &renderer, HUD *hud) override;
-  virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
+  virtual void setMode(Core &core, HUD *hud) override;
+  virtual void processKey(Core &core, SDL_Keycode code) override;
   virtual std::string getVerb() override;
 
 protected:
@@ -74,7 +74,7 @@ protected:
   rfl::Object<rfl::Generic> _next;
   std::shared_ptr<Flo> _flo;
 
-  void load(Renderer &renderer);
+  void load(Core &core);
   std::optional<rfl::Object<rfl::Generic> > findScenario(std::optional<std::vector<rfl::Generic> > scenarios, const std::string &path);
   
 };

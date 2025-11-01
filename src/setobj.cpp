@@ -24,13 +24,13 @@ SetObj::SetObj(std::unique_ptr<Element> *obj, Element *newobj) {
   
 }
 
-void SetObj::destroy(Renderer &renderer) {
+void SetObj::destroy(Core &core) {
   if (_oldobj) {
-    _oldobj->destroy(renderer);
+    _oldobj->destroy(core);
   }
 }
 
-void SetObj::exec(Renderer &renderer) {
+void SetObj::exec(Core &core) {
 
 //   cout << "exec" << endl;
 //   cout << "old null " << (_oldobj.get() == nullptr) << endl;
@@ -43,7 +43,7 @@ void SetObj::exec(Renderer &renderer) {
   
 }
 
-void SetObj::undo(Renderer &renderer) {
+void SetObj::undo(Core &core) {
 
 //   cout << "undo" << endl;
 //   cout << "old " << (*_obj)->describe() << endl;

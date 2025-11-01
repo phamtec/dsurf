@@ -35,8 +35,8 @@ public:
     return ss.str();
   }
   virtual void layout() {}
-  virtual void build(Renderer &renderer) {}
-  virtual void render(Renderer &renderer, const Point &origin) {}
+  virtual void build(Core &core) {}
+  virtual void render(Core &core, const Point &origin) {}
   virtual Size size() { return Size(); }
   
   int _value;

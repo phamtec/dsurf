@@ -34,9 +34,9 @@ Element *Modules::load(const rfl::Generic &obj, const string &filename) {
   
 }
 
-void Modules::registerHUDModes(Renderer &renderer, HUD *hud) {
+void Modules::registerHUDModes(Core &core, HUD *hud) {
 
-  Project::registerHUDModes(renderer, hud);
-  Code::registerHUDModes(renderer, hud);
+  Project::registerHUDModes(core, hud);
+  Code::registerHUDModes(core, hud);
   
 }

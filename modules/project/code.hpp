@@ -29,19 +29,19 @@ class ProjectCode: public Element, public Writeable, public Commandable {
 public:
   ProjectCode(const std::string &name, rfl::Generic transform, std::optional<std::vector<rfl::Generic> > library, std::optional<rfl::Object<rfl::Generic> > scenario);
 
-  void libChanged(Renderer &renderer, const std::vector<rfl::Generic> &library);
+  void libChanged(Core &core, const std::vector<rfl::Generic> &library);
   
   // Element
   virtual void setParent(Element *parent) override { _parent = parent; }
   virtual Element *getParent() override { return _parent; }
-  virtual void build(Renderer &renderer) override;
+  virtual void build(Core &core) override;
   virtual void layout() override;
-  virtual void render(Renderer &renderer, const Point &origin) override;
+  virtual void render(Core &core, const Point &origin) override;
   virtual Size size() override { return _size; }
   virtual RectList calcLayout() override;
   virtual Point localOrigin(Element *elem) override;
   virtual Element *hitTest(const Point &origin, const Point &p) override;
-  virtual void changed(Renderer &renderer, Element *obj) override;
+  virtual void changed(Core &core, Element *obj) override;
   virtual bool visit(std::function<bool (Element *)> f) override;
 
   // Writeable
@@ -50,8 +50,8 @@ public:
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
-  virtual void setMode(Renderer &renderer, HUD *hud) override;
-  virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
+  virtual void setMode(Core &core, HUD *hud) override;
+  virtual void processKey(Core &core, SDL_Keycode code) override;
 
 protected:
 
@@ -66,7 +66,7 @@ protected:
   bool _running;
   std::unique_ptr<Flo> _flo;
     
-  void run(Renderer &renderer);
+  void run(Core &core);
 
 };
 

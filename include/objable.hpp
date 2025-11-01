@@ -16,7 +16,7 @@
 
 #include <string>
 
-class Renderer;
+class Core;
 class Element;
 
 class Objable {
@@ -24,7 +24,7 @@ class Objable {
 public:
   virtual ~Objable() {};
 
-  virtual void setObj(Renderer &renderer, Element *obj) = 0;
+  virtual void setObj(Core &core, Element *obj) = 0;
     // set the object
     
   virtual Element *getObj() = 0;

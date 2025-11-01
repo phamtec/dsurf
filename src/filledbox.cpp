@@ -11,10 +11,10 @@
 
 #include "filledbox.hpp"
 #include "colours.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 
-void FilledBox::render(Renderer &renderer, const Point &origin) {
+void FilledBox::render(Core &core, const Point &origin) {
 
-  renderer.renderFilledRect(Rect(origin, _size), Colours::blue);
+  core.renderFilledRect(Rect(origin, _size), Colours::blue);
   
 }

@@ -27,7 +27,7 @@ public:
     Err::typeError(_elem, typeid(Editable));
     return L"???";
   }
-  virtual void setString(Renderer &renderer, const std::wstring &s) {
+  virtual void setString(Core &core, const std::wstring &s) {
     Err::typeError(_elem, typeid(Editable));
   }
 

@@ -28,19 +28,19 @@ class TextEditor: public Element {
   typedef Element super;
   
 public:
-  TextEditor(bool editing): _text(0), _window(0), _cursor(0), _renderer(0), _obj(0), _editing(editing) {}
+  TextEditor(bool editing): _text(0), _window(0), _cursor(0), _core(0), _obj(0), _editing(editing) {}
   ~TextEditor();
   
-  bool processEvent(Renderer &renderer, const SDL_Event &event);
+  bool processEvent(Core &core, const SDL_Event &event);
   bool capture() { return _editing; }
   void registerHUD(HUD *hud);
   void setHUD(HUD *hud);
-  void processTextKey(Renderer &renderer, Editable *editable, const Point &origin, const Size &size, SDL_Keycode code, HUD *hud);
+  void processTextKey(Core &core, Editable *editable, const Point &origin, const Size &size, SDL_Keycode code, HUD *hud);
   
   // Element
-  virtual void build(Renderer &renderer);
+  virtual void build(Core &core);
   virtual void layout() {};
-  virtual void render(Renderer &renderer, const Point &origin);
+  virtual void render(Core &core, const Point &origin);
   virtual Size size() { return Size(); }
   
   Point _origin;
@@ -54,7 +54,7 @@ private:
   Uint64 _last_cursor_change;
   SDL_FRect _cursor_rect;
   int _cursor;
-  Renderer *_renderer;
+  Core *_core;
   Editable *_obj;
   bool _ignoretext;
   bool _editing;
@@ -63,9 +63,9 @@ private:
   int _highlight1;
   int _highlight2;
   
-  void focus(Renderer &renderer, const Point &origin, const Size &size, Editable *obj, HUD *hud);
-  void updateTextInputArea(Renderer &renderer);
-  void drawCursor(Renderer &renderer);
+  void focus(Core &core, const Point &origin, const Size &size, Editable *obj, HUD *hud);
+  void updateTextInputArea(Core &core);
+  void drawCursor(Core &core);
   void setCursorPosition(int position);
   void insert(const char *text);
   void selectAll();
@@ -88,7 +88,7 @@ private:
   void endFocus(bool changed);
   bool getHighlightExtents(int *marker, int *length);
   bool deleteHighlight();
-  void mouseDown(Renderer &renderer, float x, float y);
+  void mouseDown(Core &core, float x, float y);
   void mouseMotion(float x, float y);
   void mouseUp(float x, float y);
 

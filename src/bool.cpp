@@ -12,7 +12,7 @@
 #include "bool.hpp"
 #include "sizes.hpp"
 #include "spatial.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "generic.hpp"
 
 #include <sstream>
@@ -32,41 +32,41 @@ void Bool::layout() {
   
 }
 
-void Bool::build(Renderer &renderer) {
+void Bool::build(Core &core) {
 
-  _value.build(renderer);
+  _value.build(core);
 
 }
 
-void Bool::render(Renderer &renderer, const Point &origin) {
+void Bool::render(Core &core, const Point &origin) {
 
-  _value.render(renderer, origin);
+  _value.render(core, origin);
   
-//  renderer.renderRect(_r);
-  
-}
-
-void Bool::processKey(Renderer &renderer, SDL_Keycode code) {
-
-  renderer.processTextKey(this, origin(), _size, code);
+//  core.renderRect(_r);
   
 }
 
-void Bool::setString(Renderer &renderer, const wstring &s) {
+void Bool::processKey(Core &core, SDL_Keycode code) {
+
+  core.processTextKey(this, origin(), _size, code);
+  
+}
+
+void Bool::setString(Core &core, const wstring &s) {
 
   _value.set(s, Colours::boolE);
-  _value.build(renderer);
-  renderer.setDirty(this);
+  _value.build(core);
+  core.setDirty(this);
   
 }
 
-void Bool::setMode(Renderer &renderer, HUD *hud) {
+void Bool::setMode(Core &core, HUD *hud) {
 
-  if (renderer.textTooSmall()) {
-    hud->setHint(renderer, &_value);
+  if (core.textTooSmall()) {
+    hud->setHint(core, &_value);
     return;
   }
 
-  renderer.setTextState();
+  core.setTextState();
   
 }

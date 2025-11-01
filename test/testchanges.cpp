@@ -24,19 +24,19 @@
 
 using namespace std;
 
-class Renderer {
+class Core {
 public:
   void layout(Element *elem);
 };
 
-void Renderer::layout(Element *elem) {
+void Core::layout(Element *elem) {
 }
 
 vector<tuple<HUDFlags, bool> > flags;
 
 HUD::HUD() {
 }
-void HUD::setFlag(Renderer &renderer, HUDFlags flag, bool state) {
+void HUD::setFlag(Core &core, HUDFlags flag, bool state) {
   flags.push_back(tuple<HUDFlags, bool>(flag, state));
 }
 
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( noChanges )
   cout << "=== noChanges ===" << endl;
    
   Changes changes;
-  Renderer r;
+  Core r;
   HUD h;
   flags.clear();
   changes.setUndoFlags(r, &h);
@@ -66,8 +66,8 @@ public:
   
   // Change
   virtual std::string describe() { return _name; }
-  virtual void exec(Renderer &renderer) {}
-  virtual void undo(Renderer &renderer) {}
+  virtual void exec(Core &core) {}
+  virtual void undo(Core &core) {}
 
 private:
   string _name;
@@ -80,8 +80,8 @@ public:
 
   // Element
   virtual void layout() {}
-  virtual void build(Renderer &renderer) {}
-  virtual void render(Renderer &renderer, const Point &origin) {}
+  virtual void build(Core &core) {}
+  virtual void render(Core &core, const Point &origin) {}
   virtual Size size() { return Size(); }
 
 };
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( change )
   flags.clear();
 
   Changes changes;
-  Renderer r;
+  Core r;
   HUD h;
   TestElement e;
   
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE( undo )
   flags.clear();
 
   Changes changes;
-  Renderer r;
+  Core r;
   HUD h;
   TestElement e;
   
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE( redo )
   flags.clear();
 
   Changes changes;
-  Renderer r;
+  Core r;
   HUD h;
   TestElement e;
   
@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE( multipleUndo )
   flags.clear();
 
   Changes changes;
-  Renderer r;
+  Core r;
   HUD h;
   TestElement e;
   
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE( execAfterUndo )
   flags.clear();
 
   Changes changes;
-  Renderer r;
+  Core r;
   HUD h;
   TestElement e;
   
@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE( redoPastEnd )
   flags.clear();
 
   Changes changes;
-  Renderer r;
+  Core r;
   HUD h;
   TestElement e;
   

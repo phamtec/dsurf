@@ -16,7 +16,7 @@
 
 #include <string>
 
-class Renderer;
+class Core;
 class Element;
 
 class Editable {
@@ -25,7 +25,7 @@ public:
   virtual ~Editable() {};
 
   virtual std::wstring getString() = 0;
-  virtual void setString(Renderer &renderer, const std::wstring &s) = 0;
+  virtual void setString(Core &core, const std::wstring &s) = 0;
     // get and set the value as a string.
     
   static Editable *cast(Element *obj);

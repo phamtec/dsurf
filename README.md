@@ -448,6 +448,7 @@ soon.
 
 - Allow any dictionary or list to be turned into a transform.
 - Allow transforms to output something other than a dictionary.
+- Rename "Renderer" class to "Core"
 
 
 

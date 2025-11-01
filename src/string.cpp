@@ -12,7 +12,7 @@
 #include "string.hpp"
 #include "sizes.hpp"
 #include "spatial.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "hud.hpp"
 #include "unicode.hpp"
 #include "generic.hpp"
@@ -42,17 +42,17 @@ void String::layout() {
   
 }
 
-void String::build(Renderer &renderer) {
+void String::build(Core &core) {
 
-  _value.build(renderer);
+  _value.build(core);
 
 }
 
-void String::render(Renderer &renderer, const Point &origin) {
+void String::render(Core &core, const Point &origin) {
 
-  _value.render(renderer, origin);
+  _value.render(core, origin);
 
-//  renderer.renderRect(_r);
+//  core.renderRect(_r);
 
 }
 
@@ -62,28 +62,28 @@ rfl::Generic String::getGeneric() {
   
 }
 
-void String::setString(Renderer &renderer, const wstring &s) {
+void String::setString(Core &core, const wstring &s) {
 
   _value.set(s, Colours::stringE);
-  _value.build(renderer);
-  renderer.setDirty(this);
+  _value.build(core);
+  core.setDirty(this);
 
 }
 
-void String::setMode(Renderer &renderer, HUD *hud) {
+void String::setMode(Core &core, HUD *hud) {
 
-  if (renderer.textTooSmall()) {
-    hud->setHint(renderer, &_value);
+  if (core.textTooSmall()) {
+    hud->setHint(core, &_value);
     return;
   }
 
-  renderer.setTextState();
+  core.setTextState();
 
 }
 
-void String::processKey(Renderer &renderer, SDL_Keycode code) {
+void String::processKey(Core &core, SDL_Keycode code) {
 
-  renderer.processTextKey(this, origin(), _size, code);
+  core.processTextKey(this, origin(), _size, code);
   
 }
 

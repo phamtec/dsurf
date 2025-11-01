@@ -27,11 +27,11 @@ public:
   static Element *walk(Element *parent, const rfl::Generic &g, const std::string &name);
 
   static Element *loadFile(const std::string &fn, bool raw=false);
-    // load the JSON file into the renderer.
+    // load the JSON file into the core.
     // if raw is true, then bypass modules.
     
   static Element *loadText(const char *text);
-    // load the JSON text into the renderer.
+    // load the JSON text into the core.
 
   static std::string getJson(Element *element);
     // get the JSON representing the element.

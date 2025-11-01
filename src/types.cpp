@@ -9,13 +9,13 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "renderer.hpp"
+#include "core.hpp"
 
 #include "list.hpp"
 #include "listelem.hpp"
 #include "modules.hpp"
 
-void Renderer::initTypes() {
+void Core::initTypes() {
 
   // register for types that deal with their own HUD
   List::registerHUDModes(_hud.get());

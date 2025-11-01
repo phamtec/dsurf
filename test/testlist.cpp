@@ -30,8 +30,8 @@ public:
   // Element
   virtual string describe() { return _name; }
   virtual void layout() {}
-  virtual void build(Renderer &renderer) {}
-  virtual void render(Renderer &renderer, const Point &origin) {}
+  virtual void build(Core &core) {}
+  virtual void render(Core &core, const Point &origin) {}
   virtual Size size() { return Size(); }
 
   void push(Element *element) { _elements.push_back(unique_ptr<Element>(element)); }

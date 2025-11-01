@@ -16,7 +16,7 @@
 #include "hud.hpp"
 #include "hudmode.hpp"
 #include "shortcut.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "unkobj.hpp"
 #include "zmqobj.hpp"
 #include "generic.hpp"
@@ -93,25 +93,25 @@ Element *Project::load(const rfl::Generic &obj, const string &filename) {
   
 }
 
-void Project::registerHUDModes(Renderer &renderer, HUD *hud) {
+void Project::registerHUDModes(Core &core, HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
-    Renderer::registerRootHUDMode(mode);
+    Core::registerRootHUDMode(mode);
     mode->add(new Shortcut(L"E", L"dit"));
     hud->registerMode("projectroot", mode);
   }
 
   {
     auto mode = new HUDMode(false);
-    renderer.registerGlobalHUDMode(mode);
+    core.registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"L", L"oad"));
     hud->registerMode("projectfileobj", mode);
   }
 
   {
     auto mode = new HUDMode(false);
-    renderer.registerGlobalHUDMode(mode);
+    core.registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"C", L"onnect"));
     mode->add(new Shortcut(L"E", L"edit", canEdit));
     hud->registerMode("projectzmqobj", mode);
@@ -119,14 +119,14 @@ void Project::registerHUDModes(Renderer &renderer, HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
-    renderer.registerGlobalHUDMode(mode);
+    core.registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"", L"???"));
     hud->registerMode("projectunkobj", mode);
   }
 
   {
     auto mode = new HUDMode(false);
-    renderer.registerGlobalHUDMode(mode);
+    core.registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"E", L"xecute", canRun));
     hud->registerMode("projectcode", mode);
   }

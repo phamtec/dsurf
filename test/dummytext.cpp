@@ -22,7 +22,7 @@ void Text::set(const std::wstring &str, const SDL_Color &fgcolor, std::optional<
 }
 Text::~Text() {
 }
-void Text::build(Renderer &renderer) {
+void Text::build(Core &core) {
 }
-void Text::render(Renderer &renderer, const Point &origin, bool offs) {
+void Text::render(Core &core, const Point &origin, bool offs) {
 }

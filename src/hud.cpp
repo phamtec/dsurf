@@ -11,7 +11,7 @@
 
 #include "hud.hpp"
 
-#include "renderer.hpp"
+#include "core.hpp"
 #include "colours.hpp"
 
 using namespace std;
@@ -44,17 +44,17 @@ int HUD::findMode(const std::string &name) {
   
 }
 
-void HUD::build(Renderer &renderer) {
+void HUD::build(Core &core) {
   
   for (auto &&i: _modes) {
     if (i) {
-      i->build(renderer);
+      i->build(core);
     }
   }
   
 }
 
-void HUD::render(Renderer &renderer, const Point &mouse) {
+void HUD::render(Core &core, const Point &mouse) {
 
   Point origin = mouse + Size(40, -40);
 //  cout << "origin " << origin << endl;
@@ -66,14 +66,14 @@ void HUD::render(Renderer &renderer, const Point &mouse) {
   if (_mode == -1) {
     if (_hint) {
       double scale = 0.3;
-      renderer.setScale(scale, scale);
+      core.setScale(scale, scale);
       
       double kiscale = 1 / scale;
       Point p = (mouse + Size(10, -10)) * kiscale;
       
-      _hint->render(renderer, p, false);
+      _hint->render(core, p, false);
   
-      renderer.setScale(1.0, 1.0);
+      core.setScale(1.0, 1.0);
     }
     return;
   }
@@ -86,28 +86,28 @@ void HUD::render(Renderer &renderer, const Point &mouse) {
   Point l = _modes[_mode]->location(origin, _loc);
   Size s = _modes[_mode]->size();
 
-  renderer.setDrawColor(Colours::white);
-  renderer.fillRect(Rect(l + Size(-4, -4), s + Size(8, 8)));
-  renderer.setDrawColor(Colours::grey);
-  renderer.drawRect(Rect(l + Size(-4, -4), s + Size(8, 8)));
+  core.setDrawColor(Colours::white);
+  core.fillRect(Rect(l + Size(-4, -4), s + Size(8, 8)));
+  core.setDrawColor(Colours::grey);
+  core.drawRect(Rect(l + Size(-4, -4), s + Size(8, 8)));
   
-  _modes[_mode]->render(renderer, origin, _loc);
+  _modes[_mode]->render(core, origin, _loc);
   
 }
 
-void HUD::setFlag(Renderer &renderer, HUDFlags flag, bool state) {
+void HUD::setFlag(Core &core, HUDFlags flag, bool state) {
 
 //  cout << "setFlag " << flag << ": " << state << endl;
   
   for (auto &&i: _modes) {
     if (i) {
-      i->setFlag(renderer, flag, state);
+      i->setFlag(core, flag, state);
     }
   }
 
 }
 
-void HUD::setHint(Renderer &renderer, Text *hint) {
+void HUD::setHint(Core &core, Text *hint) {
 
   _mode = -1;
   _hint = hint;

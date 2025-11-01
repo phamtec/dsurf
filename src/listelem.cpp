@@ -14,7 +14,7 @@
 #include "sizes.hpp"
 #include "texteditor.hpp"
 #include "hud.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "list.hpp"
 #include "setobj.hpp"
 
@@ -30,7 +30,7 @@ ListElem::ListElem(Element *obj): _obj(obj)
   obj->setParent(this);      
 }
 
-void ListElem::setEdit(Renderer &renderer, bool state) {
+void ListElem::setEdit(Core &core, bool state) {
 
   _editing = state;
   
@@ -41,17 +41,17 @@ void ListElem::setEdit(Renderer &renderer, bool state) {
     }
     Rect r(Point(0, 0), _textsize);
     
-    _texture = renderer.createTexture(_textsize.w, _textsize.h);
-    renderer.setTarget(_texture);
-    renderer.setDrawColor(Colours::lightGrey);
-    renderer.fillRect(r);
-    renderer.clearScale();
-    _obj->render(renderer, Point(0, 0));
-    renderer.restoreScale();
-    renderer.setTarget(0);
+    _texture = core.createTexture(_textsize.w, _textsize.h);
+    core.setTarget(_texture);
+    core.setDrawColor(Colours::lightGrey);
+    core.fillRect(r);
+    core.clearScale();
+    _obj->render(core, Point(0, 0));
+    core.restoreScale();
+    core.setTarget(0);
   }
   else {
-    renderer.destroyTexture(_texture);
+    core.destroyTexture(_texture);
     _texture = 0;
     List::cast(getParent())->setMoving(nullptr);
   }
@@ -70,20 +70,20 @@ void ListElem::layout() {
   
 }
 
-void ListElem::destroy(Renderer &renderer) {
+void ListElem::destroy(Core &core) {
 
   if (_texture) {
-    renderer.destroyTexture(_texture);
+    core.destroyTexture(_texture);
     _texture = 0;
   }
   
 }
 
-void ListElem::render(Renderer &renderer, const Point &origin) {
+void ListElem::render(Core &core, const Point &origin) {
 
   if (_editing) {
   
-    renderer.renderFilledRect(Rect(origin, Size(FIXED_WIDTH, FIXED_HEIGHT)), Colours::lightGrey);
+    core.renderFilledRect(Rect(origin, Size(FIXED_WIDTH, FIXED_HEIGHT)), Colours::lightGrey);
 
     Size s = _textsize;
     if (_textsize.h > FIXED_HEIGHT) {
@@ -98,11 +98,11 @@ void ListElem::render(Renderer &renderer, const Point &origin) {
     
     Rect r(origin, s);
     r -= 10;
-    renderer.renderTexture(_texture, r);
+    core.renderTexture(_texture, r);
     
   }
   else {
-    _obj->render(renderer, origin);
+    _obj->render(core, origin);
   }
 
 }
@@ -145,17 +145,17 @@ bool ListElem::visit(std::function<bool (Element *)> f) {
   
 }
 
-void ListElem::processKey(Renderer &renderer, SDL_Keycode code) {
+void ListElem::processKey(Core &core, SDL_Keycode code) {
 
   if (_editing) {
     switch (code) {
 
       case SDLK_C:
-        renderer.copy(_obj.get());
+        core.copy(_obj.get());
         break;
 
       case SDLK_ESCAPE:
-        List::cast(getParent())->processKey(renderer, code);
+        List::cast(getParent())->processKey(core, code);
         break;
 
       case SDLK_M:
@@ -165,7 +165,7 @@ void ListElem::processKey(Renderer &renderer, SDL_Keycode code) {
     return;
   }
   
-  Commandable::cast(_obj.get())->processKey(renderer, code);
+  Commandable::cast(_obj.get())->processKey(core, code);
   
 }
 
@@ -175,9 +175,9 @@ std::wstring ListElem::getString() {
   
 }
 
-void ListElem::setString(Renderer &renderer, const wstring &s) {
+void ListElem::setString(Core &core, const wstring &s) {
 
-  Editable::cast(_obj.get())->setString(renderer, s);
+  Editable::cast(_obj.get())->setString(core, s);
   
 }
 
@@ -201,21 +201,21 @@ void ListElem::initHUD(HUD *hud) {
 
 }
 
-void ListElem::setMode(Renderer &renderer, HUD *hud) {
+void ListElem::setMode(Core &core, HUD *hud) {
 
   if (_editing) {
     hud->setMode(_hudlistelem);
   }
   else {
-    Commandable::cast(_obj.get())->setMode(renderer, hud);
+    Commandable::cast(_obj.get())->setMode(core, hud);
   }
   
 }
 
-void ListElem::setObj(Renderer &renderer, Element *obj) {
+void ListElem::setObj(Core &core, Element *obj) {
   
-  renderer.initElement(this, obj);
-  renderer.exec(this, new SetObj(&_obj, obj));
+  core.initElement(this, obj);
+  core.exec(this, new SetObj(&_obj, obj));
   
 }
 

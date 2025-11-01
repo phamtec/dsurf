@@ -18,7 +18,7 @@
 #include <string>
 
 class HUD;
-class Renderer;
+class Core;
 class Element;
 
 class Commandable {
@@ -29,10 +29,10 @@ public:
   virtual void initHUD(HUD *hud) = 0;
     // for those objects that deal with the HUD direcrly, initialise them.
     
-  virtual void setMode(Renderer &renderer, HUD *hud) = 0;
+  virtual void setMode(Core &core, HUD *hud) = 0;
     // set the mode in the heads up display.
     
-  virtual void processKey(Renderer &renderer, SDL_Keycode code) = 0;
+  virtual void processKey(Core &core, SDL_Keycode code) = 0;
     // process the keycode to for object.
     
   virtual std::string getVerb() { return "???"; }

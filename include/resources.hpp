@@ -21,7 +21,7 @@ class Resources {
 public:
   Resources(): topleft(true), bottomleft(false) {}
 
-  virtual void build(Renderer &renderer);
+  virtual void build(Core &core);
     // build all resources ready to render
     
   Corner topleft;

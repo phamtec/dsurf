@@ -26,9 +26,9 @@ class NewElement: public Change {
 public:
   NewElement(List *list, Element *elem);
   
-  virtual void exec(Renderer &renderer);
-  virtual void undo(Renderer &renderer);
-  virtual void destroy(Renderer &renderer);
+  virtual void exec(Core &core);
+  virtual void undo(Core &core);
+  virtual void destroy(Core &core);
     
 private:
   List *_list;

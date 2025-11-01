@@ -54,9 +54,9 @@ public:
   virtual void setParent(Element *parent) override { _parent = parent; }
   virtual Element *getParent() override { return _parent; }
   virtual std::string describe() override;
-  virtual void destroy(Renderer &renderer) override;
+  virtual void destroy(Core &core) override;
   virtual void layout() override;
-  virtual void render(Renderer &renderer, const Point &origin) override;
+  virtual void render(Core &core, const Point &origin) override;
   virtual Element *hitTest(const Point &origin, const Point &p) override;
   virtual Point localOrigin(Element *elem) override;
   virtual Size size() override { return _size; }
@@ -68,8 +68,8 @@ public:
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
-  virtual void setMode(Renderer &renderer, HUD *hud) override;
-  virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
+  virtual void setMode(Core &core, HUD *hud) override;
+  virtual void processKey(Core &core, SDL_Keycode code) override;
   static void registerHUDModes(HUD *hud);
 
   static List *cast(Element *obj);
@@ -94,17 +94,17 @@ private:
   Element *_moveover;
   Point _moveoffs;
   
-  void drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop);
+  void drawBorder(Core &core, const Point &origin, const Size &size, bool prop);
   rfl::Generic getGenericVector();
   rfl::Generic getGenericObject();
-  void startEdit(Renderer &renderer);
-  void endEdit(Renderer &renderer);
+  void startEdit(Core &core);
+  void endEdit(Core &core);
   Element *otherElementHit(const Point &origin, const Point &p);
   void reorder();
-  void add(Renderer &renderer, const std::wstring &name, Element *element, bool container);
+  void add(Core &core, const std::wstring &name, Element *element, bool container);
   bool isParentRoot();
-  void mergeIntoUs(Renderer &renderer, List *other);
-  void transformCode(Renderer &renderer);
+  void mergeIntoUs(Core &core, List *other);
+  void transformCode(Core &core);
     
 };
 

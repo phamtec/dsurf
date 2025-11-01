@@ -11,7 +11,7 @@
 
 #include "corner.hpp"
 #include "sizes.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "colours.hpp"
 
 #include <SDL3/SDL.h>
@@ -22,30 +22,30 @@ Corner::~Corner() {
   }
 }
 
-void Corner::build(Renderer &renderer) {
+void Corner::build(Core &core) {
 
   // over sample it 4 times.
   int size = Sizes::thickness * 4;
   
   // create texture and set it as the render target.
-  _texture = renderer.createTexture(size, size);
-  renderer.setTarget(_texture);
+  _texture = core.createTexture(size, size);
+  core.setTarget(_texture);
   
   // draw...
   if (_topleft) {
-    renderer.renderFilledPie(Point(size, size), size, 180, 270, Colours::dictE);
+    core.renderFilledPie(Point(size, size), size, 180, 270, Colours::dictE);
   }
   else {
-    renderer.renderFilledPie(Point(size, 0), size, 90, 180, Colours::dictE);
+    core.renderFilledPie(Point(size, 0), size, 90, 180, Colours::dictE);
   }
   
-  renderer.setTarget(0);
+  core.setTarget(0);
   
 }
     
-void Corner::render(Renderer &renderer, const Point &origin) {
+void Corner::render(Core &core, const Point &origin) {
 
   // just copy in our texture.
-  renderer.renderTexture(_texture, Rect(origin, Size(Sizes::thickness, Sizes::thickness)));
+  core.renderTexture(_texture, Rect(origin, Size(Sizes::thickness, Sizes::thickness)));
   
 }

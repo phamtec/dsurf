@@ -20,7 +20,7 @@
 
 #include <map>
 
-class Renderer;
+class Core;
 
 class HUD {
 
@@ -34,8 +34,8 @@ public:
   int findMode(const std::string &name);
     // find the index of a previously registered mode.
     
-  void build(Renderer &renderer);
-  void render(Renderer &renderer, const Point &mouse);
+  void build(Core &core);
+  void render(Core &core, const Point &mouse);
   
   void setMode(int mode);
     // set the mode to draw in the hub.
@@ -43,10 +43,10 @@ public:
   void setEditingLoc(const Point &loc) { _loc = loc; }
     // set what we are editing in case a HUD want's to draw at that fixed location.
   
-  void setFlag(Renderer &renderer, HUDFlags flag, bool state);
+  void setFlag(Core &core, HUDFlags flag, bool state);
     // set a flag in the HUD used to conditionally show states.
       
-  void setHint(Renderer &renderer, Text *hint);
+  void setHint(Core &core, Text *hint);
     // set the hud into HINT mode when it's really small.
     
 private:

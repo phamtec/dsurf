@@ -29,9 +29,9 @@ public:
   // Element
   virtual void setParent(Element *parent) override { _parent = parent; }
   virtual Element *getParent() override { return _parent; }
-  virtual void build(Renderer &renderer) override;
+  virtual void build(Core &core) override;
   virtual void layout() override;
-  virtual void render(Renderer &renderer, const Point &origin) override;
+  virtual void render(Core &core, const Point &origin) override;
   virtual Size size() override { return _size; }
 
   // Writeable
@@ -39,8 +39,8 @@ public:
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
-  virtual void setMode(Renderer &renderer, HUD *hud) override;
-  virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
+  virtual void setMode(Core &core, HUD *hud) override;
+  virtual void processKey(Core &core, SDL_Keycode code) override;
 
 protected:
 

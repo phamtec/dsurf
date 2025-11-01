@@ -11,7 +11,7 @@
 
 #include "hudmode.hpp"
 
-#include "renderer.hpp"
+#include "core.hpp"
 
 using namespace std;
 
@@ -19,10 +19,10 @@ void HUDMode::add(Shortcut *shortcut) {
   _shortcuts.push_back(unique_ptr<Shortcut>(shortcut));
 }
 
-void HUDMode::build(Renderer &renderer) {
+void HUDMode::build(Core &core) {
 
-  for_each(_shortcuts.begin(), _shortcuts.end(), [&renderer](auto& e) {
-    e->build(renderer);
+  for_each(_shortcuts.begin(), _shortcuts.end(), [&core](auto& e) {
+    e->build(core);
   });
 
 }
@@ -57,28 +57,28 @@ Size HUDMode::size() {
   return s;
 }
 
-void HUDMode::render(Renderer &renderer, const Point &origin, const Point &loc) {
+void HUDMode::render(Core &core, const Point &origin, const Point &loc) {
 
   if (_fixed) {
     auto s = _shortcuts[0]->size();
     for (int i=_shortcuts.size(); i>0; i--) {
-      _shortcuts[i-1]->render(renderer, loc + Size(0, -10 - (s.h*i)));
+      _shortcuts[i-1]->render(core, loc + Size(0, -10 - (s.h*i)));
     }
   }
   else {
     auto s = _shortcuts[0]->size();
     for (int i=0; i<_shortcuts.size(); i++) {
-      _shortcuts[i]->render(renderer, origin + Size(0, (s.h*i)));
+      _shortcuts[i]->render(core, origin + Size(0, (s.h*i)));
     }
   }
 
 }
 
-void HUDMode::setFlag(Renderer &renderer, HUDFlags flag, bool state) {
+void HUDMode::setFlag(Core &core, HUDFlags flag, bool state) {
 
-  for_each(_shortcuts.begin(), _shortcuts.end(), [&renderer, flag, state](auto &e) {
+  for_each(_shortcuts.begin(), _shortcuts.end(), [&core, flag, state](auto &e) {
     if (e->setFlag(flag, state)) {
-      e->build(renderer);
+      e->build(core);
     }
   });
 

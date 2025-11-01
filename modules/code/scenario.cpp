@@ -11,7 +11,7 @@
 
 #include "scenario.hpp"
 
-#include "renderer.hpp"
+#include "core.hpp"
 #include "unicode.hpp"
 #include "root.hpp"
 #include "builder.hpp"
@@ -62,19 +62,19 @@ void CodeScenario::layout() {
   
 }
 
-void CodeScenario::build(Renderer &renderer) {
+void CodeScenario::build(Core &core) {
 
-  _name.build(renderer);
+  _name.build(core);
 
 }
 
-void CodeScenario::render(Renderer &renderer, const Point &origin) {
+void CodeScenario::render(Core &core, const Point &origin) {
 
   auto i = _layout.begin();
   
-  _name.render(renderer, origin + (*i).origin);
+  _name.render(core, origin + (*i).origin);
 
-//  renderer.renderRect(_r);
+//  core.renderRect(_r);
 
 }
 
@@ -84,17 +84,17 @@ void CodeScenario::initHUD(HUD *hud) {
   
 }
 
-void CodeScenario::setMode(Renderer &renderer, HUD *hud) {
+void CodeScenario::setMode(Core &core, HUD *hud) {
 
-  hud->setFlag(renderer, canLoad, !_loaded);
+  hud->setFlag(core, canLoad, !_loaded);
 
   hud->setMode(_hudobj);
   
 }
 
-void CodeScenario::processKey(Renderer &renderer, SDL_Keycode code) {
+void CodeScenario::processKey(Core &core, SDL_Keycode code) {
 
-  if (renderer.processGlobalKey(code)) {
+  if (core.processGlobalKey(code)) {
     return;
   }
 
@@ -103,8 +103,8 @@ void CodeScenario::processKey(Renderer &renderer, SDL_Keycode code) {
       {
         _loaded = true;
         auto root = dynamic_cast<CodeRoot *>(getParent());
-        root->setScenario(renderer, _scenario, _index);
-        root->run(renderer);
+        root->setScenario(core, _scenario, _index);
+        root->run(core);
       }
       break;
   }

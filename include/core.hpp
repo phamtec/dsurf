@@ -1,18 +1,20 @@
 /*
-  renderer.hpp
+  core.hpp
   
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 4-Aug-2025
     
-  Renderer class.
+  Core class. This should be smaller with better seperation of interests.
+    it started out being "Core" but it hasn't been just the renderer for
+    many moons.
   
   Licensed under [version 3 of the GNU General Public License] contained in LICENSE.
  
   https://github.com/phamtec/dsurf
 */
 
-#ifndef H_renderer
-#define H_renderer
+#ifndef H_core
+#define H_core
 
 #include "point.hpp"
 #include "size.hpp"
@@ -40,17 +42,17 @@ class SDL_Cursor;
 class Commandable;
 class Flo;
 
-class Renderer {
+class Core {
 
 public:
-  Renderer(const Size &wsize, float scalemult, float scale, const Size &offset, bool editing): 
+  Core(const Size &wsize, float scalemult, float scale, const Size &offset, bool editing): 
     _size(wsize), _scalemult(scalemult), _scale(scale), _offs(offset),
     _mousedown(false), _lastclick(0), _moving(0), _hudmoving(-1), _hudnone(-1), 
     _adding(false), _hudadding(-1),
     _window(0), _renderer(0), _engine(0), _startedit(editing)/*,
     _waitingonline(false), _online(false)*/
       {};
-  ~Renderer();
+  ~Core();
   
   static Size displaySize();
   
@@ -256,4 +258,4 @@ private:
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey);
 };
 
-#endif // H_renderer
+#endif // H_core

@@ -11,7 +11,7 @@
 
 #include "hud.hpp"
 
-#include "renderer.hpp"
+#include "core.hpp"
 #include "colours.hpp"
 
 using namespace std;
@@ -23,10 +23,10 @@ Shortcut::Shortcut(const wstring &key, const wstring &text, optional<HUDFlags> f
 
 }
 
-void Shortcut::build(Renderer &renderer) {
+void Shortcut::build(Core &core) {
 
-  _key->build(renderer);
-  _text->build(renderer);
+  _key->build(core);
+  _text->build(core);
   
 }
 
@@ -58,28 +58,28 @@ bool Shortcut::setFlag(HUDFlags flag, bool state) {
   
 }
 
-void Shortcut::render(Renderer &renderer, const Point &origin) {
+void Shortcut::render(Core &core, const Point &origin) {
 
   double scale = 0.3;
-  renderer.setScale(scale, scale);
+  core.setScale(scale, scale);
   
   double kiscale = 1 / scale;
   Point p = origin * kiscale;
   
 //  cout << "key " << p << endl;
-  _key->render(renderer, p, false);
+  _key->render(core, p, false);
   int kwidth = _key->size().w * scale;
   
   scale = 0.22;
-  renderer.setScale(scale, scale);
+  core.setScale(scale, scale);
   
   double tiscale = 1 / scale;
   p = (origin + Size(1.8 + kwidth, 3.5)) * tiscale;
   
 //  cout << "text "  << p << endl;
-  _text->render(renderer, p, false);
+  _text->render(core, p, false);
 
-  renderer.setScale(1.0, 1.0);
+  core.setScale(1.0, 1.0);
 
 }
 

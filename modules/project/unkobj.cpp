@@ -11,7 +11,7 @@
 
 #include "unkobj.hpp"
 
-#include "renderer.hpp"
+#include "core.hpp"
 #include "unicode.hpp"
 
 using namespace std;
@@ -29,17 +29,17 @@ void ProjectUnknownObj::layout() {
   
 }
 
-void ProjectUnknownObj::build(Renderer &renderer) {
+void ProjectUnknownObj::build(Core &core) {
 
-  _name.build(renderer);
+  _name.build(core);
 
 }
 
-void ProjectUnknownObj::render(Renderer &renderer, const Point &origin) {
+void ProjectUnknownObj::render(Core &core, const Point &origin) {
 
-  _name.render(renderer, origin);
+  _name.render(core, origin);
 
-//  renderer.renderRect(_r);
+//  core.renderRect(_r);
 
 }
 
@@ -49,13 +49,13 @@ void ProjectUnknownObj::initHUD(HUD *hud) {
   
 }
 
-void ProjectUnknownObj::setMode(Renderer &renderer, HUD *hud) {
+void ProjectUnknownObj::setMode(Core &core, HUD *hud) {
 
   hud->setMode(_hudobj);
   
 }
 
-void ProjectUnknownObj::processKey(Renderer &renderer, SDL_Keycode code) {
+void ProjectUnknownObj::processKey(Core &core, SDL_Keycode code) {
 
 }
 

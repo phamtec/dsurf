@@ -2,89 +2,89 @@
 #include "element.hpp"
 #include "text.hpp"
 #include "corner.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "remotezmq.hpp"
 
 using namespace std;
 
 // dummy these up so we don't recompile all code
 
-// Renderer
-void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
+// Core
+void Core::renderFilledRect(const Rect &rect, const SDL_Color &color) {
 }
-bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
+bool Core::processRootKey(Element *element, SDL_Keycode code) {
   return false;
 }
-void Renderer::setTextState() {
+void Core::setTextState() {
 }
-void Renderer::processTextKey(Element *element, const Point &origin, const Size &size, SDL_Keycode code) {
+void Core::processTextKey(Element *element, const Point &origin, const Size &size, SDL_Keycode code) {
 }
-SDL_Texture *Renderer::createTexture(int width, int height) {
+SDL_Texture *Core::createTexture(int width, int height) {
   return 0;
 }
-void Renderer::renderTexture(SDL_Texture *texture, const Rect &rect, bool offs) {
+void Core::renderTexture(SDL_Texture *texture, const Rect &rect, bool offs) {
 }
-void Renderer::destroyTexture(SDL_Texture *texture) {
+void Core::destroyTexture(SDL_Texture *texture) {
 }
-void Renderer::setTarget(SDL_Texture *texture) {
+void Core::setTarget(SDL_Texture *texture) {
 }
-void Renderer::setDrawColor(const SDL_Color &color) {
+void Core::setDrawColor(const SDL_Color &color) {
 }
-void Renderer::fillRect(const Rect &r) {
+void Core::fillRect(const Rect &r) {
 }
-void Renderer::clearScale() {
+void Core::clearScale() {
 }
-void Renderer::restoreScale() {
+void Core::restoreScale() {
 }
-void Renderer::copy(Element *element) {
+void Core::copy(Element *element) {
 }
-Point Renderer::noOffset(const Point &p) {
+Point Core::noOffset(const Point &p) {
   return Point();
 }
-void Renderer::initElement(Element *parent, Element *element) {
+void Core::initElement(Element *parent, Element *element) {
 }
-void Renderer::registerRootHUDMode(HUDMode *mode) {
+void Core::registerRootHUDMode(HUDMode *mode) {
 }
-void Renderer::registerGlobalHUDMode(HUDMode *mode) {
+void Core::registerGlobalHUDMode(HUDMode *mode) {
 }
-void Renderer::registerTextHUDMode(HUDMode *mode) {
+void Core::registerTextHUDMode(HUDMode *mode) {
 }
-void Renderer::exec(Element *element, Change *change) {
+void Core::exec(Element *element, Change *change) {
 }
-void Renderer::processDeleteKey(Element *element) {
+void Core::processDeleteKey(Element *element) {
 }
-void Renderer::setDirty(Element *elem, bool state) {
+void Core::setDirty(Element *elem, bool state) {
 }
-bool Renderer::textTooSmall() {
+bool Core::textTooSmall() {
   return false;
 }
-Element *Renderer::getClipboard() {
+Element *Core::getClipboard() {
   return nullptr;
 }
-void Renderer::setError(const string &str) {
+void Core::setError(const string &str) {
 }
-void Renderer::addFile(const string &filename, bool raw) {
+void Core::addFile(const string &filename, bool raw) {
 }
-bool Renderer::processGlobalKey(SDL_Keycode code) {
+bool Core::processGlobalKey(SDL_Keycode code) {
   return false;
 }
-void Renderer::renderLayout(const Point &origin, const RectList &layout) {
+void Core::renderLayout(const Point &origin, const RectList &layout) {
 }
-void Renderer::build(Element *elem) {
+void Core::build(Element *elem) {
 }
-void Renderer::destroy(Element *elem) {
+void Core::destroy(Element *elem) {
 }
-void Renderer::layout(Element *elem) {
+void Core::layout(Element *elem) {
 }
-void Renderer::changed(Element *elem) {
+void Core::changed(Element *elem) {
 }
-void Renderer::connectRemote(const std::string &server, int req, 
+void Core::connectRemote(const std::string &server, int req, 
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey,
     std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next) {
 }
-void Renderer::addRoot(Element *element, bool useloc) {
+void Core::addRoot(Element *element, bool useloc) {
 }
-void Renderer::removeRoot(Element *element) {
+void Core::removeRoot(Element *element) {
 }
 
 // HUD
@@ -96,15 +96,15 @@ int HUD::findMode(const string &name) {
 }
 void HUDMode::add(Shortcut *shortcut) {
 }
-void HUD::setHint(Renderer &renderer, Text *hint) {
+void HUD::setHint(Core &core, Text *hint) {
 }
 void HUD::setMode(int mode) {
 } 
-void HUD::setFlag(Renderer &renderer, HUDFlags flag, bool state) {
+void HUD::setFlag(Core &core, HUDFlags flag, bool state) {
 }
 Shortcut::Shortcut(const wstring &key, const wstring &text, optional<HUDFlags> flags) {
 }
 
 // Corner
-void Corner::render(Renderer &renderer, const Point &origin) {
+void Corner::render(Core &core, const Point &origin) {
 }

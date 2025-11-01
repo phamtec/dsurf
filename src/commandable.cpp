@@ -24,10 +24,10 @@ public:
   virtual void initHUD(HUD *hud) {
     Err::typeError(_elem, typeid(Commandable));
   }
-  virtual void setMode(Renderer &renderer, HUD *hud) {
+  virtual void setMode(Core &core, HUD *hud) {
     Err::typeError(_elem, typeid(Commandable));
   }
-  virtual void processKey(Renderer &renderer, SDL_Keycode code) {
+  virtual void processKey(Core &core, SDL_Keycode code) {
     Err::typeError(_elem, typeid(Commandable));
   }
 

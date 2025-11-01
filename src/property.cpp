@@ -14,7 +14,7 @@
 #include "sizes.hpp"
 #include "texteditor.hpp"
 #include "hud.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "unicode.hpp"
 #include "setobj.hpp"
 
@@ -71,22 +71,22 @@ void Property::layout() {
 
 }
 
-void Property::build(Renderer &renderer) {
+void Property::build(Core &core) {
 
-  _name.build(renderer);
+  _name.build(core);
 
 }
 
-void Property::render(Renderer &renderer, const Point &origin) {
+void Property::render(Core &core, const Point &origin) {
 
-//  renderer.renderLayout(origin, _layout);
+//  core.renderLayout(origin, _layout);
   
   auto i = _layout.begin();
-  _name.render(renderer, origin + i->origin);
+  _name.render(core, origin + i->origin);
   i++;
-  _obj->render(renderer, origin + i->origin);
+  _obj->render(core, origin + i->origin);
   
-//  renderer.renderRect(_r);
+//  core.renderRect(_r);
 
 }
 
@@ -147,25 +147,25 @@ Point Property::localOrigin(Element *elem) {
   
 }
 
-void Property::processKey(Renderer &renderer, SDL_Keycode code) {
+void Property::processKey(Core &core, SDL_Keycode code) {
 
   // intercept the copy to correctly copy the prooerty
   switch (code) {
     case SDLK_C:
-      renderer.copy(this);
+      core.copy(this);
       return;
   }
   
   // let the text editor have it.
-  renderer.processTextKey(this, origin(), _name.size(), code);
+  core.processTextKey(this, origin(), _name.size(), code);
   
 }
 
-void Property::setString(Renderer &renderer, const wstring &s) {
+void Property::setString(Core &core, const wstring &s) {
 
   _name.set(s, Colours::propertyE);
-  _name.build(renderer);
-  renderer.setDirty(this);
+  _name.build(core);
+  core.setDirty(this);
   
 }
 
@@ -181,21 +181,21 @@ void Property::initHUD(HUD *hud) {
 
 }
 
-void Property::setMode(Renderer &renderer, HUD *hud) {
+void Property::setMode(Core &core, HUD *hud) {
 
-  if (renderer.textTooSmall()) {
-    hud->setHint(renderer, &_name);
+  if (core.textTooSmall()) {
+    hud->setHint(core, &_name);
     return;
   }
 
-  renderer.setTextState();
+  core.setTextState();
   
 }
 
-void Property::setObj(Renderer &renderer, Element *obj) {
+void Property::setObj(Core &core, Element *obj) {
   
-  renderer.initElement(this, obj);
-  renderer.exec(this, new SetObj(&_obj, obj));
+  core.initElement(this, obj);
+  core.exec(this, new SetObj(&_obj, obj));
   
 }
 

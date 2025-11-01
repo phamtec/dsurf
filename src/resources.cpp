@@ -11,9 +11,9 @@
 
 #include "resources.hpp"
 
-void Resources::build(Renderer &renderer) {
+void Resources::build(Core &core) {
 
-  topleft.build(renderer);
-  bottomleft.build(renderer);
+  topleft.build(core);
+  bottomleft.build(core);
   
 }

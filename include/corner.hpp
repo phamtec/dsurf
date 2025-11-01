@@ -14,7 +14,7 @@
 #ifndef H_corner
 #define H_corner
 
-class Renderer;
+class Core;
 class Point;
 class SDL_Texture;
 
@@ -24,10 +24,10 @@ public:
   Corner(bool topleft): _topleft(topleft) {}
   ~Corner();
   
-  virtual void build(Renderer &renderer);
+  virtual void build(Core &core);
     // build the texture ready to render.
     
-  virtual void render(Renderer &renderer, const Point &origin);
+  virtual void render(Core &core, const Point &origin);
     // render the corner at x, y
     
 private:

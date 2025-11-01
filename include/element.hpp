@@ -30,7 +30,7 @@
 #include <vector>
 #include <functional>
 
-class Renderer;
+class Core;
 class Point;
 
 class Element {
@@ -65,15 +65,15 @@ public:
     // implement this to return a list of rectangles that parralell that,
     // save that away and then use it when your hit testing etc.
     
-  virtual void build(Renderer &renderer)  {};
+  virtual void build(Core &core)  {};
     // build the texture and surface ready to render.
     
-  virtual void destroy(Renderer &renderer) {};
-    // opposite of build, but called with the renderer.
+  virtual void destroy(Core &core) {};
+    // opposite of build, but called with the core.
     
-  virtual void render(Renderer &renderer, const Point &origin) = 0;
+  virtual void render(Core &core, const Point &origin) = 0;
     // render this object to the screen.
-    // objects, render yourself and then call super::render(renderer, origin)
+    // objects, render yourself and then call super::render(core, origin)
 
   virtual Element *hitTest(const Point &origin, const Point &p);
     // recursivle find the element at the point.
@@ -92,7 +92,7 @@ public:
   virtual bool visit(std::function<bool (Element *)> f);
     // visit all the sub elements of this element.
     
-  virtual void changed(Renderer &renderer, Element *) {}
+  virtual void changed(Core &core, Element *) {}
     // an element has changed.
     
   virtual bool isRoot() { return false; }

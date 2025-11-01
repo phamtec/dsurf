@@ -26,9 +26,9 @@ class SetObj: public Change {
 public:
   SetObj(std::unique_ptr<Element> *obj, Element *newobj);
   
-  virtual void exec(Renderer &renderer);
-  virtual void undo(Renderer &renderer);
-  virtual void destroy(Renderer &renderer);
+  virtual void exec(Core &core);
+  virtual void undo(Core &core);
+  virtual void destroy(Core &core);
     
 private:
   std::unique_ptr<Element> *_obj;

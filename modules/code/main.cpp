@@ -14,7 +14,7 @@
 #include "hud.hpp"
 #include "hudmode.hpp"
 #include "shortcut.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "generic.hpp"
 #include "root.hpp"
 
@@ -43,17 +43,17 @@ Element *Code::load(const rfl::Generic &obj, const string &filename) {
   
 }
 
-void Code::registerHUDModes(Renderer &renderer, HUD *hud) {
+void Code::registerHUDModes(Core &core, HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
-    Renderer::registerRootHUDMode(mode);
+    Core::registerRootHUDMode(mode);
     hud->registerMode("code", mode);
   }
 
   {
     auto mode = new HUDMode(false);
-    renderer.registerGlobalHUDMode(mode);
+    core.registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"L", L"oad", canLoad));
     hud->registerMode("scenario", mode);
   }

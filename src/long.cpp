@@ -12,7 +12,7 @@
 #include "long.hpp"
 #include "sizes.hpp"
 #include "spatial.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 
 #include <sstream>
 
@@ -32,17 +32,17 @@ void Long::layout() {
   
 }
 
-void Long::build(Renderer &renderer) {
+void Long::build(Core &core) {
 
-  _value.build(renderer);
+  _value.build(core);
 
 }
 
-void Long::render(Renderer &renderer, const Point &origin) {
+void Long::render(Core &core, const Point &origin) {
 
-  _value.render(renderer, origin);
+  _value.render(core, origin);
   
-//  renderer.renderRect(_r);
+//  core.renderRect(_r);
   
 }
 
@@ -56,27 +56,27 @@ rfl::Generic Long::getGeneric() {
 
 }
 
-void Long::processKey(Renderer &renderer, SDL_Keycode code) {
+void Long::processKey(Core &core, SDL_Keycode code) {
 
-  renderer.processTextKey(this, origin(), _size, code);
+  core.processTextKey(this, origin(), _size, code);
   
 }
 
-void Long::setString(Renderer &renderer, const wstring &s) {
+void Long::setString(Core &core, const wstring &s) {
 
   _value.set(s, Colours::longE);
-  _value.build(renderer);
-  renderer.setDirty(this);
+  _value.build(core);
+  core.setDirty(this);
 
 }
 
-void Long::setMode(Renderer &renderer, HUD *hud) {
+void Long::setMode(Core &core, HUD *hud) {
 
-  if (renderer.textTooSmall()) {
-    hud->setHint(renderer, &_value);
+  if (core.textTooSmall()) {
+    hud->setHint(core, &_value);
     return;
   }
 
-  renderer.setTextState();
+  core.setTextState();
   
 }

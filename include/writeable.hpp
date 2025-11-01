@@ -17,7 +17,7 @@
 #include <rfl.hpp>
 
 class Element;
-class Renderer;
+class Core;
 
 class Writeable {
 
@@ -30,7 +30,7 @@ public:
     // return the name and the object for serialization.
     // if there is a name, then the object is a property.
         
-  virtual void setDirty(Renderer &renderer, bool state) {}
+  virtual void setDirty(Core &core, bool state) {}
     // this is dirty all ready  to write!
     
   virtual std::optional<std::string> getFilename() { return std::nullopt; }

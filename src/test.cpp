@@ -9,7 +9,7 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "renderer.hpp"
+#include "core.hpp"
 
 #include "commandable.hpp"
 #include "objable.hpp"
@@ -22,7 +22,7 @@
 
 using namespace std;
 
-void Renderer::setupTest(int rep) {
+void Core::setupTest(int rep) {
 
   if (!_context) {
     cout << "new ZMQ context" << endl;
@@ -35,7 +35,7 @@ void Renderer::setupTest(int rep) {
 
 }
 
-void Renderer::handleTestMsg() {
+void Core::handleTestMsg() {
 
   // get the message.
   zmq::message_t req;
@@ -67,7 +67,7 @@ void Renderer::handleTestMsg() {
   
 }
 
-void Renderer::handleTestCount(const TestMsg &msg) {
+void Core::handleTestCount(const TestMsg &msg) {
 
   auto target = getTestTarget(msg.target);
   if (!target) {
@@ -82,7 +82,7 @@ void Renderer::handleTestCount(const TestMsg &msg) {
 
 }
 
-void Renderer::handleTestKey(const TestMsg &msg) {
+void Core::handleTestKey(const TestMsg &msg) {
 
   auto target = getTestTarget(msg.target);
   if (!target) {
@@ -134,7 +134,7 @@ void Renderer::handleTestKey(const TestMsg &msg) {
 
 }
 
-Element *Renderer::getTestTarget(const optional<string> &name, bool silent) {
+Element *Core::getTestTarget(const optional<string> &name, bool silent) {
 
   if (!name) {
     if (!silent) {
@@ -183,7 +183,7 @@ Element *Renderer::getTestTarget(const optional<string> &name, bool silent) {
   
 }
 
-Element *Renderer::getRootPath(Element *elem, const string &name, bool silent) {
+Element *Core::getRootPath(Element *elem, const string &name, bool silent) {
 
   auto root = dynamic_cast<Root *>(elem);
   if (root) {
@@ -211,7 +211,7 @@ Element *Renderer::getRootPath(Element *elem, const string &name, bool silent) {
   
 }
 
-Element *Renderer::findRoot(const string &name) {
+Element *Core::findRoot(const string &name) {
 
   for (auto& i: _roots) {
     auto wx = dynamic_cast<Writeable *>(i.get());
@@ -227,7 +227,7 @@ Element *Renderer::findRoot(const string &name) {
   return nullptr;
 }
 
-void Renderer::testSend(const TestMsg &reply) {
+void Core::testSend(const TestMsg &reply) {
 
   string r(rfl::json::write(reply)); 
   zmq::message_t rep(r.length());
@@ -240,13 +240,13 @@ void Renderer::testSend(const TestMsg &reply) {
 
 }
 
-void Renderer::testAck() {
+void Core::testAck() {
 
   testSend({ .type = "ack" });
 
 }
 
-void Renderer::testErr(const string &msg) {
+void Core::testErr(const string &msg) {
 
   cerr << "Test error: "<< msg << endl;
   testSend({ .type = "err", .payload = msg });

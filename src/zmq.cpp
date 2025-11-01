@@ -9,7 +9,7 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "renderer.hpp"
+#include "core.hpp"
 
 #include "builder.hpp"
 #include "generic.hpp"
@@ -22,12 +22,12 @@
 using namespace std;
 using flo::Generic;
 
-void Renderer::closeRemote() {
+void Core::closeRemote() {
   _remotereq->close();
   _remotereq.reset();
 }
 
-void Renderer::processMsg() {
+void Core::processMsg() {
 
   const std::chrono::milliseconds timeout{20};
 
@@ -78,7 +78,7 @@ void Renderer::processMsg() {
 
 }
 
-bool Renderer::setupRemote(const string &server, int req, 
+bool Core::setupRemote(const string &server, int req, 
   const string &remotePubKey, const string &privateKey, const string &pubKey) {
 
   if (_remotereq) {
@@ -131,7 +131,7 @@ bool Renderer::setupRemote(const string &server, int req,
   
 }
 
-void Renderer::connectRemote(const std::string &server, int req, 
+void Core::connectRemote(const std::string &server, int req, 
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey,
     std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next) {
 
@@ -151,7 +151,7 @@ void Renderer::connectRemote(const std::string &server, int req,
   
 }
 
-void Renderer::sendRemote(const rfl::Object<rfl::Generic> &msg) {
+void Core::sendRemote(const rfl::Object<rfl::Generic> &msg) {
 
   string r(rfl::json::write(msg)); 
   cout << "-> " << r << endl;

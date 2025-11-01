@@ -37,9 +37,9 @@ public:
   // Element
   virtual void setParent(Element *parent) override;
   virtual Element *getParent() override { return nullptr; }
-  virtual void build(Renderer &renderer) override;
+  virtual void build(Core &core) override;
   virtual void layout() override;
-  virtual void render(Renderer &renderer, const Point &origin) override;
+  virtual void render(Core &core, const Point &origin) override;
   virtual Element *hitTest(const Point &origin, const Point &p) override;
   virtual Point localOrigin(Element *elem) override;
   virtual Size size() override { return _size; }
@@ -50,18 +50,18 @@ public:
   // Writeable
   virtual std::string getName() override;
   virtual rfl::Generic getGeneric() override;
-  virtual void setDirty(Renderer &renderer, bool state) override;
+  virtual void setDirty(Core &core, bool state) override;
   virtual std::optional<std::string> getFilename() override;
 
   // Editable
   virtual std::wstring getString() override;
-  virtual void setString(Renderer &renderer, const std::wstring &s) override;
+  virtual void setString(Core &core, const std::wstring &s) override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
-  virtual void setMode(Renderer &renderer, HUD *hud) override;
+  virtual void setMode(Core &core, HUD *hud) override;
   static void registerHUDModes(HUD *hud);
-  virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
+  virtual void processKey(Core &core, SDL_Keycode code) override;
 
   // Locatable
   virtual Point getLocation() override { return _location; }

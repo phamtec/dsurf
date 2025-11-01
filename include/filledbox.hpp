@@ -27,7 +27,7 @@ public:
 
   // Element
   virtual void layout() {};
-  virtual void render(Renderer &renderer, const Point &origin);
+  virtual void render(Core &core, const Point &origin);
 
 private:
 

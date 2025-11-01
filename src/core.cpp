@@ -1,5 +1,5 @@
 /*
-  renderer.cpp
+  core.cpp
   
   Author: Paul Hamilton (phamtec@mac.com)
   Date: 4-Aug-2025
@@ -9,7 +9,7 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "renderer.hpp"
+#include "core.hpp"
 
 #include "spatial.hpp"
 #include "builder.hpp"
@@ -35,7 +35,7 @@ using namespace std;
 
 #define DOUBLE_CLICK_TIME 300
 
-Renderer::~Renderer() {
+Core::~Core() {
 
   // allow objects to cleanup.
   destroyRoots();
@@ -65,7 +65,7 @@ Renderer::~Renderer() {
 
 }
 
-void Renderer::destroyRoots() {
+void Core::destroyRoots() {
 
   for_each(_roots.begin(), _roots.end(), [this](auto& e) { 
     destroy(e.get()); 
@@ -73,7 +73,7 @@ void Renderer::destroyRoots() {
 
 }
 
-Size Renderer::displaySize() {
+Size Core::displaySize() {
 
   if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
     SDL_Log("Couldn't initialize SDL Video: %s", SDL_GetError());
@@ -97,7 +97,7 @@ Size Renderer::displaySize() {
 
 }
 
-bool Renderer::init(const string &path) {
+bool Core::init(const string &path) {
 
    /* Initialize the TTF library */
   if (!TTF_Init()) {
@@ -191,7 +191,7 @@ bool Renderer::init(const string &path) {
    
 }
 
-void Renderer::addFile(const string &filename, bool raw) {
+void Core::addFile(const string &filename, bool raw) {
 
   auto obj = Builder::loadFile(filename, raw);
   if (!obj) {
@@ -203,13 +203,13 @@ void Renderer::addFile(const string &filename, bool raw) {
   
 }
 
-void Renderer::addRoot(const std::string &name, const rfl::Generic &g) {
+void Core::addRoot(const std::string &name, const rfl::Generic &g) {
   
   addRoot(new Root(name, Builder::walk(0, g)));
   
 }
 
-void Renderer::addRoot(Element *element, bool useloc) {
+void Core::addRoot(Element *element, bool useloc) {
 
   // if there is only 1 element and it is <new> with an empty dict
   // then we replace it.
@@ -229,7 +229,7 @@ void Renderer::addRoot(Element *element, bool useloc) {
   // setup the HUD in the object.
   Commandable::cast(element)->initHUD(_hud.get());
 
-  // build all objects with this renderer.
+  // build all objects with this core.
   build(element);
   
   // lay it out.
@@ -257,7 +257,7 @@ void Renderer::addRoot(Element *element, bool useloc) {
 
 }
 
-void Renderer::removeRoot(Element *element) {
+void Core::removeRoot(Element *element) {
 
   auto r = find_if(_roots.begin(), _roots.end(), [element](auto& e) {
     return e.get() == element;
@@ -273,7 +273,7 @@ void Renderer::removeRoot(Element *element) {
   
 }
 
-void Renderer::build(Element *elem) {
+void Core::build(Element *elem) {
 
   elem->visit([this](auto e) {
 //    cout << "building " << e->describe() << endl;
@@ -283,7 +283,7 @@ void Renderer::build(Element *elem) {
 
 }
 
-void Renderer::destroy(Element *elem) {
+void Core::destroy(Element *elem) {
 
   elem->visit([this](auto e) {
 //    cout << "destroying " << e->describe() << endl;
@@ -293,7 +293,7 @@ void Renderer::destroy(Element *elem) {
 
 }
 
-void Renderer::layout(Element *elem) {
+void Core::layout(Element *elem) {
 
   elem->visit([this](auto e) {
 //    cout << "layout " << e->describe() << endl;
@@ -303,7 +303,7 @@ void Renderer::layout(Element *elem) {
   
 }
 
-void Renderer::layoutAll() {
+void Core::layoutAll() {
 
   for_each(_roots.begin(), _roots.end(), [this](auto& e) {
     layout(e.get());
@@ -311,7 +311,7 @@ void Renderer::layoutAll() {
   
 }
 
-void Renderer::recenter() {
+void Core::recenter() {
 
   // find the widest and tallest.
   _osize = Size();
@@ -330,7 +330,7 @@ void Renderer::recenter() {
 
 }
 
-void Renderer::initElement(Element *parent, Element *element) {
+void Core::initElement(Element *parent, Element *element) {
 
   element->setParent(parent);
   build(element);
@@ -338,7 +338,7 @@ void Renderer::initElement(Element *parent, Element *element) {
   
 }
 
-void Renderer::loop(int rep) {
+void Core::loop(int rep) {
 
   setupTest(rep);
 
@@ -390,33 +390,33 @@ void Renderer::loop(int rep) {
   
 }
 
-void Renderer::setDrawColor(const SDL_Color &color) {
+void Core::setDrawColor(const SDL_Color &color) {
 
   SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
   
 }
 
-void Renderer::drawRect(const Rect &r) {
+void Core::drawRect(const Rect &r) {
 
   SDL_FRect sr = r.srect();
   SDL_RenderRect(_renderer, &sr);
   
 }
 
-void Renderer::setScale(double x, double y) {
+void Core::setScale(double x, double y) {
 
   SDL_SetRenderScale(_renderer, x, y);
 
 }
 
-void Renderer::fillRect(const Rect &r) {
+void Core::fillRect(const Rect &r) {
 
   SDL_FRect sr = r.srect();
   SDL_RenderFillRect(_renderer, &sr);
   
 }
 
-void Renderer::debugOffs() {
+void Core::debugOffs() {
 
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
   stringstream ss;
@@ -425,7 +425,7 @@ void Renderer::debugOffs() {
 
 }
 
-void Renderer::debugScale() {
+void Core::debugScale() {
 
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
   stringstream ss;
@@ -434,7 +434,7 @@ void Renderer::debugScale() {
 
 }
 
-void Renderer::debugMouse(const Point &p) {
+void Core::debugMouse(const Point &p) {
 
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
   stringstream ss;
@@ -443,7 +443,7 @@ void Renderer::debugMouse(const Point &p) {
 
 }
 
-void Renderer::debugSize() {
+void Core::debugSize() {
 
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
   stringstream ss;
@@ -452,7 +452,7 @@ void Renderer::debugSize() {
 
 }
 
-bool Renderer::isDoubleClick() {
+bool Core::isDoubleClick() {
 
   auto ticks = SDL_GetTicks();
   bool dbl = (ticks - _lastclick) < DOUBLE_CLICK_TIME;
@@ -461,7 +461,7 @@ bool Renderer::isDoubleClick() {
   
 }
 
-optional<Renderer::getHitReturnType> Renderer::getHit() {
+optional<Core::getHitReturnType> Core::getHit() {
 
 //  cout << "getHit" << endl;
   
@@ -484,7 +484,7 @@ optional<Renderer::getHitReturnType> Renderer::getHit() {
   return nullopt;
 }
 
-void Renderer::setHUD() {
+void Core::setHUD() {
 
   if (_moving) {
     _hud->setMode(_hudmoving);
@@ -515,7 +515,7 @@ void Renderer::setHUD() {
   _hud->setMode(_hudnone);
 }
 
-void Renderer::changed(Element *elem) {
+void Core::changed(Element *elem) {
 
 //  cout << "changed " << elem->describe() << endl;
   
@@ -532,7 +532,7 @@ void Renderer::changed(Element *elem) {
 
 }
 
-void Renderer::endEdit(Editable *obj) {
+void Core::endEdit(Editable *obj) {
 
   setHUD();
 
@@ -546,7 +546,7 @@ void Renderer::endEdit(Editable *obj) {
     
 }
 
-void Renderer::registerGlobalHUDMode(HUDMode *mode) {
+void Core::registerGlobalHUDMode(HUDMode *mode) {
 
   mode->add(new Shortcut(L"[1-9]", L"Zoom"));
   mode->add(new Shortcut(L"U", L"ndo", canUndo));
@@ -554,24 +554,25 @@ void Renderer::registerGlobalHUDMode(HUDMode *mode) {
   
 }
 
-void Renderer::registerRootHUDMode(HUDMode *mode) {
+void Core::registerRootHUDMode(HUDMode *mode) {
 
   registerGlobalHUDMode(mode);
   mode->add(new Shortcut(L"M", L"ove"));
   mode->add(new Shortcut(L"K", L"ill"));
   mode->add(new Shortcut(L"W", L"rite", canWrite));
+//  mode->add(new Shortcut(L"N", L"ame"));
   mode->add(new Shortcut(L"C", L"opy"));
   mode->add(new Shortcut(L"P", L"aste"));
   
 }
 
-void Renderer::registerTextHUDMode(HUDMode *mode) {
+void Core::registerTextHUDMode(HUDMode *mode) {
 
   mode->add(new Shortcut(L"D", L"elete"));
   
 }
 
-Element *Renderer::getClipboard() {
+Element *Core::getClipboard() {
 
   char *text = SDL_GetClipboardText();
   auto elem = Builder::loadText(text);
@@ -580,7 +581,7 @@ Element *Renderer::getClipboard() {
   
 }
 
-void Renderer::write(Element *element) {
+void Core::write(Element *element) {
 
   auto root = element->root();
   
@@ -601,7 +602,7 @@ void Renderer::write(Element *element) {
   
 }
 
-void Renderer::exec(Element *element, Change *change) {
+void Core::exec(Element *element, Change *change) {
   _changes.exec(*this, _hud.get(), element, change);
   if (element) {
     setDirty(element);
@@ -611,7 +612,7 @@ void Renderer::exec(Element *element, Change *change) {
   }
 }
 
-void Renderer::undo(Element *element) {
+void Core::undo(Element *element) {
   _changes.undo(*this, _hud.get(), element);
   if (element) {
     setDirty(element);
@@ -621,7 +622,7 @@ void Renderer::undo(Element *element) {
   }
 }
 
-void Renderer::redo(Element *element) {
+void Core::redo(Element *element) {
   _changes.redo(*this, _hud.get(), element);
   if (element) {
     setDirty(element);
@@ -631,7 +632,7 @@ void Renderer::redo(Element *element) {
   }
 }
 
-bool Renderer::processGlobalKey(SDL_Keycode code) {
+bool Core::processGlobalKey(SDL_Keycode code) {
 
   if (code >= SDLK_1 && code <= SDLK_9) {
     zoom((SDLK_9 - code) + 1);
@@ -651,7 +652,7 @@ bool Renderer::processGlobalKey(SDL_Keycode code) {
   return false;
 }
 
-bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
+bool Core::processRootKey(Element *element, SDL_Keycode code) {
 
   if (processGlobalKey(code)) {
     return true;
@@ -692,13 +693,13 @@ bool Renderer::processRootKey(Element *element, SDL_Keycode code) {
   
 }
 
-void Renderer::setTextState() {
+void Core::setTextState() {
 
   _editor->setHUD(_hud.get());
 
 }
 
-bool Renderer::removeFromList(Element *p, Element *element) {
+bool Core::removeFromList(Element *p, Element *element) {
 
   auto list = dynamic_cast<List *>(p);
   if (list) {
@@ -709,7 +710,7 @@ bool Renderer::removeFromList(Element *p, Element *element) {
   
 }
 
-void Renderer::processDeleteKey(Element *element) {
+void Core::processDeleteKey(Element *element) {
 
   auto p = element->getParent();
   if (!removeFromList(p, element)) {
@@ -736,7 +737,7 @@ void Renderer::processDeleteKey(Element *element) {
   
 }
 
-Point Renderer::addRootOrigin(Element *element, const Point &origin) {
+Point Core::addRootOrigin(Element *element, const Point &origin) {
 
 //  cout << "addRootOrigin" << element->describe() << endl;
   
@@ -747,7 +748,7 @@ Point Renderer::addRootOrigin(Element *element, const Point &origin) {
 
 }
 
-void Renderer::processTextKey(Element *element, const Point &origin, const Size &size, SDL_Keycode code) {
+void Core::processTextKey(Element *element, const Point &origin, const Size &size, SDL_Keycode code) {
 
   if (processGlobalKey(code)) {
     return;
@@ -774,26 +775,26 @@ void Renderer::processTextKey(Element *element, const Point &origin, const Size 
 
 }
 
-Point Renderer::localToGlobal(const Point &p) {
+Point Core::localToGlobal(const Point &p) {
 
   return (p + _offs) * _scale;
   
 }
 
-Point Renderer::noOffset(const Point &p) {
+Point Core::noOffset(const Point &p) {
 
   return p - _offs;
   
 }
 
-void Renderer::copy(Element *element) {
+void Core::copy(Element *element) {
 
 //  cout << "copying " << element->describe() << endl;
   SDL_SetClipboardText(Builder::getJson(element).c_str());
   
 }
 
-void Renderer::paste() {
+void Core::paste() {
 
   auto elem = getClipboard();
   if (elem) {
@@ -810,7 +811,7 @@ void Renderer::paste() {
   
 }
 
-bool Renderer::processEvents() {
+bool Core::processEvents() {
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
@@ -936,7 +937,7 @@ bool Renderer::processEvents() {
   
 }
 
-void Renderer::zoom(int key) {
+void Core::zoom(int key) {
 
   float newscale = Spatial::calcScale(key);
   if (newscale != 0) {
@@ -945,19 +946,19 @@ void Renderer::zoom(int key) {
 
 }
 
-void Renderer::clearScale() {
+void Core::clearScale() {
   _oldscale = _scale;
   _oldoffs = _offs;
   _scale = 1.0;
   _offs = Size(0, 0);
 }
 
-void Renderer::restoreScale() {
+void Core::restoreScale() {
   _scale = _oldscale;
   _offs = _oldoffs;
 }
 
-void Renderer::setTarget(SDL_Texture *texture) {
+void Core::setTarget(SDL_Texture *texture) {
 
   if (!SDL_SetRenderTarget(_renderer, texture)) {
     SDL_Log("Couldn't set render target: %s", SDL_GetError());
@@ -966,7 +967,7 @@ void Renderer::setTarget(SDL_Texture *texture) {
 }
 
 
-SDL_Texture *Renderer::createTexture(int width, int height) {
+SDL_Texture *Core::createTexture(int width, int height) {
 
   SDL_Texture *texture = SDL_CreateTexture(_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
   if (!texture) {
@@ -978,7 +979,7 @@ SDL_Texture *Renderer::createTexture(int width, int height) {
 };
 
 
-SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {
+SDL_Texture *Core::createTexture(SDL_Surface *surface) {
   
   SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, surface);
   if (!texture) {
@@ -989,11 +990,11 @@ SDL_Texture *Renderer::createTexture(SDL_Surface *surface) {
   
 }
 
-void Renderer::destroyTexture(SDL_Texture *texture) {
+void Core::destroyTexture(SDL_Texture *texture) {
   SDL_DestroyTexture(texture);
 }
 
-void Renderer::renderTexture(SDL_Texture *texture, const Rect &rect, bool offs) {
+void Core::renderTexture(SDL_Texture *texture, const Rect &rect, bool offs) {
 
   Rect r = rect + (offs ? _offs : Size(0, 0));
 
@@ -1002,7 +1003,7 @@ void Renderer::renderTexture(SDL_Texture *texture, const Rect &rect, bool offs) 
 
 }
 
-void Renderer::renderRect(const Rect &rect) {
+void Core::renderRect(const Rect &rect) {
 
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0xFF);
 
@@ -1014,7 +1015,7 @@ void Renderer::renderRect(const Rect &rect) {
 
 }
 
-void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
+void Core::renderFilledRect(const Rect &rect, const SDL_Color &color) {
 
   SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
   
@@ -1026,13 +1027,13 @@ void Renderer::renderFilledRect(const Rect &rect, const SDL_Color &color) {
 
 }
 
-bool Renderer::textTooSmall() {
+bool Core::textTooSmall() {
 
   return _scale < 0.14;
   
 }
 
-SDL_Surface *Renderer::renderText(const std::wstring &str, const SDL_Color &fgcolor, const SDL_Color &bgcolor) {
+SDL_Surface *Core::renderText(const std::wstring &str, const SDL_Color &fgcolor, const SDL_Color &bgcolor) {
 
   if (str.size() == 0) {
     return nullptr;
@@ -1052,7 +1053,7 @@ SDL_Surface *Renderer::renderText(const std::wstring &str, const SDL_Color &fgco
   
 }
 
-void Renderer::renderFilledPie(const Point &origin, int radius, int start, int end, const SDL_Color &color) {
+void Core::renderFilledPie(const Point &origin, int radius, int start, int end, const SDL_Color &color) {
 
   Point o = origin + _offs;
   Gfx::aaFilledPieRGBA(_renderer, 
@@ -1062,7 +1063,7 @@ void Renderer::renderFilledPie(const Point &origin, int radius, int start, int e
 
 }
 
-void Renderer::setError(const string &str) {
+void Core::setError(const string &str) {
 
   cerr << str << endl;
 
@@ -1073,7 +1074,7 @@ void Renderer::setError(const string &str) {
   
 }
 
-void Renderer::setDirty(Element *elem, bool state) {
+void Core::setDirty(Element *elem, bool state) {
 
   auto elemroot = elem->root();
   if (!elemroot) {
@@ -1095,7 +1096,7 @@ void Renderer::setDirty(Element *elem, bool state) {
 
 }
 
-void Renderer::renderLayout(const Point &origin, const RectList &layout) {
+void Core::renderLayout(const Point &origin, const RectList &layout) {
 
   if (layout.size() == 0) {
     return;

@@ -11,7 +11,7 @@
 
 #include "fileobj.hpp"
 
-#include "renderer.hpp"
+#include "core.hpp"
 #include "unicode.hpp"
 
 using namespace std;
@@ -29,17 +29,17 @@ void ProjectFileObj::layout() {
   
 }
 
-void ProjectFileObj::build(Renderer &renderer) {
+void ProjectFileObj::build(Core &core) {
 
-  _name.build(renderer);
+  _name.build(core);
 
 }
 
-void ProjectFileObj::render(Renderer &renderer, const Point &origin) {
+void ProjectFileObj::render(Core &core, const Point &origin) {
 
-  _name.render(renderer, origin);
+  _name.render(core, origin);
 
-//  renderer.renderRect(_r);
+//  core.renderRect(_r);
 
 }
 
@@ -49,21 +49,21 @@ void ProjectFileObj::initHUD(HUD *hud) {
   
 }
 
-void ProjectFileObj::setMode(Renderer &renderer, HUD *hud) {
+void ProjectFileObj::setMode(Core &core, HUD *hud) {
 
   hud->setMode(_hudobj);
   
 }
 
-void ProjectFileObj::processKey(Renderer &renderer, SDL_Keycode code) {
+void ProjectFileObj::processKey(Core &core, SDL_Keycode code) {
 
-  if (renderer.processGlobalKey(code)) {
+  if (core.processGlobalKey(code)) {
     return;
   }
   
   switch (code) {      
     case SDLK_L:
-      renderer.addFile(_fullfilename, false);
+      core.addFile(_fullfilename, false);
       break;
   }
 

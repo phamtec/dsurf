@@ -63,7 +63,7 @@ set(LIBS zmq)
 set(SRC
   src/font.cpp 
   src/text.cpp 
-  src/renderer.cpp 
+  src/core.cpp 
   src/builder.cpp 
   src/spatial.cpp
   src/filledbox.cpp

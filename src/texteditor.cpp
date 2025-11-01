@@ -12,7 +12,7 @@
 #include "texteditor.hpp"
 
 #include "colours.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "editable.hpp"
 #include "hud.hpp"
 #include "unicode.hpp"
@@ -31,9 +31,9 @@ TextEditor::~TextEditor() {
   }
 }
 
-void TextEditor::build(Renderer &renderer) {
+void TextEditor::build(Core &core) {
 
-  _text = TTF_CreateText(renderer._engine, renderer._font->_font, NULL, 0);
+  _text = TTF_CreateText(core._engine, core._font->_font, NULL, 0);
   if (!_text) {
     SDL_Log("couldn't create text");
     return;
@@ -48,8 +48,8 @@ void TextEditor::build(Renderer &renderer) {
   // make the text black
   TTF_SetTextColor(_text, 0x00, 0x00, 0x00, 0xFF);
   
-  _window = renderer._window;
-  _renderer = &renderer;
+  _window = core._window;
+  _core = &core;
 }
 
 void TextEditor::registerHUD(HUD *hud) {
@@ -57,7 +57,7 @@ void TextEditor::registerHUD(HUD *hud) {
   // the text keys.
   {
     auto mode = new HUDMode(false);
-    Renderer::registerGlobalHUDMode(mode);
+    Core::registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"A", L"ppend"));
     mode->add(new Shortcut(L"S", L"elect all"));
     mode->add(new Shortcut(L"I", L"nsert"));
@@ -79,21 +79,21 @@ void TextEditor::registerHUD(HUD *hud) {
 
 }
 
-void TextEditor::processTextKey(Renderer &renderer, Editable *editable, const Point &origin, const Size &size, SDL_Keycode code, HUD *hud) {
+void TextEditor::processTextKey(Core &core, Editable *editable, const Point &origin, const Size &size, SDL_Keycode code, HUD *hud) {
 
   switch (code) {
     case SDLK_A:
-      focus(renderer, origin, size, editable, hud);    
+      focus(core, origin, size, editable, hud);    
       break;
       
     case SDLK_S:
-      focus(renderer, origin, size, editable, hud);
+      focus(core, origin, size, editable, hud);
       selectAll();
       break;
       
     case SDLK_I:
-      focus(renderer, origin, size, editable, hud);
-      mouseDown(renderer, renderer._mouse.x, renderer._mouse.y);
+      focus(core, origin, size, editable, hud);
+      mouseDown(core, core._mouse.x, core._mouse.y);
       break;
       
     case SDLK_C:
@@ -110,14 +110,14 @@ void TextEditor::processTextKey(Renderer &renderer, Editable *editable, const Po
     case SDLK_P:
       {
         auto text = SDL_GetClipboardText();
-        editable->setString(renderer, Unicode::convert(text));
+        editable->setString(core, Unicode::convert(text));
       }
       break;
   }
 
 }
 
-bool TextEditor::processEvent(Renderer &renderer, const SDL_Event &event) {
+bool TextEditor::processEvent(Core &core, const SDL_Event &event) {
 
   if (!_editing) {
     return false;
@@ -126,7 +126,7 @@ bool TextEditor::processEvent(Renderer &renderer, const SDL_Event &event) {
   switch (event.type) {
   
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
-      mouseDown(renderer, event.button.x, event.button.y);
+      mouseDown(core, event.button.x, event.button.y);
       break;
 
     case SDL_EVENT_MOUSE_MOTION:
@@ -240,14 +240,14 @@ bool TextEditor::processEvent(Renderer &renderer, const SDL_Event &event) {
    
 }
 
-void TextEditor::focus(Renderer &renderer, const Point &origin, const Size &size, Editable *obj, HUD *hud) {
+void TextEditor::focus(Core &core, const Point &origin, const Size &size, Editable *obj, HUD *hud) {
 
   if (!_text) {
     SDL_Log("need to build first!");
     return;
   }
   
-  _origin = origin + renderer._offs;
+  _origin = origin + core._offs;
   _size = size;
   _obj = obj;
   
@@ -270,7 +270,7 @@ void TextEditor::focus(Renderer &renderer, const Point &origin, const Size &size
   
   // locate the hud on the edited object.
   setHUD(hud);
-  hud->setEditingLoc(renderer.localToGlobal(origin));
+  hud->setEditingLoc(core.localToGlobal(origin));
   
 }
 
@@ -279,10 +279,10 @@ void TextEditor::endFocus(bool changed) {
   // unicode?
   if (changed) {
     string s(_text->text);
-    _obj->setString(*_renderer, wstring(s.begin(), s.end()));
+    _obj->setString(*_core, wstring(s.begin(), s.end()));
   }
   _editing = false;
-  _renderer->endEdit(_obj);
+  _core->endEdit(_obj);
   
 }
 
@@ -460,16 +460,16 @@ void TextEditor::setCursorPosition(int position) {
     _cursor = position;
 }
 
-void TextEditor::updateTextInputArea(Renderer &renderer) {
+void TextEditor::updateTextInputArea(Core &core) {
 
     /* Convert the text input area and cursor into window coordinates */
     SDL_FPoint window_edit_rect_min;
     SDL_FPoint window_edit_rect_max;
     SDL_FPoint window_cursor;
     SDL_FRect r = Rect(_origin, _size).srect();
-    if (!SDL_RenderCoordinatesToWindow(renderer._renderer, r.x, r.y, &window_edit_rect_min.x, &window_edit_rect_min.y) ||
-        !SDL_RenderCoordinatesToWindow(renderer._renderer, r.x + r.w, r.y + r.h, &window_edit_rect_max.x, &window_edit_rect_max.y) ||
-        !SDL_RenderCoordinatesToWindow(renderer._renderer, _cursor_rect.x, _cursor_rect.y, &window_cursor.x, &window_cursor.y)) {
+    if (!SDL_RenderCoordinatesToWindow(core._renderer, r.x, r.y, &window_edit_rect_min.x, &window_edit_rect_min.y) ||
+        !SDL_RenderCoordinatesToWindow(core._renderer, r.x + r.w, r.y + r.h, &window_edit_rect_max.x, &window_edit_rect_max.y) ||
+        !SDL_RenderCoordinatesToWindow(core._renderer, _cursor_rect.x, _cursor_rect.y, &window_cursor.x, &window_cursor.y)) {
         return;
     }
 
@@ -479,30 +479,30 @@ void TextEditor::updateTextInputArea(Renderer &renderer) {
     rect.w = (int)SDL_roundf(window_edit_rect_max.x - window_edit_rect_min.x);
     rect.h = (int)SDL_roundf(window_edit_rect_max.y - window_edit_rect_min.y);
     int cursor_offset = (int)SDL_roundf(window_cursor.x - window_edit_rect_min.x);
-    SDL_SetTextInputArea(renderer._window, &rect, cursor_offset);
+    SDL_SetTextInputArea(core._window, &rect, cursor_offset);
 }
 
-void TextEditor::drawCursor(Renderer &renderer) {
+void TextEditor::drawCursor(Core &core) {
 
 //     if (edit->composition_length > 0) {
 //         DrawCompositionCursor(edit);
 //         return;
 //     }
 
-    SDL_SetRenderDrawColor(renderer._renderer, 0, 0, 0, 0xFF);
-    SDL_RenderFillRect(renderer._renderer, &_cursor_rect);
+    SDL_SetRenderDrawColor(core._renderer, 0, 0, 0, 0xFF);
+    SDL_RenderFillRect(core._renderer, &_cursor_rect);
 }
 
-void TextEditor::render(Renderer &renderer, const Point &origin) {
+void TextEditor::render(Core &core, const Point &origin) {
 
   if (!_editing) {
     return;
   }
   
   /* Clear the text rect to light gray */
-  SDL_SetRenderDrawColor(renderer._renderer, 0xCC, 0xCC, 0xCC, 0xFF);
+  SDL_SetRenderDrawColor(core._renderer, 0xCC, 0xCC, 0xCC, 0xFF);
   SDL_FRect r = Rect(_origin, _size).srect();
-  SDL_RenderFillRect(renderer._renderer, &r);
+  SDL_RenderFillRect(core._renderer, &r);
 
   /* Draw any highlight */
   int marker, length;
@@ -510,13 +510,13 @@ void TextEditor::render(Renderer &renderer, const Point &origin) {
       TTF_SubString **highlights = TTF_GetTextSubStringsForRange(_text, marker, length, NULL);
       if (highlights) {
           int i;
-          SDL_SetRenderDrawColor(renderer._renderer, 0xEE, 0xEE, 0x00, 0xFF);
+          SDL_SetRenderDrawColor(core._renderer, 0xEE, 0xEE, 0x00, 0xFF);
           for (i = 0; highlights[i]; ++i) {
               SDL_FRect rect;
               SDL_RectToFRect(&highlights[i]->rect, &rect);
               rect.x += r.x;
               rect.y += r.y;
-              SDL_RenderFillRect(renderer._renderer, &rect);
+              SDL_RenderFillRect(core._renderer, &rect);
           }
           SDL_free(highlights);
       }
@@ -543,7 +543,7 @@ void TextEditor::render(Renderer &renderer, const Point &origin) {
         _cursor_rect.y += r.y;
         _cursor_rect.w = 3.0f;
 
-        updateTextInputArea(renderer);
+        updateTextInputArea(core);
     }
 
 //       if (edit->composition_length > 0) {
@@ -555,7 +555,7 @@ void TextEditor::render(Renderer &renderer, const Point &origin) {
 //       }
 
     if (_cursor_visible) {
-      drawCursor(renderer);
+      drawCursor(core);
     }
   
 }
@@ -720,11 +720,11 @@ void TextEditor::deleteText()
     TTF_DeleteTextString(_text, _cursor, (int)length);
 }
 
-void TextEditor::mouseDown(Renderer &renderer, float x, float y)
+void TextEditor::mouseDown(Core &core, float x, float y)
 {
   SDL_FRect r = Rect(_origin, _size).srect();
   
-  float scale = 1 / renderer._scale;
+  float scale = 1 / core._scale;
   
   SDL_FPoint pt = { x * scale, y * scale };
   if (!SDL_PointInRectFloat(&pt, &r)) {

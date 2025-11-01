@@ -26,7 +26,7 @@ public:
 
   
 private:
-  friend class Renderer;
+  friend class Core;
   friend class TextEditor;
   
   TTF_Font *_font;

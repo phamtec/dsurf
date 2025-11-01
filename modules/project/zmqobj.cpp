@@ -11,7 +11,7 @@
 
 #include "zmqobj.hpp"
 
-#include "renderer.hpp"
+#include "core.hpp"
 #include "unicode.hpp"
 #include "builder.hpp"
 #include "flo.hpp"
@@ -190,24 +190,24 @@ void ProjectZMQObj::layout() {
   
 }
 
-void ProjectZMQObj::build(Renderer &renderer) {
+void ProjectZMQObj::build(Core &core) {
 
-  _name.build(renderer);
+  _name.build(core);
 
 }
 
-void ProjectZMQObj::render(Renderer &renderer, const Point &origin) {
+void ProjectZMQObj::render(Core &core, const Point &origin) {
 
-//  renderer.renderLayout(origin, _layout);
+//  core.renderLayout(origin, _layout);
 
   auto i = _layout.begin();
-  _name.render(renderer, origin + (*i).origin);
+  _name.render(core, origin + (*i).origin);
   i++;
   
   if (_editing) {
-    for_each(_code.begin(), _code.end(), [&renderer, &i, origin](auto& e) {
-      renderer.renderFilledRect(*i + origin, Colours::white);
-      e->render(renderer, origin + i->origin);
+    for_each(_code.begin(), _code.end(), [&core, &i, origin](auto& e) {
+      core.renderFilledRect(*i + origin, Colours::white);
+      e->render(core, origin + i->origin);
       i++;
     });
   }
@@ -265,34 +265,34 @@ void ProjectZMQObj::initHUD(HUD *hud) {
 
 }
 
-void ProjectZMQObj::setMode(Renderer &renderer, HUD *hud) {
+void ProjectZMQObj::setMode(Core &core, HUD *hud) {
 
-  hud->setFlag(renderer, canEdit, !_editing);
+  hud->setFlag(core, canEdit, !_editing);
   
   hud->setMode(_hudobj);
   
 }
 
-void ProjectZMQObj::processKey(Renderer &renderer, SDL_Keycode code) {
+void ProjectZMQObj::processKey(Core &core, SDL_Keycode code) {
 
-  if (renderer.processGlobalKey(code)) {
+  if (core.processGlobalKey(code)) {
     return;
   }
 
   switch (code) {      
     case SDLK_C:
-      load(renderer);
+      load(core);
       break;
 
     case SDLK_E:
       _editing = true;
-      renderer.layout(root());
+      core.layout(root());
       break;
   }
 
 }
 
-void ProjectZMQObj::load(Renderer &renderer) {
+void ProjectZMQObj::load(Core &core) {
 
   if (_send.size() == 0) {
     cerr << "no send" << endl;
@@ -301,7 +301,7 @@ void ProjectZMQObj::load(Renderer &renderer) {
 
   cout << "connecting to " << _remoteAddress << ":" << _remotePort << endl;
   
-  renderer.connectRemote(_remoteAddress, _remotePort, _remotePubKey, _privateKey, _publicKey, _flo, _send, _next);
+  core.connectRemote(_remoteAddress, _remotePort, _remotePubKey, _privateKey, _publicKey, _flo, _send, _next);
   
 }
 
@@ -316,22 +316,22 @@ bool ProjectZMQObj::visit(function<bool (Element *)> f) {
   
 }
 
-void ProjectZMQObj::changed(Renderer &renderer, Element *obj) {
+void ProjectZMQObj::changed(Core &core, Element *obj) {
 
   // test the library.
   auto lib = _code[_libindex].get();
-  if (!lib->visit([this, &renderer, obj, lib](auto e) {
+  if (!lib->visit([this, &core, obj, lib](auto e) {
     if (e == obj) {
       auto v = Generic::getVector(Writeable::cast(lib)->getGeneric());
       if (!v) {
         cerr << "lib is not a vector!" << endl;
         return false;
       }
-      for_each(_code.begin(), _code.end(), [&renderer, v](auto& e) {
+      for_each(_code.begin(), _code.end(), [&core, v](auto& e) {
         auto code = dynamic_cast<ProjectCode *>(e.get());
         if (code) {
-          code->libChanged(renderer, *v);
-//          code->run(renderer);
+          code->libChanged(core, *v);
+//          code->run(core);
         }
       });
       return false;

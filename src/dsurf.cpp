@@ -11,7 +11,7 @@
   https://github.com/phamtec/dsurf
 */
 
-#include "renderer.hpp"
+#include "core.hpp"
 #include "builder.hpp"
 #include "element.hpp"
 #include "filledbox.hpp"
@@ -88,42 +88,42 @@ int main(int argc, char *argv[])
   
 //  bool edit = true;
   bool edit = false;
-  Size wsize = Renderer::displaySize() - Size(200, 300);
+  Size wsize = Core::displaySize() - Size(200, 300);
 //  Size wsize(500, 500);
 //  Size wsize(1024, 768);
   double scale = 0.3;
 //   double scale = 1.5;
 //   double scale = 0.5;
 
-  Renderer renderer(wsize, 0.01, scale, Size(0.0, 0.0), edit);
+  Core core(wsize, 0.01, scale, Size(0.0, 0.0), edit);
 
-  // build all of the internal renderer state.
+  // build all of the internal core state.
 #ifdef MAC_APP
-  if (!renderer.init(MacUtil::getFontPath())) {
+  if (!core.init(MacUtil::getFontPath())) {
 #else
-  if (!renderer.init("../fonts/Monaco.ttf")) {
+  if (!core.init("../fonts/Monaco.ttf")) {
 #endif
-//  if (!renderer.init("../fonts/Geneva.ttf")) {
+//  if (!core.init("../fonts/Geneva.ttf")) {
     return 1;
   }
   
   // read in a file if one is specified.
   if (vm.count("input-files")) {
     vector<string> files = vm["input-files"].as<vector<string> >();
-    for_each(files.begin(), files.end(), [&renderer](auto f) { 
-      renderer.addFile(f, false);
+    for_each(files.begin(), files.end(), [&core](auto f) { 
+      core.addFile(f, false);
     });
   }
   else {
     // always just a new dictiionary.
-    renderer.addRoot(new Root("<new>", new List(true)));
+    core.addRoot(new Root("<new>", new List(true)));
   }
 
 //  alternate startup which just draws a blue box right in the middle of a small
 //  screen
-//  renderer.setRoot(new FilledBox(Size(200, 200)));
+//  core.setRoot(new FilledBox(Size(200, 200)));
 
   // the render loop
-  renderer.loop(repPort);
+  core.loop(repPort);
   
 }

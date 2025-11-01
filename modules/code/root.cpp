@@ -11,7 +11,7 @@
 
 #include "root.hpp"
 
-#include "renderer.hpp"
+#include "core.hpp"
 #include "unicode.hpp"
 #include "generic.hpp"
 #include "builder.hpp"
@@ -73,18 +73,18 @@ optional<string> CodeRoot::getFilename() {
   
 }
 
-void CodeRoot::setDirty(Renderer &renderer, bool state) {
+void CodeRoot::setDirty(Core &core, bool state) {
 
   _filename.set(_filename.str(), state ? Colours::red : Colours::black);
-  _filename.build(renderer);
+  _filename.build(core);
 
 }
 
-void CodeRoot::build(Renderer &renderer) {
+void CodeRoot::build(Core &core) {
 
-  _filename.build(renderer);
-  _scenarioslabel.build(renderer);
-  _librarylabel.build(renderer);
+  _filename.build(core);
+  _scenarioslabel.build(core);
+  _librarylabel.build(core);
 
 }
 
@@ -173,37 +173,37 @@ void CodeRoot::layout() {
 
 }
 
-void CodeRoot::render(Renderer &renderer, const Point &origin) {
+void CodeRoot::render(Core &core, const Point &origin) {
 
   auto i = _layout.begin();
   
-  _filename.render(renderer, origin + (*i).origin);
+  _filename.render(core, origin + (*i).origin);
   i++;
 
-  _scenarioslabel.render(renderer, origin + (*i).origin);
+  _scenarioslabel.render(core, origin + (*i).origin);
   i++;
 
   for (auto& e: _scenarios) {
-    e->render(renderer, origin + (*i).origin);
+    e->render(core, origin + (*i).origin);
     i++;
   }
 
-  renderer.renderFilledRect(*i + origin, Colours::straw);
-  _transform->render(renderer, origin + (*i).origin + Size(Sizes::text_padding, Sizes::text_padding));
+  core.renderFilledRect(*i + origin, Colours::straw);
+  _transform->render(core, origin + (*i).origin + Size(Sizes::text_padding, Sizes::text_padding));
   i++;
 
-  _librarylabel.render(renderer, origin + (*i).origin);
+  _librarylabel.render(core, origin + (*i).origin);
   i++;
 
-  _library->render(renderer, origin + (*i).origin + Size(Sizes::text_padding, Sizes::text_padding));
+  _library->render(core, origin + (*i).origin + Size(Sizes::text_padding, Sizes::text_padding));
   i++;
 
   if (_running) {
-    renderer.renderFilledRect(*i + origin, Colours::lightPlum);
-    _scenario->render(renderer, origin + (*i).origin + Sizes::text_padding);
+    core.renderFilledRect(*i + origin, Colours::lightPlum);
+    _scenario->render(core, origin + (*i).origin + Sizes::text_padding);
     i++;
-    renderer.renderFilledRect(*i + origin, Colours::teaGreen);
-    _output->render(renderer, origin + (*i).origin + Sizes::text_padding);
+    core.renderFilledRect(*i + origin, Colours::teaGreen);
+    _output->render(core, origin + (*i).origin + Sizes::text_padding);
   }
 
 }
@@ -310,35 +310,35 @@ void CodeRoot::initHUD(HUD *hud) {
   
 }
 
-void CodeRoot::setMode(Renderer &renderer, HUD *hud) {
+void CodeRoot::setMode(Core &core, HUD *hud) {
 
   // we can run if we have an input context.
-  hud->setFlag(renderer, canRun, !_running);
+  hud->setFlag(core, canRun, !_running);
   
   hud->setMode(_hudobj);
   
 }
 
-void CodeRoot::processKey(Renderer &renderer, SDL_Keycode code) {
+void CodeRoot::processKey(Core &core, SDL_Keycode code) {
 
-  if (renderer.processRootKey(this, code)) {
+  if (core.processRootKey(this, code)) {
     return;
   }
 
 }
 
-void CodeRoot::setScenario(Renderer &renderer, const rfl::Generic &scenario, int index) {
+void CodeRoot::setScenario(Core &core, const rfl::Generic &scenario, int index) {
 
-  _scenario->destroy(renderer);
+  _scenario->destroy(core);
   _scenario = unique_ptr<Element>(Builder::walk(this, scenario));
-  renderer.build(_scenario.get());
-  renderer.layout(this);
+  core.build(_scenario.get());
+  core.layout(this);
   _running = true;
   _scindex = index;
   
 }
 
-void CodeRoot::run(Renderer &renderer) {
+void CodeRoot::run(Core &core) {
 
   if (!_running) {
     return;
@@ -360,7 +360,7 @@ void CodeRoot::run(Renderer &renderer) {
   auto out = _flo->eval(*in, *to);
   
   // clear out the output
-  _output->destroy(renderer);
+  _output->destroy(core);
   
   // rebuild it.
   if (out) {
@@ -372,13 +372,13 @@ void CodeRoot::run(Renderer &renderer) {
     _output->setParent(this);
   }
   
-  renderer.build(_output.get());
+  core.build(_output.get());
   
-  renderer.layout(this);
+  core.layout(this);
   
 }
 
-void CodeRoot::rebuildScenarios(Renderer &renderer) {
+void CodeRoot::rebuildScenarios(Core &core) {
 
   vector<Element *> scenarios;
   for (int i=0; i<_scenarios.size(); i++) {
@@ -387,9 +387,9 @@ void CodeRoot::rebuildScenarios(Renderer &renderer) {
       // create a new scenario out of the one we are editing so it will be written out.
       auto scenario = new CodeScenario(Writeable::cast(_scenario.get())->getGeneric(), i);
       scenario->setParent(this);
-      renderer.destroy(s);
+      core.destroy(s);
       scenarios.push_back(scenario);
-      renderer.build(scenario);
+      core.build(scenario);
     }
     else {
       scenarios.push_back(s);
@@ -400,20 +400,20 @@ void CodeRoot::rebuildScenarios(Renderer &renderer) {
     return unique_ptr<Element>(e);
   });
   
-  renderer.layout(root());
+  core.layout(root());
   
 }
 
-void CodeRoot::changed(Renderer &renderer, Element *obj) {
+void CodeRoot::changed(Core &core, Element *obj) {
 
 //  cout << "CodeRoot::changed " << obj->describe() << endl;
 
   // test the transform.
-  if (!_transform->visit([this, &renderer, obj](auto e) {
+  if (!_transform->visit([this, &core, obj](auto e) {
 //    cout << "testing " << e->describe() << endl;
     if (e == obj) {
 //      cout << "running" << endl;
-      run(renderer);
+      run(core);
       return false;
     }
     return true;
@@ -423,9 +423,9 @@ void CodeRoot::changed(Renderer &renderer, Element *obj) {
 
   // test the scenarios.
   for (auto& e: _scenarios) {
-    e->visit([this, &renderer, obj](auto e2) {
+    e->visit([this, &core, obj](auto e2) {
       if (e2 == obj) {
-        run(renderer);
+        run(core);
         return false;
       }
       return true;
@@ -433,22 +433,22 @@ void CodeRoot::changed(Renderer &renderer, Element *obj) {
   }
 
   // test the scenario we are actually in.
-  _scenario->visit([this, &renderer, obj](auto e) {
+  _scenario->visit([this, &core, obj](auto e) {
     if (e == obj) {
-      run(renderer);
-      rebuildScenarios(renderer);
+      run(core);
+      rebuildScenarios(core);
       return false;
     }
     return true;
   });
   
   // test the library.
-  if (!_library->visit([this, &renderer, obj](auto e) {
+  if (!_library->visit([this, &core, obj](auto e) {
     if (e == obj) {
       rfl::Object<rfl::Generic> lib;
       lib["library"] = Writeable::cast(_library.get())->getGeneric();
       _flo.reset(new Flo(lib));
-      run(renderer);
+      run(core);
       return false;
     }
     return true;

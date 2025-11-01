@@ -12,7 +12,7 @@
 #include "newelement.hpp"
 
 #include "list.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 
 #include <iostream>
 
@@ -25,13 +25,13 @@ NewElement::NewElement(List *list, Element *elem) {
   
 }
 
-void NewElement::destroy(Renderer &renderer) {
+void NewElement::destroy(Core &core) {
   if (_newelem) {
-    _newelem->destroy(renderer);
+    _newelem->destroy(core);
   }
 }
 
-void NewElement::exec(Renderer &renderer) {
+void NewElement::exec(Core &core) {
 
   auto elements = _list->getElements();
   if (!elements) {
@@ -41,12 +41,12 @@ void NewElement::exec(Renderer &renderer) {
 
   elements->push_back(unique_ptr<Element>(_elem));
 
-  // tell the renderer the parent has changed.
-  renderer.changed(_list);
+  // tell the core the parent has changed.
+  core.changed(_list);
   
 }
 
-void NewElement::undo(Renderer &renderer) {
+void NewElement::undo(Core &core) {
 
   auto elements = _list->getElements();
   if (!elements) {
@@ -62,7 +62,7 @@ void NewElement::undo(Renderer &renderer) {
   // remove it from the list.
   elements->erase(last);
   
-  // tell the renderer the parent has changed.
-  renderer.changed(_list);
+  // tell the core the parent has changed.
+  core.changed(_list);
   
 }

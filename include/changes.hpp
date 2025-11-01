@@ -54,11 +54,11 @@ class Changes {
 public:
   Changes(): _undoptr(_changes.end()) {}
   
-  void destroy(Renderer &renderer);
-  void undo(Renderer &renderer, HUD *hud, Element *element);
-  void redo(Renderer &renderer, HUD *hud, Element *element);
-  void exec(Renderer &renderer, HUD *hud, Element *element, Change *change);
-  void setUndoFlags(Renderer &renderer, HUD *hud);
+  void destroy(Core &core);
+  void undo(Core &core, HUD *hud, Element *element);
+  void redo(Core &core, HUD *hud, Element *element);
+  void exec(Core &core, HUD *hud, Element *element, Change *change);
+  void setUndoFlags(Core &core, HUD *hud);
   int size() { return _changes.size(); }
   
 private:

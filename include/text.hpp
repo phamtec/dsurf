@@ -23,7 +23,7 @@
 
 class SDL_Texture;
 
-class Renderer;
+class Core;
 class Font;
 class Point;
 
@@ -36,10 +36,10 @@ public:
 
   void set(const std::wstring &str, const SDL_Color &fgcolor, std::optional<SDL_Color> bgcolor=std::nullopt);
   
-  void build(Renderer &renderer);
+  void build(Core &core);
     // build the texture ready to render.
     
-  void render(Renderer &renderer, const Point &origin, bool offs=true);
+  void render(Core &core, const Point &origin, bool offs=true);
     // render the text at x, y
     
   Size size() { return _size; }

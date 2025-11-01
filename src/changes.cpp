@@ -13,7 +13,7 @@
 
 #include "hud.hpp"
 #include "element.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "generic.hpp"
 
 #include <algorithm>
@@ -21,25 +21,25 @@
 using namespace std;
 using flo::Generic;
 
-void Changes::destroy(Renderer &renderer) {
+void Changes::destroy(Core &core) {
 
   // make sure alkl the chnages objects get destroyed too.
-  for_each(_changes.begin(), _changes.end(), [&renderer](auto& e) { 
-    e->destroy(renderer); 
+  for_each(_changes.begin(), _changes.end(), [&core](auto& e) { 
+    e->destroy(core); 
   });
 
 }
 
-void Changes::setUndoFlags(Renderer &renderer, HUD *hud) {
+void Changes::setUndoFlags(Core &core, HUD *hud) {
 
   if (_changes.size() == 0) {
-    hud->setFlag(renderer, canRedo, false);
-    hud->setFlag(renderer, canUndo, false);
+    hud->setFlag(core, canRedo, false);
+    hud->setFlag(core, canUndo, false);
     return;
   }
 
-  hud->setFlag(renderer, canRedo, _undoptr != (_changes.end() - 1));
-  hud->setFlag(renderer, canUndo, _undoptr != _changes.end());
+  hud->setFlag(core, canRedo, _undoptr != (_changes.end() - 1));
+  hud->setFlag(core, canUndo, _undoptr != _changes.end());
 
 }
 
@@ -53,7 +53,7 @@ void Changes::dump() {
   });
 }
 
-void Changes::exec(Renderer &renderer, HUD *hud, Element *element, Change *change) {
+void Changes::exec(Core &core, HUD *hud, Element *element, Change *change) {
 
   // throw away all the changes after the undo ptr.
   if (_changes.size() > 0 && _undoptr != _changes.end()) {
@@ -68,13 +68,13 @@ void Changes::exec(Renderer &renderer, HUD *hud, Element *element, Change *chang
   }
 
   // execute this change
-  change->exec(renderer);
+  change->exec(core);
   
   // layout the root.
   if (element) {
     auto root = element->root();
     if (root) {
-      renderer.layout(root);
+      core.layout(root);
     }
   }
     
@@ -84,11 +84,11 @@ void Changes::exec(Renderer &renderer, HUD *hud, Element *element, Change *chang
   // make sure the undoptr is at the end.
   _undoptr = _changes.end() - 1;
   
-  setUndoFlags(renderer, hud);
+  setUndoFlags(core, hud);
   
 }
 
-void Changes::undo(Renderer &renderer, HUD *hud, Element *element) {
+void Changes::undo(Core &core, HUD *hud, Element *element) {
 
   if (_changes.size() == 0) {
     cout << "no changes" << endl;
@@ -100,13 +100,13 @@ void Changes::undo(Renderer &renderer, HUD *hud, Element *element) {
     return;
   }
   
-  (*_undoptr)->undo(renderer);
+  (*_undoptr)->undo(core);
   
   // layout the root.
   if (element) {
     auto root = element->root();
     if (root) {
-      renderer.layout(root);
+      core.layout(root);
     }
   }
   
@@ -117,11 +117,11 @@ void Changes::undo(Renderer &renderer, HUD *hud, Element *element) {
     _undoptr--;
   }
   
-  setUndoFlags(renderer, hud);
+  setUndoFlags(core, hud);
   
 }
 
-void Changes::redo(Renderer &renderer, HUD *hud, Element *element) {
+void Changes::redo(Core &core, HUD *hud, Element *element) {
 
   if (_changes.size() == 0) {
     cout << "no changes" << endl;
@@ -141,18 +141,18 @@ void Changes::redo(Renderer &renderer, HUD *hud, Element *element) {
   }
   
   if (_undoptr != _changes.end()) {
-    (*_undoptr)->exec(renderer);
+    (*_undoptr)->exec(core);
   }
 
   // layout the root.
   if (element) {
     auto root = element->root();
     if (root) {
-      renderer.layout(root);
+      core.layout(root);
     }
   }
   
   
-  setUndoFlags(renderer, hud);
+  setUndoFlags(core, hud);
 
 }

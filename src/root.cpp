@@ -11,7 +11,7 @@
 
 #include "root.hpp"
 
-#include "renderer.hpp"
+#include "core.hpp"
 #include "unicode.hpp"
 #include "sizes.hpp"
 
@@ -34,10 +34,10 @@ optional<string> Root::getFilename() {
   
 }
 
-void Root::setDirty(Renderer &renderer, bool state) {
+void Root::setDirty(Core &core, bool state) {
 
   _filename.set(_filename.str(), state ? Colours::red : Colours::black);
-  _filename.build(renderer);
+  _filename.build(core);
 
 }
 
@@ -68,20 +68,20 @@ void Root::layout() {
   
 }
 
-void Root::build(Renderer &renderer) {
+void Root::build(Core &core) {
 
-  _filename.build(renderer);
+  _filename.build(core);
 
 }
 
-void Root::render(Renderer &renderer, const Point &origin) {
+void Root::render(Core &core, const Point &origin) {
 
-//  renderer.renderLayout(origin, _layout);
+//  core.renderLayout(origin, _layout);
   
   auto i = _layout.begin();
-  _filename.render(renderer, origin + (*i).origin);
+  _filename.render(core, origin + (*i).origin);
   i++;
-  _obj->render(renderer, origin + (*i).origin);
+  _obj->render(core, origin + (*i).origin);
   
 }
 
@@ -132,9 +132,9 @@ bool Root::visit(std::function<bool (Element *)> f) {
   
 }
 
-void Root::processKey(Renderer &renderer, SDL_Keycode code) {
+void Root::processKey(Core &core, SDL_Keycode code) {
 
-  Commandable::cast(_obj.get())->processKey(renderer, code);
+  Commandable::cast(_obj.get())->processKey(core, code);
   
 }
 
@@ -144,9 +144,9 @@ std::wstring Root::getString() {
   
 }
 
-void Root::setString(Renderer &renderer, const wstring &s) {
+void Root::setString(Core &core, const wstring &s) {
 
-  Editable::cast(_obj.get())->setString(renderer, s);
+  Editable::cast(_obj.get())->setString(core, s);
   
 }
 
@@ -156,8 +156,8 @@ void Root::initHUD(HUD *hud) {
 
 }
 
-void Root::setMode(Renderer &renderer, HUD *hud) {
+void Root::setMode(Core &core, HUD *hud) {
 
-  Commandable::cast(_obj.get())->setMode(renderer, hud);
+  Commandable::cast(_obj.get())->setMode(core, hud);
   
 }

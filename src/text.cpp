@@ -11,7 +11,7 @@
 
 #include "text.hpp"
 #include "font.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "spatial.hpp"
 #include "unicode.hpp"
 
@@ -41,7 +41,7 @@ Text::~Text() {
   }
 }
 
-void Text::build(Renderer &renderer) {
+void Text::build(Core &core) {
 
   if (_texture) {
     SDL_DestroyTexture(_texture);
@@ -50,7 +50,7 @@ void Text::build(Renderer &renderer) {
 
   // create a surface from the text. We don't have
   // to keep it around after making a texture from it.
-  unique_ptr<SDL_Surface> surface(renderer.renderText(_str, _fgcolor, _bgcolor));
+  unique_ptr<SDL_Surface> surface(core.renderText(_str, _fgcolor, _bgcolor));
   if (!surface) {
     return;
   }
@@ -58,10 +58,10 @@ void Text::build(Renderer &renderer) {
   _size = Size(surface->w, surface->h);
   
   // create a texture.
-  _texture = renderer.createTexture(surface.get());
+  _texture = core.createTexture(surface.get());
 }
 
-void Text::render(Renderer &renderer, const Point &origin, bool offs) {
+void Text::render(Core &core, const Point &origin, bool offs) {
 
   if (!_texture) {
     SDL_Log("need to build %s first!", Unicode::convert(_str).c_str());
@@ -69,12 +69,12 @@ void Text::render(Renderer &renderer, const Point &origin, bool offs) {
   }
   
   Rect r(origin, _size);
-  if (offs && renderer.textTooSmall()) {
+  if (offs && core.textTooSmall()) {
     r -= 4;
-    renderer.renderFilledRect(r, _fgcolor);
+    core.renderFilledRect(r, _fgcolor);
   }
   else {
-    renderer.renderTexture(_texture, r, offs);
+    core.renderTexture(_texture, r, offs);
   }
   
 }

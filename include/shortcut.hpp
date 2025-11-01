@@ -21,15 +21,15 @@
 #include <optional>
 #include <memory>
 
-class Renderer;
+class Core;
 
 class Shortcut {
 
 public:
   Shortcut(const std::wstring &key, const std::wstring &text, std::optional<HUDFlags> flags = std::nullopt);
   
-  void build(Renderer &renderer);
-  void render(Renderer &renderer, const Point &origin);
+  void build(Core &core);
+  void render(Core &core, const Point &origin);
   
   Size size();
   

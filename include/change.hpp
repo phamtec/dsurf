@@ -16,7 +16,7 @@
 
 #include <string>
 
-class Renderer;
+class Core;
 
 class Change {
 
@@ -26,14 +26,14 @@ public:
   virtual std::string describe() { return "?"; }
     // describe the change.
     
-  virtual void exec(Renderer &renderer) = 0;
+  virtual void exec(Core &core) = 0;
     // execute (do) the change.
     
-  virtual void undo(Renderer &renderer) = 0;
+  virtual void undo(Core &core) = 0;
     // undo the change.
     
-  virtual void destroy(Renderer &renderer) {};
-    // opposite of build, but called with the renderer.
+  virtual void destroy(Core &core) {};
+    // opposite of build, but called with the core.
     
 };
 

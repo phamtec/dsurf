@@ -21,7 +21,7 @@ class ObjableErr: public Objable {
 public:
   ObjableErr(Element *elem): _elem(elem) {}
 
-  virtual void setObj(Renderer &renderer, Element *obj) {
+  virtual void setObj(Core &core, Element *obj) {
     Err::typeError(_elem, typeid(Objable));
   }
   virtual Element *getObj() {

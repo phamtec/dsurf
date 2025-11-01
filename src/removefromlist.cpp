@@ -14,7 +14,7 @@
 #include "list.hpp"
 #include "move.hpp"
 #include "objable.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 
 #include <iostream>
 
@@ -27,13 +27,13 @@ RemoveFromList::RemoveFromList(List *list, Element *elem) {
   
 }
 
-void RemoveFromList::destroy(Renderer &renderer) {
+void RemoveFromList::destroy(Core &core) {
   if (_oldelem) {
-    _oldelem->destroy(renderer);
+    _oldelem->destroy(core);
   }
 }
 
-void RemoveFromList::exec(Renderer &renderer) {
+void RemoveFromList::exec(Core &core) {
 
   auto elements = _list->getElements();
   if (!elements) {
@@ -63,12 +63,12 @@ void RemoveFromList::exec(Renderer &renderer) {
   // remove the element from the list (we have it)
   elements->erase(it);
 
-  // tell the renderer the parent has changed.
-  renderer.changed(_list);
+  // tell the core the parent has changed.
+  core.changed(_list);
   
 }
 
-void RemoveFromList::undo(Renderer &renderer) {
+void RemoveFromList::undo(Core &core) {
 
   auto elements = _list->getElements();
   if (!elements) {
@@ -84,7 +84,7 @@ void RemoveFromList::undo(Renderer &renderer) {
   // give it back to the list.
   elements->push_back(std::move(_oldelem));
 
-  // tell the renderer the parent has changed.
-  renderer.changed(_list);
+  // tell the core the parent has changed.
+  core.changed(_list);
   
 }

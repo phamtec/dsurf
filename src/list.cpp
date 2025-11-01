@@ -11,7 +11,7 @@
 
 #include "list.hpp"
 
-#include "renderer.hpp"
+#include "core.hpp"
 #include "colours.hpp"
 #include "sizes.hpp"
 #include "listelem.hpp"
@@ -95,15 +95,15 @@ void List::layout() {
   
 }
 
-void List::destroy(Renderer &renderer) {
+void List::destroy(Core &core) {
 
-  endEdit(renderer);
+  endEdit(core);
 
 }
 
-void List::render(Renderer &renderer, const Point &origin) {
+void List::render(Core &core, const Point &origin) {
 
-  drawBorder(renderer, origin, _size, false);
+  drawBorder(core, origin, _size, false);
 
   if (_moving) {
  
@@ -113,7 +113,7 @@ void List::render(Renderer &renderer, const Point &origin) {
       for (auto& i: _elements) {
         Size s = i->size();
         if (i.get() != _moving) {
-          i->render(renderer, o);
+          i->render(core, o);
         }
         o.y += s.h + Sizes::listgap;
       }
@@ -128,7 +128,7 @@ void List::render(Renderer &renderer, const Point &origin) {
         if (i.get() == _moving) {
         
           Point ro = o;
-          Point p = renderer.noOffset(_mouse) - _moveoffs;
+          Point p = core.noOffset(_mouse) - _moveoffs;
           p.y += (index * (s. h + Sizes::listgap)) + Sizes::listgap;
           
           // constrain on y.
@@ -145,7 +145,7 @@ void List::render(Renderer &renderer, const Point &origin) {
           if (ro.y > bottom) {
             ro.y = bottom;
           }
-          i->render(renderer, ro);
+          i->render(core, ro);
         }
         o.y += s.h + Sizes::listgap;
         index++;
@@ -155,37 +155,37 @@ void List::render(Renderer &renderer, const Point &origin) {
   else {
     // just render like normal.
     for (auto&& i: std::ranges::views::zip(_elements, _layout)) {
-      get<0>(i)->render(renderer, origin + get<1>(i).origin);
+      get<0>(i)->render(core, origin + get<1>(i).origin);
     }
  }
   
-//  renderer.renderRect(_r);
+//  core.renderRect(_r);
 
 }
 
-void List::endEdit(Renderer &renderer) {
+void List::endEdit(Core &core) {
 
   if (!_dict) {
-    for_each(_elements.begin(), _elements.end(), [&renderer](auto& e) {
+    for_each(_elements.begin(), _elements.end(), [&core](auto& e) {
       ListElem *le = dynamic_cast<ListElem *>(e.get());
       if (!le) {
         cerr << typeid(e.get()).name() << " not a list element" << endl;
       }
-      le->setEdit(renderer, false);
+      le->setEdit(core, false);
     });
   }
 
 }
 
-void List::startEdit(Renderer &renderer) {
+void List::startEdit(Core &core) {
 
   if (!_dict) {
-    for_each(_elements.begin(), _elements.end(), [&renderer](auto& e) {
+    for_each(_elements.begin(), _elements.end(), [&core](auto& e) {
       ListElem *le = dynamic_cast<ListElem *>(e.get());
       if (!le) {
         cerr << typeid(e.get()).name() << " not a list element" << endl;
       }
-      le->setEdit(renderer, true);
+      le->setEdit(core, true);
     });
   }
   
@@ -274,7 +274,7 @@ void List::registerHUDModes(HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
-    Renderer::registerRootHUDMode(mode);
+    Core::registerRootHUDMode(mode);
     mode->add(new Shortcut(L"E", L"dit"));
     mode->add(new Shortcut(L"N", L"ew"));
     mode->add(new Shortcut(L"T", L"ransform"));
@@ -283,7 +283,7 @@ void List::registerHUDModes(HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
-    Renderer::registerRootHUDMode(mode);
+    Core::registerRootHUDMode(mode);
     mode->add(new Shortcut(L"N", L"ew"));
     mode->add(new Shortcut(L"T", L"ransform"));
     hud->registerMode("rootdict", mode);
@@ -291,22 +291,22 @@ void List::registerHUDModes(HUD *hud) {
 
   {
     auto mode = new HUDMode(false);
-    Renderer::registerGlobalHUDMode(mode);
+    Core::registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
     mode->add(new Shortcut(L"E", L"dit"));
     mode->add(new Shortcut(L"N", L"ew"));
-    Renderer::registerTextHUDMode(mode);
+    Core::registerTextHUDMode(mode);
     hud->registerMode("list", mode);
   }
   
   {
     auto mode = new HUDMode(false);
-    Renderer::registerGlobalHUDMode(mode);
+    Core::registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
     mode->add(new Shortcut(L"N", L"ew"));
-    Renderer::registerTextHUDMode(mode);
+    Core::registerTextHUDMode(mode);
     hud->registerMode("dict", mode);
   }
 
@@ -368,9 +368,9 @@ void List::initHUD(HUD *hud) {
 
 }
 
-void List::setMode(Renderer &renderer, HUD *hud) {
+void List::setMode(Core &core, HUD *hud) {
 
-  if (renderer.textTooSmall()) {
+  if (core.textTooSmall()) {
     hud->setMode(0);
     return;
   }
@@ -392,7 +392,7 @@ void List::setMode(Renderer &renderer, HUD *hud) {
   
 }
 
-void List::mergeIntoUs(Renderer &renderer, List *other) {
+void List::mergeIntoUs(Core &core, List *other) {
 
   if (other->isDict() != isDict()) {
     cerr << "can't merge. We are not the same." << endl;
@@ -402,21 +402,21 @@ void List::mergeIntoUs(Renderer &renderer, List *other) {
   // move the elements onto us.
   for (auto& e: other->_elements) {
     auto elem = std::move(e.get());
-    renderer.initElement(this, elem);
-    renderer.exec(this, new NewElement(this, elem));
+    core.initElement(this, elem);
+    core.exec(this, new NewElement(this, elem));
   }
   
 }
 
-void List::processKey(Renderer &renderer, SDL_Keycode code) {
+void List::processKey(Core &core, SDL_Keycode code) {
 
   if (isParentRoot()) {  
-    if (renderer.processRootKey(this, code)) {
+    if (core.processRootKey(this, code)) {
       return;
     }
   }
   else {
-    if (renderer.processGlobalKey(code)) {
+    if (core.processGlobalKey(code)) {
       return;
     }
   }
@@ -425,28 +425,28 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
       if (_editing) {
         break;
       }
-      renderer.copy(this);
+      core.copy(this);
       break;
 
     case SDLK_P:
       {
-        auto elem = renderer.getClipboard();
+        auto elem = core.getClipboard();
         if (elem) {
           auto list = dynamic_cast<List *>(elem);
           if (list) {
             if (list->isDict() == isDict()) {
-              mergeIntoUs(renderer, list);
+              mergeIntoUs(core, list);
             }
             else {
-              add(renderer, L"list", list, true);
+              add(core, L"list", list, true);
             }
           }
           else {
-            add(renderer, L"elem", elem, false);
+            add(core, L"elem", elem, false);
           }
         }
         else {
-          renderer.setError("Invalid Dict");
+          core.setError("Invalid Dict");
         }
       }
       break;
@@ -459,7 +459,7 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
         break;
       }
       _editing = true;
-      startEdit(renderer);
+      startEdit(core);
       root()->layout();
       break;
       
@@ -477,14 +477,14 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
       }
       else {
         _editing = false;
-        endEdit(renderer);
+        endEdit(core);
       }
       root()->layout();
       break;
 
     case SDLK_D:
       if (_adding) {
-        add(renderer, L"dict", new List(true), true);
+        add(core, L"dict", new List(true), true);
         break;
       }
       if (_moving) {
@@ -495,7 +495,7 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
         break;
       }
       if (!isParentRoot()) {
-        renderer.processDeleteKey(getParent());
+        core.processDeleteKey(getParent());
       }
       break;
 
@@ -503,14 +503,14 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
       if (!_adding) {
         return;
       }
-      add(renderer, L"list", new List(false), true);
+      add(core, L"list", new List(false), true);
       break;
 
     case SDLK_S:
       if (!_adding) {
         return;
       }
-      add(renderer, L"string", new String(L"value"), false);
+      add(core, L"string", new String(L"value"), false);
       break;
 
     case SDLK_N:
@@ -519,25 +519,25 @@ void List::processKey(Renderer &renderer, SDL_Keycode code) {
         _adding = true;
         return;
       }
-      add(renderer, L"long", new Long(0), false);
+      add(core, L"long", new Long(0), false);
       break;
 
     case SDLK_B:
       if (!_adding) {
         return;
       }
-      add(renderer, L"bool", new Bool(false), false);
+      add(core, L"bool", new Bool(false), false);
       break;
       
     case SDLK_T:
-      transformCode(renderer);
+      transformCode(core);
       break;
     
   }
   
 }
 
-void List::add(Renderer &renderer, const std::wstring &name, Element *element, bool container) {
+void List::add(Core &core, const std::wstring &name, Element *element, bool container) {
 
   _adding = false;
   
@@ -545,16 +545,16 @@ void List::add(Renderer &renderer, const std::wstring &name, Element *element, b
   if (_dict) {
     // wrap in a property
     e = new Property(name, element, container); 
-    renderer.initElement(this, e);
+    core.initElement(this, e);
 
   }
   else {
     // wrap in a list element.
     e = new ListElem(element);
-    renderer.initElement(this, e);
+    core.initElement(this, e);
   }
 
-  renderer.exec(this, new NewElement(this, e));
+  core.exec(this, new NewElement(this, e));
   
 }
 
@@ -609,31 +609,31 @@ rfl::Generic List::getGenericVector() {
   
 }
 
-void List::drawBorder(Renderer &renderer, const Point &origin, const Size &size, bool prop) {
+void List::drawBorder(Core &core, const Point &origin, const Size &size, bool prop) {
 
   if (_dict) {
     // top left corner
-    renderer.resources.topleft.render(renderer, origin);
+    core.resources.topleft.render(core, origin);
        
-    renderer.renderFilledRect(Rect(origin + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::dictE);
-    renderer.renderFilledRect(Rect(origin + Size(0, Sizes::thickness), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 20 : 0) - Sizes::thickness)), Colours::dictE);
+    core.renderFilledRect(Rect(origin + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::dictE);
+    core.renderFilledRect(Rect(origin + Size(0, Sizes::thickness), Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 20 : 0) - Sizes::thickness)), Colours::dictE);
   
     // bottom left corner
-    renderer.resources.bottomleft.render(renderer, origin + Size(0, size.h - Sizes::thickness));
+    core.resources.bottomleft.render(core, origin + Size(0, size.h - Sizes::thickness));
     
-    renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength - Sizes::thickness)), Colours::dictE);
-    renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness) + Size(Sizes::thickness, 0), Size(Sizes::bottomlinelength - Sizes::thickness, Sizes::thickness)), Colours::dictE);
+    core.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength - Sizes::thickness)), Colours::dictE);
+    core.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness) + Size(Sizes::thickness, 0), Size(Sizes::bottomlinelength - Sizes::thickness, Sizes::thickness)), Colours::dictE);
   }
   else {
-    renderer.renderFilledRect(Rect(origin + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::listE);
-    renderer.renderFilledRect(Rect(origin, Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 40 : 0))), Colours::listE);
-    renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength)), Colours::listE);
-    renderer.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::listE);
+    core.renderFilledRect(Rect(origin + Size(Sizes::thickness, 0), Size(Sizes::toplinelength, Sizes::thickness)), Colours::listE);
+    core.renderFilledRect(Rect(origin, Size(Sizes::thickness, Sizes::leftlinelength + (prop ? 40 : 0))), Colours::listE);
+    core.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::leftlinelength), Size(Sizes::thickness, Sizes::leftlinelength)), Colours::listE);
+    core.renderFilledRect(Rect(origin + Size(0, size.h - Sizes::thickness), Size(Sizes::bottomlinelength, Sizes::thickness)), Colours::listE);
   }
 
 }
 
-void List::transformCode(Renderer &renderer) {
+void List::transformCode(Core &core) {
 
   auto code = Code::build(getGeneric());
   if (!code) {
@@ -641,8 +641,8 @@ void List::transformCode(Renderer &renderer) {
     return;
   }
   
-  renderer.removeRoot(root());
-  renderer.addRoot(code);
+  core.removeRoot(root());
+  core.addRoot(code);
   
 }
 

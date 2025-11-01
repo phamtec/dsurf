@@ -16,7 +16,7 @@
 
 #include "module.hpp"
 
-class Renderer;
+class Core;
 class HUD;
 
 class Project: public Module {
@@ -26,7 +26,7 @@ public:
   virtual bool isA(const rfl::Generic &obj);
   virtual Element *load(const rfl::Generic &obj, const std::string &filename);
   
-  static void registerHUDModes(Renderer &renderer, HUD *hud);
+  static void registerHUDModes(Core &core, HUD *hud);
   
 private:
 

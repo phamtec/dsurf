@@ -14,7 +14,7 @@
 #include "builder.hpp"
 #include "sizes.hpp"
 #include "unicode.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "generic.hpp"
 #include "list.hpp"
 
@@ -52,9 +52,9 @@ ProjectCode::ProjectCode(const string &name, rfl::Generic transform, optional<ve
  
 }
 
-void ProjectCode::build(Renderer &renderer) {
+void ProjectCode::build(Core &core) {
 
-  _name.build(renderer);
+  _name.build(core);
 
 }
 
@@ -108,23 +108,23 @@ void ProjectCode::layout() {
   
 }
 
-void ProjectCode::render(Renderer &renderer, const Point &origin) {
+void ProjectCode::render(Core &core, const Point &origin) {
 
 //  cout << origin << endl;
 
   auto i = _layout.begin();
-  _name.render(renderer, origin + (*i).origin);
+  _name.render(core, origin + (*i).origin);
   i++;
-  renderer.renderFilledRect(*i + origin, Colours::straw);
-  _transform->render(renderer, origin + (*i).origin + Size(Sizes::text_padding, Sizes::text_padding));
+  core.renderFilledRect(*i + origin, Colours::straw);
+  _transform->render(core, origin + (*i).origin + Size(Sizes::text_padding, Sizes::text_padding));
   i++;
   
   if (_running) {
-    renderer.renderFilledRect(*i + origin, Colours::lightPlum);
-    _input->render(renderer, origin + (*i).origin + Sizes::text_padding);
+    core.renderFilledRect(*i + origin, Colours::lightPlum);
+    _input->render(core, origin + (*i).origin + Sizes::text_padding);
     i++;
-    renderer.renderFilledRect(*i + origin, Colours::teaGreen);
-    _output->render(renderer, origin + (*i).origin + Sizes::text_padding);
+    core.renderFilledRect(*i + origin, Colours::teaGreen);
+    _output->render(core, origin + (*i).origin + Sizes::text_padding);
   }
 }
 
@@ -190,33 +190,33 @@ void ProjectCode::initHUD(HUD *hud) {
   
 }
 
-void ProjectCode::setMode(Renderer &renderer, HUD *hud) {
+void ProjectCode::setMode(Core &core, HUD *hud) {
 
   // we can run if we have an input context.
-  hud->setFlag(renderer, canRun, !_running);
+  hud->setFlag(core, canRun, !_running);
   
   hud->setMode(_hudobj);
   
 }
 
-void ProjectCode::processKey(Renderer &renderer, SDL_Keycode code) {
+void ProjectCode::processKey(Core &core, SDL_Keycode code) {
 
-  if (renderer.processGlobalKey(code)) {
+  if (core.processGlobalKey(code)) {
     return;
   }
 
   switch (code) {      
     case SDLK_E:
       _running = true;
-      run(renderer);
-      renderer.layout(root());
+      run(core);
+      core.layout(root());
       break;
 
   }
 
 }
 
-void ProjectCode::run(Renderer &renderer) {
+void ProjectCode::run(Core &core) {
 
   auto in = Writeable::cast(_input.get())->getGeneric();
   auto t = Writeable::cast(_transform.get())->getGeneric();
@@ -230,7 +230,7 @@ void ProjectCode::run(Renderer &renderer) {
   auto out = _flo->eval(in, *to);
   
   // clear out the output
-  _output->destroy(renderer);
+  _output->destroy(core);
   
   // rebuild it.
   if (out) {
@@ -240,29 +240,29 @@ void ProjectCode::run(Renderer &renderer) {
     _output = unique_ptr<Element>(new List(false));
     _output->setParent(this);
   }
-  renderer.build(_output.get());
-  renderer.layout(this);
+  core.build(_output.get());
+  core.layout(this);
   
 }
 
-void ProjectCode::libChanged(Renderer &renderer, const std::vector<rfl::Generic> &library) {
+void ProjectCode::libChanged(Core &core, const std::vector<rfl::Generic> &library) {
 
   rfl::Object<rfl::Generic> lib;
   lib["library"] = library;
   _flo.reset(new Flo(lib));
-  run(renderer);
+  run(core);
 }
 
-void ProjectCode::changed(Renderer &renderer, Element *obj) {
+void ProjectCode::changed(Core &core, Element *obj) {
 
   if (!_running) {
     return;
   }
   
   // test the transform.
-  if (!_transform->visit([this, &renderer, obj](auto e) {
+  if (!_transform->visit([this, &core, obj](auto e) {
     if (e == obj) {
-      run(renderer);
+      run(core);
       return false;
     }
     return true;
@@ -271,9 +271,9 @@ void ProjectCode::changed(Renderer &renderer, Element *obj) {
   }
 
   // test the input.
-  _input->visit([this, &renderer, obj](auto e) {
+  _input->visit([this, &core, obj](auto e) {
     if (e == obj) {
-      run(renderer);
+      run(core);
       return false;
     }
     return true;

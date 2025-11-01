@@ -32,33 +32,33 @@ class CodeRoot: public Element, public Writeable, public Commandable, public Loc
 public:
   CodeRoot(const std::string &filename, const rfl::Generic &obj);
 
-  void setScenario(Renderer &renderer, const rfl::Generic &scenario, int index);
-  void run(Renderer &renderer);
+  void setScenario(Core &core, const rfl::Generic &scenario, int index);
+  void run(Core &core);
 
   // Element
   virtual void setParent(Element *parent) override { _parent = parent; }
   virtual Element *getParent() override { return _parent; }
-  virtual void build(Renderer &renderer) override;
+  virtual void build(Core &core) override;
   virtual void layout() override;
-  virtual void render(Renderer &renderer, const Point &origin) override;
+  virtual void render(Core &core, const Point &origin) override;
   virtual Size size() override { return _size; }
   virtual bool visit(std::function<bool (Element *)> f) override;
   virtual RectList calcLayout() override;
   virtual Point localOrigin(Element *elem) override;
   virtual Element *hitTest(const Point &origin, const Point &p) override;
-  virtual void changed(Renderer &renderer, Element *obj) override;
+  virtual void changed(Core &core, Element *obj) override;
   virtual bool isRoot() override { return true; }
 
   // Writeable
   virtual std::string getName() override;
   virtual rfl::Generic getGeneric() override;
-  virtual void setDirty(Renderer &renderer, bool state) override;
+  virtual void setDirty(Core &core, bool state) override;
   virtual std::optional<std::string> getFilename() override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
-  virtual void setMode(Renderer &renderer, HUD *hud) override;
-  virtual void processKey(Renderer &renderer, SDL_Keycode code) override;
+  virtual void setMode(Core &core, HUD *hud) override;
+  virtual void processKey(Core &core, SDL_Keycode code) override;
 
   // Locatable
   virtual Point getLocation() override { return _location; }
@@ -83,7 +83,7 @@ protected:
   int _hudobj;
   std::unique_ptr<Flo> _flo;
   
-  void rebuildScenarios(Renderer &renderer);
+  void rebuildScenarios(Core &core);
 
 };
 

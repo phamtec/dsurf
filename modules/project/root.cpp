@@ -11,7 +11,7 @@
 
 #include "root.hpp"
 
-#include "renderer.hpp"
+#include "core.hpp"
 #include "unicode.hpp"
 #include "sizes.hpp"
 
@@ -38,10 +38,10 @@ optional<string> ProjectRoot::getFilename() {
   
 }
 
-void ProjectRoot::setDirty(Renderer &renderer, bool state) {
+void ProjectRoot::setDirty(Core &core, bool state) {
 
   _filename.set(_filename.str(), state ? Colours::red : Colours::black);
-  _filename.build(renderer);
+  _filename.build(core);
 
 }
 
@@ -84,28 +84,28 @@ void ProjectRoot::layout() {
   
 }
 
-void ProjectRoot::build(Renderer &renderer) {
+void ProjectRoot::build(Core &core) {
 
-  _filename.build(renderer);
-  _name.build(renderer);
+  _filename.build(core);
+  _name.build(core);
 
 }
 
-void ProjectRoot::render(Renderer &renderer, const Point &origin) {
+void ProjectRoot::render(Core &core, const Point &origin) {
 
-//  renderer.renderLayout(origin, _layout);
+//  core.renderLayout(origin, _layout);
 
   auto i = _layout.begin();
-  _filename.render(renderer, origin + (*i).origin);
+  _filename.render(core, origin + (*i).origin);
   i++;
   
-  renderer.renderFilledRect(Rect(origin + (*i).origin, _size - Size(0, _filename.size().h)), Colours::racingGreen);
+  core.renderFilledRect(Rect(origin + (*i).origin, _size - Size(0, _filename.size().h)), Colours::racingGreen);
 
-  _name.render(renderer, origin + (*i).origin);
+  _name.render(core, origin + (*i).origin);
   i++;
 
-  for_each(_objs.begin(), _objs.end(), [&renderer, origin, &i](auto& e) {
-    e->render(renderer, origin + i->origin);
+  for_each(_objs.begin(), _objs.end(), [&core, origin, &i](auto& e) {
+    e->render(core, origin + i->origin);
     i++;
   });
 
@@ -163,21 +163,21 @@ void ProjectRoot::initHUD(HUD *hud) {
 
 }
 
-void ProjectRoot::setMode(Renderer &renderer, HUD *hud) {
+void ProjectRoot::setMode(Core &core, HUD *hud) {
 
   hud->setMode(_hudroot);
   
 }
 
-void ProjectRoot::processKey(Renderer &renderer, SDL_Keycode code) {
+void ProjectRoot::processKey(Core &core, SDL_Keycode code) {
 
-  if (renderer.processRootKey(this, code)) {
+  if (core.processRootKey(this, code)) {
     return;
   }
 
   switch (code) {      
     case SDLK_E:
-      renderer.addFile(Unicode::convert(_filename.str()), true);
+      core.addFile(Unicode::convert(_filename.str()), true);
       break;
   }
 

@@ -21,7 +21,7 @@
 
 #include <vector>
 
-class Renderer;
+class Core;
 
 class HUDMode {
 
@@ -31,13 +31,13 @@ public:
   void add(Shortcut *shortcut);
     // add a shortcut to the mode.
     
-  void build(Renderer &renderer);
-  void render(Renderer &renderer, const Point &origin, const Point &loc);
+  void build(Core &core);
+  void render(Core &core, const Point &origin, const Point &loc);
   
   Point location(const Point &origin, const Point &loc);
   Size size();
 
-  void setFlag(Renderer &renderer, HUDFlags flag, bool state);
+  void setFlag(Core &core, HUDFlags flag, bool state);
   
 private:
 

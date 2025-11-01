@@ -17,7 +17,7 @@
 #include "writeable.hpp"
 #include "list.hpp"
 #include "objable.hpp"
-#include "renderer.hpp"
+#include "core.hpp"
 #include "locatable.hpp"
 
 #define BOOST_AUTO_TEST_MAIN
@@ -30,8 +30,8 @@ using namespace std;
 class X: public Element {
 public:
   virtual void layout() {}
-  virtual void build(Renderer &renderer) {}
-  virtual void render(Renderer &renderer, const Point &origin) {}
+  virtual void build(Core &core) {}
+  virtual void render(Core &core, const Point &origin) {}
   virtual Size size() { return Size(); }
 };
 
