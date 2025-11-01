@@ -169,6 +169,12 @@ bool Core::init(const string &path) {
     _hudadding = _hud->registerMode("adding", mode);
   }
   
+  // register all of the key handlers.
+  registerGlobalKeyHandlers();
+  registerRootKeyHandlers();
+  registerTextKeyHandlers();
+  registerCoreKeyHandlers();
+  
   // initialisation for types after everything has been created.
   initTypes();
   
@@ -554,6 +560,13 @@ void Core::registerGlobalHUDMode(HUDMode *mode) {
   
 }
 
+void Core::registerGlobalKeyHandlers() {
+
+  _globalHandlers[SDLK_U] =  [&](Core &core) { undo(0); };
+  _globalHandlers[SDLK_R] =  [&](Core &core) { redo(0); };
+
+}
+
 void Core::registerRootHUDMode(HUDMode *mode) {
 
   registerGlobalHUDMode(mode);
@@ -566,10 +579,78 @@ void Core::registerRootHUDMode(HUDMode *mode) {
   
 }
 
+void Core::registerRootKeyHandlers() {
+
+  // all the handlers related to "root" objects.
+  _rootHandlers[SDLK_M] =  [&](Core &core, Element *element) { 
+    core._moving = element->root();
+    core._movoffs = _mouse;
+  };
+  _rootHandlers[SDLK_K] =  [&](Core &core, Element *element) { 
+    core.removeRoot(element->root());
+  };
+  _rootHandlers[SDLK_W] =  [&](Core &core, Element *element) { write(element); };
+  _rootHandlers[SDLK_C] =  [&](Core &core, Element *element) { copy(element); };
+  _rootHandlers[SDLK_P] =  [&](Core &core, Element *element) { paste(); };
+
+  // and overide the root undor and redo to take an element.
+  _rootHandlers[SDLK_U] =  [&](Core &core, Element *element) { undo(element); };
+  _rootHandlers[SDLK_R] =  [&](Core &core, Element *element) { redo(element); };
+
+}
+
 void Core::registerTextHUDMode(HUDMode *mode) {
 
   mode->add(new Shortcut(L"D", L"elete"));
   
+}
+
+void Core::registerTextKeyHandlers() {
+
+  _textHandlers[SDLK_D] =  [&](Core &core, Element *element) { 
+    core.processDeleteKey(element);
+  };
+
+  // and overide the root undor and redo to take an element.
+  _textHandlers[SDLK_U] =  [&](Core &core, Element *element) { undo(element); };
+  _textHandlers[SDLK_R] =  [&](Core &core, Element *element) { redo(element); };
+  
+}
+
+void Core::registerCoreKeyHandlers() {
+
+  // all the core handlers. pasting, movind and dropping, new items on the desktop.
+  _coreHandlers[SDLK_P] =  [&](Core &core) { paste(); };
+  _coreHandlers[SDLK_ESCAPE] =  [&](Core &core) { 
+    if (core._moving) {
+      core._moving = nullptr;
+      return;
+    }
+    core._adding = false;
+  };
+  _coreHandlers[SDLK_N] =  [&](Core &core) { 
+    core._adding = true;
+  };
+  _coreHandlers[SDLK_D] =  [&](Core &core) { 
+    if (core._moving) {
+        // it's dropped.
+        auto loc = Locatable::cast(_moving)->getLocation();
+        Locatable::cast(_moving)->setLocation(((_mouse - _movoffs) / _scale) + loc);
+        core._moving = nullptr;
+        return;
+    }
+    if (core._adding) {
+      core.addRoot(new Root("<new>", new List(true)));
+      core._adding = false;
+    }
+  };
+  _coreHandlers[SDLK_L] =  [&](Core &core) { 
+    if (core._adding) {
+      core.addRoot(new Root("<new>", new List(false)));
+      core._adding = false;
+    }
+  };
+
 }
 
 Element *Core::getClipboard() {
@@ -632,64 +713,49 @@ void Core::redo(Element *element) {
   }
 }
 
+bool Core::processKeyHandler(map<SDL_Keycode, globalMsgHandler> &handlers, SDL_Keycode code) {
+
+  auto handler = handlers.find(code);
+  if (handler == handlers.end()) {
+//    cout << "ignoring key" << code << endl;
+    return false;
+  }
+  handler->second(*this);
+  return true;
+
+}
+
+bool Core::processKeyHandler(std::map<SDL_Keycode, elementMsgHandler> &handlers, Element *element, SDL_Keycode code) {
+
+  auto handler = handlers.find(code);
+  if (handler == handlers.end()) {
+//    cout << "ignoring key" << code << endl;
+    return false;
+  }
+  handler->second(*this, element);
+  return true;
+}
+
 bool Core::processGlobalKey(SDL_Keycode code) {
 
+  // explictly test for zoom.
   if (code >= SDLK_1 && code <= SDLK_9) {
     zoom((SDLK_9 - code) + 1);
     return true;
   }
   
-  switch (code) {
-    case SDLK_U:
-      undo(0);
-      return true;
+  // otherwise try a handler.
+  return processKeyHandler(_globalHandlers, code);
 
-    case SDLK_R:
-      redo(0);
-      return true;
-  }
-  
-  return false;
 }
 
 bool Core::processRootKey(Element *element, SDL_Keycode code) {
 
-  if (processGlobalKey(code)) {
+  if (processKeyHandler(_rootHandlers, element, code)) {
     return true;
   }
-  
-  switch (code) {
-    case SDLK_P:
-      paste();
-      return true;
-      
-    case SDLK_C:
-      copy(element);
-      return true;
 
-    case SDLK_U:
-      undo(element);
-      return true;
-
-    case SDLK_R:
-      redo(element);
-      return true;
-
-    case SDLK_W:
-      write(element);
-      return true;
-
-    case SDLK_M:
-      _moving = element->root();
-      _movoffs = _mouse;
-      return true;
-
-    case SDLK_K:
-      removeRoot(element->root());
-      return true;
-  }
-  
-  return false;
+  return processGlobalKey(code);
   
 }
 
@@ -750,25 +816,16 @@ Point Core::addRootOrigin(Element *element, const Point &origin) {
 
 void Core::processTextKey(Element *element, const Point &origin, const Size &size, SDL_Keycode code) {
 
+  if (processKeyHandler(_textHandlers, element, code)) {
+    return;
+  }
+
   if (processGlobalKey(code)) {
     return;
   }
   
+  // find where the element is/
   Point o = addRootOrigin(element, origin);
-
-  switch (code) {
-    case SDLK_D:
-      processDeleteKey(element);
-      return;
-      
-    case SDLK_U:
-      undo(element);
-      return;
-
-    case SDLK_R:
-      redo(element);
-      return;
-  }
 
   // pass to the editor.
   _editor->processTextKey(*this, Editable::cast(element), o, size, code, _hud.get());
@@ -867,55 +924,18 @@ bool Core::processEvents() {
                
       case SDL_EVENT_KEY_DOWN:
         _error.reset();
-        if (_moving) {
-          if (event.key.key == SDLK_ESCAPE) {
-            _moving = nullptr;
-            break;
-          }
-          if (event.key.key == SDLK_D) {
-            // it's dropped.
-            auto loc = Locatable::cast(_moving)->getLocation();
-            Locatable::cast(_moving)->setLocation(((_mouse - _movoffs) / _scale) + loc);
-            _moving = nullptr;
-            break;
-          }
-        }
-        else if (!_editor->capture()) {
+        if (!_editor->capture()) {
           auto hit = getHit();
           if (hit) {
+            // try the actual object.
+            // it is up to an object to try the global handlers first if they 
+            // aren't in some special mode.
             get<0>(*hit)->processKey(*this, event.key.key);
           }
           else {
+            // no hit, try a core key otherwise a global key.
             if (!processGlobalKey(event.key.key)) {
-              switch (event.key.key) {
-                case SDLK_P:
-                  paste();
-                  break;
-                  
-                case SDLK_ESCAPE:
-                  _adding = false;
-                  break;
-                  
-                case SDLK_N:
-                  _adding = true;
-                  break;
-                  
-                case SDLK_D:
-                  if (!_adding) {
-                    break;
-                  }
-                  addRoot(new Root("<new>", new List(true)));
-                  _adding = false;
-                  break;
-            
-                case SDLK_L:
-                  if (!_adding) {
-                    break;
-                  }
-                  addRoot(new Root("<new>", new List(false)));
-                  _adding = false;
-                  break;
-              }
+              processKeyHandler(_coreHandlers, event.key.key);
             }
           }
           setHUD();

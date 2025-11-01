@@ -29,6 +29,7 @@
 #include "element.hpp"
 #include "writeable.hpp"
 #include "commandable.hpp"
+#include "handlers.hpp"
 
 #include <memory>
 #include <vector>
@@ -38,7 +39,7 @@ class List: public Element,  public Writeable, public Commandable  {
   typedef Element super;
 
 public:
-  List(bool dict): _dict(dict), _parent(0), _editing(false), _moving(0), _moveover(0), _adding(false) {}
+  List(bool dict);
   
   void setMoving(Element *elem);
     // this object is currently moving.
@@ -93,6 +94,7 @@ private:
   Element *_moving;
   Element *_moveover;
   Point _moveoffs;
+  std::map<SDL_Keycode, listMsgHandler> _listHandlers;
   
   void drawBorder(Core &core, const Point &origin, const Size &size, bool prop);
   rfl::Generic getGenericVector();
@@ -105,6 +107,7 @@ private:
   bool isParentRoot();
   void mergeIntoUs(Core &core, List *other);
   void transformCode(Core &core);
+  void registerListKeyHandlers();
     
 };
 

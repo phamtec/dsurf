@@ -36,6 +36,12 @@
 using namespace std;
 using flo::Generic;
 
+List::List(bool dict): _dict(dict), _parent(0), _editing(false), _moving(0), _moveover(0), _adding(false) {
+
+  registerListKeyHandlers();
+  
+}
+
 bool List::isParentRoot() {
   
   return dynamic_cast<Root *>(_parent) != nullptr;
@@ -347,6 +353,113 @@ void List::registerHUDModes(HUD *hud) {
 
 }
 
+void List::registerListKeyHandlers() {
+
+  _listHandlers[SDLK_E] =  [&](Core &core, List &list) { 
+    if (list._dict) {
+      return;
+    }
+    if (list._editing) {
+      return;
+    }
+    list._editing = true;
+    list.startEdit(core);
+    list.root()->layout();
+  };
+  _listHandlers[SDLK_N] =  [&](Core &core, List &list) {
+    if (!list._adding) {
+      // also "New"
+      _adding = true;
+      return;
+    }
+    list.add(core, L"long", new Long(0), false);
+  };
+  _listHandlers[SDLK_T] =  [&](Core &core, List &list) {
+    transformCode(core);
+  };
+  
+  _listHandlers[SDLK_C] =  [&](Core &core, List &list) { 
+    if (list._editing) {
+      return;
+    }
+    core.copy(this);
+  };
+  _listHandlers[SDLK_P] =  [&](Core &core, List &list) { 
+    auto elem = core.getClipboard();
+    if (elem) {
+      auto l = dynamic_cast<List *>(elem);
+      if (l) {
+        if (l->isDict() == isDict()) {
+          list.mergeIntoUs(core, l);
+        }
+        else {
+          list.add(core, L"list", l, true);
+        }
+      }
+      else {
+        list.add(core, L"elem", elem, false);
+      }
+    }
+    else {
+      core.setError("Invalid Dict");
+    }
+  };
+  
+  _listHandlers[SDLK_ESCAPE] =  [&](Core &core, List &list) { 
+    if (list._adding) {
+      list._adding = false;
+      return;
+    }
+    if (!list._editing) {
+      return;
+    }
+    if (list._moving) {
+      list._moving = nullptr;
+      list._moveover = nullptr;
+    }
+    else {
+      list._editing = false;
+      list.endEdit(core);
+    }
+    list.root()->layout();
+  };
+  
+  _listHandlers[SDLK_D] =  [&](Core &core, List &list) {
+    if (list._adding) {
+      list.add(core, L"dict", new List(true), true);
+      return;
+    }
+    if (list._moving) {
+      list.reorder();
+      list._moving = nullptr;
+      list._moveover = nullptr;
+      list.root()->layout();
+      return;
+    }
+    if (!list.isParentRoot()) {
+      core.processDeleteKey(getParent());
+    }
+  };
+  _listHandlers[SDLK_L] =  [&](Core &core, List &list) {
+    if (!list._adding) {
+      return;
+    }
+    list.add(core, L"list", new List(false), true);
+  };
+  _listHandlers[SDLK_S] =  [&](Core &core, List &list) {
+    if (!list._adding) {
+      return;
+    }
+    list.add(core, L"string", new String(L"value"), false);
+  };
+  _listHandlers[SDLK_B] =  [&](Core &core, List &list) {
+    if (!list._adding) {
+      return;
+    }
+    list.add(core, L"bool", new Bool(false), false);
+  };
+}
+
 void List::initHUD(HUD *hud) {
 
   _hudrootlist = hud->findMode(_dict ? "rootdict" : "rootlist");
@@ -420,121 +533,13 @@ void List::processKey(Core &core, SDL_Keycode code) {
       return;
     }
   }
-  switch (code) {      
-    case SDLK_C:
-      if (_editing) {
-        break;
-      }
-      core.copy(this);
-      break;
-
-    case SDLK_P:
-      {
-        auto elem = core.getClipboard();
-        if (elem) {
-          auto list = dynamic_cast<List *>(elem);
-          if (list) {
-            if (list->isDict() == isDict()) {
-              mergeIntoUs(core, list);
-            }
-            else {
-              add(core, L"list", list, true);
-            }
-          }
-          else {
-            add(core, L"elem", elem, false);
-          }
-        }
-        else {
-          core.setError("Invalid Dict");
-        }
-      }
-      break;
-
-    case SDLK_E:
-      if (_dict) {
-        break;
-      }
-      if (_editing) {
-        break;
-      }
-      _editing = true;
-      startEdit(core);
-      root()->layout();
-      break;
-      
-    case SDLK_ESCAPE:
-      if (_adding) {
-        _adding = false;
-        break;
-      }
-      if (!_editing) {
-        break;
-      }
-      if (_moving) {
-        _moving = nullptr;
-        _moveover = nullptr;
-      }
-      else {
-        _editing = false;
-        endEdit(core);
-      }
-      root()->layout();
-      break;
-
-    case SDLK_D:
-      if (_adding) {
-        add(core, L"dict", new List(true), true);
-        break;
-      }
-      if (_moving) {
-        reorder();
-        _moving = nullptr;
-        _moveover = nullptr;
-        root()->layout();
-        break;
-      }
-      if (!isParentRoot()) {
-        core.processDeleteKey(getParent());
-      }
-      break;
-
-    case SDLK_L:
-      if (!_adding) {
-        return;
-      }
-      add(core, L"list", new List(false), true);
-      break;
-
-    case SDLK_S:
-      if (!_adding) {
-        return;
-      }
-      add(core, L"string", new String(L"value"), false);
-      break;
-
-    case SDLK_N:
-      if (!_adding) {
-        // also "New"
-        _adding = true;
-        return;
-      }
-      add(core, L"long", new Long(0), false);
-      break;
-
-    case SDLK_B:
-      if (!_adding) {
-        return;
-      }
-      add(core, L"bool", new Bool(false), false);
-      break;
-      
-    case SDLK_T:
-      transformCode(core);
-      break;
-    
+  auto handler = _listHandlers.find(code);
+  if (handler == _listHandlers.end()) {
+//    cout << "ignoring key" << code << endl;
+    return;
   }
-  
+  handler->second(core, *this);
+
 }
 
 void List::add(Core &core, const std::wstring &name, Element *element, bool container) {

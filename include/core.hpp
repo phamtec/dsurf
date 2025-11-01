@@ -25,6 +25,7 @@
 #include "hud.hpp"
 #include "changes.hpp"
 #include "remotezmq.hpp"
+#include "handlers.hpp"
 
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_events.h>
@@ -204,6 +205,10 @@ private:
   bool _adding;
   int _hudadding;
   std::unique_ptr<RemoteZMQ> _remote;
+  std::map<SDL_Keycode, globalMsgHandler> _globalHandlers;
+  std::map<SDL_Keycode, globalMsgHandler> _coreHandlers;
+  std::map<SDL_Keycode, elementMsgHandler> _rootHandlers;
+  std::map<SDL_Keycode, elementMsgHandler> _textHandlers;
   
   bool processEvents();
   bool isDoubleClick();
@@ -222,7 +227,6 @@ private:
     // bool is whether it's the root, 
     // and the root text object at the end.
   std::optional<getHitReturnType> getHit();
-
 
   void debugOffs();
   void debugScale();
@@ -250,6 +254,12 @@ private:
   void handleTestCount(const TestMsg &msg);
   Element *findRoot(const std::string &name);
   Element *getRootPath(Element *elem, const std::string &name, bool silent);
+  void registerGlobalKeyHandlers();
+  void registerRootKeyHandlers();
+  void registerTextKeyHandlers();
+  void registerCoreKeyHandlers();
+  bool processKeyHandler(std::map<SDL_Keycode, globalMsgHandler> &handlers, SDL_Keycode code);
+  bool processKeyHandler(std::map<SDL_Keycode, elementMsgHandler> &handlers, Element *element, SDL_Keycode code);
 
   // handling remove ZMQ requests to encrypted servers.
   std::unique_ptr<zmq::socket_t> _remotereq;
