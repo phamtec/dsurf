@@ -994,7 +994,6 @@ void Core::setTarget(SDL_Texture *texture) {
 
 }
 
-
 SDL_Texture *Core::createTexture(int width, int height) {
 
   SDL_Texture *texture = SDL_CreateTexture(_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
@@ -1004,8 +1003,7 @@ SDL_Texture *Core::createTexture(int width, int height) {
   }
   return texture;
 
-};
-
+}
 
 SDL_Texture *Core::createTexture(SDL_Surface *surface) {
   

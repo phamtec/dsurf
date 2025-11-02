@@ -13,6 +13,7 @@
 
 #include <filesystem>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -39,11 +40,10 @@ string Filenames::addPath(const string &filename) {
   fs::path p = filename;
   auto par = p.parent_path();
   if (par.empty()) {
-#ifdef __APPLE__
-    return "~/Documents/" + filename;
-#else
-    return "~/" + filename;
-#endif
+    auto home = getenv("HOME");
+    stringstream ss;
+    ss << home << "/" << "Documents" << "/" << filename;
+    return ss.str();
   }
   
   return filename;

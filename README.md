@@ -451,4 +451,11 @@ soon.
 - Rename "Renderer" class to "Core"
 - Big rewrite of the way keys are handled removing large switch statements.
 
+### 2-Nov-2025
+
+- Files can be saved to disk. Not specifying a full path will put it in
+  Documents, if there is a path it must exist and the filename must end with
+  .json or .yml
+
+
 

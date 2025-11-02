@@ -15,8 +15,10 @@
 #include "unicode.hpp"
 #include "sizes.hpp"
 #include "filenames.hpp"
+#include "builder.hpp"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 Root::Root(const std::string &filename, Element *obj): 
   _filename(Unicode::convert(filename), Colours::black), _obj(obj) {
@@ -147,13 +149,20 @@ std::wstring Root::getString() {
 
 void Root::setString(Core &core, const wstring &s) {
 
+  // rename the file or set the name.
   auto msg = Filenames::isInvalid(Unicode::convert(s));
   if (msg) {
     core.setError(*msg);
   }
   else {
     auto fn = Filenames::addPath(Unicode::convert(s));
-    cout << "rename from " << Unicode::convert(_filename.str()) << " to " << fn << endl;
+    auto oldfn = Unicode::convert(_filename.str());
+    if (oldfn.find('<') == 0 && oldfn.find('>') == (oldfn.size() - 1)) {
+      Builder::write(getGeneric(), fn);
+    }
+    else {
+      fs::rename(oldfn, fn);
+    }
     _filename.set(Unicode::convert(fn), Colours::black);
     _filename.build(core);
   }
