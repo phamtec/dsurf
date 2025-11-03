@@ -33,3 +33,4 @@ SDL_Color Colours::stringE = green;
 SDL_Color Colours::longE = turquoise;
 SDL_Color Colours::boolE = lime;
 SDL_Color Colours::propertyE = blue;
+SDL_Color Colours::nullE = black;

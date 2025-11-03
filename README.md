@@ -461,6 +461,7 @@ soon.
 
 - Files can be opened from the disk.
 - Use SDL file open and save dialogs instead of typing full filename.
+- Add support for Null.
 
 
 

@@ -480,3 +480,17 @@ rfl::Generic CodeRoot::getGeneric() {
   return obj;
   
 }
+
+std::wstring CodeRoot::getString() {
+
+  return _filename.str();
+  
+}
+
+void CodeRoot::setString(Core &core, const wstring &s) {
+
+  _filename.set(s, Colours::black);
+  _filename.build(core);
+  
+}
+

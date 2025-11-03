@@ -43,6 +43,7 @@ public:
   static SDL_Color longE;
   static SDL_Color boolE;
   static SDL_Color propertyE;
+  static SDL_Color nullE;
   
 };
 

@@ -19,13 +19,14 @@
 #include "commandable.hpp"
 #include "locatable.hpp"
 #include "writeable.hpp"
+#include "editable.hpp"
 #include "flo.hpp"
 
 #include <rfl.hpp>
 
 class Element;
 
-class CodeRoot: public Element, public Writeable, public Commandable, public Locatable {
+class CodeRoot: public Element, public Writeable, public Commandable, public Locatable, public Editable  {
 
   typedef Element super;
 
@@ -63,6 +64,10 @@ public:
   // Locatable
   virtual Point getLocation() override { return _location; }
   virtual void setLocation(const Point &loc) override { _location = loc; }
+
+  // Editable
+  virtual std::wstring getString() override;
+  virtual void setString(Core &core, const std::wstring &s) override;
 
 protected:
 

@@ -103,6 +103,7 @@ set(OBJSRC
   src/listelem.cpp
   src/long.cpp
   src/bool.cpp
+  src/null.cpp
   src/property.cpp
   src/editable.cpp
   src/commandable.cpp

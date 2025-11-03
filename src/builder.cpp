@@ -16,6 +16,7 @@
 #include "string.hpp"
 #include "bool.hpp"
 #include "long.hpp"
+#include "null.hpp"
 #include "property.hpp"
 #include "unicode.hpp"
 #include "modules.hpp"
@@ -108,6 +109,9 @@ Element *Builder::castGeneric(const rfl::Generic &g)  {
     else if constexpr (std::is_same<Type, long long>() || std::is_same<Type, long>()) {
       obj = new Long(field);
     }
+    else if constexpr (std::is_same<Type, nullopt_t>()) {
+      obj = new Null();
+    }
     else {
       cout << "unknown type in generic " << typeid(field).name() << endl;
     }
@@ -122,8 +126,10 @@ Element *Builder::walk(Element *parent, const rfl::Generic &g) {
 
   Element *obj = castGeneric(g);
 
-  obj->setParent(parent);
-    
+  if (obj) {
+    obj->setParent(parent);
+  }
+  
   return obj;
     
 }

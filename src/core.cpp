@@ -282,6 +282,11 @@ void Core::removeRoot(Element *element) {
 
 void Core::build(Element *elem) {
 
+  if (!elem) {
+    cerr << "trying to build a null elem" << endl;
+    return;
+  }
+  
   elem->visit([this](auto e) {
 //    cout << "building " << e->describe() << endl;
     e->build(*this);
@@ -292,6 +297,11 @@ void Core::build(Element *elem) {
 
 void Core::destroy(Element *elem) {
 
+  if (!elem) {
+    cerr << "trying to destroy a null elem" << endl;
+    return;
+  }
+  
   elem->visit([this](auto e) {
 //    cout << "destroying " << e->describe() << endl;
     e->destroy(*this);
@@ -302,6 +312,11 @@ void Core::destroy(Element *elem) {
 
 void Core::layout(Element *elem) {
 
+  if (!elem) {
+    cerr << "trying to visit a null elem" << endl;
+    return;
+  }
+  
   elem->visit([this](auto e) {
 //    cout << "layout " << e->describe() << endl;
     e->layout();
@@ -1208,6 +1223,9 @@ void Core::saveFile(Element *element) {
       if (ex && wx) {
         Builder::write(wx->getGeneric(), list[0]);
         ex->setString(*(ud->core), Unicode::convert(list[0]));
+      }
+      else {
+        cerr << "can't write and edit." << endl;
       }
       delete ud;
     }

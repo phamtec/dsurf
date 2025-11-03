@@ -217,3 +217,17 @@ rfl::Generic ProjectRoot::getGeneric() {
   return obj;
   
 }
+
+std::wstring ProjectRoot::getString() {
+
+  return _filename.str();
+  
+}
+
+void ProjectRoot::setString(Core &core, const wstring &s) {
+
+  _filename.set(s, Colours::black);
+  _filename.build(core);
+  
+}
+
