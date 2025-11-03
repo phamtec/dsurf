@@ -28,8 +28,6 @@ public:
   
   static void registerHUDModes(Core &core, HUD *hud);
   
-private:
-
 };
 
 #endif // H_project_main

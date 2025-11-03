@@ -30,8 +30,6 @@ public:
   
   static Element *build(const rfl::Generic &g);
 
-private:
-
 };
 
 #endif // H_code_main

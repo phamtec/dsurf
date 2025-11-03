@@ -56,7 +56,6 @@ public:
   // Editable
   virtual std::wstring getString() override;
   virtual void setString(Core &core, const std::wstring &s) override;
-  virtual void edit(Core &core) override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;

@@ -149,23 +149,8 @@ std::wstring Root::getString() {
 
 void Root::setString(Core &core, const wstring &s) {
 
-  // rename the file or set the name.
-  auto msg = Filenames::isInvalid(Unicode::convert(s));
-  if (msg) {
-    core.setError(*msg);
-  }
-  else {
-    auto fn = Filenames::addPath(Unicode::convert(s));
-    auto oldfn = Unicode::convert(_filename.str());
-    if (oldfn.find('<') == 0 && oldfn.find('>') == (oldfn.size() - 1)) {
-      Builder::write(getGeneric(), fn);
-    }
-    else {
-      fs::rename(oldfn, fn);
-    }
-    _filename.set(Unicode::convert(fn), Colours::black);
-    _filename.build(core);
-  }
+  _filename.set(s, Colours::black);
+  _filename.build(core);
   
 }
 
@@ -182,10 +167,3 @@ void Root::setMode(Core &core, HUD *hud) {
   core.setTextState();
 
 }
-
-void Root::edit(Core &core) {
-
-  core.processTextKey(this, origin(), _filename.size(), SDLK_A);
-
-}
-

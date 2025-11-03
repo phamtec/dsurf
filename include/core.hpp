@@ -260,6 +260,8 @@ private:
   void registerCoreKeyHandlers();
   bool processKeyHandler(std::map<SDL_Keycode, globalMsgHandler> &handlers, SDL_Keycode code);
   bool processKeyHandler(std::map<SDL_Keycode, elementMsgHandler> &handlers, Element *element, SDL_Keycode code);
+  void openFile();
+  void saveFile(Element *element);
 
   // handling remove ZMQ requests to encrypted servers.
   std::unique_ptr<zmq::socket_t> _remotereq;

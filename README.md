@@ -457,5 +457,10 @@ soon.
   Documents, if there is a path it must exist and the filename must end with
   .json or .yml
 
+### 3-Nov-2025
+
+- Files can be opened from the disk.
+- Use SDL file open and save dialogs instead of typing full filename.
+
 
 

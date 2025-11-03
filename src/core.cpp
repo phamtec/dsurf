@@ -158,6 +158,7 @@ bool Core::init(const string &path) {
     registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"N", L"ew"));
     mode->add(new Shortcut(L"P", L"aste"));
+    mode->add(new Shortcut(L"O", L"pen"));
     _hudnone = _hud->registerMode("none", mode);
   }
   
@@ -573,7 +574,7 @@ void Core::registerRootHUDMode(HUDMode *mode) {
   mode->add(new Shortcut(L"M", L"ove"));
   mode->add(new Shortcut(L"K", L"ill"));
   mode->add(new Shortcut(L"W", L"rite", canWrite));
-  mode->add(new Shortcut(L"S", L"ave"));
+  mode->add(new Shortcut(L"S", L"ave as"));
   mode->add(new Shortcut(L"C", L"opy"));
   mode->add(new Shortcut(L"P", L"aste"));
   
@@ -583,18 +584,17 @@ void Core::registerRootKeyHandlers() {
 
   // all the handlers related to "root" objects.
   _rootHandlers[SDLK_M] =  [&](Core &core, Element *element) { 
-    core._moving = element->root();
-    core._movoffs = _mouse;
+    _moving = element->root();
+    _movoffs = _mouse;
   };
   _rootHandlers[SDLK_K] =  [&](Core &core, Element *element) { 
-    core.removeRoot(element->root());
+    removeRoot(element->root());
   };
-  _rootHandlers[SDLK_W] =  [&](Core &core, Element *element) { write(element); };
+  _rootHandlers[SDLK_W] =  [&](Core &core, Element *element) { 
+    write(element); 
+  };
   _rootHandlers[SDLK_S] =  [&](Core &core, Element *element) {
-    auto ex = dynamic_cast<Editable *>(element->root());
-    if (ex) {
-      ex->edit(core);
-    }
+    saveFile(element);
   };
   _rootHandlers[SDLK_C] =  [&](Core &core, Element *element) { copy(element); };
   _rootHandlers[SDLK_P] =  [&](Core &core, Element *element) { paste(); };
@@ -614,12 +614,16 @@ void Core::registerTextHUDMode(HUDMode *mode) {
 void Core::registerTextKeyHandlers() {
 
   _textHandlers[SDLK_D] =  [&](Core &core, Element *element) { 
-    core.processDeleteKey(element);
+    processDeleteKey(element);
   };
 
   // and overide the root undo and redo to take an element.
-  _textHandlers[SDLK_U] =  [&](Core &core, Element *element) { undo(element); };
-  _textHandlers[SDLK_R] =  [&](Core &core, Element *element) { redo(element); };
+  _textHandlers[SDLK_U] =  [&](Core &core, Element *element) { 
+    undo(element); 
+  };
+  _textHandlers[SDLK_R] =  [&](Core &core, Element *element) { 
+    redo(element); 
+  };
   
 }
 
@@ -636,6 +640,9 @@ void Core::registerCoreKeyHandlers() {
   };
   _coreHandlers[SDLK_N] =  [&](Core &core) { 
     core._adding = true;
+  };
+  _coreHandlers[SDLK_O] =  [&](Core &core) {
+    core.openFile();
   };
   _coreHandlers[SDLK_D] =  [&](Core &core) { 
     if (core._moving) {
@@ -682,8 +689,12 @@ void Core::write(Element *element) {
     cerr << "Not a file based object" << endl;
     return;
   }
-  
-  Builder::write(writeable->getGeneric(), *filename);
+  if (filename->find('<') == 0 && filename->find('>') == (filename->size() - 1)) {
+    saveFile(root);
+  }
+  else {
+    Builder::write(writeable->getGeneric(), *filename);
+  }
   
   setDirty(root, false);
   
@@ -1136,4 +1147,44 @@ void Core::renderLayout(const Point &origin, const RectList &layout) {
     renderFilledRect(i + origin, Colours::blue);
   }
   
+}
+
+void Core::openFile() {
+
+  const SDL_DialogFileFilter filters[] = {
+    { "JSON",  "json" },
+    { "YAML", "yaml" }
+  };
+  SDL_ShowOpenFileDialog([](auto userdata, auto list, auto filter) {
+    if (list && *list) {
+      Core *core = (Core *)userdata;
+      core->addRoot(Builder::loadFile(list[0], false));
+    }
+  }, this, _window, filters, 2, nullptr, false);
+  
+}
+
+void Core::saveFile(Element *element) {
+
+  const SDL_DialogFileFilter filters[] = {
+    { "JSON",  "json" },
+    { "YAML", "yaml" }
+  };
+  typedef struct {
+    Core *core;
+    Element *element;
+  } UserData;
+  auto ud = new UserData{this, element->root()};
+  SDL_ShowSaveFileDialog([](auto userdata, auto list, auto filter) {
+    if (list && *list) {
+      auto ud = (UserData *)userdata;
+      auto ex = dynamic_cast<Editable *>(ud->element);
+      auto wx = dynamic_cast<Writeable *>(ud->element);
+      if (ex && wx) {
+        Builder::write(wx->getGeneric(), list[0]);
+        ex->setString(*(ud->core), Unicode::convert(list[0]));
+      }
+      delete ud;
+    }
+  }, ud, _window, filters, 2, nullptr);
 }
