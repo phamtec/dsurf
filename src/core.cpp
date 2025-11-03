@@ -563,8 +563,12 @@ void Core::registerGlobalHUDMode(HUDMode *mode) {
 
 void Core::registerGlobalKeyHandlers() {
 
-  _globalHandlers[SDLK_U] =  [&](Core &core) { undo(0); };
-  _globalHandlers[SDLK_R] =  [&](Core &core) { redo(0); };
+  _globalHandlers[SDLK_U] =  [&]() { 
+    undo(0); 
+  };
+  _globalHandlers[SDLK_R] =  [&]() { 
+    redo(0); 
+  };
 
 }
 
@@ -583,25 +587,33 @@ void Core::registerRootHUDMode(HUDMode *mode) {
 void Core::registerRootKeyHandlers() {
 
   // all the handlers related to "root" objects.
-  _rootHandlers[SDLK_M] =  [&](Core &core, Element *element) { 
+  _rootHandlers[SDLK_M] =  [&](Element *element) { 
     _moving = element->root();
     _movoffs = _mouse;
   };
-  _rootHandlers[SDLK_K] =  [&](Core &core, Element *element) { 
+  _rootHandlers[SDLK_K] =  [&](Element *element) { 
     removeRoot(element->root());
   };
-  _rootHandlers[SDLK_W] =  [&](Core &core, Element *element) { 
+  _rootHandlers[SDLK_W] =  [&](Element *element) { 
     write(element); 
   };
-  _rootHandlers[SDLK_S] =  [&](Core &core, Element *element) {
+  _rootHandlers[SDLK_S] =  [&](Element *element) {
     saveFile(element);
   };
-  _rootHandlers[SDLK_C] =  [&](Core &core, Element *element) { copy(element); };
-  _rootHandlers[SDLK_P] =  [&](Core &core, Element *element) { paste(); };
+  _rootHandlers[SDLK_C] =  [&](Element *element) { 
+    copy(element); 
+  };
+  _rootHandlers[SDLK_P] =  [&](Element *element) { 
+    paste(); 
+  };
 
   // and overide the root undor and redo to take an element.
-  _rootHandlers[SDLK_U] =  [&](Core &core, Element *element) { undo(element); };
-  _rootHandlers[SDLK_R] =  [&](Core &core, Element *element) { redo(element); };
+  _rootHandlers[SDLK_U] =  [&](Element *element) { 
+    undo(element); 
+  };
+  _rootHandlers[SDLK_R] =  [&](Element *element) { 
+    redo(element); 
+  };
 
 }
 
@@ -613,15 +625,15 @@ void Core::registerTextHUDMode(HUDMode *mode) {
 
 void Core::registerTextKeyHandlers() {
 
-  _textHandlers[SDLK_D] =  [&](Core &core, Element *element) { 
+  _textHandlers[SDLK_D] =  [&](Element *element) { 
     processDeleteKey(element);
   };
 
   // and overide the root undo and redo to take an element.
-  _textHandlers[SDLK_U] =  [&](Core &core, Element *element) { 
+  _textHandlers[SDLK_U] =  [&](Element *element) { 
     undo(element); 
   };
-  _textHandlers[SDLK_R] =  [&](Core &core, Element *element) { 
+  _textHandlers[SDLK_R] =  [&](Element *element) { 
     redo(element); 
   };
   
@@ -630,37 +642,39 @@ void Core::registerTextKeyHandlers() {
 void Core::registerCoreKeyHandlers() {
 
   // all the core handlers. pasting, movind and dropping, new items on the desktop.
-  _coreHandlers[SDLK_P] =  [&](Core &core) { paste(); };
-  _coreHandlers[SDLK_ESCAPE] =  [&](Core &core) { 
-    if (core._moving) {
-      core._moving = nullptr;
+  _coreHandlers[SDLK_P] =  [&]() { 
+    paste(); 
+  };
+  _coreHandlers[SDLK_ESCAPE] =  [&]() { 
+    if (_moving) {
+      _moving = nullptr;
       return;
     }
-    core._adding = false;
+    _adding = false;
   };
-  _coreHandlers[SDLK_N] =  [&](Core &core) { 
-    core._adding = true;
+  _coreHandlers[SDLK_N] =  [&]() { 
+    _adding = true;
   };
-  _coreHandlers[SDLK_O] =  [&](Core &core) {
-    core.openFile();
+  _coreHandlers[SDLK_O] =  [&]() {
+    openFile();
   };
-  _coreHandlers[SDLK_D] =  [&](Core &core) { 
-    if (core._moving) {
+  _coreHandlers[SDLK_D] =  [&]() { 
+    if (_moving) {
         // it's dropped.
         auto loc = Locatable::cast(_moving)->getLocation();
         Locatable::cast(_moving)->setLocation(((_mouse - _movoffs) / _scale) + loc);
-        core._moving = nullptr;
+        _moving = nullptr;
         return;
     }
-    if (core._adding) {
-      core.addRoot(new Root("<new>", new List(true)));
-      core._adding = false;
+    if (_adding) {
+      addRoot(new Root("<new>", new List(true)));
+      _adding = false;
     }
   };
-  _coreHandlers[SDLK_L] =  [&](Core &core) { 
-    if (core._adding) {
-      core.addRoot(new Root("<new>", new List(false)));
-      core._adding = false;
+  _coreHandlers[SDLK_L] =  [&]() { 
+    if (_adding) {
+      addRoot(new Root("<new>", new List(false)));
+      _adding = false;
     }
   };
 
@@ -730,14 +744,14 @@ void Core::redo(Element *element) {
   }
 }
 
-bool Core::processKeyHandler(map<SDL_Keycode, globalMsgHandler> &handlers, SDL_Keycode code) {
+bool Core::processKeyHandler(map<SDL_Keycode, msgHandler> &handlers, SDL_Keycode code) {
 
   auto handler = handlers.find(code);
   if (handler == handlers.end()) {
 //    cout << "ignoring key" << code << endl;
     return false;
   }
-  handler->second(*this);
+  handler->second();
   return true;
 
 }
@@ -749,7 +763,18 @@ bool Core::processKeyHandler(std::map<SDL_Keycode, elementMsgHandler> &handlers,
 //    cout << "ignoring key" << code << endl;
     return false;
   }
-  handler->second(*this, element);
+  handler->second(element);
+  return true;
+}
+
+bool Core::processKeyHandler(std::map<SDL_Keycode, coreMsgHandler> &handlers, SDL_Keycode code) {
+
+  auto handler = handlers.find(code);
+  if (handler == handlers.end()) {
+//    cout << "ignoring key" << code << endl;
+    return false;
+  }
+  handler->second(*this);
   return true;
 }
 

@@ -355,49 +355,49 @@ void List::registerHUDModes(HUD *hud) {
 
 void List::registerListKeyHandlers() {
 
-  _listHandlers[SDLK_E] =  [&](Core &core, List &list) { 
-    if (list._dict) {
+  _listHandlers[SDLK_E] =  [&](Core &core) { 
+    if (_dict) {
       return;
     }
-    if (list._editing) {
+    if (_editing) {
       return;
     }
-    list._editing = true;
-    list.startEdit(core);
-    list.root()->layout();
+    _editing = true;
+    startEdit(core);
+    root()->layout();
   };
-  _listHandlers[SDLK_N] =  [&](Core &core, List &list) {
-    if (!list._adding) {
+  _listHandlers[SDLK_N] =  [&](Core &core) {
+    if (!_adding) {
       // also "New"
       _adding = true;
       return;
     }
-    list.add(core, L"long", new Long(0), false);
+    add(core, L"long", new Long(0), false);
   };
-  _listHandlers[SDLK_T] =  [&](Core &core, List &list) {
+  _listHandlers[SDLK_T] =  [&](Core &core) {
     transformCode(core);
   };
   
-  _listHandlers[SDLK_C] =  [&](Core &core, List &list) { 
-    if (list._editing) {
+  _listHandlers[SDLK_C] =  [&](Core &core) { 
+    if (_editing) {
       return;
     }
     core.copy(this);
   };
-  _listHandlers[SDLK_P] =  [&](Core &core, List &list) { 
+  _listHandlers[SDLK_P] =  [&](Core &core) { 
     auto elem = core.getClipboard();
     if (elem) {
       auto l = dynamic_cast<List *>(elem);
       if (l) {
         if (l->isDict() == isDict()) {
-          list.mergeIntoUs(core, l);
+          mergeIntoUs(core, l);
         }
         else {
-          list.add(core, L"list", l, true);
+          add(core, L"list", l, true);
         }
       }
       else {
-        list.add(core, L"elem", elem, false);
+        add(core, L"elem", elem, false);
       }
     }
     else {
@@ -405,58 +405,58 @@ void List::registerListKeyHandlers() {
     }
   };
   
-  _listHandlers[SDLK_ESCAPE] =  [&](Core &core, List &list) { 
-    if (list._adding) {
-      list._adding = false;
+  _listHandlers[SDLK_ESCAPE] =  [&](Core &core) { 
+    if (_adding) {
+      _adding = false;
       return;
     }
-    if (!list._editing) {
+    if (!_editing) {
       return;
     }
-    if (list._moving) {
-      list._moving = nullptr;
-      list._moveover = nullptr;
+    if (_moving) {
+      _moving = nullptr;
+      _moveover = nullptr;
     }
     else {
-      list._editing = false;
-      list.endEdit(core);
+      _editing = false;
+      endEdit(core);
     }
-    list.root()->layout();
+    root()->layout();
   };
   
-  _listHandlers[SDLK_D] =  [&](Core &core, List &list) {
-    if (list._adding) {
-      list.add(core, L"dict", new List(true), true);
+  _listHandlers[SDLK_D] =  [&](Core &core) {
+    if (_adding) {
+      add(core, L"dict", new List(true), true);
       return;
     }
-    if (list._moving) {
-      list.reorder();
-      list._moving = nullptr;
-      list._moveover = nullptr;
-      list.root()->layout();
+    if (_moving) {
+      reorder();
+      _moving = nullptr;
+      _moveover = nullptr;
+      root()->layout();
       return;
     }
-    if (!list.isParentRoot()) {
+    if (!isParentRoot()) {
       core.processDeleteKey(getParent());
     }
   };
-  _listHandlers[SDLK_L] =  [&](Core &core, List &list) {
-    if (!list._adding) {
+  _listHandlers[SDLK_L] =  [&](Core &core) {
+    if (!_adding) {
       return;
     }
-    list.add(core, L"list", new List(false), true);
+    add(core, L"list", new List(false), true);
   };
-  _listHandlers[SDLK_S] =  [&](Core &core, List &list) {
-    if (!list._adding) {
+  _listHandlers[SDLK_S] =  [&](Core &core) {
+    if (!_adding) {
       return;
     }
-    list.add(core, L"string", new String(L"value"), false);
+    add(core, L"string", new String(L"value"), false);
   };
-  _listHandlers[SDLK_B] =  [&](Core &core, List &list) {
-    if (!list._adding) {
+  _listHandlers[SDLK_B] =  [&](Core &core) {
+    if (!_adding) {
       return;
     }
-    list.add(core, L"bool", new Bool(false), false);
+    add(core, L"bool", new Bool(false), false);
   };
 }
 
@@ -521,17 +521,6 @@ void List::mergeIntoUs(Core &core, List *other) {
   
 }
 
-void List::handleKey(Core &core, SDL_Keycode code) {
-
-  auto handler = _listHandlers.find(code);
-  if (handler == _listHandlers.end()) {
-//    cout << "ignoring key" << code << endl;
-    return;
-  }
-  handler->second(core, *this);
-  return;
-}
-
 void List::processKey(Core &core, SDL_Keycode code) {
 
   if (isParentRoot() && !_adding) {
@@ -545,7 +534,7 @@ void List::processKey(Core &core, SDL_Keycode code) {
       return;
     }
   }
-  handleKey(core, code);
+  core.processKeyHandler(_listHandlers, code);
 
 }
 

@@ -94,7 +94,7 @@ private:
   Element *_moving;
   Element *_moveover;
   Point _moveoffs;
-  std::map<SDL_Keycode, listMsgHandler> _listHandlers;
+  std::map<SDL_Keycode, coreMsgHandler> _listHandlers;
   
   void drawBorder(Core &core, const Point &origin, const Size &size, bool prop);
   rfl::Generic getGenericVector();
@@ -108,7 +108,6 @@ private:
   void mergeIntoUs(Core &core, List *other);
   void transformCode(Core &core);
   void registerListKeyHandlers();
-  void handleKey(Core &core, SDL_Keycode code);
     
 };
 

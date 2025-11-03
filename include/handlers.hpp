@@ -15,11 +15,10 @@
 #define H_handler
 
 class Core;
-class List;
 class Element;
 
-typedef std::function<void (Core &core)> globalMsgHandler;
-typedef std::function<void (Core &core, Element *element)> elementMsgHandler;
-typedef std::function<void (Core &core, List &list)> listMsgHandler;
+typedef std::function<void ()> msgHandler;
+typedef std::function<void (Element *element)> elementMsgHandler;
+typedef std::function<void (Core &core)> coreMsgHandler;
 
 #endif // H_handler

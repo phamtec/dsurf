@@ -86,6 +86,9 @@ void Core::addRoot(Element *element, bool useloc) {
 }
 void Core::removeRoot(Element *element) {
 }
+bool Core::processKeyHandler(std::map<SDL_Keycode, coreMsgHandler> &handlers, SDL_Keycode code) {
+  return false;
+}
 
 // HUD
 int HUD::registerMode(const string &name, HUDMode *mode) {

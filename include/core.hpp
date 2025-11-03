@@ -160,6 +160,11 @@ public:
   void changed(Element *elem);
     // an element has changed. Communicate this.
     
+  bool processKeyHandler(std::map<SDL_Keycode, msgHandler> &handlers, SDL_Keycode code);
+  bool processKeyHandler(std::map<SDL_Keycode, coreMsgHandler> &handlers, SDL_Keycode code);
+  bool processKeyHandler(std::map<SDL_Keycode, elementMsgHandler> &handlers, Element *element, SDL_Keycode code);
+    // Process various key handlers.
+    
   Resources resources;
   
   // ZMQ remote server.
@@ -205,8 +210,8 @@ private:
   bool _adding;
   int _hudadding;
   std::unique_ptr<RemoteZMQ> _remote;
-  std::map<SDL_Keycode, globalMsgHandler> _globalHandlers;
-  std::map<SDL_Keycode, globalMsgHandler> _coreHandlers;
+  std::map<SDL_Keycode, msgHandler> _globalHandlers;
+  std::map<SDL_Keycode, msgHandler> _coreHandlers;
   std::map<SDL_Keycode, elementMsgHandler> _rootHandlers;
   std::map<SDL_Keycode, elementMsgHandler> _textHandlers;
   
@@ -258,8 +263,6 @@ private:
   void registerRootKeyHandlers();
   void registerTextKeyHandlers();
   void registerCoreKeyHandlers();
-  bool processKeyHandler(std::map<SDL_Keycode, globalMsgHandler> &handlers, SDL_Keycode code);
-  bool processKeyHandler(std::map<SDL_Keycode, elementMsgHandler> &handlers, Element *element, SDL_Keycode code);
   void openFile();
   void saveFile(Element *element);
 
