@@ -78,6 +78,14 @@ public:
 private:
   friend class TestList;
   
+  typedef enum {
+    
+    none,
+    adding,
+    reorder
+  
+  } State;
+
   bool _dict;
   Element *_parent;
   Size _size;
@@ -88,8 +96,7 @@ private:
   int _hudlistedit;
   int _hudlistmove;
   int _hudaddlist;
-  bool _adding;
-  bool _editing;
+  State _state;
   Point _mouse;
   Element *_moving;
   Element *_moveover;
@@ -102,7 +109,7 @@ private:
   void startEdit(Core &core);
   void endEdit(Core &core);
   Element *otherElementHit(const Point &origin, const Point &p);
-  void reorder();
+  void reorderList();
   void add(Core &core, const std::wstring &name, Element *element, bool container);
   bool isParentRoot();
   void mergeIntoUs(Core &core, List *other);

@@ -36,7 +36,7 @@
 using namespace std;
 using flo::Generic;
 
-List::List(bool dict): _dict(dict), _parent(0), _editing(false), _moving(0), _moveover(0), _adding(false) {
+List::List(bool dict): _dict(dict), _parent(0), _state(none), _moving(0), _moveover(0) {
 
   registerListKeyHandlers();
   
@@ -75,13 +75,19 @@ RectList List::calcLayout() {
 
   RectList layout;
   Point o = Point(Sizes::group_indent, Sizes::listgap);
-  float w = Sizes::bottomlinelength;
+  float w = _state == reorder ? FIXED_WIDTH : Sizes::bottomlinelength;
   for (auto& i: _elements) {
-    auto s = i->size();
-    layout.push_back(Rect(o, s));
-    o.y += s.h + Sizes::listgap;
-    if ((o.x + s.w) > w) {
-      w = o.x + s.w;
+    if (_state == reorder) {
+      layout.push_back(Rect(o, Size(FIXED_WIDTH, FIXED_HEIGHT)));
+      o.y += FIXED_HEIGHT + Sizes::listgap;
+    }
+    else {
+      auto s = i->size();
+      layout.push_back(Rect(o, s));
+      o.y += s.h + Sizes::listgap;
+      if ((o.x + s.w) > w) {
+        w = o.x + s.w;
+      }
     }
   }
   if (_elements.size() == 0) {
@@ -111,31 +117,28 @@ void List::render(Core &core, const Point &origin) {
 
   drawBorder(core, origin, _size, false);
 
+  auto zipped = std::ranges::views::zip(_elements, _layout);
+  
   if (_moving) {
  
     // all the non moving objects.
     {
-      Point o = origin + Point(Sizes::group_indent, Sizes::listgap);
-      for (auto& i: _elements) {
-        Size s = i->size();
-        if (i.get() != _moving) {
-          i->render(core, o);
+      for (auto&& i: zipped) {
+        if (get<0>(i).get() != _moving) {
+          get<0>(i)->render(core, origin + get<1>(i).origin);
         }
-        o.y += s.h + Sizes::listgap;
       }
     }
     
     // and the one we are moving.
-    {
-      Point o = origin + Point(Sizes::group_indent, Sizes::listgap);
+      Point o = origin + get<1>(*zipped.begin()).origin;
       int index = 0;
-      for (auto& i: _elements) {
-        Size s = i->size();
-        if (i.get() == _moving) {
+      for (auto&& i: zipped) {
+        if (get<0>(i).get() == _moving) {
         
           Point ro = o;
           Point p = core.noOffset(_mouse) - _moveoffs;
-          p.y += (index * (s. h + Sizes::listgap)) + Sizes::listgap;
+          p.y += (index * (FIXED_HEIGHT + Sizes::listgap)) + Sizes::listgap;
           
           // constrain on y.
           ro.y = p.y;
@@ -144,23 +147,22 @@ void List::render(Core &core, const Point &origin) {
           Point lo = this->origin();
           Size ls = size();
           float top = lo.y + Sizes::listgap;
-          float bottom = lo.y + ls.h - s.h - (Sizes::listgap * 2);
+          float bottom = lo.y + ls.h - FIXED_HEIGHT - (Sizes::listgap * 2);
           if (ro.y < top) {
             ro.y = top;
           }
           if (ro.y > bottom) {
             ro.y = bottom;
           }
-          i->render(core, ro);
+          get<0>(i)->render(core, ro);
         }
-        o.y += s.h + Sizes::listgap;
+        o.y += FIXED_HEIGHT + Sizes::listgap;
         index++;
       }
-    }
   }
   else {
     // just render like normal.
-    for (auto&& i: std::ranges::views::zip(_elements, _layout)) {
+    for (auto&& i: zipped) {
       get<0>(i)->render(core, origin + get<1>(i).origin);
     }
  }
@@ -205,7 +207,7 @@ rfl::Generic List::getGeneric() {
 
 Element *List::hitTest(const Point &origin, const Point &p) { 
 
-  if (_editing) {
+  if (_state == reorder) {
     _mouse = p;
     if (_moving) {
       // what are we over?
@@ -281,7 +283,7 @@ void List::registerHUDModes(HUD *hud) {
   {
     auto mode = new HUDMode(false);
     Core::registerRootHUDMode(mode);
-    mode->add(new Shortcut(L"E", L"dit"));
+    mode->add(new Shortcut(L"O", L"rder"));
     mode->add(new Shortcut(L"N", L"ew"));
     mode->add(new Shortcut(L"T", L"ransform"));
     hud->registerMode("rootlist", mode);
@@ -300,7 +302,7 @@ void List::registerHUDModes(HUD *hud) {
     Core::registerGlobalHUDMode(mode);
     mode->add(new Shortcut(L"C", L"opy"));
     mode->add(new Shortcut(L"P", L"aste"));
-    mode->add(new Shortcut(L"E", L"dit"));
+    mode->add(new Shortcut(L"O", L"rder"));
     mode->add(new Shortcut(L"N", L"ew"));
     Core::registerTextHUDMode(mode);
     hud->registerMode("list", mode);
@@ -355,21 +357,21 @@ void List::registerHUDModes(HUD *hud) {
 
 void List::registerListKeyHandlers() {
 
-  _listHandlers[SDLK_E] =  [&](Core &core) { 
+  _listHandlers[SDLK_O] =  [&](Core &core) { 
     if (_dict) {
       return;
     }
-    if (_editing) {
+    if (_state == reorder) {
       return;
     }
-    _editing = true;
+    _state = reorder;
     startEdit(core);
-    root()->layout();
+    core.layout(root());
   };
   _listHandlers[SDLK_N] =  [&](Core &core) {
-    if (!_adding) {
+    if (_state == none) {
       // also "New"
-      _adding = true;
+      _state = adding;
       return;
     }
     add(core, L"long", new Long(0), false);
@@ -379,7 +381,7 @@ void List::registerListKeyHandlers() {
   };
   
   _listHandlers[SDLK_C] =  [&](Core &core) { 
-    if (_editing) {
+    if (_state != none) {
       return;
     }
     core.copy(this);
@@ -406,11 +408,11 @@ void List::registerListKeyHandlers() {
   };
   
   _listHandlers[SDLK_ESCAPE] =  [&](Core &core) { 
-    if (_adding) {
-      _adding = false;
+    if (_state == adding) {
+      _state = none;
       return;
     }
-    if (!_editing) {
+    if (_state != reorder) {
       return;
     }
     if (_moving) {
@@ -418,22 +420,22 @@ void List::registerListKeyHandlers() {
       _moveover = nullptr;
     }
     else {
-      _editing = false;
+      _state = none;
       endEdit(core);
     }
-    root()->layout();
+    core.layout(root());
   };
   
   _listHandlers[SDLK_D] =  [&](Core &core) {
-    if (_adding) {
+    if (_state == adding) {
       add(core, L"dict", new List(true), true);
       return;
     }
     if (_moving) {
-      reorder();
+      reorderList();
       _moving = nullptr;
       _moveover = nullptr;
-      root()->layout();
+      core.layout(root());
       return;
     }
     if (!isParentRoot()) {
@@ -441,19 +443,19 @@ void List::registerListKeyHandlers() {
     }
   };
   _listHandlers[SDLK_L] =  [&](Core &core) {
-    if (!_adding) {
+    if (_state != adding) {
       return;
     }
     add(core, L"list", new List(false), true);
   };
   _listHandlers[SDLK_S] =  [&](Core &core) {
-    if (!_adding) {
+    if (_state != adding) {
       return;
     }
     add(core, L"string", new String(L"value"), false);
   };
   _listHandlers[SDLK_B] =  [&](Core &core) {
-    if (!_adding) {
+    if (_state != adding) {
       return;
     }
     add(core, L"bool", new Bool(false), false);
@@ -488,21 +490,25 @@ void List::setMode(Core &core, HUD *hud) {
     return;
   }
 
-  if (_adding) {
-    hud->setMode(_hudaddlist);
-    return;
+  switch (_state) {
+    case adding:
+      hud->setMode(_hudaddlist);
+      return;
+      
+    case reorder:
+      hud->setMode(_moving ? _hudlistmove : _hudlistedit);
+      return;
+
+    default:
+      break;
   }
-  if (_editing) {
-    hud->setMode(_moving ? _hudlistmove : _hudlistedit);
-    return;
-  }
+  
   if (isParentRoot()) {
     hud->setMode(_hudrootlist);
     return;
   }
   
   hud->setMode(_hudlist);
-  
 }
 
 void List::mergeIntoUs(Core &core, List *other) {
@@ -523,7 +529,7 @@ void List::mergeIntoUs(Core &core, List *other) {
 
 void List::processKey(Core &core, SDL_Keycode code) {
 
-  if (isParentRoot() && !_adding) {
+  if (isParentRoot() && _state != adding) {
     // root keys as "S" so we don't do it while we are adding.
     if (core.processRootKey(this, code)) {
       return;
@@ -540,7 +546,7 @@ void List::processKey(Core &core, SDL_Keycode code) {
 
 void List::add(Core &core, const std::wstring &name, Element *element, bool container) {
 
-  _adding = false;
+  _state = none;
   
   Element *e;
   if (_dict) {
@@ -559,7 +565,7 @@ void List::add(Core &core, const std::wstring &name, Element *element, bool cont
   
 }
 
-void List::reorder() {
+void List::reorderList() {
 
   if (!_moving || !_moveover) {
     cerr << "nothing to move." << endl;
