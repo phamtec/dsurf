@@ -212,7 +212,13 @@ void Core::addFile(const string &filename, bool raw) {
 
 void Core::addRoot(const std::string &name, const rfl::Generic &g) {
   
-  addRoot(new Root(name, Builder::walk(0, g)));
+  auto obj = Builder::loadObj(g, name);
+  if (obj) {
+    addRoot(obj);
+  }
+  else {
+    addRoot(new Root(name, Builder::walk(0, g)));
+  }
   
 }
 

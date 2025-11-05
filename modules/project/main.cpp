@@ -83,7 +83,7 @@ Element *Project::load(const rfl::Generic &obj, const string &filename) {
         return new ProjectZMQObj(*name, *zmq);
       }
       else {
-        cerr << "unkown type of object" << endl;
+        cerr << "unknown type of object" << Generic::toString(*obj) << endl;
         return new ProjectUnknownObj(*name, *obj);
       }
     }

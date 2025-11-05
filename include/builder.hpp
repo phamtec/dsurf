@@ -26,7 +26,10 @@ public:
   static Element *walk(Element *parent, const rfl::Generic &g);
   static Element *walk(Element *parent, const rfl::Generic &g, const std::string &name);
 
-  static Element *loadFile(const std::string &fn, bool raw=false);
+ static Element *loadObj(const rfl::Generic &obj, const std::string &fn);
+    // load the Generic object into the core.
+    
+ static Element *loadFile(const std::string &fn, bool raw=false);
     // load the JSON file into the core.
     // if raw is true, then bypass modules.
     

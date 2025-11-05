@@ -349,7 +349,7 @@ void CodeRoot::run(Core &core) {
     cerr << "scenario is not an obj" << endl;
     return;
   }
-  auto in = Generic::getObject(sobj, "input");
+  auto in = Generic::getGeneric(sobj, "input");
   if (!in) {
     cerr << "scenario missing input" << endl;
     return;

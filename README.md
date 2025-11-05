@@ -466,3 +466,4 @@ soon.
 ### 5-Nov-2025
 
 - Fix list reordering.
+- Projects generating and loading others.

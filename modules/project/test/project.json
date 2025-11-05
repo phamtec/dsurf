@@ -34,9 +34,145 @@
                                             "streams"
                                         ],
                                         [
-                                            "user",
+                                            "me",
                                             {
                                                 "userId": {}
+                                            }
+                                        ]
+                                    ],
+                                    {
+                                        "dict": {}
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "getObjects",
+                            "result": {
+                                "apply": [
+                                    {
+                                        "cur": {}
+                                    },
+                                    {
+                                        "getmember": {
+                                            "name": "streams"
+                                        }
+                                    },
+                                    {
+                                        "map": [
+                                            [
+                                                [
+                                                    "name",
+                                                    {
+                                                        "getmember": {
+                                                            "name": "name"
+                                                        }
+                                                    }
+                                                ],
+                                                [
+                                                    "zmq",
+                                                    {
+                                                        "getZMQ": {}
+                                                    }
+                                                ]
+                                            ],
+                                            {
+                                                "dict": {}
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "getZMQ",
+                            "result": {
+                                "apply": [
+                                    [
+                                        [
+                                            "remote",
+                                            {
+                                                "apply": [
+                                                    [
+                                                        [
+                                                            "dict",
+                                                            {
+                                                                "getRemote": {}
+                                                            }
+                                                        ]
+                                                    ],
+                                                    {
+                                                        "dict": {}
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        [
+                                            "send",
+                                            {
+                                                "apply": [
+                                                    [
+                                                        [
+                                                            "dict",
+                                                            {
+                                                                "streamsMsg": {}
+                                                            }
+                                                        ]
+                                                    ],
+                                                    {
+                                                        "dict": {}
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    ],
+                                    {
+                                        "dict": {}
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "getRemote",
+                            "result": {
+                                "dict": {
+                                    "address": "localhost",
+                                    "port": 8094
+                                }
+                            }
+                        },
+                        {
+                            "name": "streamsMsg",
+                            "result": {
+                                "apply": [
+                                    [
+                                        [
+                                            "type",
+                                            "object"
+                                        ],
+                                        [
+                                            "objtype",
+                                            "stream"
+                                        ],
+                                        [
+                                            "me",
+                                            {
+                                                "userId": {}
+                                            }
+                                        ],
+                                        [
+                                            "id",
+                                            {
+                                                "apply": [
+                                                    {
+                                                        "cur": {}
+                                                    },
+                                                    {
+                                                        "getmember": {
+                                                            "name": "id"
+                                                        }
+                                                    }
+                                                ]
                                             }
                                         ]
                                     ],
@@ -48,17 +184,69 @@
                         }
                     ],
                     "remote": {
-                        "dict": {
-                            "address": "localhost",
-                            "port": 8094
-                        }
+                        "getRemote": {}
                     },
                     "local": {},
                     "send": {
                         "objectsMsg": {}
                     },
-                    "next": {},
-                    "scenarios": []
+                    "next": {
+                        "apply": [
+                            [
+                                [
+                                    "project",
+                                    {
+                                        "apply": [
+                                            [
+                                                [
+                                                    "name",
+                                                    "Streams"
+                                                ],
+                                                [
+                                                    "objects",
+                                                    {
+                                                        "getObjects": {}
+                                                    }
+                                                ]
+                                            ],
+                                            {
+                                                "dict": {}
+                                            }
+                                        ]
+                                    }
+                                ]
+                            ],
+                            {
+                                "dict": {}
+                            }
+                        ]
+                    },
+                    "scenarios": [
+                        {
+                            "path": "/next",
+                            "input": {
+                                "type": "streams",
+                                "user": "5b5a709cb990eb4d298d805d",
+                                "streams": [
+                                    {
+                                        "name": "Breakfast",
+                                        "id": "690465879f880b8ebae41290",
+                                        "policy": "690465879f880b8ebae41269"
+                                    },
+                                    {
+                                        "name": "BugBase",
+                                        "id": "690465879f880b8ebae4128e",
+                                        "policy": "690465879f880b8ebae4126d"
+                                    },
+                                    {
+                                        "name": "Stream 1",
+                                        "id": "690465879f880b8ebae4128f",
+                                        "policy": "690465879f880b8ebae41269"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 }
             }
         ]

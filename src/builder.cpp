@@ -31,6 +31,12 @@ using namespace std;
 namespace fs = std::filesystem;
 using flo::Generic;
 
+Element *Builder::loadObj(const rfl::Generic &obj, const string &fn) {
+
+  return Modules::load(obj, fn);
+
+}
+
 Element *Builder::loadFile(const string &fn, bool raw) {
 
   auto obj = Generic::parseFile(fn);
