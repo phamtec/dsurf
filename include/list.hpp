@@ -93,7 +93,7 @@ private:
   RectList _layout;
   int _hudrootlist;
   int _hudlist;
-  int _hudlistedit;
+  int _hudlistreorder;
   int _hudlistmove;
   int _hudaddlist;
   State _state;

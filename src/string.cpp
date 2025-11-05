@@ -39,6 +39,7 @@ std::string String::describe() {
 void String::layout() {
 
   _size = _value.size();
+//  cout << "String size " << _size << endl;
   
 }
 

@@ -30,9 +30,6 @@
 #include <SDL3/SDL.h>
 #include <ranges>
 
-#define FIXED_HEIGHT  200
-#define FIXED_WIDTH   600
-
 using namespace std;
 using flo::Generic;
 
@@ -75,19 +72,13 @@ RectList List::calcLayout() {
 
   RectList layout;
   Point o = Point(Sizes::group_indent, Sizes::listgap);
-  float w = _state == reorder ? FIXED_WIDTH : Sizes::bottomlinelength;
+  float w = Sizes::bottomlinelength;
   for (auto& i: _elements) {
-    if (_state == reorder) {
-      layout.push_back(Rect(o, Size(FIXED_WIDTH, FIXED_HEIGHT)));
-      o.y += FIXED_HEIGHT + Sizes::listgap;
-    }
-    else {
-      auto s = i->size();
-      layout.push_back(Rect(o, s));
-      o.y += s.h + Sizes::listgap;
-      if ((o.x + s.w) > w) {
-        w = o.x + s.w;
-      }
+    auto s = i->size();
+    layout.push_back(Rect(o, s));
+    o.y += s.h + Sizes::listgap;
+    if ((o.x + s.w) > w) {
+      w = o.x + s.w;
     }
   }
   if (_elements.size() == 0) {
@@ -122,47 +113,51 @@ void List::render(Core &core, const Point &origin) {
   if (_moving) {
  
     // all the non moving objects.
-    {
-      for (auto&& i: zipped) {
-        if (get<0>(i).get() != _moving) {
-          get<0>(i)->render(core, origin + get<1>(i).origin);
-        }
+    for (auto&& i: zipped) {
+      if (get<0>(i).get() != _moving) {
+        core.renderFilledRect(Rect(origin + get<1>(i).origin, get<0>(i)->size()), Colours::lightGrey);
+        get<0>(i)->render(core, origin + get<1>(i).origin);
       }
     }
     
     // and the one we are moving.
-      Point o = origin + get<1>(*zipped.begin()).origin;
-      int index = 0;
-      for (auto&& i: zipped) {
-        if (get<0>(i).get() == _moving) {
+    Point o = origin + get<1>(*zipped.begin()).origin;
+    int index = 0;
+    for (auto&& i: zipped) {
+      Size s = get<0>(i)->size();
+      if (get<0>(i).get() == _moving) {
+      
+        Point ro = o;
+        Point p = core.noOffset(_mouse) - _moveoffs;
+        p.y += (index * (s.h + Sizes::listgap)) + Sizes::listgap;
         
-          Point ro = o;
-          Point p = core.noOffset(_mouse) - _moveoffs;
-          p.y += (index * (FIXED_HEIGHT + Sizes::listgap)) + Sizes::listgap;
-          
-          // constrain on y.
-          ro.y = p.y;
-          
-          // constrain to the list.
-          Point lo = this->origin();
-          Size ls = size();
-          float top = lo.y + Sizes::listgap;
-          float bottom = lo.y + ls.h - FIXED_HEIGHT - (Sizes::listgap * 2);
-          if (ro.y < top) {
-            ro.y = top;
-          }
-          if (ro.y > bottom) {
-            ro.y = bottom;
-          }
-          get<0>(i)->render(core, ro);
+        // constrain on y.
+        ro.y = p.y;
+        
+        // constrain to the list.
+        Point lo = this->origin();
+        Size ls = size();
+        float top = lo.y + Sizes::listgap;
+        float bottom = lo.y + ls.h - s.h - (Sizes::listgap * 2);
+        if (ro.y < top) {
+          ro.y = top;
         }
-        o.y += FIXED_HEIGHT + Sizes::listgap;
-        index++;
+        if (ro.y > bottom) {
+          ro.y = bottom;
+        }
+        core.renderFilledRect(Rect(ro, s), Colours::lime);
+        get<0>(i)->render(core, ro);
       }
+      o.y += s.h + Sizes::listgap;
+      index++;
+    }
   }
   else {
     // just render like normal.
     for (auto&& i: zipped) {
+      if (_state == reorder) {
+        core.renderFilledRect(Rect(origin + get<1>(i).origin, get<0>(i)->size()), Colours::lightGrey);
+      }
       get<0>(i)->render(core, origin + get<1>(i).origin);
     }
  }
@@ -431,11 +426,14 @@ void List::registerListKeyHandlers() {
       add(core, L"dict", new List(true), true);
       return;
     }
-    if (_moving) {
+    if (_state == reorder && _moving) {
       reorderList();
+      _state = none;
+      endEdit(core);
       _moving = nullptr;
       _moveover = nullptr;
       core.layout(root());
+      core.setDirty(this);
       return;
     }
     if (!isParentRoot()) {
@@ -466,7 +464,7 @@ void List::initHUD(HUD *hud) {
 
   _hudrootlist = hud->findMode(_dict ? "rootdict" : "rootlist");
   _hudlist = hud->findMode(_dict ? "dict" : "list");
-  _hudlistedit = hud->findMode("listedit");
+  _hudlistreorder = hud->findMode("listreorder");
   _hudlistmove = hud->findMode("listmove");
   _hudaddlist = hud->findMode(_dict ? "adddict" : "addlist");
   
@@ -485,6 +483,8 @@ void List::initHUD(HUD *hud) {
 
 void List::setMode(Core &core, HUD *hud) {
 
+//  cout << "List::setMode" << endl;
+  
   if (core.textTooSmall()) {
     hud->setMode(0);
     return;
@@ -496,7 +496,7 @@ void List::setMode(Core &core, HUD *hud) {
       return;
       
     case reorder:
-      hud->setMode(_moving ? _hudlistmove : _hudlistedit);
+      hud->setMode(_moving ? _hudlistmove : _hudlistreorder);
       return;
 
     default:
@@ -509,21 +509,30 @@ void List::setMode(Core &core, HUD *hud) {
   }
   
   hud->setMode(_hudlist);
+  
 }
 
 void List::mergeIntoUs(Core &core, List *other) {
 
-  if (other->isDict() != isDict()) {
-    cerr << "can't merge. We are not the same." << endl;
+  if (isDict()) {
+    if (!other->isDict()) {
+      cerr << "can't merge. We are not the same." << endl;
+      return;
+    }
+  
+    // move the elements onto us.
+    for (auto& e: other->_elements) {
+      auto elem = std::move(e.get());
+      core.initElement(this, elem);
+      core.exec(this, new NewElement(this, elem));
+    }
     return;
   }
-
-  // move the elements onto us.
-  for (auto& e: other->_elements) {
-    auto elem = std::move(e.get());
-    core.initElement(this, elem);
-    core.exec(this, new NewElement(this, elem));
-  }
+  
+  
+  auto e = new ListElem(other);
+  core.initElement(this, e);
+  core.exec(this, new NewElement(this, e));
   
 }
 
@@ -572,7 +581,7 @@ void List::reorderList() {
     return;
   }
   
-  // and move them.
+  // and move them. Not undoable :-(
   Move::moveObj(&_elements, _moving, _moveover);
 
 }
@@ -650,6 +659,6 @@ void List::transformCode(Core &core) {
   
   core.removeRoot(root());
   core.addRoot(code);
-  
+
 }
 

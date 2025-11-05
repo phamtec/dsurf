@@ -20,10 +20,10 @@
 
 #include <iostream>
 
+using namespace std;
+
 #define FIXED_HEIGHT  200
 #define FIXED_WIDTH   600
-
-using namespace std;
 
 ListElem::ListElem(Element *obj): _obj(obj)
 {
@@ -34,76 +34,22 @@ void ListElem::setEdit(Core &core, bool state) {
 
   _editing = state;
   
-  if (_editing) {
-    _textsize = size();
-    if (_textsize.h >= FIXED_HEIGHT) {
-      _textsize.h = FIXED_HEIGHT * 2;
-    }
-    Rect r(Point(0, 0), _textsize);
-    
-    _texture = core.createTexture(_textsize.w, _textsize.h);
-    core.setTarget(_texture);
-    core.setDrawColor(Colours::lightGrey);
-    core.fillRect(r);
-    core.clearScale();
-    _obj->render(core, Point(0, 0));
-    core.restoreScale();
-    core.setTarget(0);
-  }
-  else {
-    core.destroyTexture(_texture);
-    _texture = 0;
-    List::cast(getParent())->setMoving(nullptr);
-  }
-  
 }
 
 void ListElem::layout() {
 
   if (_editing) {
-    _size.h = Sizes::listgap + FIXED_HEIGHT;
-    _size.w = FIXED_WIDTH;
+    _size = Size(FIXED_WIDTH, FIXED_HEIGHT);
   }
-  else  {
+  else {
     _size = _obj->size();
-  }
-  
-}
-
-void ListElem::destroy(Core &core) {
-
-  if (_texture) {
-    core.destroyTexture(_texture);
-    _texture = 0;
   }
   
 }
 
 void ListElem::render(Core &core, const Point &origin) {
 
-  if (_editing) {
-  
-    core.renderFilledRect(Rect(origin, Size(FIXED_WIDTH, FIXED_HEIGHT)), Colours::lightGrey);
-
-    Size s = _textsize;
-    if (_textsize.h > FIXED_HEIGHT) {
-      float scale = FIXED_HEIGHT / s.h;
-      s.h = FIXED_HEIGHT;
-      s.w *= scale;
-    }
-    else {
-      s.h *= 2;
-      s.w *= 2;
-    }
-    
-    Rect r(origin, s);
-    r -= 10;
-    core.renderTexture(_texture, r);
-    
-  }
-  else {
-    _obj->render(core, origin);
-  }
+  _obj->render(core, origin);
 
 }
 

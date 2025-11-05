@@ -818,9 +818,8 @@ bool Core::processRootKey(Element *element, SDL_Keycode code) {
 
 void Core::setTextState() {
 
-  if (_editor->capture()) {
-    _editor->setHUD(_hud.get());
-  }
+  // the editor knows how.
+  _editor->setHUD(_hud.get());
 
 }
 

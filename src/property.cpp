@@ -183,6 +183,8 @@ void Property::initHUD(HUD *hud) {
 
 void Property::setMode(Core &core, HUD *hud) {
 
+//  cout << "Property::setMode" << endl;
+  
   if (core.textTooSmall()) {
     hud->setHint(core, &_name);
     return;

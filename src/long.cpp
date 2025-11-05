@@ -29,7 +29,7 @@ Long::Long(long value): _parent(0) {
 void Long::layout() {
 
   _size = _value.size();
-  
+
 }
 
 void Long::build(Core &core) {

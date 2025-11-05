@@ -163,7 +163,5 @@ void Root::initHUD(HUD *hud) {
 void Root::setMode(Core &core, HUD *hud) {
 
   Commandable::cast(_obj.get())->setMode(core, hud);
-  
-  core.setTextState();
 
 }

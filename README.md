@@ -463,10 +463,6 @@ soon.
 - Use SDL file open and save dialogs instead of typing full filename.
 - Add support for Null.
 
-### 4-Nov-2025
+### 5-Nov-2025
 
 - Fix list reordering.
-
-
-
-

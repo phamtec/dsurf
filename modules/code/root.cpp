@@ -199,7 +199,7 @@ void CodeRoot::render(Core &core, const Point &origin) {
   i++;
 
   if (_running) {
-    core.renderFilledRect(*i + origin, Colours::lightPlum);
+    core.renderFilledRect(*i + origin, Colours::lavender);
     _scenario->render(core, origin + (*i).origin + Sizes::text_padding);
     i++;
     core.renderFilledRect(*i + origin, Colours::teaGreen);
