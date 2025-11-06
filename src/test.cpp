@@ -30,9 +30,17 @@ void Core::setupTest(int rep) {
   }
   _context.reset(new zmq::context_t(1));
   _rep.reset(new zmq::socket_t(*_context, ZMQ_REP));
-  _rep->bind("tcp://127.0.0.1:" + to_string(rep));
-	cout << "Bound to ZMQ as Local REP on " << rep << endl;
-
+  try {
+    _rep->bind("tcp://127.0.0.1:" + to_string(rep));
+    cout << "Bound to ZMQ as Local REP on " << rep << endl;
+  }
+    catch (zmq::error_t &ex) {
+      // something failed!
+      cout << "ZMQ can't bind: " << ex.what() << endl;
+      cout << "won't do testing." << endl;
+      _rep.reset();
+      _context.reset();
+    }
 }
 
 void Core::handleTestMsg() {

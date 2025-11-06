@@ -271,6 +271,8 @@ private:
   
   bool setupRemote(const std::string &server, int req, 
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey);
+  void handleRemoteMsg();
+  
 };
 
 #endif // H_core

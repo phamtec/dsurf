@@ -33,48 +33,74 @@ void Core::processMsg() {
 
   if (_remotereq) {
     
+    if (_rep) {
+    
+      // remote and test
+      zmq::pollitem_t items [] = {
+          { *_rep, 0, ZMQ_POLLIN, 0 },
+          { *_remotereq, 0, ZMQ_POLLIN, 0 }
+      };
+    
+      zmq::message_t message;
+      zmq::poll(&items[0], 2, timeout);
+      if (items[0].revents & ZMQ_POLLIN) {
+        handleTestMsg();
+      }
+      if (items[1].revents & ZMQ_POLLIN) {
+        handleRemoteMsg();
+      }
+      return;
+    }
+    
+    // just remote request
     zmq::pollitem_t items [] = {
-        { *_rep, 0, ZMQ_POLLIN, 0 },
         { *_remotereq, 0, ZMQ_POLLIN, 0 }
     };
   
     zmq::message_t message;
-    zmq::poll(&items[0], 2, timeout);
+    zmq::poll(&items[0], 1, timeout);
+    if (items[0].revents & ZMQ_POLLIN) {
+      handleRemoteMsg();
+    }
+    return;
+
+  }
+
+
+  if (_rep) {
+  
+    // just testing.
+    zmq::pollitem_t items [] = {
+        { *_rep, 0, ZMQ_POLLIN, 0 }
+    };
+  
+    zmq::message_t message;
+    zmq::poll(&items[0], 1, timeout);
     if (items[0].revents & ZMQ_POLLIN) {
       handleTestMsg();
     }
-    if (items[1].revents & ZMQ_POLLIN) {
-    
-      // get the message.
-      zmq::message_t req;
-  #if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)
-      auto res = _remotereq->recv(&req);
-  #else
-      auto res = _remotereq->recv(req, zmq::recv_flags::none);
-  #endif
-//      cout << "poll result " << res << endl;
-      string m((const char *)req.data(), req.size());
-      cout << "<- " << m << endl;
-      auto result = rfl::json::read<rfl::Generic>(m);
-      if (!result) {
-        _remote->msgError(*this, "unknown result " + m);
-        return;
-      }
-      _remote->evalMsg(*this, *result);
-      return;
-    }
-    return;
   }
   
-  zmq::pollitem_t items [] = {
-      { *_rep, 0, ZMQ_POLLIN, 0 }
-  };
+}
 
-  zmq::message_t message;
-  zmq::poll(&items[0], 1, timeout);
-  if (items[0].revents & ZMQ_POLLIN) {
-    handleTestMsg();
+void Core::handleRemoteMsg() {
+
+  // get the message.
+  zmq::message_t req;
+#if CPPZMQ_VERSION == ZMQ_MAKE_VERSION(4, 3, 1)
+  auto res = _remotereq->recv(&req);
+#else
+  auto res = _remotereq->recv(req, zmq::recv_flags::none);
+#endif
+//      cout << "poll result " << res << endl;
+  string m((const char *)req.data(), req.size());
+  cout << "<- " << m << endl;
+  auto result = rfl::json::read<rfl::Generic>(m);
+  if (!result) {
+    _remote->msgError(*this, "unknown result " + m);
+    return;
   }
+  _remote->evalMsg(*this, *result);
 
 }
 
@@ -116,7 +142,7 @@ bool Core::setupRemote(const string &server, int req,
     }
     catch (zmq::error_t &ex) {
       // something failed!
-      cout << "ZMQ can't pmmect: " << ex.what() << endl;
+      cout << "ZMQ can't set option: " << ex.what() << endl;
       _remotereq.reset();
       return false;
     }
