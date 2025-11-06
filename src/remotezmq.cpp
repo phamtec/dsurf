@@ -27,20 +27,8 @@ void RemoteZMQ::msgError(Core &core, const string &err) {
 
 void RemoteZMQ::evalMsg(Core &core, const rfl::Generic &msg) {
   
-  if (_next) {
-    if (_next->size() > 0) {
-      auto result = _flo->evalObj(msg, *_next);
-      if (result) {
-        core.addRoot("<zmq-result>", *result);
-      }
-    }
-    else {
-      core.addRoot("<zmq-result>", msg);
-    }
-//     // just open the message.
-//     addRoot(new Root("<zmq-result>", Builder::walk(0, msg)));
-    
-    // and close the request.
+  if (!_next || _next->size() == 0) {
+    core.addRoot("<zmq-result>", msg);
     core.closeRemote();
     return;
   }
@@ -73,15 +61,19 @@ void RemoteZMQ::evalMsg(Core &core, const rfl::Generic &msg) {
   }
   
   auto send = Generic::getObject(result, "send");
-  auto next = Generic::getObject(result, "next");
-  if (!send || !next) {
-    msgError(core, "missing send or next");
+  if (send) {
+    core.sendRemote(*send);
+  }
+  else {
+    core.addRoot("<zmq-result>", *result);
+    core.closeRemote();
     return;
   }
   
-  core.sendRemote(*send);
-  
-  _next = *next;
+  auto next = Generic::getObject(result, "next");
+  if (next) {
+    _next = *next;
+  }
 
 }
 
