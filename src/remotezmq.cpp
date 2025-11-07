@@ -11,14 +11,11 @@
 
 #include "remotezmq.hpp"
 
-#include "generic.hpp"
+#include "dict.hpp"
 #include "core.hpp"
 
-#include <rfl.hpp>
-#include <rfl/json.hpp>
-
 using namespace std;
-using flo::Generic;
+using namespace vops;
 
 void RemoteZMQ::msgError(Core &core, const string &err) {
   cerr << "ZMQ error: "<< err << endl;
@@ -33,34 +30,34 @@ void RemoteZMQ::evalMsg(Core &core, const rfl::Generic &msg) {
     return;
   }
   
-//  cout << "next " << Generic::toString(_next) << endl;
+//  cout << "next " << Dict::toString(_next) << endl;
   
   auto result = _flo->evalObj(msg, *_next);
   if (!result) {
-    msgError(core, "unknown reply " + Generic::toString(msg));
+    msgError(core, "unknown reply " + Dict::toString(msg));
     return;
   }
 
-  auto close = Generic::getBool(result, "close");
+  auto close = Dict::getBool(result, "close");
   if (close && *close) {
     cout << "closing" << endl;
     core.closeRemote();
     return;
   }
   
-  auto ignore = Generic::getBool(result, "ignore");
+  auto ignore = Dict::getBool(result, "ignore");
   if (ignore && *ignore) {
     cout << "ignoring" << endl;
     return;
   }
   
-  auto err = Generic::getString(result, "error");
+  auto err = Dict::getString(result, "error");
   if (err) {
     msgError(core, *err);
     return;
   }
   
-  auto send = Generic::getObject(result, "send");
+  auto send = Dict::getObject(result, "send");
   if (send) {
     core.sendRemote(*send);
   }
@@ -70,7 +67,7 @@ void RemoteZMQ::evalMsg(Core &core, const rfl::Generic &msg) {
     return;
   }
   
-  auto next = Generic::getObject(result, "next");
+  auto next = Dict::getObject(result, "next");
   if (next) {
     _next = *next;
   }

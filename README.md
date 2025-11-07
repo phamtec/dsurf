@@ -12,6 +12,11 @@ You can read a bit about it here:
 
 [Substack article](https://phamtec.substack.com/p/og-gui-programmer-doesnt-know-what)
 
+This uses these projects directly which are also my projects:
+
+[Dict]https://github.com/visualopsholdings/dict)
+[Flo]https://github.com/visualopsholdings/flo)
+
 ## Prerequsists
 
 #### Linux
@@ -471,3 +476,4 @@ soon.
 ### 7-Nov-2025
 
 - Fix empty string crasher.
+- "Generic" is now "Dict" and seperate to "Flo".

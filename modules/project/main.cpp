@@ -19,19 +19,19 @@
 #include "core.hpp"
 #include "unkobj.hpp"
 #include "zmqobj.hpp"
-#include "generic.hpp"
+#include "dict.hpp"
 
 #include <iostream>
 #include <filesystem>
 
 using namespace std;
 namespace fs = std::filesystem;
-using flo::Generic;
+using namespace vops;
 
 bool Project::isA(const rfl::Generic &obj) {
 
   // we need a Mondoid here :-)
-  auto name = Generic::getString(Generic::getObject(Generic::getObject(obj), "project"), "name");
+  auto name = Dict::getString(Dict::getObject(Dict::getObject(obj), "project"), "name");
   if (name) {
     cout << "Project " << *name << endl;
     return true;
@@ -43,34 +43,34 @@ bool Project::isA(const rfl::Generic &obj) {
 
 Element *Project::load(const rfl::Generic &obj, const string &filename) {
 
-  auto project = Generic::getObject(Generic::getObject(obj), "project");
+  auto project = Dict::getObject(Dict::getObject(obj), "project");
   if (!project) {
     cerr << "no project!" << endl;
     return nullptr;
   }
-  auto name = Generic::getString(project, "name");
+  auto name = Dict::getString(project, "name");
   if (!name) {
     cerr << "no name!" << endl;
     return nullptr;
   }
-  auto objects = Generic::getVector(project, "objects");
+  auto objects = Dict::getVector(project, "objects");
   if (!objects) {
     cerr << "no objects!" << endl;
     return nullptr;
   }
   std::vector<Element *> objs;
   transform(objects->begin(), objects->end(), back_inserter(objs), [filename](auto e) -> Element * {
-    auto obj = Generic::getObject(e);
+    auto obj = Dict::getObject(e);
     if (!obj) {
       cerr << "obj is not an object!" << endl;
       return nullptr;
     }
-    auto name = Generic::getString(*obj, "name");
+    auto name = Dict::getString(*obj, "name");
     if (!name) {
       cerr << "no name in obj!" << endl;
       return nullptr;
     }
-    auto file = Generic::getString(*obj, "file");    
+    auto file = Dict::getString(*obj, "file");    
     if (file) {
       fs::path p = filename;
       p = p.parent_path();
@@ -78,12 +78,12 @@ Element *Project::load(const rfl::Generic &obj, const string &filename) {
       return new ProjectFileObj(*name, p, *file);
     }
     else {
-      auto zmq = Generic::getObject(*obj, "zmq");    
+      auto zmq = Dict::getObject(*obj, "zmq");    
       if (zmq) {
         return new ProjectZMQObj(*name, *zmq);
       }
       else {
-        cerr << "unknown type of object" << Generic::toString(*obj) << endl;
+        cerr << "unknown type of object" << Dict::toString(*obj) << endl;
         return new ProjectUnknownObj(*name, *obj);
       }
     }

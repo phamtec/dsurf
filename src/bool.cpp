@@ -13,12 +13,10 @@
 #include "sizes.hpp"
 #include "spatial.hpp"
 #include "core.hpp"
-#include "generic.hpp"
 
 #include <sstream>
 
 using namespace std;
-using flo::Generic;
 
 Bool::Bool(bool value): _parent(0) {
 

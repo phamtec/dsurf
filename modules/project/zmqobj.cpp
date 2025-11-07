@@ -15,7 +15,7 @@
 #include "unicode.hpp"
 #include "builder.hpp"
 #include "flo.hpp"
-#include "generic.hpp"
+#include "dict.hpp"
 #include "sizes.hpp"
 #include "code.hpp"
 #include "list.hpp"
@@ -24,7 +24,7 @@
 #include <string_view>
 
 using namespace std;
-using flo::Generic;
+using namespace vops;
 
 ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic> &obj): 
   _parent(0), _hudobj(-1), _editing(false) {
@@ -33,27 +33,27 @@ ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic>
 
   rfl::Object<rfl::Generic> empty;
 
-  auto library = Generic::getVector(obj, "library");    
+  auto library = Dict::getVector(obj, "library");    
 
   _flo.reset(new Flo(obj));
   
-  auto scenarios =  Generic::getVector(obj, "scenarios");
+  auto scenarios =  Dict::getVector(obj, "scenarios");
 
   ProjectCode *code = nullptr;
-  auto remote = Generic::getObject(obj, "remote");
+  auto remote = Dict::getObject(obj, "remote");
   if (remote) {
     auto obj = _flo->evalObj(empty, *remote);
     if (obj) {
       code = new ProjectCode("remote", *remote, library, findScenario(scenarios, "/remote"));
-      auto s = Generic::getString(obj, "address");
+      auto s = Dict::getString(obj, "address");
       if (s) {
         _remoteAddress = *s;
       }
-      s = Generic::getString(obj, "public");
+      s = Dict::getString(obj, "public");
       if (s) {
         _remotePubKey = *s;
       }
-      auto i = Generic::getNum(obj, "port");
+      auto i = Dict::getNum(obj, "port");
       if (i) {
         _remotePort = *i;
       }
@@ -65,20 +65,20 @@ ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic>
   _code.push_back(unique_ptr<Element>(code));
   
   code = nullptr;
-  auto local = Generic::getObject(obj, "local");    
+  auto local = Dict::getObject(obj, "local");    
   if (local) {
     auto obj = _flo->evalObj(empty, *local);
     if (obj) {
       code = new ProjectCode("local", *local, library, findScenario(scenarios, "/local"));
-      auto s = Generic::getString(obj, "uuid");
+      auto s = Dict::getString(obj, "uuid");
       if (s) {
         _uuid = *s;
       }
-      s = Generic::getString(obj, "private");
+      s = Dict::getString(obj, "private");
       if (s) {
         _privateKey = *s;
       }
-      s = Generic::getString(obj, "public");
+      s = Dict::getString(obj, "public");
       if (s) {
         _publicKey = *s;
       }
@@ -90,7 +90,7 @@ ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic>
   _code.push_back(unique_ptr<Element>(code));
   
   // send and next are late binding so we just have the code for them.
-  auto o = Generic::getObject(obj, "send");
+  auto o = Dict::getObject(obj, "send");
   if (o) {
     _code.push_back(unique_ptr<Element>(new ProjectCode("send", *o, library, findScenario(scenarios, "/send"))));
     _send = *o;
@@ -99,7 +99,7 @@ ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic>
     _code.push_back(unique_ptr<Element>(new ProjectCode("send", empty, library, empty)));
  }
   
-  auto next =  Generic::getObject(obj, "next");
+  auto next =  Dict::getObject(obj, "next");
   if (next) {
     _code.push_back(unique_ptr<Element>(new ProjectCode("next", *next, library, findScenario(scenarios, "/next"))));
     _next = *next;
@@ -140,8 +140,8 @@ optional<rfl::Object<rfl::Generic> > ProjectZMQObj::findScenario(optional<vector
 
   if (scenarios) {
     for (auto i: *scenarios) {
-      auto obj = Generic::getObject(i);
-      auto p = Generic::getString(obj, "path");
+      auto obj = Dict::getObject(i);
+      auto p = Dict::getString(obj, "path");
       if (p && *p == path) {
         return obj;
       }
@@ -322,7 +322,7 @@ void ProjectZMQObj::changed(Core &core, Element *obj) {
   auto lib = _code[_libindex].get();
   if (!lib->visit([this, &core, obj, lib](auto e) {
     if (e == obj) {
-      auto v = Generic::getVector(Writeable::cast(lib)->getGeneric());
+      auto v = Dict::getVector(Writeable::cast(lib)->getGeneric());
       if (!v) {
         cerr << "lib is not a vector!" << endl;
         return false;

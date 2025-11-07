@@ -14,7 +14,7 @@
 #include "builder.hpp"
 #include "element.hpp"
 #include "writeable.hpp"
-#include "generic.hpp"
+#include "dict.hpp"
 
 #include "../modules/project/main.hpp"
 
@@ -27,7 +27,7 @@
 
 using namespace std;
 namespace fs = std::filesystem;
-using flo::Generic;
+using namespace vops;
 
 BOOST_AUTO_TEST_CASE( isAProject )
 {
@@ -60,6 +60,6 @@ BOOST_AUTO_TEST_CASE( loadAndSave )
   // make sure they are identical.
   BOOST_CHECK_EQUAL(json, input);
 
-//  cout << Generic::toString(out) << endl;
+//  cout << Dict::toString(out) << endl;
   
 }

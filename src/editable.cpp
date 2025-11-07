@@ -13,10 +13,8 @@
 
 #include "element.hpp"
 #include "err.hpp"
-#include "generic.hpp"
 
 using namespace std;
-using flo::Generic;
 
 class EditableErr: public Editable {
 

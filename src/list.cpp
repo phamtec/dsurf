@@ -23,7 +23,6 @@
 #include "newelement.hpp"
 #include "root.hpp"
 #include "property.hpp"
-#include "generic.hpp"
 #include "../modules/code/main.hpp"
 
 #include <iostream>
@@ -31,7 +30,6 @@
 #include <ranges>
 
 using namespace std;
-using flo::Generic;
 
 List::List(bool dict): _dict(dict), _parent(0), _state(none), _moving(0), _moveover(0) {
 

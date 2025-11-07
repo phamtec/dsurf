@@ -14,12 +14,10 @@
 #include "hud.hpp"
 #include "element.hpp"
 #include "core.hpp"
-#include "generic.hpp"
 
 #include <algorithm>
 
 using namespace std;
-using flo::Generic;
 
 void Changes::destroy(Core &core) {
 

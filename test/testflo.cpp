@@ -15,11 +15,12 @@
 #include <boost/test/unit_test.hpp>
 
 #include "flo.hpp"
-#include "generic.hpp"
+#include "dict.hpp"
 
 #include <rfl/json.hpp>
 
 using namespace std;
+using namespace vops;
 
 rfl::Generic loadJSON(const string &fn) {
 
@@ -38,7 +39,7 @@ BOOST_AUTO_TEST_CASE( evalStringMember )
 
   Flo flo;
   auto json = loadJSON("../test/string-t.json");
-  auto obj = Generic::getObject(json);
+  auto obj = Dict::getObject(json);
   auto s = flo.evalStringMember(obj, "test");
   BOOST_CHECK(s);
   BOOST_CHECK_EQUAL(*s, "hello");
@@ -51,7 +52,7 @@ BOOST_AUTO_TEST_CASE( evalNumMember )
 
   Flo flo;
   auto json = loadJSON("../test/num-t.json");
-  auto obj = Generic::getObject(json);
+  auto obj = Dict::getObject(json);
   auto s = flo.evalNumMember(obj, "test");
   BOOST_CHECK(s);
   BOOST_CHECK_EQUAL(*s, 42);
@@ -65,12 +66,12 @@ BOOST_AUTO_TEST_CASE( evalObj )
 
   Flo flo;
   auto obj = loadJSON("../test/obj-t.json");
-  auto transform = Generic::getObject(obj);
+  auto transform = Dict::getObject(obj);
   BOOST_CHECK(transform);
   rfl::Generic m;
   auto o = flo.evalObj(m, *transform);
   BOOST_CHECK(o);
-  auto xxx = Generic::getString(o, "xxx");
+  auto xxx = Dict::getString(o, "xxx");
   BOOST_CHECK(xxx);
   BOOST_CHECK_EQUAL(*xxx, "yyy");
 

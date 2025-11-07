@@ -11,7 +11,7 @@
 
 #include "flo.hpp"
 
-#include "generic.hpp"
+#include "dict.hpp"
 
 #include "processor.hpp"
 #include "functions.hpp"
@@ -21,6 +21,7 @@
 
 using namespace std;
 using namespace flo;
+using namespace vops;
 
 optional<rfl::Object<rfl::Generic> > Flo::evalObj(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform) {
 
@@ -29,14 +30,14 @@ optional<rfl::Object<rfl::Generic> > Flo::evalObj(const rfl::Generic &obj, const
     return nullopt;
   }
   
-  return Generic::getObject(*result);
+  return Dict::getObject(*result);
   
 }
 
 optional<rfl::Generic> Flo::eval(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform) {
 
-//   cout << "obj " << Generic::toString(obj) << endl;
-//   cout << "transform " << Generic::toString(transform) << endl;
+//   cout << "obj " << Dict::toString(obj) << endl;
+//   cout << "transform " << Dict::toString(transform) << endl;
   
   Functions f(_library);
   Processor p(f);
@@ -47,7 +48,7 @@ optional<rfl::Generic> Flo::eval(const rfl::Generic &obj, const rfl::Object<rfl:
   if (!result) {
     return nullopt;
   }
-//  cout << "result " << Generic::toString(*result) << endl;
+//  cout << "result " << Dict::toString(*result) << endl;
   return *result;
   
 }

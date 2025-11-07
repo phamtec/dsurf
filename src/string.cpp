@@ -15,10 +15,8 @@
 #include "core.hpp"
 #include "hud.hpp"
 #include "unicode.hpp"
-#include "generic.hpp"
 
 using namespace std;
-using flo::Generic;
 
 String::String(const std::wstring &value): _parent(0) {
 

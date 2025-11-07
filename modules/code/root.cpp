@@ -13,14 +13,14 @@
 
 #include "core.hpp"
 #include "unicode.hpp"
-#include "generic.hpp"
+#include "dict.hpp"
 #include "builder.hpp"
 #include "list.hpp"
 #include "sizes.hpp"
 #include "scenario.hpp"
 
 using namespace std;
-using flo::Generic;
+using namespace vops;
 
 CodeRoot::CodeRoot(const std::string &filename, const rfl::Generic &obj): 
   _parent(0), _hudobj(-1), _running(false) {
@@ -29,18 +29,18 @@ CodeRoot::CodeRoot(const std::string &filename, const rfl::Generic &obj):
   _scenarioslabel.set(L"Scenarios", Colours::black);
   _librarylabel.set(L"Library", Colours::black);
 
-  auto code = Generic::getObject(obj);
+  auto code = Dict::getObject(obj);
   if (code) {
     _flo.reset(new Flo(*code));
-    auto transform = Generic::getObject(*code, "transform");
+    auto transform = Dict::getObject(*code, "transform");
     if (transform) {
       _transform = unique_ptr<Element>(Builder::walk(this, *transform));
     }
-    auto library = Generic::getVector(*code, "library");
+    auto library = Dict::getVector(*code, "library");
     if (library) {
       _library = unique_ptr<Element>(Builder::walk(this, *library));
     }
-    auto scenarios = Generic::getVector(*code, "scenarios");
+    auto scenarios = Dict::getVector(*code, "scenarios");
     if (scenarios) {
       for (int i=0; i<(*scenarios).size(); i++) {
         auto s = (*scenarios)[i];
@@ -344,19 +344,19 @@ void CodeRoot::run(Core &core) {
     return;
   }
 
-  auto sobj = Generic::getObject(Writeable::cast(_scenario.get())->getGeneric());
+  auto sobj = Dict::getObject(Writeable::cast(_scenario.get())->getGeneric());
   if (!sobj) {
     cerr << "scenario is not an obj" << endl;
     return;
   }
-  auto in = Generic::getGeneric(sobj, "input");
+  auto in = Dict::getGeneric(sobj, "input");
   if (!in) {
     cerr << "scenario missing input" << endl;
     return;
   }
 
   auto t = Writeable::cast(_transform.get())->getGeneric();
-  auto to = Generic::getObject(t);
+  auto to = Dict::getObject(t);
   auto out = _flo->eval(*in, *to);
   
   // clear out the output
@@ -364,7 +364,7 @@ void CodeRoot::run(Core &core) {
   
   // rebuild it.
   if (out) {
-//    cout << Generic::toString(*out) << endl;
+//    cout << Dict::toString(*out) << endl;
     _output = unique_ptr<Element>(Builder::walk(this, *out));
   }
   else {

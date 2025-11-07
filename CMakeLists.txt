@@ -30,11 +30,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(FetchContent)
 
 FetchContent_Declare(
+  dict
+  GIT_REPOSITORY https://github.com/visualopsholdings/dict.git
+  GIT_TAG main
+)
+FetchContent_MakeAvailable(dict)
+
+include_directories(build/_deps/dict-src/include)
+
+FetchContent_Declare(
   flo
   GIT_REPOSITORY https://github.com/visualopsholdings/flo.git
   GIT_TAG main
 )
 FetchContent_MakeAvailable(flo)
+
+include_directories(build/_deps/flo-src/include)
 
 if (UNIX AND NOT APPLE)
   add_definitions(-funwind-tables) 
@@ -54,7 +65,6 @@ endif ()
 include_directories(include)
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
-include_directories(build/_deps/flo-src/include)
 
 set(BOOSTLIBS ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_LOG_SETUP_LIBRARY} ${Boost_LOG_LIBRARY})
 
@@ -132,7 +142,7 @@ set(MODSRC
 
 add_executable(dsurf src/dsurf.cpp ${SRC} ${UTILSRC} ${OBJSRC} ${MODSRC})
   target_link_libraries(dsurf SDL3::SDL3 SDL3_ttf::SDL3_ttf OpenGL::GL FloLib
-    ${BOOSTLIBS} reflectcpp yaml-cpp::yaml-cpp ${LIBS})
+    ${BOOSTLIBS} DictLib ${LIBS})
 
 add_executable(Send test/send.cpp)
   target_link_libraries(Send ${BOOSTLIBS} reflectcpp ${LIBS})
@@ -148,22 +158,22 @@ add_executable(TestSpatial test/testspatial.cpp src/spatial.cpp src/point.cpp sr
 add_test(TestSpatial TestSpatial)
 
 add_executable(TestBuilder test/testbuilder.cpp src/builder.cpp test/dummyobjs.cpp test/dummytext.cpp src/flo.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
-  target_link_libraries(TestBuilder FloLib yaml-cpp::yaml-cpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${BOOSTLIBS})
+  target_link_libraries(TestBuilder FloLib DictLib ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${BOOSTLIBS})
 
 add_test(TestBuilder TestBuilder)
 
 add_executable(TestErrable test/testerrable.cpp test/dummyobjs.cpp test/dummytext.cpp test/dummybuilder.cpp modules/code/test/dummyobjs.cpp ${OBJSRC} ${UTILSRC})
-  target_link_libraries(TestErrable FloLib yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  target_link_libraries(TestErrable FloLib DictLib ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestErrable TestErrable)
 
 add_executable(TestMove test/testmove.cpp test/dummyobjs.cpp test/dummytext.cpp test/dummybuilder.cpp modules/code/test/dummyobjs.cpp ${OBJSRC} ${UTILSRC})
-  target_link_libraries(TestMove FloLib yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  target_link_libraries(TestMove FloLib DictLib ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestMove TestMove)
 
 add_executable(TestList test/testlist.cpp test/dummyobjs.cpp test/dummytext.cpp test/dummybuilder.cpp  modules/code/test/dummyobjs.cpp  ${OBJSRC} ${UTILSRC})
-  target_link_libraries(TestList FloLib yaml-cpp::yaml-cpp reflectcpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  target_link_libraries(TestList FloLib DictLib ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 add_test(TestList TestList)
 
@@ -183,7 +193,7 @@ add_executable(TestKeys test/testkeys.cpp)
 add_test(TestKeys TestKeys)
 
 add_executable(TestProject modules/project/test/testproject.cpp src/builder.cpp test/dummyobjs.cpp test/dummytext.cpp src/flo.cpp ${OBJSRC} ${UTILSRC} ${MODSRC})
-  target_link_libraries(TestProject FloLib yaml-cpp::yaml-cpp ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${BOOSTLIBS})
+  target_link_libraries(TestProject FloLib DictLib ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${BOOSTLIBS})
 
 add_test(TestProject TestProject)
 

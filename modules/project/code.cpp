@@ -15,11 +15,11 @@
 #include "sizes.hpp"
 #include "unicode.hpp"
 #include "core.hpp"
-#include "generic.hpp"
+#include "dict.hpp"
 #include "list.hpp"
 
 using namespace std;
-using flo::Generic;
+using namespace vops;
 
 ProjectCode::ProjectCode(const string &name, rfl::Generic transform, optional<vector<rfl::Generic> > library, optional<rfl::Object<rfl::Generic> > scenario): 
   _hudobj(-1), _running(false) {
@@ -36,7 +36,7 @@ ProjectCode::ProjectCode(const string &name, rfl::Generic transform, optional<ve
   _name.set(Unicode::convert(name), Colours::black);
   _transform = unique_ptr<Element>(Builder::walk(this, transform));
   if (scenario) {
-    auto input = Generic::getGeneric(*scenario, "input");
+    auto input = Dict::getGeneric(*scenario, "input");
     if (input) {
       _input = unique_ptr<Element>(Builder::walk(this, *input));
     }
@@ -220,7 +220,7 @@ void ProjectCode::run(Core &core) {
 
   auto in = Writeable::cast(_input.get())->getGeneric();
   auto t = Writeable::cast(_transform.get())->getGeneric();
-  auto to = Generic::getObject(t);
+  auto to = Dict::getObject(t);
   if (!to) {
     cerr << "transform is not object" << endl;
     return;

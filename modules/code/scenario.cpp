@@ -15,22 +15,22 @@
 #include "unicode.hpp"
 #include "root.hpp"
 #include "builder.hpp"
-#include "generic.hpp"
+#include "dict.hpp"
 
 using namespace std;
-using flo::Generic;
+using namespace vops;
 
 CodeScenario::CodeScenario(const rfl::Generic &scenario, int index): 
   _parent(0), _hudobj(-1), _loaded(false), _index(index) {
 
   _scenario = scenario;
-  auto obj = Generic::getObject(scenario);
+  auto obj = Dict::getObject(scenario);
   if (!obj) {
     cerr << "scenario is not an obj" << endl;
     return;
   }
   
-  auto name = Generic::getString(obj, "name");
+  auto name = Dict::getString(obj, "name");
   if (!name) {
     cerr << "scenario missing name" << endl;
     return;

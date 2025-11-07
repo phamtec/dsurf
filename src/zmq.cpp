@@ -12,7 +12,6 @@
 #include "core.hpp"
 
 #include "builder.hpp"
-#include "generic.hpp"
 #include "flo.hpp"
 #include "root.hpp"
 
@@ -20,7 +19,6 @@
 #include <rfl.hpp>
 
 using namespace std;
-using flo::Generic;
 
 void Core::closeRemote() {
   _remotereq->close();

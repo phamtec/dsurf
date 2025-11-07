@@ -15,7 +15,7 @@
 #include "hudmode.hpp"
 #include "shortcut.hpp"
 #include "core.hpp"
-#include "generic.hpp"
+#include "dict.hpp"
 #include "root.hpp"
 
 #include <iostream>
@@ -23,11 +23,11 @@
 
 using namespace std;
 namespace fs = std::filesystem;
-using flo::Generic;
+using namespace vops;
 
 bool Code::isA(const rfl::Generic &obj) {
 
-  auto transform = Generic::getObject(Generic::getObject(obj), "transform");
+  auto transform = Dict::getObject(Dict::getObject(obj), "transform");
   if (transform) {
 //    cout << "Code"  << endl;
     return true;

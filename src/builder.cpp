@@ -21,7 +21,7 @@
 #include "unicode.hpp"
 #include "modules.hpp"
 #include "root.hpp"
-#include "generic.hpp"
+#include "dict.hpp"
 
 #include <rfl/json.hpp>
 #include <rfl/yaml.hpp>
@@ -29,7 +29,7 @@
 
 using namespace std;
 namespace fs = std::filesystem;
-using flo::Generic;
+using namespace vops;
 
 Element *Builder::loadObj(const rfl::Generic &obj, const string &fn) {
 
@@ -39,7 +39,7 @@ Element *Builder::loadObj(const rfl::Generic &obj, const string &fn) {
 
 Element *Builder::loadFile(const string &fn, bool raw) {
 
-  auto obj = Generic::parseFile(fn);
+  auto obj = Dict::parseFile(fn);
   if (!obj) {
     return nullptr;
   }
