@@ -467,3 +467,7 @@ soon.
 
 - Fix list reordering.
 - Projects generating and loading others.
+
+### 7-Nov-2025
+
+- Fix empty string crasher.
