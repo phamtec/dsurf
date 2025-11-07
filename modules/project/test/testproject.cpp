@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE( isAProject )
 {
   cout << "=== isAProject ===" << endl;
 
-  auto result = rfl::json::load<rfl::Generic>("../modules/project/test/project.json");
+  auto result = rfl::json::load<DictG>("../modules/project/test/project.json");
   BOOST_CHECK(result);
   Project p;
   BOOST_CHECK(p.isA(*result));
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( loadAndSave )
 {
   cout << "=== loadAndSave ===" << endl;
 
-  auto result = rfl::json::load<rfl::Generic>("../modules/project/test/project.json");
+  auto result = rfl::json::load<DictG>("../modules/project/test/project.json");
   BOOST_CHECK(result);
   Project p;
   auto project = p.load(*result, "test.json");

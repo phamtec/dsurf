@@ -24,7 +24,7 @@ class Element;
 class ProjectUnknownObj: public Element, public Writeable, public Commandable {
 
 public:
-  ProjectUnknownObj(const std::string &name, rfl::Generic g);
+  ProjectUnknownObj(const std::string &name, DictG g);
 
   // Element
   virtual void setParent(Element *parent) override { _parent = parent; }
@@ -35,7 +35,7 @@ public:
   virtual Size size() override { return _size; }
 
   // Writeable
-  virtual rfl::Generic getGeneric() override;
+  virtual DictG getGeneric() override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
@@ -48,7 +48,7 @@ protected:
   Size _size;
   Text _name;
   int _hudobj;
-  rfl::Generic _g;
+  DictG _g;
   
 };
 

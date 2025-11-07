@@ -58,7 +58,7 @@ public:
   static Size displaySize();
   
   void addRoot(Element *element, bool useloc=false);
-  void addRoot(const std::string &name, const rfl::Generic &g);
+  void addRoot(const std::string &name, const DictG &g);
     // add a root, either we know the element, or add some generic object
     
   void removeRoot(Element *element);
@@ -170,9 +170,9 @@ public:
   // ZMQ remote server.
   void connectRemote(const std::string &server, int req, 
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey,
-    std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next);
+    std::shared_ptr<Flo> &flo, const DictO &msg, std::optional<DictO> next);
   void closeRemote();
-  void sendRemote(const rfl::Object<rfl::Generic> &msg);
+  void sendRemote(const DictO &msg);
   
 private:
   friend class TextEditor;

@@ -22,7 +22,7 @@ void RemoteZMQ::msgError(Core &core, const string &err) {
   core.closeRemote();
 }
 
-void RemoteZMQ::evalMsg(Core &core, const rfl::Generic &msg) {
+void RemoteZMQ::evalMsg(Core &core, const DictG &msg) {
   
   if (!_next || _next->size() == 0) {
     core.addRoot("<zmq-result>", msg);
@@ -74,12 +74,12 @@ void RemoteZMQ::evalMsg(Core &core, const rfl::Generic &msg) {
 
 }
 
-void RemoteZMQ::startRemote(Core &core, shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, optional<rfl::Object<rfl::Generic> > next) {
+void RemoteZMQ::startRemote(Core &core, shared_ptr<Flo> &flo, const DictO &msg, optional<DictO> next) {
   
   _flo = flo;
   
   // no message has come in yet.
-  rfl::Generic empty;
+  DictG empty;
   auto cmsg = _flo->evalObj(empty, msg);
   if (!cmsg) {
     return;

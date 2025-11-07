@@ -55,7 +55,7 @@ void String::render(Core &core, const Point &origin) {
 
 }
 
-rfl::Generic String::getGeneric() { 
+DictG String::getGeneric() { 
 
   return Unicode::convert(getString());
   

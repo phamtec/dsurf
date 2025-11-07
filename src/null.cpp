@@ -46,9 +46,9 @@ void Null::render(Core &core, const Point &origin) {
   
 }
 
-rfl::Generic Null::getGeneric() { 
+DictG Null::getGeneric() { 
   
-  rfl::Generic empty;
+  DictG empty;
   return empty;
 
 }

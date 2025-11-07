@@ -48,7 +48,7 @@ public:
 
   // Writeable
   virtual std::string getName() override;
-  virtual rfl::Generic getGeneric() override;
+  virtual DictG getGeneric() override;
   virtual void setDirty(Core &core, bool state) override;
   virtual std::optional<std::string> getFilename() override;
 

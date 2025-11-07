@@ -21,11 +21,11 @@
 using namespace std;
 using namespace vops;
 
-ProjectCode::ProjectCode(const string &name, rfl::Generic transform, optional<vector<rfl::Generic> > library, optional<rfl::Object<rfl::Generic> > scenario): 
+ProjectCode::ProjectCode(const string &name, DictG transform, optional<vector<DictG> > library, optional<DictO> scenario): 
   _hudobj(-1), _running(false) {
 
   if (library) {
-    rfl::Object<rfl::Generic> lib;
+    DictO lib;
     lib["library"] = *library;
     _flo.reset(new Flo(lib));
   }
@@ -245,9 +245,9 @@ void ProjectCode::run(Core &core) {
   
 }
 
-void ProjectCode::libChanged(Core &core, const std::vector<rfl::Generic> &library) {
+void ProjectCode::libChanged(Core &core, const DictV &library) {
 
-  rfl::Object<rfl::Generic> lib;
+  DictO lib;
   lib["library"] = library;
   _flo.reset(new Flo(lib));
   run(core);
@@ -287,7 +287,7 @@ std::string ProjectCode::getName() {
   
 }
 
-rfl::Generic ProjectCode::getGeneric() {
+DictG ProjectCode::getGeneric() {
 
   return Writeable::cast(_transform.get())->getGeneric();
   

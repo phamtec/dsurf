@@ -14,7 +14,9 @@
 #ifndef H_modules
 #define H_modules
 
-#include <rfl.hpp>
+#include "dict.hpp"
+
+using vops::DictG;
 
 class Element;
 class Core;
@@ -24,7 +26,7 @@ class Modules {
 
 public:
   
-  static Element *load(const rfl::Generic &obj, const std::string &filename);
+  static Element *load(const DictG &obj, const std::string &filename);
     // Determine and load the module.
     
   static void registerHUDModes(Core &core, HUD *hud);

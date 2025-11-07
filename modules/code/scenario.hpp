@@ -26,7 +26,7 @@ class Element;
 class CodeScenario: public Element, public Writeable, public Commandable {
 
 public:
-  CodeScenario(const rfl::Generic &scenario, int index);
+  CodeScenario(const DictG &scenario, int index);
 
   // Element
   virtual void setParent(Element *parent) override { _parent = parent; }
@@ -38,7 +38,7 @@ public:
   virtual RectList calcLayout() override;
 
   // Writeable
-  virtual rfl::Generic getGeneric() override { return _scenario; }
+  virtual DictG getGeneric() override { return _scenario; }
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
@@ -51,7 +51,7 @@ protected:
   Size _size;
   Text _name;
   int _hudobj;
-  rfl::Generic _scenario;
+  DictG _scenario;
   RectList _layout;
   bool _loaded;
   int _index;

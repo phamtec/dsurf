@@ -19,8 +19,11 @@
 #include "commandable.hpp"
 #include "flo.hpp"
 #include "writeable.hpp"
+#include "dict.hpp"
 
-#include <rfl.hpp>
+using vops::DictG;
+using vops::DictO;
+using vops::DictV;
 
 class Element;
 
@@ -29,7 +32,7 @@ class ProjectZMQObj: public Element, public Writeable, public Commandable {
   typedef Element super;
 
 public:
-  ProjectZMQObj(const std::string &name, const rfl::Object<rfl::Generic> &obj);
+  ProjectZMQObj(const std::string &name, const DictO &obj);
 
   // Element
   virtual void setParent(Element *parent) override { _parent = parent; }
@@ -45,7 +48,7 @@ public:
   virtual void changed(Core &core, Element *obj) override;
 
   // Writeable
-  virtual rfl::Generic getGeneric()  override;
+  virtual DictG getGeneric()  override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
@@ -70,12 +73,12 @@ protected:
   std::string _uuid;
   std::string _privateKey;
   std::string _publicKey;
-  rfl::Object<rfl::Generic> _send;
-  rfl::Object<rfl::Generic> _next;
+  DictO _send;
+  DictO _next;
   std::shared_ptr<Flo> _flo;
 
   void load(Core &core);
-  std::optional<rfl::Object<rfl::Generic> > findScenario(std::optional<std::vector<rfl::Generic> > scenarios, const std::string &path);
+  std::optional<DictO> findScenario(std::optional<DictV> scenarios, const std::string &path);
   
 };
 

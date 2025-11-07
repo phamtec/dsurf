@@ -26,12 +26,12 @@
 using namespace std;
 using namespace vops;
 
-ProjectZMQObj::ProjectZMQObj(const string &name, const rfl::Object<rfl::Generic> &obj): 
+ProjectZMQObj::ProjectZMQObj(const string &name, const DictO &obj): 
   _parent(0), _hudobj(-1), _editing(false) {
 
   _name.set(Unicode::convert(name), Colours::white);
 
-  rfl::Object<rfl::Generic> empty;
+  DictO empty;
 
   auto library = Dict::getVector(obj, "library");    
 
@@ -136,7 +136,7 @@ std::string ProjectZMQObj::getVerb() {
   
 }
 
-optional<rfl::Object<rfl::Generic> > ProjectZMQObj::findScenario(optional<vector<rfl::Generic> > scenarios, const string &path) {
+optional<DictO> ProjectZMQObj::findScenario(optional<vector<DictG> > scenarios, const string &path) {
 
   if (scenarios) {
     for (auto i: *scenarios) {
@@ -343,16 +343,16 @@ void ProjectZMQObj::changed(Core &core, Element *obj) {
   
 }
 
-rfl::Generic ProjectZMQObj::getGeneric() {
+DictG ProjectZMQObj::getGeneric() {
 
-  rfl::Object<rfl::Generic> obj;
+  DictO obj;
 
   // build a code object from the parts
   obj["name"] = Unicode::convert(_name.str());
   
   // collect all the writeables.
-  rfl::Generic library;
-  rfl::Generic scenarios;
+  DictG library;
+  DictG scenarios;
   vector<Writeable *> code;
   for (int i=0; i<_code.size(); i++) {
     auto e = _code[i].get();
@@ -372,7 +372,7 @@ rfl::Generic ProjectZMQObj::getGeneric() {
     }
   }
   
-  rfl::Object<rfl::Generic> zmq;
+  DictO zmq;
   zmq["library"] = library;
   for (auto i: code) {
     zmq[i->getName()] = i->getGeneric();

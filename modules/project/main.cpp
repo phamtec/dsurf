@@ -28,7 +28,7 @@ using namespace std;
 namespace fs = std::filesystem;
 using namespace vops;
 
-bool Project::isA(const rfl::Generic &obj) {
+bool Project::isA(const DictG &obj) {
 
   // we need a Mondoid here :-)
   auto name = Dict::getString(Dict::getObject(Dict::getObject(obj), "project"), "name");
@@ -41,7 +41,7 @@ bool Project::isA(const rfl::Generic &obj) {
   
 }
 
-Element *Project::load(const rfl::Generic &obj, const string &filename) {
+Element *Project::load(const DictG &obj, const string &filename) {
 
   auto project = Dict::getObject(Dict::getObject(obj), "project");
   if (!project) {

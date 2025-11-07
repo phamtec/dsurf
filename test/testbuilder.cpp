@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE( genericReflection )
   cout << "=== genericReflection ===" << endl;
 
   // this is the basic mechanism we went with.  
-  auto obj = rfl::Object<rfl::Generic>();
+  auto obj = DictO();
   obj["a"] = "x";
   obj["b"] = "y";
   obj["c"] = 10;
@@ -111,9 +111,9 @@ BOOST_AUTO_TEST_CASE( genericReflection )
 
   BOOST_CHECK_EQUAL(rfl::json::write(obj), "{\"a\":\"x\",\"b\":\"y\",\"c\":true}");
   
-  auto other = rfl::Object<rfl::Generic>();
+  auto other = DictO();
   other["name"] = "joe";
-  other["nums"] = vector<rfl::Generic>{1, 2, 3};
+  other["nums"] = vector<DictG>{1, 2, 3};
   obj["c"] = other;
   
   BOOST_CHECK_EQUAL(rfl::json::write(obj), 

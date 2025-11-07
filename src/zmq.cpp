@@ -93,7 +93,7 @@ void Core::handleRemoteMsg() {
 //      cout << "poll result " << res << endl;
   string m((const char *)req.data(), req.size());
   cout << "<- " << m << endl;
-  auto result = rfl::json::read<rfl::Generic>(m);
+  auto result = rfl::json::read<DictG>(m);
   if (!result) {
     _remote->msgError(*this, "unknown result " + m);
     return;
@@ -157,7 +157,7 @@ bool Core::setupRemote(const string &server, int req,
 
 void Core::connectRemote(const std::string &server, int req, 
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey,
-    std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next) {
+    std::shared_ptr<Flo> &flo, const DictO &msg, std::optional<DictO> next) {
 
   if (_remotereq) {
     _remotereq->close();
@@ -175,7 +175,7 @@ void Core::connectRemote(const std::string &server, int req,
   
 }
 
-void Core::sendRemote(const rfl::Object<rfl::Generic> &msg) {
+void Core::sendRemote(const DictO &msg) {
 
   string r(rfl::json::write(msg)); 
   cout << "-> " << r << endl;

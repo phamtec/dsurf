@@ -35,7 +35,7 @@ public:
   virtual Size size() override { return _size; }
 
   // Writeable
-  virtual rfl::Generic getGeneric() override;
+  virtual DictG getGeneric() override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;

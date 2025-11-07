@@ -19,17 +19,20 @@
 #include "text.hpp"
 #include "flo.hpp"
 #include "writeable.hpp"
+#include "dict.hpp"
 
-#include <rfl.hpp>
+using vops::DictG;
+using vops::DictO;
+using vops::DictV;
 
 class ProjectCode: public Element, public Writeable, public Commandable {
 
   typedef Element super;
 
 public:
-  ProjectCode(const std::string &name, rfl::Generic transform, std::optional<std::vector<rfl::Generic> > library, std::optional<rfl::Object<rfl::Generic> > scenario);
+  ProjectCode(const std::string &name, DictG transform, std::optional<DictV> library, std::optional<DictO> scenario);
 
-  void libChanged(Core &core, const std::vector<rfl::Generic> &library);
+  void libChanged(Core &core, const DictV &library);
   
   // Element
   virtual void setParent(Element *parent) override { _parent = parent; }
@@ -46,7 +49,7 @@ public:
 
   // Writeable
   virtual std::string getName() override;
-  virtual rfl::Generic getGeneric() override;
+  virtual DictG getGeneric() override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;

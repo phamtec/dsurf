@@ -94,7 +94,7 @@ std::string Root::getName() {
   
 }
 
-rfl::Generic Root::getGeneric() { 
+DictG Root::getGeneric() { 
 
   return Writeable::cast(_obj.get())->getGeneric();
   

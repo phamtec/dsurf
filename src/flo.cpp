@@ -20,10 +20,10 @@
 #include <rfl/json.hpp>
 
 using namespace std;
-using namespace flo;
+using namespace vops::flo;
 using namespace vops;
 
-optional<rfl::Object<rfl::Generic> > Flo::evalObj(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform) {
+optional<DictO> Flo::evalObj(const DictG &obj, const DictO &transform) {
 
   auto result = eval(obj, transform);
   if (!result) {
@@ -34,7 +34,7 @@ optional<rfl::Object<rfl::Generic> > Flo::evalObj(const rfl::Generic &obj, const
   
 }
 
-optional<rfl::Generic> Flo::eval(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform) {
+optional<DictG> Flo::eval(const DictG &obj, const DictO &transform) {
 
 //   cout << "obj " << Dict::toString(obj) << endl;
 //   cout << "transform " << Dict::toString(transform) << endl;
@@ -42,7 +42,7 @@ optional<rfl::Generic> Flo::eval(const rfl::Generic &obj, const rfl::Object<rfl:
   Functions f(_library);
   Processor p(f);
 
-  rfl::Object<rfl::Generic> t;
+  DictO t;
   t["transform"] = transform;
   auto result = p.transform(t, obj);
   if (!result) {

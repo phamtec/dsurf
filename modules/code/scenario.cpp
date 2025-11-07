@@ -20,7 +20,7 @@
 using namespace std;
 using namespace vops;
 
-CodeScenario::CodeScenario(const rfl::Generic &scenario, int index): 
+CodeScenario::CodeScenario(const DictG &scenario, int index): 
   _parent(0), _hudobj(-1), _loaded(false), _index(index) {
 
   _scenario = scenario;

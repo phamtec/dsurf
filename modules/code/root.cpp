@@ -22,7 +22,7 @@
 using namespace std;
 using namespace vops;
 
-CodeRoot::CodeRoot(const std::string &filename, const rfl::Generic &obj): 
+CodeRoot::CodeRoot(const std::string &filename, const DictG &obj): 
   _parent(0), _hudobj(-1), _running(false) {
   
   _filename.set(Unicode::convert(filename), Colours::black);
@@ -327,7 +327,7 @@ void CodeRoot::processKey(Core &core, SDL_Keycode code) {
 
 }
 
-void CodeRoot::setScenario(Core &core, const rfl::Generic &scenario, int index) {
+void CodeRoot::setScenario(Core &core, const DictG &scenario, int index) {
 
   _scenario->destroy(core);
   _scenario = unique_ptr<Element>(Builder::walk(this, scenario));
@@ -445,7 +445,7 @@ void CodeRoot::changed(Core &core, Element *obj) {
   // test the library.
   if (!_library->visit([this, &core, obj](auto e) {
     if (e == obj) {
-      rfl::Object<rfl::Generic> lib;
+      DictO lib;
       lib["library"] = Writeable::cast(_library.get())->getGeneric();
       _flo.reset(new Flo(lib));
       run(core);
@@ -464,14 +464,14 @@ std::string CodeRoot::getName() {
   
 }
 
-rfl::Generic CodeRoot::getGeneric() { 
+DictG CodeRoot::getGeneric() { 
 
-  rfl::Object<rfl::Generic> obj;
+  DictO obj;
   
   // build a code object from the parts
   obj["library"] = Writeable::cast(_library.get())->getGeneric();
   obj["transform"] = Writeable::cast(_transform.get())->getGeneric();
-  vector<rfl::Generic> scenarios;
+  vector<DictG> scenarios;
   transform(_scenarios.begin(), _scenarios.end(), back_inserter(scenarios), [](auto& e) {
     return Writeable::cast(e.get())->getGeneric();
   });

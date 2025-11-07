@@ -69,9 +69,9 @@ void ProjectFileObj::processKey(Core &core, SDL_Keycode code) {
 
 }
 
-rfl::Generic ProjectFileObj::getGeneric() {
+DictG ProjectFileObj::getGeneric() {
 
-  rfl::Object<rfl::Generic> obj;
+  DictO obj;
 
   // build a code object from the parts
   obj["name"] = Unicode::convert(_name.str());

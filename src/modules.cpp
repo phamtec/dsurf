@@ -16,7 +16,7 @@
 
 using namespace std;
 
-Element *Modules::load(const rfl::Generic &obj, const string &filename) {
+Element *Modules::load(const DictG &obj, const string &filename) {
 
   // all the modules might register and be used here.
   Project p;

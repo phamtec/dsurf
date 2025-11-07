@@ -39,7 +39,7 @@ public:
   virtual Size size() { return _size; }
 
   // Writeable
-  virtual rfl::Generic getGeneric() { return _value.str() == L"true"; }
+  virtual DictG getGeneric() { return _value.str() == L"true"; }
 
   // Editable
   virtual std::wstring getString() { return _value.str(); }

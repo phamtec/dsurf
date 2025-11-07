@@ -59,7 +59,7 @@ std::string ListElem::getName() {
   
 }
 
-rfl::Generic ListElem::getGeneric() { 
+DictG ListElem::getGeneric() { 
 
   return Writeable::cast(_obj.get())->getGeneric();
   

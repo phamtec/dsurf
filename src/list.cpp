@@ -192,7 +192,7 @@ void List::startEdit(Core &core) {
   
 }
 
-rfl::Generic List::getGeneric() { 
+DictG List::getGeneric() { 
 
   return _dict ? getGenericObject() : getGenericVector(); 
   
@@ -584,9 +584,9 @@ void List::reorderList() {
 
 }
 
-rfl::Generic List::getGenericObject() { 
+DictG List::getGenericObject() { 
 
-  auto obj = rfl::Object<rfl::Generic>();
+  auto obj = DictO();
 
   for (auto&& i: _elements) {
     auto *wx = dynamic_cast<Writeable *>(i.get());
@@ -603,9 +603,9 @@ rfl::Generic List::getGenericObject() {
   
 }
 
-rfl::Generic List::getGenericVector() { 
+DictG List::getGenericVector() { 
 
-  auto obj = vector<rfl::Generic>();
+  auto obj = vector<DictG>();
 
   transform(_elements.begin(), _elements.end(), back_inserter(obj), [](auto& e) {
     auto *wx = dynamic_cast<Writeable *>(e.get());
@@ -615,7 +615,7 @@ rfl::Generic List::getGenericVector() {
     else {
       stringstream ss;
       ss << typeid(e).name() << " not Writeable";
-      return (rfl::Generic)ss.str();
+      return (DictG)ss.str();
     }
   });
   

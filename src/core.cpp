@@ -210,7 +210,7 @@ void Core::addFile(const string &filename, bool raw) {
   
 }
 
-void Core::addRoot(const std::string &name, const rfl::Generic &g) {
+void Core::addRoot(const std::string &name, const DictG &g) {
   
   auto obj = Builder::loadObj(g, name);
   if (obj) {

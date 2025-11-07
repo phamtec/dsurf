@@ -46,7 +46,7 @@ void Long::render(Core &core, const Point &origin) {
   
 }
 
-rfl::Generic Long::getGeneric() { 
+DictG Long::getGeneric() { 
   
   wstringstream ss(_value.str());
   long l;

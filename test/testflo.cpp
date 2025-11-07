@@ -22,9 +22,9 @@
 using namespace std;
 using namespace vops;
 
-rfl::Generic loadJSON(const string &fn) {
+DictG loadJSON(const string &fn) {
 
-  auto g = rfl::json::load<rfl::Generic>(fn);
+  auto g = rfl::json::load<DictG>(fn);
   if (!g) {
     cout << g.error().what() << endl;
     return 0;
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE( evalObj )
   auto obj = loadJSON("../test/obj-t.json");
   auto transform = Dict::getObject(obj);
   BOOST_CHECK(transform);
-  rfl::Generic m;
+  DictG m;
   auto o = flo.evalObj(m, *transform);
   BOOST_CHECK(o);
   auto xxx = Dict::getString(o, "xxx");

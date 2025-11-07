@@ -25,7 +25,7 @@ using namespace std;
 namespace fs = std::filesystem;
 using namespace vops;
 
-bool Code::isA(const rfl::Generic &obj) {
+bool Code::isA(const DictG &obj) {
 
   auto transform = Dict::getObject(Dict::getObject(obj), "transform");
   if (transform) {
@@ -37,7 +37,7 @@ bool Code::isA(const rfl::Generic &obj) {
   
 }
 
-Element *Code::load(const rfl::Generic &obj, const string &filename) {
+Element *Code::load(const DictG &obj, const string &filename) {
 
   return new CodeRoot(filename, obj);
   
@@ -60,25 +60,25 @@ void Code::registerHUDModes(Core &core, HUD *hud) {
 
 }
 
- Element *Code::build(const rfl::Generic &g) {
+ Element *Code::build(const DictG &g) {
 
-  vector<rfl::Generic> scenarios;
-  rfl::Object<rfl::Generic> simple;
+  vector<DictG> scenarios;
+  DictO simple;
   simple["name"] = "Simple";
   simple["input"] = g;
   scenarios.push_back(simple);
   
-  vector<rfl::Generic> apply;
-  rfl::Object<rfl::Generic> cur;
-  rfl::Object<rfl::Generic> empty;
+  vector<DictG> apply;
+  DictO cur;
+  DictO empty;
   cur["cur"] = empty;
   apply.push_back(cur);
-  rfl::Object<rfl::Generic> transform;
+  DictO transform;
   transform["apply"] = apply;
   
-  vector<rfl::Generic> library;
+  vector<DictG> library;
   
-  rfl::Object<rfl::Generic> code;
+  DictO code;
   code["scenarios"] = scenarios;
   code["transform"] = transform;
   code["library"] = library;

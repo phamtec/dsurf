@@ -31,9 +31,9 @@ class CodeRoot: public Element, public Writeable, public Commandable, public Loc
   typedef Element super;
 
 public:
-  CodeRoot(const std::string &filename, const rfl::Generic &obj);
+  CodeRoot(const std::string &filename, const DictG &obj);
 
-  void setScenario(Core &core, const rfl::Generic &scenario, int index);
+  void setScenario(Core &core, const DictG &scenario, int index);
   void run(Core &core);
 
   // Element
@@ -52,7 +52,7 @@ public:
 
   // Writeable
   virtual std::string getName() override;
-  virtual rfl::Generic getGeneric() override;
+  virtual DictG getGeneric() override;
   virtual void setDirty(Core &core, bool state) override;
   virtual std::optional<std::string> getFilename() override;
 

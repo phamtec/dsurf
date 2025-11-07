@@ -27,23 +27,26 @@
 #ifndef H_flo
 #define H_flo
 
-#include <rfl.hpp>
+#include "dict.hpp"
+
+using vops::DictG;
+using vops::DictO;
 
 class Flo {
 
 public:
-  Flo(const rfl::Generic &library): _library(library) {}
+  Flo(const DictG &library): _library(library) {}
   Flo() {}
   
-  std::optional<rfl::Object<rfl::Generic> > evalObj(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform);
+  std::optional<DictO> evalObj(const DictG &obj, const DictO &transform);
     // evaulate, expecting an object to be returned.
     
-  std::optional<rfl::Generic> eval(const rfl::Generic &obj, const rfl::Object<rfl::Generic> &transform);
+  std::optional<DictG> eval(const DictG &obj, const DictO &transform);
     // evaluate getting anything back.
     
 private:
   
-  rfl::Generic _library;
+  DictG _library;
   
 };
 

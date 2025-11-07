@@ -29,14 +29,14 @@ public:
   RemoteZMQ() {};
   
   // remote server.
-  void startRemote(Core &core, std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next);
-  void evalMsg(Core &core, const rfl::Generic &msg);
+  void startRemote(Core &core, std::shared_ptr<Flo> &flo, const DictO &msg, std::optional<DictO> next);
+  void evalMsg(Core &core, const DictG &msg);
   void msgError(Core &core, const std::string &err);
   
 private:
 
   std::shared_ptr<Flo> _flo;
-  std::optional<rfl::Object<rfl::Generic> > _next;
+  std::optional<DictO> _next;
   
 };
 

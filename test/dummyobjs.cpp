@@ -80,7 +80,7 @@ void Core::changed(Element *elem) {
 }
 void Core::connectRemote(const std::string &server, int req, 
     const std::string &upstreamPubKey, const std::string &privateKey, const std::string &pubKey,
-    std::shared_ptr<Flo> &flo, const rfl::Object<rfl::Generic> &msg, std::optional<rfl::Object<rfl::Generic> > next) {
+    std::shared_ptr<Flo> &flo, const DictO &msg, std::optional<DictO> next) {
 }
 void Core::addRoot(Element *element, bool useloc) {
 }

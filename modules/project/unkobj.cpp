@@ -16,7 +16,7 @@
 
 using namespace std;
 
-ProjectUnknownObj::ProjectUnknownObj(const std::string &name, rfl::Generic g): 
+ProjectUnknownObj::ProjectUnknownObj(const std::string &name, DictG g): 
   _parent(0), _hudobj(-1), _g(g) {
 
   _name.set(Unicode::convert(name), Colours::white);
@@ -59,7 +59,7 @@ void ProjectUnknownObj::processKey(Core &core, SDL_Keycode code) {
 
 }
 
-rfl::Generic ProjectUnknownObj::getGeneric() {
+DictG ProjectUnknownObj::getGeneric() {
 
   return _g;
 

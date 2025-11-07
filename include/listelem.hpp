@@ -49,7 +49,7 @@ public:
 
   // Writeable
   virtual std::string getName() override ;
-  virtual rfl::Generic getGeneric() override ;
+  virtual DictG getGeneric() override ;
 
   // Editable
   virtual std::wstring getString() override ;

@@ -107,7 +107,7 @@ string Property::getName() {
   
 }
 
-rfl::Generic Property::getGeneric() { 
+DictG Property::getGeneric() { 
 
   auto wx = dynamic_cast<Writeable *>(_obj.get());
   if (wx) {

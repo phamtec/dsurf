@@ -65,7 +65,7 @@ public:
   virtual bool visit(std::function<bool (Element *)> f) override;
   
   // Writeable
-  virtual rfl::Generic getGeneric() override;
+  virtual DictG getGeneric() override;
 
   // Commandable
   virtual void initHUD(HUD *hud) override;
@@ -104,8 +104,8 @@ private:
   std::map<SDL_Keycode, coreMsgHandler> _listHandlers;
   
   void drawBorder(Core &core, const Point &origin, const Size &size, bool prop);
-  rfl::Generic getGenericVector();
-  rfl::Generic getGenericObject();
+  DictG getGenericVector();
+  DictG getGenericObject();
   void startEdit(Core &core);
   void endEdit(Core &core);
   Element *otherElementHit(const Point &origin, const Point &p);

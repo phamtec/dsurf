@@ -31,7 +31,7 @@ public:
     Err::typeError(_elem, typeid(Writeable));
     return nullopt;
   }
-  virtual rfl::Generic getGeneric() {
+  virtual DictG getGeneric() {
     Err::typeError(_elem, typeid(Writeable));
     return 0;
   }

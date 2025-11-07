@@ -14,7 +14,9 @@
 #ifndef H_writeable
 #define H_writeable
 
-#include <rfl.hpp>
+#include "dict.hpp"
+
+using vops::DictG;
 
 class Element;
 class Core;
@@ -26,7 +28,7 @@ public:
 
   virtual std::string getName() { return "????"; }
   virtual std::optional<std::string> getPropName() { return std::nullopt; }
-  virtual rfl::Generic getGeneric() = 0;
+  virtual DictG getGeneric() = 0;
     // return the name and the object for serialization.
     // if there is a name, then the object is a property.
         

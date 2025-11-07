@@ -200,14 +200,14 @@ std::string ProjectRoot::getName() {
   
 }
 
-rfl::Generic ProjectRoot::getGeneric() { 
+DictG ProjectRoot::getGeneric() { 
 
-  rfl::Object<rfl::Generic> obj;
+  DictO obj;
   
   // build a code object from the parts
-  rfl::Object<rfl::Generic> project;
+  DictO project;
   project["name"] = Unicode::convert(_name.str());
-  vector<rfl::Generic> objects;
+  vector<DictG> objects;
   transform(_objs.begin(), _objs.end(), back_inserter(objects), [](auto& e) {
     return Writeable::cast(e.get())->getGeneric();
   });

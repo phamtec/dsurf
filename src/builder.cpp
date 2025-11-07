@@ -31,7 +31,7 @@ using namespace std;
 namespace fs = std::filesystem;
 using namespace vops;
 
-Element *Builder::loadObj(const rfl::Generic &obj, const string &fn) {
+Element *Builder::loadObj(const DictG &obj, const string &fn) {
 
   return Modules::load(obj, fn);
 
@@ -61,7 +61,7 @@ Element *Builder::loadFile(const string &fn, bool raw) {
 
 Element *Builder::loadText(const char *text) {
 
-  auto result = rfl::json::read<rfl::Generic>(text);
+  auto result = rfl::json::read<DictG>(text);
   if (!result) {
     return nullptr;
   }
@@ -75,7 +75,7 @@ Element *Builder::loadText(const char *text) {
 
 }
 
-void Builder::write(const rfl::Generic &g, const string &fn) {
+void Builder::write(const DictG &g, const string &fn) {
 
   fs::path p = fn;
   if (p.extension() == ".json") {
@@ -89,18 +89,18 @@ void Builder::write(const rfl::Generic &g, const string &fn) {
   }
 }
 
-Element *Builder::castGeneric(const rfl::Generic &g)  {
+Element *Builder::castGeneric(const DictG &g)  {
 
   Element *obj = nullptr;
   std::visit([&obj](const auto &field) {
   
     using Type = std::decay_t<decltype(field)>;
-    if constexpr (std::is_same<Type, vector<rfl::Generic> >()) {
+    if constexpr (std::is_same<Type, vector<DictG> >()) {
       auto *l = new List(false);
       walk(l, field, l);
       obj = l;
     }
-    else if constexpr (std::is_same<Type, rfl::Object<rfl::Generic> >()) {
+    else if constexpr (std::is_same<Type, DictO >()) {
       auto *d = new List(true);
 //      auto *d = new Dict();
       walk(d, field, d);
@@ -128,7 +128,7 @@ Element *Builder::castGeneric(const rfl::Generic &g)  {
   
 }
 
-Element *Builder::walk(Element *parent, const rfl::Generic &g) {
+Element *Builder::walk(Element *parent, const DictG &g) {
 
   Element *obj = castGeneric(g);
 
@@ -140,7 +140,7 @@ Element *Builder::walk(Element *parent, const rfl::Generic &g) {
     
 }
 
-Element *Builder::walk(Element *parent, const rfl::Generic &g, const string &name) {
+Element *Builder::walk(Element *parent, const DictG &g, const string &name) {
 
   Element *obj = castGeneric(g);
 
@@ -153,14 +153,14 @@ Element *Builder::walk(Element *parent, const rfl::Generic &g, const string &nam
     
 }
 
-void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Element *list) {
+void Builder::walk(Element *parent, const DictO &obj, Element *list) {
 
 //  cout << "walk object " << list->describe() << endl;
   
   for (const auto& [k, v]: obj) {
     
     using V = remove_cvref_t<decltype(v)>;
-    if (is_same<rfl::Generic, V>::value) {
+    if (is_same<DictG, V>::value) {
       auto obj = walk(list, v, k);
       if (obj) {
         auto elements = List::cast(list)->getElements();
@@ -181,7 +181,7 @@ void Builder::walk(Element *parent, const rfl::Object<rfl::Generic> &obj, Elemen
   }
 }
 
-void Builder::walk(Element *parent, const std::vector<rfl::Generic > &v, Element *list) {
+void Builder::walk(Element *parent, const std::vector<DictG> &v, Element *list) {
 
 //  cout << "walk vector " << list->describe() << endl;
   
@@ -219,7 +219,7 @@ std::string Builder::getJson(Element *element) {
     auto name = wx->getPropName();
     if (name) {
       // create a dictionary with this property on it.
-      rfl::Object<rfl::Generic> dict;
+      DictO dict;
       dict[*name] = wx->getGeneric();
       return rfl::json::write(dict, rfl::json::pretty); 
     }
