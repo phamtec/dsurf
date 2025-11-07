@@ -48,9 +48,11 @@ void Text::build(Core &core) {
     _texture = 0;
   }
 
+  auto s = _str.size() > 0 ? _str : L"<empty>";
+  
   // create a surface from the text. We don't have
   // to keep it around after making a texture from it.
-  unique_ptr<SDL_Surface> surface(core.renderText(_str, _fgcolor, _bgcolor));
+  unique_ptr<SDL_Surface> surface(core.renderText(s, _fgcolor, _bgcolor));
   if (!surface) {
     return;
   }

@@ -303,9 +303,9 @@ void TextEditor::selectAll()
     SDL_Log("need to build first!");
     return;
   }
-  
+    
   _highlight1 = 0;
-  _highlight2 = (int)SDL_strlen(_text->text);
+  _highlight2 = _text->text ? (int)SDL_strlen(_text->text) : 0;
 }
 
 bool TextEditor::getHighlightExtents(int *marker, int *length)
