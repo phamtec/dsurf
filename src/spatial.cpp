@@ -72,6 +72,6 @@ void Spatial::scaleAndCenter(const Size &wsize, const Size &objsize, const Size 
 
 float Spatial::calcScale(int key) {
 
-  return ((((9-key) + 1) * 2.0) / 10.0)  - 0.15;
+  return (((9-key) + 1) / 15.0);
   
 }
