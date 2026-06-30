@@ -23,7 +23,7 @@ project (dsurf)
   add_definitions(-DBOOST_ALL_DYN_LINK) 
   enable_testing()
   
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -58,8 +58,6 @@ if (APPLE)
   else()
       message(STATUS "Unknown processor architecture: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
   endif()  
-  include_directories(/usr/local/include ${HOMEBREW_PATH}/Cellar/zeromq/4.3.5_2/include)
-  LINK_DIRECTORIES(${HOMEBREW_PATH}/Cellar/zeromq/4.3.5_2/lib)
 endif ()
 
 include_directories(include)
@@ -90,6 +88,7 @@ set(SRC
   src/flo.cpp
   src/zmq.cpp
   src/remotezmq.cpp
+  src/pgm.cpp
 )
 
 set(UTILSRC
