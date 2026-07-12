@@ -14,7 +14,7 @@ cmake_policy(SET CMP0167 NEW) # Boost
 cmake_policy(SET CMP0072 NEW) # OpenGL
 
 project (dsurf)
-  find_package(Boost 1.85.0 COMPONENTS program_options unit_test_framework log_setup log REQUIRED)
+  find_package(Boost 1.90.0 COMPONENTS program_options unit_test_framework log_setup log REQUIRED)
   find_package(SDL3 REQUIRED)
   find_package(SDL3_ttf REQUIRED)
   find_package(OpenGL)

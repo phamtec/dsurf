@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
   string logLevel;
   int repPort;
 
-  string usage = "Usage: " + string(argv[0]) + " input-file";
   po::options_description desc("Allowed options");
   desc.add_options()
     ("repPort", po::value<int>(&repPort)->default_value(3013), "ZMQ Rep port.")
