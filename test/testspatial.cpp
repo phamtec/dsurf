@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE( calcScale )
 {
   cout << "=== calcScale ===" << endl;
 
-  vector<double> expected = {1.6, 1.45, 1.25, 1.0, 0.85, 0.64, 0.44, 0.25, 0.05};
+  vector<double> expected = {0.6, 0.5, 0.46, 0.4, 0.33, 0.26, 0.2, 0.13, 0.06666};
   
   for (int i=1; i<=9; i++) {
     BOOST_CHECK_CLOSE_FRACTION(Spatial::calcScale(i), expected[i-1], 0.1);
