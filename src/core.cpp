@@ -402,7 +402,7 @@ void Core::loop(int rep) {
       _error->render(*this, Point(0.0, 0.0), false);
     }
   
-    // set the scale back to 1.0 so that our draw will work.
+    // set the scale back to 1.0 so that our debug and HUD draw will work.
     SDL_SetRenderScale(_renderer, 1.0, 1.0);
   
 //     debugOffs();
